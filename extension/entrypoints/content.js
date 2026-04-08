@@ -40,12 +40,14 @@ export default defineContentScript({
       }
 
       if (message.type === 'toggle-inspect') {
+        if (isReviewing()) { hideMarkers(); destroySidebar(); stopReview(); }
         if (isInspecting()) { stopInspect(); } else { startInspect(); }
         sendResponse({ ok: true, active: isInspecting() });
         return true;
       }
 
       if (message.type === 'toggle-review') {
+        if (isInspecting()) { stopInspect(); }
         if (!isReviewing()) {
           startReview({
             onAdd: (ann) => { showPanel(ann, { onChange: () => refreshSidebar() }); refreshSidebar(); },
