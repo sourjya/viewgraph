@@ -4,9 +4,11 @@
 **Date:** 2026-04-08
 **Status:** Draft
 **Authors:** ViewGraph Project
-**Lineage:** Inspired by the SiFR v2 format from Element to LLM (Insitu).
-See [viewgraph-format-research.md](./viewgraph-format-research.md) for credits
-and analysis.
+
+**Lineage:** Inspired by the SiFR v2 format from
+[Element to LLM](https://addons.mozilla.org/en-US/firefox/addon/element-to-llm/)
+(Insitu). See [viewgraph-format-research.md](./viewgraph-format-research.md)
+for credits and analysis.
 
 ---
 
