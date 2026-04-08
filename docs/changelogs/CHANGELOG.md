@@ -23,3 +23,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Changed
 - Renamed project from Sifr to ViewGraph across all config, source, and documentation files
+
+### Milestone 1: MCP Server Core Tools
+- ViewGraph v2 parser: parseMetadata, parseCapture, parseSummary (never throws, returns result objects)
+- In-memory capture indexer with add/remove/list/getLatest and LRU eviction
+- File watcher using chokidar (watches directory, filters to .json)
+- Path validation utility preventing directory traversal
+- MCP tools: list_captures, get_capture, get_latest_capture, get_page_summary
+- Test fixtures: valid capture, annotated capture, malformed capture
+- 23 unit tests passing (parser: 11, indexer: 11, smoke: 1)

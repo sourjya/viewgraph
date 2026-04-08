@@ -1,0 +1,68 @@
+{
+  "====METADATA====": {
+    "format": "viewgraph-v2",
+    "captureMode": "review",
+    "timestamp": "2026-04-08T07:15:00.000Z",
+    "url": "http://localhost:8040/jobs",
+    "title": "Job Scheduler - Home Management",
+    "viewport": { "width": 1696, "height": 799 },
+    "screenshot": "viewgraph-localhost-2026-04-08T071500.png",
+    "stats": {
+      "totalNodes": 5,
+      "salience": { "high": 1, "med": 3, "low": 1 },
+      "clusters": 2
+    },
+    "annotationCount": 2
+  },
+  "====NODES====": {
+    "high": [
+      { "id": "btn002", "tag": "button", "text": "View Chain", "bbox": { "x": 865, "y": 14, "w": 99, "h": 36 }, "actions": ["click"], "cluster": "c1" }
+    ],
+    "med": [
+      { "id": "div004", "tag": "div", "text": "", "bbox": { "x": 300, "y": 400, "w": 800, "h": 200 }, "actions": [], "cluster": "c1" },
+      { "id": "div005", "tag": "div", "text": "", "bbox": { "x": 300, "y": 400, "w": 800, "h": 50 }, "actions": [], "cluster": "c1" },
+      { "id": "tbl002", "tag": "table", "text": "", "bbox": { "x": 300, "y": 450, "w": 800, "h": 150 }, "actions": [], "cluster": "c1" }
+    ],
+    "low": [
+      { "id": "spn003", "tag": "span", "text": "", "bbox": { "x": 0, "y": 0, "w": 0, "h": 0 }, "actions": [], "cluster": "c2" }
+    ]
+  },
+  "====SUMMARY====": {
+    "layout": "dashboard with job table",
+    "styles": { "primaryColors": ["#3b82f6"], "fonts": ["Inter"], "spacing": "12px" },
+    "clusters": [
+      { "id": "c1", "label": "Job details", "bbox": { "x": 300, "y": 400, "w": 800, "h": 200 }, "elementCount": 4 },
+      { "id": "c2", "label": "Decorative", "bbox": { "x": 0, "y": 0, "w": 0, "h": 0 }, "elementCount": 1 }
+    ]
+  },
+  "====RELATIONS====": {
+    "parentChild": [
+      { "parent": "div004", "child": "div005" },
+      { "parent": "div004", "child": "tbl002" }
+    ]
+  },
+  "====DETAILS====": {
+    "btn002": {
+      "selector": "button[data-testid='view-chain']",
+      "attributes": { "data-testid": "view-chain", "role": "button" },
+      "computedStyles": { "backgroundColor": "#3b82f6", "color": "#ffffff" }
+    }
+  },
+  "====ANNOTATIONS====": [
+    {
+      "id": "ann-1",
+      "type": "region",
+      "region": { "x": 300, "y": 400, "w": 800, "h": 200 },
+      "selectedNodes": ["div004", "div005", "tbl002"],
+      "comment": "Add pagination to this table and make error details collapsible",
+      "timestamp": "2026-04-08T07:15:00Z"
+    },
+    {
+      "id": "ann-2",
+      "type": "element",
+      "selectedNodes": ["btn002"],
+      "comment": "This button should open in a side panel, not navigate away",
+      "timestamp": "2026-04-08T07:15:30Z"
+    }
+  ]
+}

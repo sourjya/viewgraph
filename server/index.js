@@ -5,14 +5,34 @@
  * analyzing, and comparing ViewGraph DOM captures. Kiro (or any MCP host)
  * spawns this process and communicates via JSON-RPC over stdin/stdout.
  *
- * Architecture: index.js wires together the watcher, indexer, HTTP receiver,
- * and tool handlers. Each tool is registered in its own module under src/tools/.
+ * Wires together: file watcher → parser → indexer → MCP tools.
  *
  * CRITICAL: All logging goes to stderr — stdout is reserved for JSON-RPC.
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { readFile } from 'fs/promises';
+import path from 'path';
+
+import { createWatcher } from './src/watcher.js';
+import { createIndexer } from './src/indexer.js';
+import { parseMetadata } from './src/parsers/viewgraph-v2.js';
+import { register as registerListCaptures } from './src/tools/list-captures.js';
+import { register as registerGetCapture } from './src/tools/get-capture.js';
+import { register as registerGetLatest } from './src/tools/get-latest.js';
+import { register as registerGetPageSummary } from './src/tools/get-page-summary.js';
+
+// ---------------------------------------------------------------------------
+// Configuration from environment
+// ---------------------------------------------------------------------------
+
+const CAPTURES_DIR = process.env.VIEWGRAPH_CAPTURES_DIR || path.join(process.cwd(), 'captures');
+const MAX_CAPTURES = parseInt(process.env.VIEWGRAPH_MAX_CAPTURES || '50', 10);
+
+// ---------------------------------------------------------------------------
+// Server setup
+// ---------------------------------------------------------------------------
 
 const server = new McpServer({
   name: 'viewgraph-mcp-server',
@@ -20,25 +40,66 @@ const server = new McpServer({
   description: 'Exposes ViewGraph DOM capture tools for AI-powered UI auditing, test generation, and visual regression',
 });
 
+const indexer = createIndexer({ maxCaptures: MAX_CAPTURES });
+
+// Register all MCP tools
+registerListCaptures(server, indexer);
+registerGetCapture(server, indexer, CAPTURES_DIR);
+registerGetLatest(server, indexer, CAPTURES_DIR);
+registerGetPageSummary(server, indexer, CAPTURES_DIR);
+
 // ---------------------------------------------------------------------------
-// Server startup
+// File indexing — parse metadata from a capture file and add to index
 // ---------------------------------------------------------------------------
 
+async function indexFile(filename, filePath) {
+  try {
+    const content = await readFile(filePath, 'utf-8');
+    const result = parseMetadata(content);
+    if (result.ok) {
+      indexer.add(filename, result.data);
+    } else {
+      console.error(`[viewgraph] Skipping ${filename}: ${result.error}`);
+    }
+  } catch (err) {
+    console.error(`[viewgraph] Error reading ${filename}: ${err.message}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Startup
+// ---------------------------------------------------------------------------
+
+let watcher;
+
 async function main() {
+  console.error(`[viewgraph] Captures dir: ${CAPTURES_DIR}`);
+
+  // Start file watcher — indexes existing files on startup (ignoreInitial: false)
+  watcher = createWatcher(CAPTURES_DIR, {
+    onAdd: indexFile,
+    onChange: indexFile,
+    onRemove: (filename) => indexer.remove(filename),
+  });
+
+  // Connect MCP transport
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error('[viewgraph] MCP server running on stdio');
 }
 
-// Graceful shutdown — close watchers, HTTP server, etc. when Kiro terminates us
-process.on('SIGINT', () => {
-  console.error('[viewgraph] Shutting down (SIGINT)');
+// ---------------------------------------------------------------------------
+// Graceful shutdown
+// ---------------------------------------------------------------------------
+
+function shutdown(signal) {
+  console.error(`[viewgraph] Shutting down (${signal})`);
+  if (watcher) watcher.close();
   process.exit(0);
-});
-process.on('SIGTERM', () => {
-  console.error('[viewgraph] Shutting down (SIGTERM)');
-  process.exit(0);
-});
+}
+
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 main().catch((err) => {
   console.error('[viewgraph] Fatal error:', err);
