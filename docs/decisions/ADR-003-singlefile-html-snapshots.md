@@ -24,9 +24,20 @@ structure and are not self-contained.
 
 ## Decision
 
-Integrate [SingleFile Core](https://github.com/nickerso/single-file-core)
-(MIT license) as a library dependency in the extension to produce
-self-contained HTML snapshots alongside ViewGraph JSON captures.
+Produce HTML snapshots alongside ViewGraph JSON captures using a
+two-tier approach:
+
+1. **Internal fidelity measurement:** Our own lightweight HTML serializer
+   (no external dependency, no license issues). Captures DOM + inline
+   styles, strips scripts. Sufficient for element-level comparison.
+2. **Full visual snapshots:** Recommend SingleFile as an optional
+   companion extension. Users drop SingleFile HTML into `snapshots/`
+   for full-fidelity visual reference.
+
+Note: `single-file-core` is **AGPL-3.0** (not MIT as originally
+assumed). Bundling it would require our extension to be AGPL. We avoid
+this by building our own serializer for the core use case and treating
+SingleFile as an optional external tool.
 
 ### Dual output model
 
