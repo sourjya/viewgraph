@@ -8,6 +8,28 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Milestone 7b: Unified Annotate Mode (ADR-006)
+- Merged inspect and review into single annotate mode - one mode, two gestures
+- Click element to annotate, shift+drag to annotate region - both open comment panel
+- Popup simplified to two buttons: Capture + Annotate
+- Click dedup: clicking already-annotated element reopens panel instead of creating duplicate
+- Drag selection clamped to viewport bounds (no overflow past edges)
+- Hover tooltip skips sidebar and all annotate UI children
+- Sidebar close button directly dismisses annotate mode
+- Legacy data-vg-review/data-vg-inspector elements cleaned up on start
+- Panel positions left of marker when near right edge/sidebar
+- Sidebar title: "ViewGraph: Review Notes"
+- Collapsed badge: 40px filled chat bubble with centered count
+- 183 extension tests
+
+### Milestone 7c: Multi-Export Annotations
+- Three export buttons in sidebar: Send to Kiro / Copy Markdown / Download Report
+- Markdown formatter: structured bug report with ancestor labels, resolved status
+- Screenshot cropping: per-annotation viewport crops via canvas
+- ZIP assembly: markdown + cropped PNGs packaged via JSZip
+- All export buttons disabled when no annotations
+- 193 extension tests, 324 total
+
 ### Extension UX Improvements
 - Popup: dark background fills edge-to-edge, header icon alignment fixed
 - Inspector: copy selector uses fallback textarea method, shows tick confirmation, returns to inspect mode

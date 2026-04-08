@@ -8,6 +8,9 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | M2 | MCP Analysis Tools | [`mcp-analysis-tools/`](./mcp-analysis-tools/) | Complete |
 | M3 | MCP Request Bridge | [`mcp-request-bridge/`](./mcp-request-bridge/) | Complete |
 | M4 | Extension Core Capture | [`extension-core/`](./extension-core/) | Complete |
+| M7 | Deployment Automation | [`deployment-automation/`](./deployment-automation/) | Complete |
+| M7b | Unified Annotate Mode | [`unified-annotate-mode/`](./unified-annotate-mode/) | Complete |
+| M7c | Multi-Export Annotations | [`multi-export/`](./multi-export/) | Complete |
 | - | SingleFile Fidelity | [`singlefile-fidelity/`](./singlefile-fidelity/) | Not Started |
 
 ## Architecture Decisions
@@ -16,6 +19,10 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 |---|---|---|
 | ADR-001 | [`universal-agent-integration`](../../docs/decisions/ADR-001-universal-agent-integration.md) | Multi-tool architecture (Kiro, Claude Code, Cursor, Windsurf) |
 | ADR-002 | [`multi-project-capture-routing`](../../docs/decisions/ADR-002-multi-project-capture-routing.md) | How the extension routes captures to the right project |
+| ADR-003 | [`singlefile-html-snapshots`](../../docs/decisions/ADR-003-singlefile-html-snapshots.md) | HTML snapshot strategy |
+| ADR-004 | [`extension-ui-side-panel`](../../docs/decisions/ADR-004-extension-ui-side-panel.md) | Extension UI architecture |
+| ADR-005 | [`npx-viewgraph-init`](../../docs/decisions/ADR-005-npx-viewgraph-init.md) | CLI init command design |
+| ADR-006 | [`merge-inspect-review`](../../docs/decisions/ADR-006-merge-inspect-review.md) | Unified annotate mode (merged inspect + review) |
 
 ## Architecture Docs
 

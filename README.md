@@ -15,7 +15,7 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 | Component | Description | Status |
 |---|---|---|
 | [`server/`](./server/) | MCP server - reads capture files, exposes 15 query/analysis/request tools | M1+M2+M3 Complete |
-| [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, inspector, annotations | M4+M5+M6 Complete |
+| [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, unified annotate, multi-export | M4+M5+M6+M7b+M7c Complete |
 
 ## How It Works
 
@@ -124,6 +124,8 @@ The server starts on stdio (for MCP) and an HTTP receiver on `localhost:9876` (f
    - **Scroll wheel** to navigate up/down the DOM tree while hovering
    - Use the sidebar to manage, resolve, or delete annotations
    - Click **Send to Kiro** to push all annotations with context to your AI agent
+   - Click **Copy MD** to copy a markdown bug report to clipboard
+   - Click **Report** to download a ZIP with markdown + cropped screenshots
 
 Captures are saved to `.viewgraph/captures/` and pushed to the MCP server automatically.
 
@@ -173,9 +175,9 @@ npm run dev:ext        # start extension dev server (Chrome HMR)
 ## Testing
 
 ```bash
-npm test               # all tests (228 tests, 32 files)
-npm run test:server    # server only (128 tests)
-npm run test:ext       # extension only (100 tests)
+npm test               # all tests (324 tests)
+npm run test:server    # server only (131 tests)
+npm run test:ext       # extension only (193 tests)
 ```
 
 ## MCP Tools

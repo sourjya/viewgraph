@@ -259,6 +259,46 @@ with one script. Manual testing checklist passes on Chrome + Firefox.
 
 ---
 
+## Milestone 7b: Unified Annotate Mode (Days 28-29)
+
+**Goal:** Merge inspect and review into a single annotation mode.
+
+**ADR:** [`docs/decisions/ADR-006-merge-inspect-review.md`](../decisions/ADR-006-merge-inspect-review.md)
+**Spec:** `.kiro/specs/unified-annotate-mode/`
+**Status:** Complete
+
+| # | Task | Details |
+|---|---|---|
+| 7b.1 | Unified state machine | `lib/annotate.js` - click to annotate element, shift+drag to annotate region |
+| 7b.2 | Popup simplification | Two buttons: Capture + Annotate (replaces Capture + Inspect + Review) |
+| 7b.3 | Content script rewire | Single `toggle-annotate` message, exit mode before capture |
+| 7b.4 | Click dedup | Clicking already-annotated element reopens panel instead of creating duplicate |
+| 7b.5 | Viewport clamping | Drag selection clamped to viewport bounds |
+| 7b.6 | Legacy cleanup | Remove old inspector.js and review.js (Phase 4) |
+
+**Exit criteria:** One mode, two gestures. All annotations flow through unified sidebar.
+
+---
+
+## Milestone 7c: Multi-Export Annotations (Days 29-30)
+
+**Goal:** Multiple export destinations for annotations - AI agents, testers, issue trackers.
+
+**Spec:** `.kiro/specs/multi-export/`
+**Status:** Complete
+
+| # | Task | Details |
+|---|---|---|
+| 7c.1 | Markdown formatter | `lib/export-markdown.js` - structured bug report with ancestor labels |
+| 7c.2 | Screenshot cropping | `lib/screenshot-crop.js` - crop viewport PNG per annotation region |
+| 7c.3 | ZIP assembly | `lib/export-zip.js` - markdown + screenshots packaged via JSZip |
+| 7c.4 | Three-button sidebar | Send to Kiro / Copy Markdown / Download Report |
+| 7c.5 | Settings toggle | Include screenshots in reports (popup settings panel) |
+
+**Exit criteria:** Testers can annotate and export without MCP server or AI agent.
+
+---
+
 ## Milestone 8: Universal Agent Integration (Days 28-30)
 
 **Goal:** Plug-and-play support for all major agentic coding tools.
