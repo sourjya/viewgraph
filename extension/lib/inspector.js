@@ -375,7 +375,7 @@ function copySelector(btn) {
   doCopy.then(() => {
     const original = btn.innerHTML;
     btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-    setTimeout(() => { btn.innerHTML = original; stop(); }, 1200);
+    setTimeout(() => { btn.innerHTML = original; unfreeze(); }, 1200);
   });
 }
 
