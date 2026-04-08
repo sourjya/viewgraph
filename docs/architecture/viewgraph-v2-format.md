@@ -1,8 +1,11 @@
 # ViewGraph v2 Format Specification
 
-**Version:** 2.0.0
+**Version:** 2.1.0
+
 **Date:** 2026-04-08
+
 **Status:** Draft
+
 **Authors:** ViewGraph Project
 
 **Lineage:** Inspired by the SiFR v2 format from
@@ -14,27 +17,49 @@ for credits and analysis.
 
 ## 1. Overview
 
-ViewGraph v2 is a JSON format for representing captured web page state  - 
-structure, layout, styles, accessibility, and human annotations  -  optimized
+ViewGraph v2 is a JSON format for representing captured web page state -
+structure, layout, styles, accessibility, and human annotations - optimized
 for consumption by LLM-based coding agents via MCP tools.
 
 ### 1.1 Design goals
 
 1. **LLM-first:** Minimize tokens for equivalent information. Progressive
-   disclosure  -  summary first, details on demand.
+   disclosure - summary first, details on demand.
 2. **Human-readable:** Full tag names, semantic node IDs, no abbreviations.
-3. **Formally specified:** This document is the contract. Producers and
-   consumers can be built independently.
+3. **Formally specified:** This document + a JSON Schema are the contract.
 4. **Extensible:** New sections can be added without breaking existing parsers.
    Unknown sections MUST be ignored.
 5. **Interoperable:** Optional export to standard formats (CDP DOMSnapshot,
    AX tree, W3C Web Annotation) via MCP tools.
+6. **Deterministic:** Captures of the same page state should produce the same
+   output. Node IDs, ordering, and coordinate frames are well-defined.
 
 ### 1.2 MIME type and file extension
 
 - MIME: `application/vnd.viewgraph.v2+json`
 - Extension: `.viewgraph.json`
 - Legacy extension: `.json` (accepted by parsers)
+
+### 1.3 Schema
+
+A machine-readable JSON Schema (2020-12) is published at
+`server/schemas/viewgraph-v2.schema.json`. Producers SHOULD validate output
+against this schema. MCP tools MAY validate input captures on first parse.
+
+The schema uses `$defs` for reusable section shapes (bbox, node, locator,
+annotation) so that tooling can generate typed SDKs.
+
+### 1.4 Serialization profiles
+
+ViewGraph v2 has two serialization profiles sharing one logical model:
+
+| Profile | Key | Use case |
+|---|---|---|
+| `readable` | Default. Nested objects, indented JSON. | Human inspection, debugging |
+| `compact` | Columnar arrays + shared string table (CDP-style). | MCP transport, large captures, token optimization |
+
+The `metadata.profile` field declares which serialization was used.
+Parsers MUST support `readable`. Support for `compact` is RECOMMENDED.
 
 ---
 
@@ -44,12 +69,14 @@ A ViewGraph v2 capture is a single JSON object with plain, dot-accessible keys.
 
 ```json
 {
-  "metadata":    { ... },
-  "summary":     { ... },
-  "nodes":       { ... },
-  "relations":   { ... },
-  "details":     { ... },
-  "annotations": [ ... ]
+  "metadata":      { ... },
+  "summary":       { ... },
+  "nodes":         { ... },
+  "relations":     { ... },
+  "details":       { ... },
+  "annotations":   [ ... ],
+  "accessibility": { ... },
+  "coverage":      { ... }
 }
 ```
 
@@ -67,6 +94,7 @@ producers MUST emit in this order for LLM attention optimization.
 | 5 | `details` | Yes | Full selectors, attributes, computed styles |
 | 6 | `annotations` | No | Human annotations from review mode |
 | 7 | `accessibility` | No | Computed accessibility tree snapshot |
+| 8 | `coverage` | No | Omission manifest - what was dropped and why |
 
 ### 2.2 Why plain keys (not `====SECTION====` markers)
 
@@ -77,7 +105,7 @@ deliberately does not. Reasons:
 - **Standard JSON:** No special characters in keys means standard schema
   validation, autocomplete, and tooling work out of the box
 - **LLMs parse JSON natively:** Models don't need visual markers to locate
-  top-level keys  -  they already understand JSON structure
+  top-level keys - they already understand JSON structure
 - **Zero overhead:** Eliminates ~10 characters of noise per key
 - **Greppability is equivalent:** `grep '"metadata"'` works as well as
   `grep "====METADATA===="`
@@ -99,7 +127,8 @@ Required. Provides capture context.
 {
   "metadata": {
     "format": "viewgraph-v2",
-    "version": "2.0.0",
+    "version": "2.1.0",
+    "profile": "readable",
     "timestamp": "2026-04-08T06:08:15.214Z",
     "url": "http://localhost:8040/projects",
     "title": "Projects - AI Video Editor",
@@ -107,21 +136,29 @@ Required. Provides capture context.
     "viewport": { "width": 1696, "height": 799 },
     "coordinateFrame": {
       "unit": "css-px",
-      "origin": "viewport-top-left"
+      "origin": "document-top-left",
+      "scrollOffset": { "x": 0, "y": 150 },
+      "precision": "round"
     },
-    "documentScroll": { "x": 0, "y": 150 },
     "devicePixelRatio": 1.13,
     "userAgent": "Mozilla/5.0 ...",
-    "screenshot": "viewgraph-localhost-2026-04-08T060815.png",
-    "provenance": "browser-api",
+    "screenshot": "viewgraph-localhost-20260408-060815.png",
+    "provenance": {
+      "geometry": "cdp:DOMSnapshot",
+      "accessibility": "cdp:Accessibility",
+      "styles": "computed-style",
+      "selectors": "heuristic",
+      "salience": "heuristic",
+      "annotations": "user"
+    },
     "stats": {
       "totalNodes": 375,
       "salience": { "high": 42, "med": 186, "low": 147 },
       "inOutput": { "high": 42, "med": 150, "low": 80 },
       "clusters": 12,
       "relations": 34,
-      "captureSize": 98000,
-      "sizeLimit": 409600
+      "captureSizeBytes": 98000,
+      "sizeLimitBytes": 409600
     },
     "extension": {
       "name": "ViewGraph Capture",
@@ -136,17 +173,17 @@ Required. Provides capture context.
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `format` | string | Yes | Always `"viewgraph-v2"` |
-| `version` | string | Yes | Semver. Current: `"2.0.0"` |
+| `version` | string | Yes | Semver. Current: `"2.1.0"` |
+| `profile` | string | Yes | `"readable"` or `"compact"` |
 | `timestamp` | string | Yes | ISO 8601 UTC |
 | `url` | string | Yes | Page URL at capture time |
 | `title` | string | Yes | Document title |
 | `captureMode` | string | Yes | One of: `screenshot`, `viewgraph-capture`, `select-element`, `review` |
 | `viewport` | object | Yes | `{ width, height }` in CSS pixels |
-| `coordinateFrame` | object | Yes | Declares bbox coordinate system |
-| `documentScroll` | object | Yes | `{ x, y }` scroll offset at capture time |
-| `devicePixelRatio` | number | Yes | Window.devicePixelRatio |
+| `coordinateFrame` | object | Yes | Declares bbox coordinate system (see 3.2) |
+| `devicePixelRatio` | number | Yes | `window.devicePixelRatio` |
 | `screenshot` | string | No | Filename of associated PNG screenshot |
-| `provenance` | string | Yes | Default data source: `"browser-api"` |
+| `provenance` | object | Yes | Per-section data source map (see 3.3) |
 | `stats` | object | Yes | Capture statistics |
 | `extension` | object | No | Producing extension metadata |
 
@@ -157,10 +194,27 @@ All bounding boxes in the capture use the coordinate frame declared here.
 | Field | Values | Description |
 |---|---|---|
 | `unit` | `"css-px"`, `"device-px"` | Coordinate unit |
-| `origin` | `"viewport-top-left"`, `"document-top-left"` | Origin point |
+| `origin` | `"document-top-left"` (canonical), `"viewport-top-left"` | Origin point |
+| `scrollOffset` | `{ x, y }` | Document scroll position at capture time |
+| `precision` | `"round"`, `"floor"`, `"exact"` | Rounding policy for sub-pixel values |
 
-When `origin` is `"viewport-top-left"`, add `documentScroll` to get
-document-relative coordinates.
+**Document-relative coordinates are canonical.** This means a node's bbox
+does not change when the page is scrolled. Viewport-relative coordinates
+can be derived: `viewportX = documentX - scrollOffset.x`.
+
+### 3.3 Provenance map
+
+Provenance is per-section, not global. Each key declares the source of
+truth for that data category.
+
+| Key | Example values | Meaning |
+|---|---|---|
+| `geometry` | `"cdp:DOMSnapshot"`, `"getBoundingClientRect"` | Source of bbox data |
+| `accessibility` | `"cdp:Accessibility"`, `"dom-aria-attributes"` | Source of AX data |
+| `styles` | `"computed-style"`, `"cdp:CSS"` | Source of style data |
+| `selectors` | `"heuristic"`, `"data-testid"` | How selectors were generated |
+| `salience` | `"heuristic"` | How salience was scored |
+| `annotations` | `"user"` | Always user-provided |
 
 ---
 
@@ -184,20 +238,16 @@ to understand the page from SUMMARY alone without reading other sections.
       "primaryTextColor": "#cdd6f4",
       "primaryFontFamily": "Inter, sans-serif",
       "fontSizesPx": [12, 14, 16, 20, 24],
-      "fontWeights": [400, 500, 600, 700],
-      "hasAnimations": false
+      "fontWeights": [400, 500, 600, 700]
     },
     "layout": {
       "pageWidth": 1696,
       "pageHeight": 2400,
       "mainContentBBox": [200, 60, 1296, 2000],
-      "gridSize": "12x12",
-      "axis": "rows:top→down, cols:left→right",
       "clusters": {
         "spatial": [
           {
             "id": "cluster001",
-            "gridPos": "[0-1, 0-11]",
             "role": "header",
             "elements": ["nav:main-menu", "button:user-profile"]
           }
@@ -210,19 +260,18 @@ to understand the page from SUMMARY alone without reading other sections.
             "exemplar": {
               "id": "div:project-card-1",
               "children": ["h3", "span.status", "div.actions"]
-            },
-            "salience": "med"
+            }
           }
         ]
       }
     },
     "elements": [
       {
-        "id": "button:create-project",
+        "nid": 1,
+        "alias": "button:create-project",
         "tag": "button",
-        "category": "button",
         "actions": ["clickable"],
-        "text": "Create Project",
+        "visibleText": "Create Project",
         "bbox": [1500, 20, 150, 36]
       }
     ]
@@ -234,19 +283,8 @@ to understand the page from SUMMARY alone without reading other sections.
 
 All bounding boxes use the compact array format `[x, y, width, height]`
 instead of `{ x, y, width, height }`. This saves ~40% tokens per bbox
-(eliminates 4 key strings).
-
-### 4.2 Structural patterns
-
-Structural patterns MUST be self-contained in SUMMARY. Each pattern includes
-an inline exemplar showing the structure, so the LLM can understand the
-pattern without cross-referencing NODES or DETAILS.
-
-### 4.3 Element summaries
-
-The `elements` array contains high-salience interactive elements with enough
-context for the LLM to reference them (id, tag, text, bbox, actions). This
-is the "quick reference card" for the page.
+(eliminates 4 key strings). Coordinates use the frame declared in
+`metadata.coordinateFrame`.
 
 ---
 
@@ -254,25 +292,51 @@ is the "quick reference card" for the page.
 
 Required. The element tree grouped by salience tier.
 
+### 5.1 Node identity: three-layer ID model
+
+Each node has three identity layers:
+
+| Layer | Field | Purpose | Stability |
+|---|---|---|---|
+| Machine ID | `nid` | Compact capture-local integer. Primary join key. | Stable within capture |
+| Human alias | `alias` | Semantic ID like `button:create-project` | May drift across captures |
+| Browser ID | `backendNodeId` | CDP `DOM.BackendNodeId` when available | Stable within browser session |
+
+The `nid` is the canonical reference used in relations, annotations, details,
+and accessibility cross-references. The `alias` is for human readability in
+prompts and logs. The `backendNodeId` enables round-trip to CDP for live
+interaction.
+
+Alias generation priority:
+
+| Priority | Source | Example alias |
+|---|---|---|
+| 1 | `data-testid` attribute | `button:submit-form` |
+| 2 | `id` attribute | `div:main-content` |
+| 3 | Accessible name + role | `button:create-project` |
+| 4 | Tag + nid | `div:n042` |
+
+### 5.2 Node structure
+
 ```json
 {
   "nodes": {
     "high": {
       "button": {
-        "button:create-project": {
-          "parent": "div:header-actions",
+        "1": {
+          "alias": "button:create-project",
+          "backendNodeId": 142,
+          "parent": 5,
           "children": [],
           "actions": ["clickable"],
-          "cluster": "cluster001",
-          "posInCluster": "top-right"
-        }
-      },
-      "nav": {
-        "nav:main-menu": {
-          "parent": "header:site-header",
-          "children": ["a:home", "a:projects", "a:settings"],
-          "cluster": "cluster001",
-          "posInCluster": "top-left"
+          "ax": {
+            "role": "button",
+            "name": "Create Project",
+            "states": ["focusable"]
+          },
+          "frame": null,
+          "shadowRoot": null,
+          "cluster": "cluster001"
         }
       }
     },
@@ -282,64 +346,77 @@ Required. The element tree grouped by salience tier.
 }
 ```
 
-### 5.1 Node ID format
-
-Node IDs follow the pattern `tag:semantic-identifier` where:
-
-| Priority | Source | Example |
-|---|---|---|
-| 1 | `data-testid` attribute | `button:submit-form` |
-| 2 | `id` attribute | `div:main-content` |
-| 3 | Accessible name + role | `button:create-project` |
-| 4 | Tag + sequential counter | `div:n042` |
-
-IDs MUST be unique within a capture. IDs SHOULD be human-readable.
-
-### 5.2 Node structure
-
-Each node in the NODES section contains structural information only  -  no
-styles, no selectors, no attributes. Those live in DETAILS.
-
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `parent` | string\|null | Yes | Parent node ID, null for root |
-| `children` | string[] | Yes | Child node IDs (ordered) |
+| `alias` | string | Yes | Human-readable semantic ID |
+| `backendNodeId` | number | No | CDP BackendNodeId for live interaction |
+| `parent` | number\|null | Yes | Parent nid, null for root |
+| `children` | number[] | Yes | Child nids (ordered) |
 | `actions` | string[] | No | `"clickable"`, `"fillable"`, `"hoverable"` |
-| `oid` | string | No | Original HTML `id` attribute |
+| `ax` | object | No | Inline accessibility data (see 5.3) |
+| `frame` | object | No | Frame boundary info (see 5.4) |
+| `shadowRoot` | string | No | `"open"` or `"closed"` if shadow host |
 | `cluster` | string | No | Cluster ID from SUMMARY |
-| `posInCluster` | string | No | Semantic position: `"top-left"`, `"center"`, etc. |
 
-### 5.3 Salience tiers
+### 5.3 Inline accessibility (ax field)
 
-| Tier | Criteria | Style detail in DETAILS |
+For high and medium salience nodes, computed accessibility data is inlined
+directly into the node rather than requiring a cross-section join. This is
+the data agents use most often for element identification.
+
+| Field | Type | Description |
 |---|---|---|
-| `high` | Interactive, visible, has testid/aria, in viewport | Full styles + hints |
-| `med` | Has content, semantic role, moderate score | Layout + visual styles |
-| `low` | Decorative, wrappers, low score | Minimal or none |
+| `role` | string | Computed ARIA role |
+| `name` | string | Computed accessible name |
+| `description` | string | Computed accessible description |
+| `states` | string[] | `focusable`, `editable`, `required`, `disabled`, `expanded`, `selected`, `checked` |
 
-Salience is computed by the producer using a weighted scoring algorithm.
-The spec does not mandate a specific algorithm  -  only that the three tiers
-are populated and that `high` contains the most important interactive elements.
+Low-salience nodes MAY omit `ax`. The full accessibility tree (with
+parent-child AX relationships that may differ from DOM) is in the optional
+`accessibility` section.
+
+### 5.4 Frame and shadow boundaries
+
+When a node is an iframe host or shadow root, boundary info is preserved:
+
+| Field | Type | Description |
+|---|---|---|
+| `frame.frameId` | string | CDP frame ID |
+| `frame.documentNid` | number | nid of the frame's document root node |
+| `frame.url` | string | Frame src URL |
+| `shadowRoot` | string | `"open"` or `"closed"` |
+
+This enables agents to know when a selector or action crosses an execution
+context boundary.
+
+### 5.5 Salience tiers
+
+| Tier | Criteria | AX data | Style detail in DETAILS |
+|---|---|---|---|
+| `high` | Interactive, visible, has testid/aria, in viewport | Inlined | Full styles + hints |
+| `med` | Has content, semantic role, moderate score | Inlined | Layout + visual styles |
+| `low` | Decorative, wrappers, low score | Omitted | Minimal or none |
 
 ---
 
 ## 6. RELATIONS Section
 
-Required. Semantic relationships between nodes.
+Required. Semantic relationships between nodes. References use `nid`.
 
 ```json
 {
   "relations": {
-    "semantic": {
-      "label:email-label": { "input:email-field": "labelFor" },
-      "button:show-details": { "div:details-panel": "controls" }
-    },
-    "groups": {
-      "nav:main-menu": {
+    "semantic": [
+      { "source": 7, "target": 12, "type": "labelFor" },
+      { "source": 3, "target": 15, "type": "controls" }
+    ],
+    "groups": [
+      {
+        "nid": 2,
         "orientation": "horizontal",
-        "members": ["a:home", "a:projects", "a:settings"]
+        "members": [10, 11, 12]
       }
-    }
+    ]
   }
 }
 ```
@@ -353,20 +430,10 @@ Required. Semantic relationships between nodes.
 | `controls` | Element controls another | `aria-controls` |
 | `owns` | Element owns another | `aria-owns` |
 
-### 6.2 Groups (always included)
-
-Ordered groups of sibling elements (nav items, tab lists, etc.) with
-orientation (`horizontal` or `vertical`).
-
-### 6.3 Spatial relations (optional, on-demand)
+### 6.2 Spatial relations (optional, on-demand)
 
 Spatial relations (`above`, `leftOf`, `overlaps`) are NOT included in the
-default capture. They can be computed on demand via the MCP tool
-`get_spatial_relations({ filename })`.
-
-**Rationale:** Spatial relations are expensive to compute, produce hundreds
-of entries, and are rarely needed by LLM agents. Semantic relations cover
-most use cases.
+default capture. They can be computed on demand via MCP tool.
 
 ---
 
@@ -374,21 +441,70 @@ most use cases.
 
 Required. Full element details grouped by salience tier and tag.
 
+### 7.1 Text channels
+
+Text is split into distinct channels instead of one overloaded `text` field:
+
+| Field | Source | Description |
+|---|---|---|
+| `visibleText` | Rendered text visible to user | What you see on screen |
+| `domText` | `textContent` from DOM | Raw DOM text (may include hidden text) |
+| `formValue` | `input.value`, `textarea.value` | Current form control value |
+| `accessibleName` | Computed accessible name | What screen readers announce |
+| `accessibleDescription` | Computed accessible description | Extended AT description |
+
+Producers SHOULD populate `visibleText` and `accessibleName` for high/med
+nodes. Other channels are populated when they differ from `visibleText`.
+
+### 7.2 Locators (multi-strategy)
+
+Instead of a single `selector` string, each node has a ranked array of
+locator strategies:
+
+```json
+{
+  "locators": [
+    { "strategy": "testId", "value": "create-project", "rank": 1 },
+    { "strategy": "role", "value": "button", "name": "Create Project", "rank": 2 },
+    { "strategy": "css", "value": "button[data-testid='create-project']", "rank": 3 },
+    { "strategy": "xpath", "value": "//button[@data-testid='create-project']", "rank": 4 }
+  ]
+}
+```
+
+| Strategy | Description | Stability |
+|---|---|---|
+| `testId` | `data-testid` attribute value | Highest (developer-maintained) |
+| `id` | HTML `id` attribute | High (but may be generated) |
+| `role` | ARIA role + accessible name | High (semantic) |
+| `css` | CSS selector | Medium (breaks on refactor) |
+| `xpath` | XPath expression | Medium (breaks on refactor) |
+| `textQuote` | Visible text content match | Low (breaks on copy changes) |
+
+Rank 1 = most stable. Agents SHOULD prefer lower-ranked (more stable)
+locators. The `rank` field is producer-assigned based on stability heuristics.
+
+### 7.3 Full detail structure
+
 ```json
 {
   "details": {
     "high": {
       "button": {
-        "button:create-project": {
-          "selector": "button[data-testid='create-project']",
+        "1": {
+          "locators": [
+            { "strategy": "testId", "value": "create-project", "rank": 1 },
+            { "strategy": "css", "value": "button[data-testid='create-project']", "rank": 3 }
+          ],
           "attributes": {
             "data-testid": "create-project",
             "type": "button"
           },
-          "text": "Create Project",
+          "visibleText": "Create Project",
+          "accessibleName": "Create Project",
           "layout": {
-            "bbox": [1500, 20, 150, 36],
-            "scroll": null
+            "bboxDocument": [1500, 170, 150, 36],
+            "bboxViewport": [1500, 20, 150, 36]
           },
           "styles": {
             "layout": { "display": "flex" },
@@ -397,30 +513,8 @@ Required. Full element details grouped by salience tier and tag.
             "spacing": { "padding": "8px 16px", "border-radius": "6px" }
           },
           "hints": [
-            { "type": "high-z-index", "value": 100 }
+            { "type": "high-z-index", "value": 1500, "threshold": 1000 }
           ]
-        }
-      }
-    },
-    "med": {
-      "div": {
-        "div:project-card-1": {
-          "selector": "div.project-card:nth-child(1)",
-          "text": "My Video Project",
-          "layout": { "bbox": [200, 100, 400, 200] },
-          "styles": {
-            "layout": { "display": "flex", "flex-direction": "column" },
-            "visual": { "background": "#2a2a3e" }
-          }
-        }
-      }
-    },
-    "low": {
-      "div": {
-        "div:n042": {
-          "selector": "div.wrapper:nth-child(3)",
-          "text": "",
-          "layout": { "bbox": [0, 0, 1696, 2400] }
         }
       }
     }
@@ -428,7 +522,7 @@ Required. Full element details grouped by salience tier and tag.
 }
 ```
 
-### 7.1 Progressive style disclosure
+### 7.4 Progressive style disclosure
 
 | Tier | Styles included | Hints |
 |---|---|---|
@@ -436,41 +530,26 @@ Required. Full element details grouped by salience tier and tag.
 | `med` | layout, visual, typography, spacing only | No |
 | `low` | None (bbox only) | No |
 
-### 7.2 Style categories
+### 7.5 Hints (anomaly detection)
 
-Styles are grouped by category. Only non-default values are included.
-CSS shorthand is used where possible (margin, padding, border, flex,
-background, inset, outline, gap).
+High-salience nodes MAY include `hints` - detected anomalies. Each hint
+includes the detected `value` and the `threshold` that triggered it.
 
-| Category | Properties |
-|---|---|
-| `layout` | display, position, float, visibility, overflow, width, height, min/max-width/height |
-| `spacing` | margin, padding, border, border-radius |
-| `positioning` | top, right, bottom, left, z-index, transform |
-| `visual` | color, background, opacity, box-shadow, filter |
-| `typography` | font, font-size, font-weight, line-height, text-align, text-decoration |
-| `flexbox` | flex-direction, justify-content, align-items, gap |
-| `grid` | grid-template-columns, grid-template-rows, grid-area |
-
-### 7.3 Hints (anomaly detection)
-
-High-salience nodes MAY include `hints`  -  detected anomalies that might
-indicate bugs or interesting layout behavior:
-
-| Hint type | Meaning |
-|---|---|
-| `extreme-aspect` | Very wide or very tall element |
-| `negative-margin` | Element uses negative margins |
-| `high-z-index` | z-index > 1000 |
-| `partially-offscreen` | Element extends beyond viewport |
-| `scrollable` | Element has scrollable overflow |
-| `nearly-transparent` | Opacity between 0 and 0.3 |
+| Hint type | Threshold | Meaning |
+|---|---|---|
+| `extreme-aspect` | ratio > 20:1 or 1:20 | Very wide or very tall element |
+| `negative-margin` | any negative margin | Element uses negative margins |
+| `high-z-index` | z-index > 1000 | Elevated stacking context |
+| `partially-offscreen` | bbox extends beyond document | Element extends beyond viewport |
+| `scrollable` | overflow: auto/scroll with content overflow | Element has scrollable overflow |
+| `nearly-transparent` | opacity < 0.3 | Nearly invisible element |
 
 ---
 
 ## 8. ANNOTATIONS Section
 
-Optional. Present only in `review` capture mode.
+Optional. Present only in `review` capture mode. Internal model is
+W3C Web Annotation-aligned for lossless export.
 
 ```json
 {
@@ -478,17 +557,18 @@ Optional. Present only in `review` capture mode.
     {
       "id": "ann-1",
       "type": "region",
-      "region": [300, 400, 800, 200],
-      "selectedNodes": ["div:job-config", "table:runs-table"],
-      "comment": "Add pagination and make error details collapsible",
-      "timestamp": "2026-04-08T07:15:00Z"
-    },
-    {
-      "id": "ann-2",
-      "type": "element",
-      "selectedNodes": ["button:view-chain"],
-      "comment": "Open in side panel instead of navigating away",
-      "timestamp": "2026-04-08T07:15:30Z"
+      "motivation": "commenting",
+      "body": "Add pagination and make error details collapsible",
+      "target": {
+        "region": [300, 400, 800, 200],
+        "selectedNodes": [14, 15, 16],
+        "selector": [
+          { "type": "CssSelector", "value": "div.job-config" },
+          { "type": "FragmentSelector", "value": "nid=14,15,16" }
+        ]
+      },
+      "createdBy": "user",
+      "createdAt": "2026-04-08T07:15:00Z"
     }
   ]
 }
@@ -500,167 +580,172 @@ Optional. Present only in `review` capture mode.
 |---|---|---|---|
 | `id` | string | Yes | Unique annotation ID |
 | `type` | string | Yes | `"element"` or `"region"` |
-| `region` | number[] | No | `[x, y, w, h]` for region selections |
-| `selectedNodes` | string[] | Yes | Node IDs referenced by this annotation |
-| `comment` | string | Yes | Human-written change request or observation |
-| `timestamp` | string | Yes | ISO 8601 UTC |
+| `motivation` | string | No | W3C motivation: `"commenting"`, `"editing"`, `"highlighting"` |
+| `body` | string | Yes | Human-written change request or observation |
+| `target` | object | Yes | What the annotation points at (see below) |
+| `createdBy` | string | No | `"user"` or agent identifier |
+| `createdAt` | string | Yes | ISO 8601 UTC |
 
-### 8.2 Node references
+### 8.2 Annotation target
 
-`selectedNodes` contains node IDs that MUST exist in the NODES section.
-This allows MCP tools to resolve annotations to full node details.
+| Field | Type | Description |
+|---|---|---|
+| `region` | number[] | `[x, y, w, h]` for region selections |
+| `selectedNodes` | number[] | Node nids referenced by this annotation |
+| `selector` | object[] | W3C-compatible selectors for export |
 
 ---
 
 ## 9. ACCESSIBILITY Section
 
-Optional. Computed accessibility tree snapshot.
+Optional. Full computed accessibility tree snapshot. For most agent workflows,
+the inline `ax` field on high/med nodes (Section 5.3) is sufficient. This
+section provides the complete AX tree with parent-child relationships that
+may differ from the DOM tree.
 
 ```json
 {
   "accessibility": {
-    "source": "computed",
+    "source": "cdp:Accessibility",
     "nodes": [
       {
-        "nodeId": "button:create-project",
+        "nid": 1,
+        "axId": "ax-001",
         "role": "button",
         "name": "Create Project",
         "description": null,
         "value": null,
         "focused": false,
+        "ignored": false,
         "states": ["focusable"],
-        "children": []
-      },
-      {
-        "nodeId": "input:email-field",
-        "role": "textbox",
-        "name": "Email address",
-        "description": "Enter your work email",
-        "value": "",
-        "focused": true,
-        "states": ["focusable", "editable", "required"],
-        "children": []
+        "axChildren": ["ax-002"],
+        "backendNodeId": 142
       }
     ]
   }
 }
 ```
 
-### 9.1 AX node fields
-
-| Field | Type | Description |
-|---|---|---|
-| `nodeId` | string | Matches a node ID in NODES section |
-| `role` | string | Computed ARIA role |
-| `name` | string | Computed accessible name |
-| `description` | string\|null | Computed accessible description |
-| `value` | string\|null | Current value (inputs, sliders) |
-| `focused` | boolean | Currently focused |
-| `states` | string[] | `focusable`, `editable`, `required`, `disabled`, `expanded`, `selected`, `checked` |
-| `children` | string[] | Child AX node IDs (may differ from DOM children) |
-
-### 9.2 Source
+### 9.1 Source values
 
 | Value | Meaning |
 |---|---|
-| `"computed"` | From browser accessibility APIs (CDP Accessibility domain) |
-| `"derived"` | Inferred from DOM ARIA attributes (no browser API access) |
+| `"cdp:Accessibility"` | From CDP Accessibility domain (high fidelity) |
+| `"dom-aria-attributes"` | Inferred from DOM ARIA attributes (no browser API) |
 
 ---
 
-## 10. Standard Format Exports
+## 10. COVERAGE Section
+
+Optional. Explicit omission manifest. When a capture is degraded for budget,
+this section declares exactly what was dropped and why, so agents can
+distinguish "not on the page" from "dropped for budget".
+
+```json
+{
+  "coverage": {
+    "degradationSteps": [
+      "low-details-dropped",
+      "med-details-reduced"
+    ],
+    "tiers": {
+      "high": { "nodes": "complete", "details": "complete" },
+      "med": { "nodes": "complete", "details": "partial" },
+      "low": { "nodes": "complete", "details": "dropped" }
+    },
+    "omittedNodeCount": 0,
+    "childrenTextBubbled": 12
+  }
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `degradationSteps` | string[] | Which budget steps were applied, in order |
+| `tiers` | object | Per-tier coverage status: `"complete"`, `"partial"`, `"dropped"` |
+| `omittedNodeCount` | number | How many nodes were dropped entirely |
+| `childrenTextBubbled` | number | How many nodes had text bubbled to parent |
+
+When `childrenTextBubbled > 0`, the affected parent nodes in DETAILS will
+have a `childrenText` field containing the concatenated text of dropped
+children.
+
+---
+
+## 11. Standard Format Exports
 
 ViewGraph v2 is the canonical format. Standard format exports are available
 as optional MCP tools and optional extension output.
 
-| Export | MCP Tool | Extension Setting | Format |
-|---|---|---|---|
-| CDP DOMSnapshot | `export_cdp_snapshot` | ☐ CDP DOMSnapshot | Columnar arrays + string table |
-| Accessibility Tree | `export_ax_tree` | ☐ Accessibility Tree | Role/name/state tree |
-| W3C Web Annotation | `export_annotations_w3c` | ☐ W3C Annotations | JSON-LD with selectors |
-
-Exports are derived from the ViewGraph capture  -  they are views, not
-independent captures. The ViewGraph file is always the source of truth.
+| Export | MCP Tool | Format |
+|---|---|---|
+| CDP DOMSnapshot | `export_cdp_snapshot` | Columnar arrays + string table |
+| Accessibility Tree | `export_ax_tree` | Role/name/state tree |
+| W3C Web Annotation | `export_annotations_w3c` | JSON-LD with selectors |
 
 ---
 
-## 11. Size Budget and Progressive Degradation
+## 12. Size Budget and Progressive Degradation
 
-### 11.1 Target size
+### 12.1 Target size
 
-Default target: **400KB** (approximately 100K tokens). Configurable via
-extension settings.
+Default target: **400KB** (~100K tokens). Configurable via extension settings.
 
-### 11.2 Degradation strategy
+### 12.2 Degradation strategy
 
 When a capture exceeds the target size, the producer degrades progressively:
 
-1. Downgrade low-salience DETAILS from minimal → drop entirely
-2. Downgrade med-salience DETAILS from medium → minimal
+1. Drop low-salience DETAILS entirely
+2. Reduce med-salience DETAILS to layout + visual only
 3. Drop structural pattern instances (keep exemplars)
-4. Downgrade high-salience DETAILS from full → medium
+4. Reduce high-salience DETAILS to layout + visual only
 5. Drop low-salience NODES entirely
 6. Bubble text content to parent nodes before dropping children
 
-At each step, `stats.inOutput` is updated to reflect what was retained.
-
-### 11.3 Text bubbling
-
-When a node is dropped for budget, its text content is appended to the
-nearest retained ancestor's `childrenText` field in DETAILS. This preserves
-semantic context without the node overhead.
+At each step, the `coverage` section is updated to reflect what was retained.
 
 ---
 
-## 12. Versioning and Compatibility
+## 13. Versioning and Compatibility
 
-### 12.1 Version field
+### 13.1 Version field
 
-`METADATA.version` uses semver (MAJOR.MINOR.PATCH):
+`metadata.version` uses semver (MAJOR.MINOR.PATCH):
 - **MAJOR:** Breaking changes to section structure or required fields
 - **MINOR:** New optional sections or fields
 - **PATCH:** Bug fixes, clarifications
 
-### 12.2 Compatibility rules
+### 13.2 Compatibility rules
 
-- Parsers MUST check `METADATA.format === "viewgraph-v2"`
-- Parsers SHOULD check `METADATA.version` for feature support
+- Parsers MUST check `metadata.format === "viewgraph-v2"`
+- Parsers SHOULD check `metadata.version` for feature support
 - Parsers MUST ignore unknown sections (forward compatibility)
 - Parsers MUST ignore unknown fields within known sections
 - Producers MUST NOT omit required sections
 
 ---
 
-## 13. File Naming Convention
+## 14. File Naming Convention
 
 ```
 viewgraph-{hostname}-{YYYYMMDD}-{HHmmss}.viewgraph.json
 viewgraph-{hostname}-{YYYYMMDD}-{HHmmss}.png
 ```
 
-Examples:
-- `viewgraph-localhost-20260408-060815.viewgraph.json`
-- `viewgraph-localhost-20260408-060815.png`
-
 Screenshot PNG uses the same basename as the JSON file.
 
 ---
 
-## 14. References
+## 15. References
 
 This specification was informed by the research documented in
 [viewgraph-format-research.md](./viewgraph-format-research.md). Key sources:
 
-- **Format lineage:** Element to LLM v2.8.1 SiFR format (Insitu, BSL 1.1).
-  Section markers, salience tiers, spatial clustering, and budget-based sizing
-  are concepts adapted from SiFR. No code was reused.
-- **Token efficiency:** Compact bbox arrays, progressive style disclosure, and
-  columnar encoding options are informed by LLM context compression research
-  [research doc refs 5-13].
-- **Accessibility section:** Motivated by browser agent research showing AX tree
-  snapshots as primary agent context [research doc ref 14], and CDP Accessibility
-  domain [research doc refs 28-31].
-- **Annotation export:** W3C Web Annotation Data Model [research doc refs 32-33].
-- **Coordinate frame declaration:** Informed by CDP DOMSnapshot's explicit
-  coordinate handling [research doc ref 28] and the ULCB schema proposal
-  [research doc ref 40].
+- **Format lineage:** Element to LLM v2.8.1 SiFR format (Insitu, BSL 1.1)
+- **JSON Schema 2020-12:** [json-schema.org](https://json-schema.org/draft/2020-12)
+- **JSON Pointer (RFC 6901):** [IETF](https://datatracker.ietf.org/doc/html/rfc6901)
+- **CDP DOMSnapshot:** [chromedevtools.github.io](https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot)
+- **CDP Accessibility:** [chromedevtools.github.io](https://chromedevtools.github.io/devtools-protocol/tot/Accessibility)
+- **W3C Web Annotation Data Model:** [w3.org](https://www.w3.org/TR/annotation-model/)
+- **Token efficiency research:** (refs 5-13 in format research doc)
+- **Browser agent research:** (ref 14 in format research doc)

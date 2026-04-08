@@ -266,18 +266,32 @@ through the export tools.
 
 ## 4. Improvement Proposals for ViewGraph v2
 
-Based on the research above, these are the concrete changes from SiFR v2:
+Based on the research above plus external format review, these are the
+concrete changes from SiFR v2. Proposals 1-8 were in the initial analysis.
+Proposals 9-20 were added after expert review of the draft spec.
 
-| # | Change | Rationale |
-|---|---|---|
-| 1 | Full tag names, no abbreviations | Readability > marginal token savings |
-| 2 | Semantic node IDs incorporating testid/id/role | Stable, human-readable, debuggable |
-| 3 | Explicit coordinate frame in METADATA | Eliminates ambiguity for multimodal agents |
-| 4 | Progressive style disclosure (none in NODES, tiered in DETAILS) | 30-50% token reduction |
-| 5 | Split relations: semantic (always) vs spatial (on-demand) | Reduces default capture size |
-| 6 | Self-contained structural patterns in SUMMARY | LLM can understand without cross-referencing |
-| 7 | Optional ACCESSIBILITY section | Aligns with browser agent best practices |
-| 8 | Section-level provenance declaration | Trust signals without per-field overhead |
+| # | Change | Rationale | Status |
+|---|---|---|---|
+| 1 | Full tag names, no abbreviations | Readability > marginal token savings | In spec v2.0 |
+| 2 | Semantic node IDs incorporating testid/id/role | Stable, human-readable, debuggable | Evolved to three-layer IDs in v2.1 |
+| 3 | Explicit coordinate frame in METADATA | Eliminates ambiguity for multimodal agents | In spec v2.0, canonical=document in v2.1 |
+| 4 | Progressive style disclosure (none in NODES, tiered in DETAILS) | 30-50% token reduction | In spec v2.0 |
+| 5 | Split relations: semantic (always) vs spatial (on-demand) | Reduces default capture size | In spec v2.0 |
+| 6 | Self-contained structural patterns in SUMMARY | LLM can understand without cross-referencing | In spec v2.0 |
+| 7 | Optional ACCESSIBILITY section | Aligns with browser agent best practices | In spec v2.0, inline AX added in v2.1 |
+| 8 | Section-level provenance declaration | Trust signals without per-field overhead | Upgraded to per-section map in v2.1 |
+| 9 | JSON Schema 2020-12 metaschema | Machine-validated contract, typed SDK generation | In spec v2.1 |
+| 10 | Three-layer node IDs (nid/alias/backendNodeId) | Stable join keys + human readability + CDP round-trip | In spec v2.1 |
+| 11 | Inline AX on high/med nodes | Reduces cross-section joins for agent workflows | In spec v2.1 |
+| 12 | Multi-strategy locators with ranking | Agents pick most stable locator, not just CSS | In spec v2.1 |
+| 13 | Document-canonical coordinates | Scroll-independent diffing and regression | In spec v2.1 |
+| 14 | Coverage/omission manifest | Agents distinguish "not on page" from "dropped for budget" | In spec v2.1 |
+| 15 | Text channels (visibleText, domText, formValue, accessibleName) | Disambiguate what user sees vs DOM vs AT | In spec v2.1 |
+| 16 | Frame/shadow boundary preservation | Agents know when selectors cross execution contexts | In spec v2.1 |
+| 17 | W3C-aligned annotation model (motivation, body, target, selectors) | Lossless export to W3C Web Annotation | In spec v2.1 |
+| 18 | Compact serialization profile (columnar + string table) | Token optimization for MCP transport | In spec v2.1 |
+| 19 | Hint threshold fields | Self-documenting anomaly detection rules | In spec v2.1 |
+| 20 | childrenText defined in coverage section | Explicit schema field, not undocumented side-effect | In spec v2.1 |
 | 9 | Formal versioning with semver in METADATA | Backward compatibility contract |
 | 10 | Optional standard-format exports via MCP tools | Interoperability without format compromise |
 | 11 | Columnar encoding option for NODES | CDP-style efficiency for large captures |
@@ -466,3 +480,18 @@ standard-format exports.
   for agentic coding agents (internal). Covers DOM, AX trees, CDP snapshots,
   PDF, SVG, design exports, native mobile, annotation standards. Proposes
   Unified Layout Capture Bundle (ULCB) schema.
+
+### Standards referenced in v2.1 spec update
+
+- [41] JSON Schema 2020-12. Structure definition, canonical identification,
+  reusable definitions, and tooling-friendly comments.
+  https://json-schema.org/draft/2020-12
+- [42] JSON Pointer (RFC 6901). IETF standard for identifying a specific
+  value in a JSON document.
+  https://datatracker.ietf.org/doc/html/rfc6901
+- [43] JSONPath (RFC 9535). IETF standard for selecting and extracting
+  JSON values from a document.
+  https://datatracker.ietf.org/doc/html/rfc9535
+- [44] CDP Accessibility domain. `queryAXTree` computes name and role for
+  nodes including ignored ones. `getFullAXTree` returns complete AX tree.
+  https://chromedevtools.github.io/devtools-protocol/tot/Accessibility
