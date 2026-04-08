@@ -239,6 +239,26 @@ describe('bestSelector', () => {
     const sel = bestSelector(document.querySelector('button'));
     expect(sel).toMatch(/^\[data-testid="[^"]+"\]$/);
   });
+
+  it('returns valid selector for input with testid', () => {
+    document.body.innerHTML = '<input data-testid="email-input" type="email">';
+    const sel = bestSelector(document.querySelector('input'));
+    expect(sel).toBe('[data-testid="email-input"]');
+  });
+
+  it('returns valid selector for password input without testid', () => {
+    document.body.innerHTML = '<form><input type="password"></form>';
+    const sel = bestSelector(document.querySelector('input'));
+    expect(sel.length).toBeGreaterThan(0);
+    expect(sel).toContain('input');
+  });
+
+  it('returns valid selector for input inside nested form', () => {
+    document.body.innerHTML = '<div><form><div class="input-group"><input type="text"></div></form></div>';
+    const sel = bestSelector(document.querySelector('input'));
+    expect(sel.length).toBeGreaterThan(0);
+    expect(sel).toContain('input');
+  });
 });
 
 describe('buildMetaLine formatting', () => {
@@ -338,6 +358,11 @@ describe('getRole', () => {
   it('explicit role overrides implicit role', () => {
     document.body.innerHTML = '<nav role="menubar">X</nav>';
     expect(getRole(document.querySelector('nav'))).toEqual({ role: 'menubar', source: 'explicit' });
+  });
+
+  it('returns implicit textbox for password input', () => {
+    document.body.innerHTML = '<input type="password">';
+    expect(getRole(document.querySelector('input'))).toEqual({ role: 'textbox', source: 'implicit' });
   });
 });
 
