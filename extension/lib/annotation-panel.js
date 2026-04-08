@@ -80,9 +80,19 @@ export function show(annotation, callbacks = {}) {
 
   panelEl.append(header, textarea);
 
-  // Position near the annotation region
-  const x = annotation.region.x + annotation.region.width + 12;
-  const y = annotation.region.y;
+  // Position near the annotation region, avoiding sidebar and screen edges
+  const panelWidth = 240;
+  const sidebarWidth = 320;
+  const vw = window.innerWidth;
+  const rightEdge = annotation.region.x + annotation.region.width + 12 + panelWidth;
+  let x, y;
+  if (rightEdge > vw - sidebarWidth) {
+    // Place to the left of the marker
+    x = Math.max(8, annotation.region.x - panelWidth - 12);
+  } else {
+    x = annotation.region.x + annotation.region.width + 12;
+  }
+  y = annotation.region.y;
   Object.assign(panelEl.style, { left: `${x}px`, top: `${y}px` });
 
   document.documentElement.appendChild(panelEl);
