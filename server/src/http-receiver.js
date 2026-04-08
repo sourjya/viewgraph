@@ -16,6 +16,7 @@ import { createServer } from 'http';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { LOG_PREFIX } from './constants.js';
+import { validateCapturePath } from './utils/validate-path.js';
 
 /**
  * Capture payload limit. MCP tool responses target ~400KB for LLM context
@@ -66,10 +67,25 @@ function json(res, status, data) {
 
 /**
  * Create an HTTP receiver.
- * @param {{ queue: object, capturesDir: string, port?: number }} options
+ * @param {{ queue: object, capturesDir: string, port?: number, secret?: string }} options
+ * @param {string} [options.secret] - Shared secret token. When set, all POST
+ *   requests must include an `Authorization: Bearer <secret>` header. GET
+ *   endpoints (/health, /requests/pending) remain open so monitoring works.
  */
-export function createHttpReceiver({ queue, capturesDir, port = 9876 }) {
+export function createHttpReceiver({ queue, capturesDir, port = 9876, secret = null }) {
   let server;
+
+  /**
+   * Verify the shared secret on mutating requests. Returns true if
+   * authorized, false (and sends 401) if not.
+   */
+  function checkAuth(req, res) {
+    if (!secret) return true;
+    const header = req.headers.authorization || '';
+    if (header === `Bearer ${secret}`) return true;
+    json(res, 401, { error: 'Unauthorized - invalid or missing Bearer token' });
+    return false;
+  }
 
   async function handleRequest(req, res) {
     const { method, url } = req;
@@ -79,7 +95,7 @@ export function createHttpReceiver({ queue, capturesDir, port = 9876 }) {
       res.writeHead(204, {
         'access-control-allow-origin': '*',
         'access-control-allow-methods': 'GET, POST, OPTIONS',
-        'access-control-allow-headers': 'content-type',
+        'access-control-allow-headers': 'content-type, authorization, x-capture-filename',
       });
       return res.end();
     }
@@ -98,6 +114,7 @@ export function createHttpReceiver({ queue, capturesDir, port = 9876 }) {
     // POST /requests/:id/ack
     const ackMatch = method === 'POST' && url.match(/^\/requests\/([^/]+)\/ack$/);
     if (ackMatch) {
+      if (!checkAuth(req, res)) return;
       const acked = queue.acknowledge(ackMatch[1]);
       if (!acked) return json(res, 404, { error: 'Request not found' });
       return json(res, 200, { id: acked.id, status: acked.status });
@@ -105,6 +122,7 @@ export function createHttpReceiver({ queue, capturesDir, port = 9876 }) {
 
     // POST /captures
     if (method === 'POST' && url === '/captures') {
+      if (!checkAuth(req, res)) return;
       let body;
       try { body = await readBody(req); } catch {
         return json(res, 413, { error: 'Payload too large (max 5MB)' });
@@ -116,7 +134,9 @@ export function createHttpReceiver({ queue, capturesDir, port = 9876 }) {
       if (!capture.metadata) return json(res, 400, { error: 'Missing metadata section' });
 
       const filename = generateFilename(capture.metadata);
-      await writeFile(path.join(capturesDir, filename), JSON.stringify(capture, null, 2));
+      // Validate the generated filename stays within the captures directory
+      const safePath = validateCapturePath(filename, capturesDir);
+      await writeFile(safePath, JSON.stringify(capture, null, 2));
 
       // Check if this completes a pending request
       const match = queue.findByUrl(capture.metadata.url);
@@ -127,6 +147,7 @@ export function createHttpReceiver({ queue, capturesDir, port = 9876 }) {
 
     // POST /snapshots - receive HTML snapshot from extension
     if (method === 'POST' && url === '/snapshots') {
+      if (!checkAuth(req, res)) return;
       const filenameStem = req.headers['x-capture-filename'];
       if (!filenameStem) return json(res, 400, { error: 'Missing X-Capture-Filename header' });
 
@@ -137,8 +158,10 @@ export function createHttpReceiver({ queue, capturesDir, port = 9876 }) {
 
       const snapshotsDir = path.join(capturesDir, '..', 'snapshots');
       await mkdir(snapshotsDir, { recursive: true });
-      const filename = `${filenameStem}.html`;
-      await writeFile(path.join(snapshotsDir, filename), body);
+      // Validate the filename stays within the snapshots directory
+      const filename = `${path.basename(filenameStem)}.html`;
+      const safePath = validateCapturePath(filename, snapshotsDir);
+      await writeFile(safePath, body);
 
       return json(res, 201, { filename });
     }

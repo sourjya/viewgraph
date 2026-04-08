@@ -15,15 +15,38 @@
 import { SERVER_BASE_URL as SERVER_URL } from '../lib/constants.js';
 
 /**
+ * Read the shared secret from chrome.storage. Returns null if not set.
+ * The user configures this in the extension options page after starting
+ * the MCP server (which logs the token to stderr).
+ */
+async function getSecret() {
+  try {
+    const { httpSecret } = await chrome.storage.local.get('httpSecret');
+    return httpSecret || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Build auth headers. Includes Bearer token when a secret is configured.
+ */
+async function authHeaders() {
+  const secret = await getSecret();
+  return secret ? { authorization: `Bearer ${secret}` } : {};
+}
+
+/**
  * Push a capture to the MCP server. Fails silently if server is not running.
  * @param {object} capture - ViewGraph JSON capture
  * @returns {Promise<{ filename: string } | null>}
  */
 async function pushToServer(capture) {
   try {
+    const auth = await authHeaders();
     const res = await fetch(`${SERVER_URL}/captures`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', ...auth },
       body: JSON.stringify(capture),
     });
     if (res.ok) return await res.json();
@@ -43,9 +66,10 @@ async function pushToServer(capture) {
  */
 async function pushSnapshot(html, filenameStem) {
   try {
+    const auth = await authHeaders();
     await fetch(`${SERVER_URL}/snapshots`, {
       method: 'POST',
-      headers: { 'content-type': 'text/html', 'x-capture-filename': filenameStem },
+      headers: { 'content-type': 'text/html', 'x-capture-filename': filenameStem, ...auth },
       body: html,
     });
   } catch {

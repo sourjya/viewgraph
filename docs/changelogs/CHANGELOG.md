@@ -8,6 +8,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Security
+- Shared secret authentication on all HTTP POST endpoints (captures, ack, snapshots)
+- Write-path validation via validateCapturePath on /captures and /snapshots
+- Extension sends Bearer token from chrome.storage.local
+- Security assessment document: 8 risks assessed, 3 mitigated, 4 accepted, 1 negligible
+- 10 security tests (auth + path validation)
+
 ### Milestone 4: Extension Core Capture
 - DOM traverser: depth-first walk, element extraction, parent-child nids, alias generation, CSS selectors
 - Salience scorer: weighted scoring (interactivity, testid, aria, viewport, size, semantic tags), 3-tier classification

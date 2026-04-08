@@ -24,6 +24,7 @@ export const FORMAT_VERSION = `${PROJECT_PREFIX}-v2`;
 export const ENV_CAPTURES_DIR = `${PROJECT_PREFIX.toUpperCase()}_CAPTURES_DIR`;
 export const ENV_MAX_CAPTURES = `${PROJECT_PREFIX.toUpperCase()}_MAX_CAPTURES`;
 export const ENV_HTTP_PORT = `${PROJECT_PREFIX.toUpperCase()}_HTTP_PORT`;
+export const ENV_HTTP_SECRET = `${PROJECT_PREFIX.toUpperCase()}_HTTP_SECRET`;
 
 /** Stderr log prefix. */
 export const LOG_PREFIX = `[${PROJECT_PREFIX}]`;
