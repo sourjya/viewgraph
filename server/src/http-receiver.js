@@ -13,11 +13,12 @@
  */
 
 import { createServer } from 'http';
-import { writeFile } from 'fs/promises';
+import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { LOG_PREFIX } from './constants.js';
 
-const MAX_BODY = 5 * 1024 * 1024; // 5MB
+const MAX_BODY = 5 * 1024 * 1024; // 5MB captures
+const MAX_SNAPSHOT = 10 * 1024 * 1024; // 10MB snapshots
 
 /** Generate a capture filename from metadata. */
 function generateFilename(metadata) {
@@ -30,13 +31,13 @@ function generateFilename(metadata) {
 }
 
 /** Read the full request body with size limit. */
-function readBody(req) {
+function readBody(req, limit = MAX_BODY) {
   return new Promise((resolve, reject) => {
     let size = 0;
     const chunks = [];
     req.on('data', (chunk) => {
       size += chunk.length;
-      if (size > MAX_BODY) { req.destroy(); reject(new Error('Payload too large')); return; }
+      if (size > limit) { req.destroy(); reject(new Error('Payload too large')); return; }
       chunks.push(chunk);
     });
     req.on('end', () => resolve(Buffer.concat(chunks).toString()));
@@ -109,6 +110,24 @@ export function createHttpReceiver({ queue, capturesDir, port = 9876 }) {
       if (match) queue.complete(match.id, filename);
 
       return json(res, 201, { filename, requestId: match?.id ?? null });
+    }
+
+    // POST /snapshots - receive HTML snapshot from extension
+    if (method === 'POST' && url === '/snapshots') {
+      const filenameStem = req.headers['x-capture-filename'];
+      if (!filenameStem) return json(res, 400, { error: 'Missing X-Capture-Filename header' });
+
+      let body;
+      try { body = await readBody(req, MAX_SNAPSHOT); } catch {
+        return json(res, 413, { error: 'Payload too large (max 10MB)' });
+      }
+
+      const snapshotsDir = path.join(capturesDir, 'snapshots');
+      await mkdir(snapshotsDir, { recursive: true });
+      const filename = `${filenameStem}.html`;
+      await writeFile(path.join(snapshotsDir, filename), body);
+
+      return json(res, 201, { filename });
     }
 
     json(res, 404, { error: 'Not found' });

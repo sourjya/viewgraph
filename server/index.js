@@ -35,6 +35,7 @@ import { register as registerGetAnnotations } from '#src/tools/get-annotations.j
 import { register as registerGetAnnotatedCapture } from '#src/tools/get-annotated-capture.js';
 import { register as registerRequestCapture } from '#src/tools/request-capture.js';
 import { register as registerGetRequestStatus } from '#src/tools/get-request-status.js';
+import { register as registerGetFidelityReport } from '#src/tools/get-fidelity-report.js';
 import { createRequestQueue } from '#src/request-queue.js';
 import { createHttpReceiver } from '#src/http-receiver.js';
 
@@ -73,6 +74,7 @@ registerGetAnnotations(server, indexer, CAPTURES_DIR);
 registerGetAnnotatedCapture(server, indexer, CAPTURES_DIR);
 registerRequestCapture(server, requestQueue);
 registerGetRequestStatus(server, requestQueue);
+registerGetFidelityReport(server, CAPTURES_DIR);
 
 // ---------------------------------------------------------------------------
 // File indexing  -  parse metadata from a capture file and add to index

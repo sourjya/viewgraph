@@ -13,13 +13,13 @@
 import { traverseDOM } from '../lib/traverser.js';
 import { scoreAll } from '../lib/salience.js';
 import { serialize } from '../lib/serializer.js';
+import { captureSnapshot } from '../lib/html-snapshot.js';
 
 export default defineContentScript({
   matches: ['<all_urls>'],
   runAt: 'document_idle',
 
   main() {
-    // Listen for capture requests from the background script
     chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       if (message.type !== 'capture') return false;
 
@@ -28,12 +28,13 @@ export default defineContentScript({
         const { elements, relations } = traverseDOM();
         const scored = scoreAll(elements, viewport);
         const capture = serialize(scored, relations);
-        sendResponse({ ok: true, capture });
+        // HTML snapshot for fidelity measurement (included if requested)
+        const snapshot = message.includeSnapshot ? captureSnapshot() : null;
+        sendResponse({ ok: true, capture, snapshot });
       } catch (err) {
         sendResponse({ ok: false, error: err.message });
       }
 
-      // Return true to indicate async response
       return true;
     });
   },

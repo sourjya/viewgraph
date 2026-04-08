@@ -13,11 +13,13 @@ import path from 'path';
 import os from 'os';
 
 /** Helper: make an HTTP request to the receiver. */
-async function req(port, method, urlPath, body) {
-  const opts = { method, headers: {} };
+async function req(port, method, urlPath, body, headers, rawBody) {
+  const opts = { method, headers: { ...headers } };
   if (body) {
     opts.headers['content-type'] = 'application/json';
     opts.body = JSON.stringify(body);
+  } else if (rawBody) {
+    opts.body = rawBody;
   }
   const res = await fetch(`http://127.0.0.1:${port}${urlPath}`, opts);
   const text = await res.text();
@@ -125,6 +127,43 @@ describe('HTTP receiver', () => {
       expect(res.status).toBe(413);
     } catch (err) {
       // Connection reset is also valid - server killed the connection
+      expect(err.cause?.code).toBe('ECONNRESET');
+    }
+  });
+
+  // --- Snapshot endpoints ---
+
+  it('POST /snapshots writes HTML file to snapshots/ dir', async () => {
+    const html = '<!DOCTYPE html><html><body><p>Hello</p></body></html>';
+    const res = await req(port, 'POST', '/snapshots', null, {
+      'content-type': 'text/html',
+      'x-capture-filename': 'viewgraph-localhost-2026-04-08-120612',
+    }, html);
+    expect(res.status).toBe(201);
+    expect(res.body.filename).toBe('viewgraph-localhost-2026-04-08-120612.html');
+    const filePath = path.join(capturesDir, 'snapshots', res.body.filename);
+    const written = readFileSync(filePath, 'utf-8');
+    expect(written).toContain('<p>Hello</p>');
+  });
+
+  it('POST /snapshots rejects missing filename header', async () => {
+    const res = await fetch(`http://127.0.0.1:${port}/snapshots`, {
+      method: 'POST',
+      headers: { 'content-type': 'text/html' },
+      body: '<html></html>',
+    });
+    expect(res.status).toBe(400);
+  });
+
+  it('POST /snapshots rejects payload >10MB', async () => {
+    try {
+      const res = await fetch(`http://127.0.0.1:${port}/snapshots`, {
+        method: 'POST',
+        headers: { 'content-type': 'text/html', 'x-capture-filename': 'test' },
+        body: 'x'.repeat(11 * 1024 * 1024),
+      });
+      expect(res.status).toBe(413);
+    } catch (err) {
       expect(err.cause?.code).toBe('ECONNRESET');
     }
   });

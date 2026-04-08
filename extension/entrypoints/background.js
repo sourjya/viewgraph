@@ -36,6 +36,26 @@ async function pushToServer(capture) {
 /**
  * Capture a screenshot of the visible tab area.
  * @param {number} tabId
+/**
+ * Push an HTML snapshot to the MCP server. Fails silently if server is not running.
+ * @param {string} html - HTML snapshot content
+ * @param {string} filenameStem - Filename without extension (matches JSON capture)
+ */
+async function pushSnapshot(html, filenameStem) {
+  try {
+    await fetch(`${SERVER_URL}/snapshots`, {
+      method: 'POST',
+      headers: { 'content-type': 'text/html', 'x-capture-filename': filenameStem },
+      body: html,
+    });
+  } catch {
+    // Server not running - snapshot not saved, that's fine
+  }
+}
+
+/**
+ * Capture a screenshot of the visible tab area.
+ * @param {number} tabId
  * @returns {Promise<string|null>} Base64 PNG data URL, or null on failure
  */
 async function captureScreenshot(tabId) {
@@ -61,16 +81,16 @@ export default defineBackground(() => {
         }
 
         // Send capture message to content script, injecting it first if needed
+        const captureMsg = { type: 'capture', includeSnapshot: true };
         let result;
         try {
-          result = await chrome.tabs.sendMessage(tab.id, { type: 'capture' });
+          result = await chrome.tabs.sendMessage(tab.id, captureMsg);
         } catch {
-          // Content script not loaded yet - inject it on demand
           await chrome.scripting.executeScript({
             target: { tabId: tab.id },
             files: ['content-scripts/content.js'],
           });
-          result = await chrome.tabs.sendMessage(tab.id, { type: 'capture' });
+          result = await chrome.tabs.sendMessage(tab.id, captureMsg);
         }
         if (!result?.ok) {
           sendResponse({ ok: false, error: result?.error || 'Content script capture failed' });
@@ -91,6 +111,12 @@ export default defineBackground(() => {
         // Push to MCP server
         const pushResult = await pushToServer(capture);
         const filename = pushResult?.filename || `viewgraph-capture-${Date.now()}.json`;
+
+        // Push HTML snapshot if available
+        if (result.snapshot && pushResult?.filename) {
+          const snapshotStem = pushResult.filename.replace(/\.json$/, '');
+          await pushSnapshot(result.snapshot, snapshotStem);
+        }
 
         sendResponse({
           ok: true,
