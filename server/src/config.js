@@ -120,5 +120,15 @@ export function resolveConfig(cwd = process.cwd()) {
     10,
   );
 
-  return { capturesDir, maxCaptures, httpPort };
+  // Allowed capture directories for multi-project routing.
+  // The x-captures-dir header must resolve to one of these.
+  // Env: comma-separated VIEWGRAPH_ALLOWED_DIRS, or config file allowedDirs array.
+  const allowedDirs = (
+    process.env.VIEWGRAPH_ALLOWED_DIRS?.split(',').map((d) => resolvePath(d.trim()))
+    || (fileConfig.allowedDirs || []).map((d) => resolvePath(d))
+  );
+  // The default capturesDir is always allowed
+  if (!allowedDirs.includes(capturesDir)) allowedDirs.push(capturesDir);
+
+  return { capturesDir, maxCaptures, httpPort, allowedDirs };
 }

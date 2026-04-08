@@ -72,7 +72,7 @@ function json(res, status, data) {
  *   requests must include an `Authorization: Bearer <secret>` header. GET
  *   endpoints (/health, /requests/pending) remain open so monitoring works.
  */
-export function createHttpReceiver({ queue, capturesDir, port = 9876, secret = null }) {
+export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port = 9876, secret = null }) {
   let server;
 
   /**
@@ -139,13 +139,15 @@ export function createHttpReceiver({ queue, capturesDir, port = 9876, secret = n
       }
       if (!capture.metadata) return json(res, 400, { error: 'Missing metadata section' });
 
-      // Resolve target directory: x-captures-dir header overrides default
+      // Resolve target directory: x-captures-dir header overrides default.
+      // Must match an entry in allowedDirs to prevent arbitrary file writes.
       const overrideDir = req.headers['x-captures-dir'];
       let targetDir = capturesDir;
       if (overrideDir) {
         const resolved = path.resolve(overrideDir);
-        // Must be an absolute path and must exist
-        if (!path.isAbsolute(resolved)) return json(res, 400, { error: 'x-captures-dir must be absolute' });
+        if (!allowedDirs.some((d) => resolved === d || resolved.startsWith(d + path.sep))) {
+          return json(res, 403, { error: 'Directory not in allowedDirs - add it to .viewgraphrc.json or VIEWGRAPH_ALLOWED_DIRS' });
+        }
         const { existsSync, mkdirSync } = await import('fs');
         if (!existsSync(resolved)) {
           try { mkdirSync(resolved, { recursive: true }); } catch {

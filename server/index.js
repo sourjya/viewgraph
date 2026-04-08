@@ -46,7 +46,7 @@ import { createHttpReceiver } from '#src/http-receiver.js';
 // ---------------------------------------------------------------------------
 
 const config = resolveConfig();
-const { capturesDir: CAPTURES_DIR, maxCaptures: MAX_CAPTURES, httpPort: HTTP_PORT } = config;
+const { capturesDir: CAPTURES_DIR, maxCaptures: MAX_CAPTURES, httpPort: HTTP_PORT, allowedDirs: ALLOWED_DIRS } = config;
 
 // ---------------------------------------------------------------------------
 // Server setup
@@ -106,6 +106,9 @@ let httpReceiver;
 async function main() {
   console.error(`${LOG_PREFIX} ViewGraph MCP Server v${SERVER_VERSION}`);
   console.error(`${LOG_PREFIX} Captures dir: ${CAPTURES_DIR}`);
+  if (ALLOWED_DIRS.length > 1) {
+    console.error(`${LOG_PREFIX} Allowed dirs: ${ALLOWED_DIRS.join(', ')}`);
+  }
 
   // Validate and auto-create captures directory
   if (!existsSync(CAPTURES_DIR)) {
@@ -125,7 +128,7 @@ async function main() {
   console.error(`${LOG_PREFIX} HTTP secret: ${httpSecret}`);
 
   // Start HTTP receiver for extension communication
-  httpReceiver = createHttpReceiver({ queue: requestQueue, capturesDir: CAPTURES_DIR, port: HTTP_PORT ?? 9876, secret: httpSecret });
+  httpReceiver = createHttpReceiver({ queue: requestQueue, capturesDir: CAPTURES_DIR, allowedDirs: ALLOWED_DIRS, port: HTTP_PORT ?? 9876, secret: httpSecret });
   await httpReceiver.start();
 
   watcher = createWatcher(CAPTURES_DIR, {
