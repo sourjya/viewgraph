@@ -147,6 +147,20 @@
     .settings-panel input[type="checkbox"]:disabled {
       opacity: 0.5; cursor: default;
     }
+    .conn-status {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px; margin-top: 6px;
+      border-top: 1px solid #2a2a3a;
+      font-size: 9px; color: #666;
+      font-family: system-ui, sans-serif;
+    }
+    .conn-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #666; flex-shrink: 0;
+      transition: background 0.3s;
+    }
+    .conn-dot.connected { background: #4ade80; }
+    .conn-dot.failed { background: #f87171; }
   </style>
 </head>
 <body>
@@ -177,6 +191,10 @@
       <label><input type="checkbox" id="captureJson" checked disabled> JSON capture</label>
       <label><input type="checkbox" id="captureHtml"> HTML snapshot</label>
       <label><input type="checkbox" id="captureScreenshot"> Screenshot</label>
+    </div>
+    <div class="conn-status" id="connStatus">
+      <span class="conn-dot" id="connDot"></span>
+      <span class="conn-text" id="connText">Checking...</span>
     </div>
   </div>
   <script type="module" src="./popup.js"></script>
