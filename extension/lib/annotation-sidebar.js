@@ -174,7 +174,6 @@ export function refresh() {
     Object.assign(label.style, {
       color: ann.resolved ? '#666' : '#c8c8d0', overflow: 'hidden',
       textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1',
-      textDecoration: ann.resolved ? 'line-through' : 'none',
     });
 
     // Ancestor element badge + comment
@@ -188,7 +187,9 @@ export function refresh() {
       });
       label.appendChild(elBadge);
     }
-    const commentText = document.createTextNode(ann.comment || '(no comment)');
+    const commentText = document.createElement('span');
+    commentText.textContent = ann.comment || '(no comment)';
+    if (ann.resolved) Object.assign(commentText.style, { textDecoration: 'line-through' });
     label.appendChild(commentText);
 
     // Click to scroll and show panel
