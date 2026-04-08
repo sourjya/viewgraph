@@ -49,6 +49,7 @@ let onAnnotationRemoved = null;
 function onMouseDown(e) {
   if (!e.shiftKey) return;
   e.preventDefault();
+  e.stopPropagation();
   dragStart = { x: e.clientX, y: e.clientY };
   selectionBox = document.createElement('div');
   selectionBox.setAttribute(ATTR, 'selection');
@@ -61,6 +62,8 @@ function onMouseDown(e) {
 
 function onMouseMove(e) {
   if (!dragStart || !selectionBox) return;
+  e.preventDefault();
+  e.stopPropagation();
   const x = Math.min(dragStart.x, e.clientX);
   const y = Math.min(dragStart.y, e.clientY);
   const w = Math.abs(e.clientX - dragStart.x);
