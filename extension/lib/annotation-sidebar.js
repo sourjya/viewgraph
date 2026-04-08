@@ -10,7 +10,7 @@
  */
 
 import { show as showPanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, toggleResolved, hideMarkers, stop as stopAnnotate } from './annotate.js';
+import { getAnnotations, removeAnnotation, toggleResolved, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate } from './annotate.js';
 import { formatMarkdown } from './export-markdown.js';
 
 const ATTR = 'data-vg-annotate';
@@ -174,9 +174,11 @@ function toggleCollapse() {
     sidebarEl.style.transform = 'translateX(100%)';
     badgeEl.style.display = 'flex';
     updateBadgeCount();
+    pauseAnnotate();
   } else {
     sidebarEl.style.transform = 'translateX(0)';
     badgeEl.style.display = 'none';
+    resumeAnnotate();
   }
 }
 

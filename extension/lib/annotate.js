@@ -641,6 +641,28 @@ export function start(callbacks = {}) {
   document.addEventListener('keydown', onKeyDown, true);
 }
 
+/** Pause interaction (sidebar collapsed) - removes listeners but keeps annotations. */
+export function pause() {
+  if (!active) return;
+  frozen = false;
+  hideHoverUI();
+  document.removeEventListener('mousedown', onMouseDown, true);
+  document.removeEventListener('mousemove', onMouseMove, true);
+  document.removeEventListener('mouseup', onMouseUp, true);
+  document.removeEventListener('click', onClick, true);
+  document.removeEventListener('wheel', onWheel, { capture: true, passive: false });
+}
+
+/** Resume interaction (sidebar expanded) - re-adds listeners. */
+export function resume() {
+  if (!active) return;
+  document.addEventListener('mousedown', onMouseDown, true);
+  document.addEventListener('mousemove', onMouseMove, true);
+  document.addEventListener('mouseup', onMouseUp, true);
+  document.addEventListener('click', onClick, true);
+  document.addEventListener('wheel', onWheel, { capture: true, passive: false });
+}
+
 export function stop() {
   if (!active) return;
   active = false;
