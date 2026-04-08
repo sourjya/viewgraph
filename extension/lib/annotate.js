@@ -490,7 +490,9 @@ function createMarker(annotation, selRect) {
 }
 
 function removeMarker(id) {
-  const el = document.querySelector(`[${ATTR}="marker-${id}"]`);
+  // Check both new and legacy attrs for transition safety
+  const el = document.querySelector(`[${ATTR}="marker-${id}"]`)
+    || document.querySelector(`[data-vg-review="marker-${id}"]`);
   if (el) el.remove();
 }
 
@@ -587,6 +589,10 @@ export function start(callbacks = {}) {
   frozen = false;
   onAnnotationAdded = callbacks.onAdd || null;
   onAnnotationRemoved = callbacks.onRemove || null;
+
+  // Clean up any leftover elements from old review/inspector modes
+  document.querySelectorAll('[data-vg-review]').forEach((el) => el.remove());
+  document.querySelectorAll('[data-vg-inspector]').forEach((el) => el.remove());
 
   overlayEl = createOverlay();
   tooltipEl = createTooltip();
