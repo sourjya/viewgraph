@@ -7,8 +7,8 @@
 
 import { describe, it, expect, afterEach } from 'vitest';
 import { createTestClient } from './helpers.js';
-import { createIndexer } from '../../../src/indexer.js';
-import { register } from '../../../src/tools/list-captures.js';
+import { createIndexer } from '#src/indexer.js';
+import { register } from '#src/tools/list-captures.js';
 
 describe('list_captures via MCP', () => {
   let cleanup;

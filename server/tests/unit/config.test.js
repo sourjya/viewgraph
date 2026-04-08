@@ -10,8 +10,8 @@ import os from 'os';
 
 // We test the internal helpers by importing the module and calling resolveConfig
 // with a controlled cwd pointing to a temp directory.
-import { resolveConfig } from '../../src/config.js';
-import { ENV_CAPTURES_DIR } from '../../src/constants.js';
+import { resolveConfig } from '#src/config.js';
+import { ENV_CAPTURES_DIR } from '#src/constants.js';
 
 let tmpDir;
 

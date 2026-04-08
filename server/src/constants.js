@@ -17,7 +17,7 @@ export const SERVER_NAME = `${PROJECT_PREFIX}-mcp-server`;
 export const SERVER_VERSION = '0.1.0';
 export const SERVER_DESCRIPTION = `Exposes ${PROJECT_NAME} DOM capture tools for AI-powered UI auditing, test generation, and visual regression`;
 
-/** Capture format identifier stored in ====METADATA==== → format field. */
+/** Capture format identifier stored in metadata.format field. */
 export const FORMAT_VERSION = `${PROJECT_PREFIX}-v2`;
 
 /** Environment variable names. */

@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createIndexer } from '../../src/indexer.js';
+import { createIndexer } from '#src/indexer.js';
 
 // Helper  -  build a metadata entry
 function meta(filename, url, timestamp, nodeCount = 10) {

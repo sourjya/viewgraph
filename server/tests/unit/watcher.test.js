@@ -10,9 +10,9 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { mkdtemp, writeFile, rm } from 'fs/promises';
 import path from 'path';
 import os from 'os';
-import { createWatcher } from '../../src/watcher.js';
-import { createIndexer } from '../../src/indexer.js';
-import { parseMetadata } from '../../src/parsers/viewgraph-v2.js';
+import { createWatcher } from '#src/watcher.js';
+import { createIndexer } from '#src/indexer.js';
+import { parseMetadata } from '#src/parsers/viewgraph-v2.js';
 import { readFile } from 'fs/promises';
 
 /** Minimal valid capture for watcher to index. */

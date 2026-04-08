@@ -5,8 +5,8 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import path from 'path';
 import { createTestClient } from './helpers.js';
-import { createIndexer } from '../../../src/indexer.js';
-import { register } from '../../../src/tools/get-interactive.js';
+import { createIndexer } from '#src/indexer.js';
+import { register } from '#src/tools/get-interactive.js';
 
 const FIXTURES_DIR = path.resolve(import.meta.dirname, '../../fixtures');
 

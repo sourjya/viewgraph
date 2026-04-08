@@ -7,9 +7,9 @@
 
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
-import { PROJECT_NAME, PROJECT_PREFIX } from '../constants.js';
-import { validateCapturePath } from '../utils/validate-path.js';
-import { parseSummary } from '../parsers/viewgraph-v2.js';
+import { PROJECT_NAME, PROJECT_PREFIX } from '#src/constants.js';
+import { validateCapturePath } from '#src/utils/validate-path.js';
+import { parseSummary } from '#src/parsers/viewgraph-v2.js';
 
 export function register(server, _indexer, capturesDir) {
   server.tool(

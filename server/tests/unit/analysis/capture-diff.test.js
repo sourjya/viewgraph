@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { diffCaptures } from '../../../src/analysis/capture-diff.js';
+import { diffCaptures } from '#src/analysis/capture-diff.js';
 
 /** Helper: minimal parsed capture with given nodes and details. */
 function makeCapture(nodes, details = {}) {
