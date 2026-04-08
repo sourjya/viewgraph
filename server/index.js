@@ -16,9 +16,9 @@ import { readFile } from 'fs/promises';
 import path from 'path';
 
 import {
-  SERVER_NAME, SERVER_VERSION, SERVER_DESCRIPTION,
-  ENV_CAPTURES_DIR, ENV_MAX_CAPTURES, LOG_PREFIX,
+  SERVER_NAME, SERVER_VERSION, SERVER_DESCRIPTION, LOG_PREFIX,
 } from './src/constants.js';
+import { resolveConfig } from './src/config.js';
 import { createWatcher } from './src/watcher.js';
 import { createIndexer } from './src/indexer.js';
 import { parseMetadata } from './src/parsers/viewgraph-v2.js';
@@ -28,11 +28,11 @@ import { register as registerGetLatest } from './src/tools/get-latest.js';
 import { register as registerGetPageSummary } from './src/tools/get-page-summary.js';
 
 // ---------------------------------------------------------------------------
-// Configuration from environment
+// Configuration — env vars > .viewgraphrc.json > defaults
 // ---------------------------------------------------------------------------
 
-const CAPTURES_DIR = process.env[ENV_CAPTURES_DIR] || path.join(process.cwd(), 'captures');
-const MAX_CAPTURES = parseInt(process.env[ENV_MAX_CAPTURES] || '50', 10);
+const config = resolveConfig();
+const { capturesDir: CAPTURES_DIR, maxCaptures: MAX_CAPTURES } = config;
 
 // ---------------------------------------------------------------------------
 // Server setup
