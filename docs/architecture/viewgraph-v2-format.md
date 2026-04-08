@@ -40,17 +40,16 @@ for consumption by LLM-based coding agents via MCP tools.
 
 ## 2. Top-Level Structure
 
-A ViewGraph v2 capture is a single JSON object with section-marker keys.
-Sections are ordered for optimal LLM attention (most important first).
+A ViewGraph v2 capture is a single JSON object with plain, dot-accessible keys.
 
 ```json
 {
-  "====METADATA====": { ... },
-  "====SUMMARY====":  { ... },
-  "====NODES====":    { ... },
-  "====RELATIONS====": { ... },
-  "====DETAILS====":  { ... },
-  "====ANNOTATIONS====": [ ... ]
+  "metadata":    { ... },
+  "summary":     { ... },
+  "nodes":       { ... },
+  "relations":   { ... },
+  "details":     { ... },
+  "annotations": [ ... ]
 }
 ```
 
@@ -59,25 +58,36 @@ Sections are ordered for optimal LLM attention (most important first).
 Sections MUST appear in this order. Parsers SHOULD NOT depend on order but
 producers MUST emit in this order for LLM attention optimization.
 
-| Order | Section | Required | Purpose |
+| Order | Key | Required | Purpose |
 |---|---|---|---|
-| 1 | METADATA | Yes | Capture context, viewport, stats, provenance |
-| 2 | SUMMARY | Yes | Page overview, styles, clusters, key elements |
-| 3 | NODES | Yes | Element tree grouped by salience tier |
-| 4 | RELATIONS | Yes | Semantic and structural relationships |
-| 5 | DETAILS | Yes | Full selectors, attributes, computed styles |
-| 6 | ANNOTATIONS | No | Human annotations from review mode |
-| 7 | ACCESSIBILITY | No | Computed accessibility tree snapshot |
+| 1 | `metadata` | Yes | Capture context, viewport, stats, provenance |
+| 2 | `summary` | Yes | Page overview, styles, clusters, key elements |
+| 3 | `nodes` | Yes | Element tree grouped by salience tier |
+| 4 | `relations` | Yes | Semantic and structural relationships |
+| 5 | `details` | Yes | Full selectors, attributes, computed styles |
+| 6 | `annotations` | No | Human annotations from review mode |
+| 7 | `accessibility` | No | Computed accessibility tree snapshot |
 
-### 2.2 Section marker keys
+### 2.2 Why plain keys (not `====SECTION====` markers)
 
-Keys use the pattern `====NAME====`. This convention:
-- Makes sections greppable in raw JSON
-- Provides visual landmarks for human readers
-- Costs ~5 tokens per marker (negligible)
+The SiFR v2 format uses decorated keys like `"====METADATA===="`. ViewGraph
+deliberately does not. Reasons:
 
-Unknown section keys matching `====*====` MUST be preserved by parsers and
-ignored if not understood.
+- **Dot access:** `capture.metadata` works; `capture["====METADATA===="]` does not
+- **Standard JSON:** No special characters in keys means standard schema
+  validation, autocomplete, and tooling work out of the box
+- **LLMs parse JSON natively:** Models don't need visual markers to locate
+  top-level keys — they already understand JSON structure
+- **Zero overhead:** Eliminates ~10 characters of noise per key
+- **Greppability is equivalent:** `grep '"metadata"'` works as well as
+  `grep "====METADATA===="`
+
+If visual separation is desired when viewing raw captures, producers MAY
+insert newlines between top-level sections during pretty-printing. This is
+a serialization concern, not a format concern.
+
+Unknown top-level keys MUST be preserved by parsers and ignored if not
+understood (forward compatibility).
 
 ---
 
@@ -87,7 +97,7 @@ Required. Provides capture context.
 
 ```json
 {
-  "====METADATA====": {
+  "metadata": {
     "format": "viewgraph-v2",
     "version": "2.0.0",
     "timestamp": "2026-04-08T06:08:15.214Z",
@@ -161,7 +171,7 @@ to understand the page from SUMMARY alone without reading other sections.
 
 ```json
 {
-  "====SUMMARY====": {
+  "summary": {
     "page": {
       "title": "Projects - AI Video Editor",
       "url": "http://localhost:8040/projects",
@@ -246,7 +256,7 @@ Required. The element tree grouped by salience tier.
 
 ```json
 {
-  "====NODES====": {
+  "nodes": {
     "high": {
       "button": {
         "button:create-project": {
@@ -319,7 +329,7 @@ Required. Semantic relationships between nodes.
 
 ```json
 {
-  "====RELATIONS====": {
+  "relations": {
     "semantic": {
       "label:email-label": { "input:email-field": "labelFor" },
       "button:show-details": { "div:details-panel": "controls" }
@@ -366,7 +376,7 @@ Required. Full element details grouped by salience tier and tag.
 
 ```json
 {
-  "====DETAILS====": {
+  "details": {
     "high": {
       "button": {
         "button:create-project": {
@@ -464,7 +474,7 @@ Optional. Present only in `review` capture mode.
 
 ```json
 {
-  "====ANNOTATIONS====": [
+  "annotations": [
     {
       "id": "ann-1",
       "type": "region",
@@ -508,7 +518,7 @@ Optional. Computed accessibility tree snapshot.
 
 ```json
 {
-  "====ACCESSIBILITY====": {
+  "accessibility": {
     "source": "computed",
     "nodes": [
       {

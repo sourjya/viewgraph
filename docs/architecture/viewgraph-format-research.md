@@ -1,7 +1,9 @@
 # ViewGraph Format Research: Analysis, LLM Ingestibility, and Improvement Proposals
 
 **Date:** 2026-04-08
+
 **Status:** Complete
+
 **Purpose:** Inform the ViewGraph v2 format specification with evidence-based findings
 
 ---
