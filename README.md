@@ -16,6 +16,23 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 ## Quick Start
 
 ```bash
+# In your project
+npm install viewgraph -D
+npx viewgraph init          # auto-detect agent, write config, set up captures folder
+
+# Then install the browser extension
+# Firefox: https://addons.mozilla.org/en-US/firefox/addon/viewgraph/
+# Chrome:  (coming soon)
+```
+
+The `init` command detects your dev URLs from package.json, writes
+`.viewgraphrc.json`, and configures your MCP agent (Kiro, Cursor, Claude Code,
+Windsurf). The extension auto-discovers your project and routes captures to
+the right folder.
+
+For development on ViewGraph itself:
+
+```bash
 npm install
 npm run dev:server     # start MCP server
 npm run dev:ext        # start extension dev server (Chrome)
@@ -45,6 +62,7 @@ scripts/         Git and build scripts
 - [ViewGraph v2 Format Spec](./docs/architecture/viewgraph-v2-format.md)  -  capture format
 - [Format Research](./docs/architecture/viewgraph-format-research.md)  -  format analysis and design rationale
 - [Universal Agent Integration](./docs/decisions/ADR-001-universal-agent-integration.md)  -  multi-tool architecture (Kiro, Claude Code, Cursor, Windsurf)
+- [Multi-Project Routing](./docs/decisions/ADR-002-multi-project-capture-routing.md)  -  how the extension routes captures to the right project
 
 ## License
 
