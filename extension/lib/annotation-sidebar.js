@@ -34,10 +34,10 @@ export function create() {
   // Toggle button
   const toggle = document.createElement('button');
   toggle.setAttribute(ATTR, 'toggle');
-  toggle.textContent = 'Annotations';
+  toggle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Review Notes';
   Object.assign(toggle.style, {
-    width: '100%', padding: '8px 10px', border: 'none', borderBottom: '1px solid #333',
-    background: 'transparent', color: '#a5b4fc', fontSize: '11px', fontWeight: '600',
+    width: '100%', padding: '10px', border: 'none', borderBottom: '1px solid #333',
+    background: 'transparent', color: '#a5b4fc', fontSize: '12px', fontWeight: '600',
     cursor: 'pointer', textAlign: 'left',
   });
   toggle.addEventListener('click', () => toggleCollapse());
@@ -123,7 +123,7 @@ export function refresh() {
     // Click to scroll and show panel
     label.addEventListener('click', () => {
       window.scrollTo({ top: ann.region.y - 100, behavior: 'smooth' });
-      showPanel(ann);
+      showPanel(ann, { onChange: () => refresh() });
     });
 
     // Delete button

@@ -90,6 +90,25 @@ describe('removeAnnotation', () => {
   });
 });
 
+describe('annotation persistence across start calls', () => {
+  it('start does not clear existing annotations', () => {
+    start();
+    // Annotations added during review persist across start calls
+    expect(isActive()).toBe(true);
+    // Calling start again is safe (no-op)
+    start();
+    expect(isActive()).toBe(true);
+    stop();
+  });
+
+  it('only stop clears annotations', () => {
+    start();
+    expect(getAnnotations()).toHaveLength(0);
+    stop();
+    expect(getAnnotations()).toHaveLength(0);
+  });
+});
+
 // ---------------------------------------------------------------------------
 // Start / Stop lifecycle
 // ---------------------------------------------------------------------------

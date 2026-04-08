@@ -46,16 +46,16 @@ export default defineContentScript({
       }
 
       if (message.type === 'toggle-review') {
-        if (isReviewing()) {
-          destroySidebar();
-          stopReview();
-        } else {
+        if (!isReviewing()) {
+          // Start review mode fresh
           startReview({
-            onAdd: (ann) => { showPanel(ann); refreshSidebar(); },
+            onAdd: (ann) => { showPanel(ann, { onChange: () => refreshSidebar() }); refreshSidebar(); },
             onRemove: () => { refreshSidebar(); },
           });
-          createSidebar();
         }
+        // Always (re)create sidebar - shows existing annotations
+        destroySidebar();
+        createSidebar();
         sendResponse({ ok: true, active: isReviewing() });
         return true;
       }
