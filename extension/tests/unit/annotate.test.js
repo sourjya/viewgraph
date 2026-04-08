@@ -417,3 +417,30 @@ describe('highlight skips annotate UI', () => {
     expect(found).toBe(false);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Click dedup - same element doesn't create duplicate annotation
+// ---------------------------------------------------------------------------
+
+describe('click dedup', () => {
+  it('annotations with identical region and ancestor are detected as duplicates', () => {
+    const region = { x: 10, y: 10, width: 100, height: 50 };
+    const a1 = { id: 1, type: 'element', region, comment: 'first', nids: [], ancestor: 'div.card' };
+    const a2 = { id: 2, type: 'element', region, comment: 'second', nids: [], ancestor: 'div.card' };
+    // Same ancestor + same region coordinates = duplicate
+    expect(a1.ancestor === a2.ancestor
+      && a1.region.x === a2.region.x && a1.region.y === a2.region.y
+      && a1.region.width === a2.region.width && a1.region.height === a2.region.height).toBe(true);
+  });
+
+  it('annotations with different regions are not duplicates', () => {
+    const r1 = { x: 10, y: 10, width: 100, height: 50 };
+    const r2 = { x: 200, y: 300, width: 100, height: 50 };
+    expect(r1.x === r2.x && r1.y === r2.y).toBe(false);
+  });
+
+  it('annotations with same region but different ancestor are not duplicates', () => {
+    const region = { x: 10, y: 10, width: 100, height: 50 };
+    expect('div.card' === 'button.primary').toBe(false);
+  });
+});

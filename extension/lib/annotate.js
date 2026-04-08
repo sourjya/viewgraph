@@ -257,8 +257,6 @@ function hideHoverUI() {
 
 function freeze() {
   if (!currentEl) return;
-  frozen = true;
-  hideHoverUI();
 
   const rect = currentEl.getBoundingClientRect();
   const region = {
@@ -268,6 +266,20 @@ function freeze() {
     height: Math.round(rect.height),
   };
   const ancestor = selectorSegment(currentEl);
+
+  // Dedup: if this element already has an annotation, reopen its panel
+  const existing = annotations.find((a) =>
+    a.ancestor === ancestor && a.region.x === region.x && a.region.y === region.y
+    && a.region.width === region.width && a.region.height === region.height);
+  if (existing) {
+    frozen = true;
+    hideHoverUI();
+    if (onAnnotationAdded) onAnnotationAdded(existing);
+    return;
+  }
+
+  frozen = true;
+  hideHoverUI();
   const id = nextId++;
   const annotation = { id, type: 'element', region, comment: '', nids: [], ancestor };
   annotations.push(annotation);
