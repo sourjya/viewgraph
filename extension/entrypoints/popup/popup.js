@@ -9,6 +9,29 @@ const captureBtn = document.getElementById('captureBtn');
 const inspectBtn = document.getElementById('inspectBtn');
 const reviewBtn = document.getElementById('reviewBtn');
 const statusEl = document.getElementById('status');
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsPanel = document.getElementById('settingsPanel');
+const captureHtml = document.getElementById('captureHtml');
+const captureScreenshot = document.getElementById('captureScreenshot');
+
+// Settings toggle
+settingsBtn.addEventListener('click', () => {
+  settingsPanel.classList.toggle('visible');
+});
+
+// Load saved settings
+chrome.storage.local.get('vg-settings', (result) => {
+  const s = result['vg-settings'] || {};
+  captureHtml.checked = !!s.html;
+  captureScreenshot.checked = !!s.screenshot;
+});
+
+// Save on change
+function saveSettings() {
+  chrome.storage.local.set({ 'vg-settings': { html: captureHtml.checked, screenshot: captureScreenshot.checked } });
+}
+captureHtml.addEventListener('change', saveSettings);
+captureScreenshot.addEventListener('change', saveSettings);
 
 /** Show a status message with a given type (info, success, error). */
 function showStatus(type, message) {
@@ -22,10 +45,14 @@ captureBtn.addEventListener('click', async () => {
   showStatus('info', 'Traversing DOM...');
 
   try {
-    const response = await chrome.runtime.sendMessage({ type: 'capture' });
+    const response = await chrome.runtime.sendMessage({
+      type: 'capture',
+      includeSnapshot: captureHtml.checked,
+      includeScreenshot: captureScreenshot.checked,
+    });
     if (response?.ok) {
-      const { filename, nodeCount } = response;
-      showStatus('success', `Captured ${nodeCount} elements\n${filename}`);
+      const { nodeCount } = response;
+      showStatus('success', `Captured ${nodeCount} elements`);
     } else {
       showStatus('error', response?.error || 'Capture failed');
     }

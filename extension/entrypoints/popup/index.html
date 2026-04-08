@@ -92,6 +92,44 @@
     .status.info { background: #1a1a2e; color: #7888a0; }
     .status.success { background: #0d1f17; color: #4ade80; }
     .status.error { background: #1f0d0d; color: #f87171; }
+    .settings-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #2a2a3a;
+    }
+    .settings-toggle button {
+      border: none; background: transparent; cursor: pointer;
+      color: #555; display: flex; align-items: center; gap: 4px;
+      font-size: 9px; font-family: system-ui, sans-serif;
+      padding: 2px 6px; border-radius: 4px;
+    }
+    .settings-toggle button:hover { color: #888; background: #22223a; }
+    .settings-toggle button svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+    .settings-panel {
+      display: none;
+      margin-top: 6px;
+      padding: 8px;
+      background: #1a1a2a;
+      border-radius: 6px;
+    }
+    .settings-panel.visible { display: block; }
+    .settings-panel label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 0;
+      font-size: 10px;
+      color: #9898a8;
+      cursor: pointer;
+    }
+    .settings-panel label:hover { color: #c8c8d0; }
+    .settings-panel input[type="checkbox"] {
+      accent-color: #6366f1;
+      width: 13px; height: 13px;
+    }
   </style>
 </head>
 <body>
@@ -116,6 +154,17 @@
       </button>
     </div>
     <div class="status" id="status"></div>
+    <div class="settings-toggle">
+      <button id="settingsBtn">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Settings
+      </button>
+    </div>
+    <div class="settings-panel" id="settingsPanel">
+      <label><input type="checkbox" id="captureJson" checked disabled> JSON capture</label>
+      <label><input type="checkbox" id="captureHtml"> HTML snapshot</label>
+      <label><input type="checkbox" id="captureScreenshot"> Screenshot</label>
+    </div>
   </div>
   <script type="module" src="./popup.js"></script>
 </body>

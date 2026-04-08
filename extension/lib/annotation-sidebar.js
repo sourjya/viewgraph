@@ -107,10 +107,10 @@ export function create() {
   badgeEl.setAttribute(ATTR, 'collapse-badge');
   Object.assign(badgeEl.style, {
     position: 'fixed', top: '60px', right: '0', zIndex: '2147483646',
-    padding: '6px 8px', borderRadius: '8px 0 0 8px',
+    padding: '10px 12px', borderRadius: '10px 0 0 10px',
     background: '#252536', border: '1px solid #333', borderRight: 'none',
-    color: '#a5b4fc', fontSize: '11px', fontWeight: '600',
-    display: 'none', alignItems: 'center', gap: '5px',
+    color: '#a5b4fc', fontSize: '14px', fontWeight: '600',
+    display: 'none', alignItems: 'center', gap: '6px',
     cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
     boxShadow: '-2px 0 8px rgba(0,0,0,0.3)',
   });
@@ -136,7 +136,7 @@ function toggleCollapse() {
 function updateBadgeCount() {
   if (!badgeEl) return;
   const count = getAnnotations().length;
-  badgeEl.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>${count}</span>`;
+  badgeEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>${count}</span>`;
 }
 
 /** Refresh the sidebar list from current annotations. */

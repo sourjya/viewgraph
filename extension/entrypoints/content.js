@@ -26,6 +26,9 @@ export default defineContentScript({
   main() {
     chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       if (message.type === 'capture') {
+        // Exit any active mode before capturing
+        if (isInspecting()) stopInspect();
+        if (isReviewing()) { hideMarkers(); destroySidebar(); stopReview(); }
         try {
           const viewport = { width: window.innerWidth, height: window.innerHeight };
           const { elements, relations } = traverseDOM();
