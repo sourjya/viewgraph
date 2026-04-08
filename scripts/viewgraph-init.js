@@ -20,6 +20,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SERVER_ENTRY = path.resolve(__dirname, '..', 'server', 'index.js');
+const VIEWGRAPH_ROOT = path.resolve(__dirname, '..');
 const CWD = process.cwd();
 
 // Agent detection: config dir → config file path
@@ -127,6 +128,23 @@ if (existsSync(gitignorePath)) {
 } else {
   writeFileSync(gitignorePath, '# ViewGraph captures\n.viewgraph/captures/\n');
   console.log('  Created .gitignore');
+}
+
+// 5. Register captures dir in ViewGraph server's allowedDirs
+const serverConfigPath = path.join(VIEWGRAPH_ROOT, '.viewgraphrc.json');
+const absCapturesDir = path.resolve(capturesDir);
+let serverConfig = {};
+if (existsSync(serverConfigPath)) {
+  try { serverConfig = JSON.parse(readFileSync(serverConfigPath, 'utf-8')); } catch { /* overwrite */ }
+}
+const allowed = serverConfig.allowedDirs || [];
+if (!allowed.includes(absCapturesDir)) {
+  allowed.push(absCapturesDir);
+  serverConfig.allowedDirs = allowed;
+  writeFileSync(serverConfigPath, JSON.stringify(serverConfig, null, 2) + '\n');
+  console.log(`  Registered ${absCapturesDir} in server allowedDirs`);
+} else {
+  console.log(`  Already in server allowedDirs`);
 }
 
 console.log('\nDone. Start the server with: npm run dev:server\n');
