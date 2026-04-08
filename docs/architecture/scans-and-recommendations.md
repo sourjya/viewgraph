@@ -262,6 +262,25 @@ to detect loading state, tests use fragile timeouts.
 
 ---
 
+## Interop Scans
+
+### SCAN-060: Element action index
+
+**Detects:** All interactive elements, assigns a sequential action index.
+
+**Why it matters:** Browser automation MCP servers (Playwright, Puppeteer)
+use numeric element indices for click/fill/select commands. Providing a
+stable index in ViewGraph captures enables direct interop - the agent
+uses ViewGraph to understand, then Playwright to act, referencing the
+same element by index.
+
+**Recommendation:** Include `elementIndex` in `get_interactive_elements`
+output. Agents can pass this index to browser automation tools.
+
+**Status:** Not yet implemented
+
+---
+
 ## Regression Risk Scans
 
 ### SCAN-030: High z-index stacking

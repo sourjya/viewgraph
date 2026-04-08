@@ -95,6 +95,7 @@ producers MUST emit in this order for LLM attention optimization.
 | 6 | `annotations` | No | Human annotations from review mode |
 | 7 | `accessibility` | No | Computed accessibility tree snapshot |
 | 8 | `coverage` | No | Omission manifest - what was dropped and why |
+| 9 | `console` | No | Captured console errors/warnings |
 
 ### 2.2 Why plain keys (not `====SECTION====` markers)
 
@@ -672,7 +673,32 @@ children.
 
 ---
 
-## 11. Standard Format Exports
+## 11. CONSOLE Section
+
+Optional. Captured browser console messages during the capture window.
+Helps agents correlate UI state with runtime errors.
+
+```json
+{
+  "console": [
+    { "level": "error", "text": "Failed to fetch /api/jobs", "timestamp": "2026-04-08T07:10:01Z" },
+    { "level": "warn", "text": "Deprecated prop 'size' on Button", "timestamp": "2026-04-08T07:10:00Z" }
+  ]
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `level` | string | `"error"`, `"warn"`, `"info"` |
+| `text` | string | Console message text (truncated to 500 chars) |
+| `timestamp` | string | ISO 8601 UTC |
+
+Only `error` and `warn` levels are captured by default. The extension
+hooks `console.error` and `console.warn` during the capture window.
+
+---
+
+## 13. Standard Format Exports
 
 ViewGraph v2 is the canonical format. Standard format exports are available
 as optional MCP tools and optional extension output.
