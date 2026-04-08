@@ -9,6 +9,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   findIntersectingNodes, findCommonAncestor, updateComment, removeAnnotation,
   getAnnotations, clearAnnotations, start, stop, isActive, storageKey, save, load,
+  toggleResolved,
 } from '../../lib/review.js';
 
 let restore;
@@ -113,6 +114,17 @@ describe('removeAnnotation', () => {
     removeAnnotation(999);
     expect(getAnnotations().length).toBe(before);
     stop();
+  });
+});
+
+describe('toggleResolved', () => {
+  it('returns null for non-existent id', () => {
+    expect(toggleResolved(999)).toBeNull();
+  });
+
+  it('does not create annotation for non-existent id', () => {
+    toggleResolved(999);
+    expect(getAnnotations()).toHaveLength(0);
   });
 });
 

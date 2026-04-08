@@ -10,7 +10,7 @@
  */
 
 import { show as showPanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation } from './review.js';
+import { getAnnotations, removeAnnotation, toggleResolved } from './review.js';
 
 const ATTR = 'data-vg-review';
 let sidebarEl = null;
@@ -153,7 +153,11 @@ export function refresh() {
     entry.addEventListener('mouseleave', () => { entry.style.background = 'transparent'; });
 
     const label = document.createElement('span');
-    Object.assign(label.style, { color: '#c8c8d0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1' });
+    Object.assign(label.style, {
+      color: ann.resolved ? '#666' : '#c8c8d0', overflow: 'hidden',
+      textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1',
+      textDecoration: ann.resolved ? 'line-through' : 'none',
+    });
 
     // Ancestor element badge + comment
     if (ann.ancestor) {
@@ -175,6 +179,16 @@ export function refresh() {
       showPanel(ann, { onChange: () => refresh() });
     });
 
+    // Resolve toggle
+    const resolveBtn = document.createElement('button');
+    resolveBtn.setAttribute(ATTR, 'btn');
+    resolveBtn.innerHTML = ann.resolved
+      ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+      : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>';
+    resolveBtn.title = ann.resolved ? 'Mark unresolved' : 'Mark resolved';
+    Object.assign(resolveBtn.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', flexShrink: '0' });
+    resolveBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleResolved(ann.id); refresh(); });
+
     // Delete button
     const del = document.createElement('button');
     del.setAttribute(ATTR, 'btn');
@@ -182,7 +196,7 @@ export function refresh() {
     Object.assign(del.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', flexShrink: '0' });
     del.addEventListener('click', (e) => { e.stopPropagation(); removeAnnotation(ann.id); refresh(); });
 
-    entry.append(label, del);
+    entry.append(label, resolveBtn, del);
     list.appendChild(entry);
   }
 

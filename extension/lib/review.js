@@ -265,6 +265,19 @@ export function updateComment(id, comment) {
 }
 
 /**
+ * Toggle the resolved status of an annotation.
+ * @param {number} id
+ * @returns {boolean|null} New resolved state, or null if not found
+ */
+export function toggleResolved(id) {
+  const ann = annotations.find((a) => a.id === id);
+  if (!ann) return null;
+  ann.resolved = !ann.resolved;
+  save();
+  return ann.resolved;
+}
+
+/**
  * Remove an annotation by id.
  * @param {number} id
  */
