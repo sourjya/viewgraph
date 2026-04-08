@@ -306,6 +306,23 @@ installable globally.
 
 ---
 
+## Milestone 10: Smart Review + Annotation Intelligence (Future)
+
+**Goal:** Richer review feedback loop between extension and MCP server.
+
+| # | Task | Details |
+|---|---|---|
+| 10.1 | Element flash on select | Brief highlight pulse on intersected elements after drag-select completes. |
+| 10.2 | Automated resolve detection | MCP tool `check_annotation_status` compares annotation nodeIds against latest capture. Marks resolved/stale. |
+| 10.3 | Resolution push | Server pushes annotation status updates to extension via HTTP. Extension updates sidebar icons. |
+| 10.4 | Inspector-to-review bridge | Option to promote an inspector selection into a review annotation. |
+| 10.5 | Annotation diffing | Compare annotations across captures - track which issues persist across deploys. |
+| 10.6 | Recurring issue detection | Flag elements that appear in multiple annotation sessions. |
+
+**Effort:** TBD
+
+---
+
 ## Timeline Summary
 
 | Week | Milestones | Key Deliverable |
