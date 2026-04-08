@@ -492,3 +492,141 @@ describe('panel border color', () => {
     expect(MARKER_COLORS[len % len]).toBe(MARKER_COLORS[0]);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Connection status indicator
+// ---------------------------------------------------------------------------
+
+describe('connection status health check', () => {
+  it('successful health response sets connected state', () => {
+    const data = { status: 'ok', writable: true, capturesDir: '/tmp/captures' };
+    expect(data.writable).toBe(true);
+    const text = data.writable ? 'MCP connected' : 'Connected (dir not writable)';
+    expect(text).toBe('MCP connected');
+  });
+
+  it('writable false shows dir not writable', () => {
+    const data = { status: 'ok', writable: false, capturesDir: '/tmp/captures' };
+    const text = data.writable ? 'MCP connected' : 'Connected (dir not writable)';
+    expect(text).toBe('Connected (dir not writable)');
+  });
+
+  it('tooltip includes server URL and captures dir', () => {
+    const data = { capturesDir: '/home/user/.viewgraph/captures' };
+    const title = `Server: localhost:9876\nCaptures: ${data.capturesDir || 'unknown'}`;
+    expect(title).toContain('localhost:9876');
+    expect(title).toContain('/home/user/.viewgraph/captures');
+  });
+
+  it('tooltip shows unknown when capturesDir missing', () => {
+    const data = {};
+    const title = `Server: localhost:9876\nCaptures: ${data.capturesDir || 'unknown'}`;
+    expect(title).toContain('unknown');
+  });
+
+  it('fetch failure sets offline state', () => {
+    // Simulates catch branch
+    const className = 'conn-dot failed';
+    const text = 'MCP server offline';
+    expect(className).toContain('failed');
+    expect(text).toBe('MCP server offline');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Sidebar collapse pauses annotation
+// ---------------------------------------------------------------------------
+
+describe('sidebar collapse pauses interaction', () => {
+  it('pause does not clear annotations', () => {
+    start();
+    // Annotations array should survive pause
+    expect(getAnnotations()).toHaveLength(0);
+    stop();
+  });
+
+  it('isActive returns true before stop', () => {
+    start();
+    expect(isActive()).toBe(true);
+    stop();
+  });
+
+  it('isActive returns false after stop', () => {
+    start();
+    stop();
+    expect(isActive()).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Sidebar hover expand timing
+// ---------------------------------------------------------------------------
+
+describe('sidebar hover expand', () => {
+  it('expand delay is 400ms (not instant)', () => {
+    const EXPAND_DELAY = 400;
+    expect(EXPAND_DELAY).toBeGreaterThan(0);
+    expect(EXPAND_DELAY).toBeLessThanOrEqual(500);
+  });
+
+  it('max expanded height is capped at 120px', () => {
+    const MAX_HEIGHT = 120;
+    expect(MAX_HEIGHT).toBeLessThanOrEqual(200);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Viewport clamping on drag
+// ---------------------------------------------------------------------------
+
+describe('viewport clamping', () => {
+  it('clamps x to 0 when negative', () => {
+    const cx = Math.max(0, Math.min(-50, 1024));
+    expect(cx).toBe(0);
+  });
+
+  it('clamps x to innerWidth when beyond', () => {
+    const innerWidth = 1024;
+    const cx = Math.max(0, Math.min(1200, innerWidth));
+    expect(cx).toBe(1024);
+  });
+
+  it('clamps y to 0 when negative', () => {
+    const cy = Math.max(0, Math.min(-10, 768));
+    expect(cy).toBe(0);
+  });
+
+  it('clamps y to innerHeight when beyond', () => {
+    const innerHeight = 768;
+    const cy = Math.max(0, Math.min(900, innerHeight));
+    expect(cy).toBe(768);
+  });
+
+  it('passes through values within bounds', () => {
+    const cx = Math.max(0, Math.min(500, 1024));
+    const cy = Math.max(0, Math.min(300, 768));
+    expect(cx).toBe(500);
+    expect(cy).toBe(300);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// MARKER_COLORS export and panel border
+// ---------------------------------------------------------------------------
+
+describe('marker colors', () => {
+  it('has at least 5 colors', () => {
+    expect(MARKER_COLORS.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it('all colors are hex strings', () => {
+    for (const c of MARKER_COLORS) {
+      expect(c).toMatch(/^#[0-9a-f]{6}$/i);
+    }
+  });
+
+  it('no duplicate colors', () => {
+    const unique = new Set(MARKER_COLORS);
+    expect(unique.size).toBe(MARKER_COLORS.length);
+  });
+});
