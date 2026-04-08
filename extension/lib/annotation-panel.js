@@ -8,7 +8,7 @@
  * @see lib/review.js - annotation state management
  */
 
-import { updateComment, removeAnnotation } from './annotate.js';
+import { updateComment, removeAnnotation, MARKER_COLORS } from './annotate.js';
 
 const ATTR = 'data-vg-annotate';
 let panelEl = null;
@@ -30,7 +30,8 @@ export function show(annotation, callbacks = {}) {
   panelEl.setAttribute(ATTR, 'panel');
   Object.assign(panelEl.style, {
     position: 'absolute', zIndex: '2147483647',
-    background: '#1e1e2e', border: '1px solid #333', borderRadius: '8px',
+    background: '#1e1e2e', borderRadius: '8px',
+    border: `2px solid ${MARKER_COLORS[(annotation.id - 1) % MARKER_COLORS.length]}`,
     padding: '10px', width: '240px', fontFamily: 'system-ui, sans-serif',
     boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
   });
