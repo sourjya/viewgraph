@@ -43,7 +43,7 @@ npm run dev:ext        # start extension dev server (Chrome)
 ## Testing
 
 ```bash
-npm test               # all tests (156 tests, 29 files)
+npm test               # all tests (174 tests, 31 files)
 npm run test:server    # server only
 ```
 

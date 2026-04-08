@@ -8,6 +8,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Milestone 5: Hover Inspector
+- Inspector module: hover overlay (depth-colored), rich tooltip, scroll-wheel DOM walking, shadow DOM piercing
+- Click-to-capture: captures selected element's subtree as ViewGraph JSON, pushes to MCP server
+- Escape-to-cancel: cleans up all overlays and exits inspect mode
+- Popup UI: added Inspect Element button
+- Traverser: now accepts optional root element for subtree capture
+- 8 inspector unit tests (tooltip text builder)
+- 174 total tests (128 server + 46 extension) across 31 files
+
 ### Security
 - Shared secret authentication on all HTTP POST endpoints (captures, ack, snapshots)
 - Write-path validation via validateCapturePath on /captures and /snapshots

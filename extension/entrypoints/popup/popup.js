@@ -6,6 +6,7 @@
  */
 
 const captureBtn = document.getElementById('captureBtn');
+const inspectBtn = document.getElementById('inspectBtn');
 const statusEl = document.getElementById('status');
 
 /** Show a status message with a given type (info, success, error). */
@@ -32,5 +33,18 @@ captureBtn.addEventListener('click', async () => {
   } finally {
     captureBtn.disabled = false;
     captureBtn.textContent = 'Capture Page';
+  }
+});
+
+/** Toggle inspect mode on the active tab. */
+inspectBtn.addEventListener('click', async () => {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id) { showStatus('error', 'No active tab'); return; }
+    await chrome.tabs.sendMessage(tab.id, { type: 'toggle-inspect' });
+    // Close popup so the user can interact with the page
+    window.close();
+  } catch (err) {
+    showStatus('error', err.message);
   }
 });
