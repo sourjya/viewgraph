@@ -192,6 +192,11 @@ function highlight(el) {
     if (node.hasAttribute && node.hasAttribute(ATTR)) return;
     node = node.parentElement;
   }
+  // Skip body/html and full-viewport wrappers
+  const tag = el.tagName.toLowerCase();
+  if (tag === 'html' || tag === 'body') return;
+  const r = el.getBoundingClientRect();
+  if (r.width >= window.innerWidth * 0.95 && r.height >= window.innerHeight * 0.95) return;
   currentEl = el;
   const rect = el.getBoundingClientRect();
   const depth = getDepth(el);
@@ -258,7 +263,12 @@ function hideHoverUI() {
 function freeze() {
   if (!currentEl) return;
 
+  // Skip body, html, and full-viewport wrapper elements
+  const tag = currentEl.tagName.toLowerCase();
+  if (tag === 'html' || tag === 'body') return;
   const rect = currentEl.getBoundingClientRect();
+  if (rect.width >= window.innerWidth * 0.95 && rect.height >= window.innerHeight * 0.95) return;
+
   const region = {
     x: Math.round(rect.left + window.scrollX),
     y: Math.round(rect.top + window.scrollY),
