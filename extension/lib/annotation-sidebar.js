@@ -215,13 +215,25 @@ export function refresh() {
       cursor: 'pointer', display: 'flex', justifyContent: 'space-between',
       alignItems: 'center', transition: 'background 0.1s',
     });
-    entry.addEventListener('mouseenter', () => { entry.style.background = '#22223a'; });
-    entry.addEventListener('mouseleave', () => { entry.style.background = 'transparent'; });
+    entry.addEventListener('mouseenter', () => {
+      entry.style.background = '#22223a';
+      entry._expandTimer = setTimeout(() => {
+        label.style.whiteSpace = 'normal';
+        label.style.maxHeight = '120px';
+      }, 400);
+    });
+    entry.addEventListener('mouseleave', () => {
+      entry.style.background = 'transparent';
+      clearTimeout(entry._expandTimer);
+      label.style.whiteSpace = 'nowrap';
+      label.style.maxHeight = '20px';
+    });
 
     const label = document.createElement('span');
     Object.assign(label.style, {
       color: ann.resolved ? '#666' : '#c8c8d0', overflow: 'hidden',
       textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1',
+      maxHeight: '20px', transition: 'max-height 0.25s ease, white-space 0s',
     });
 
     // Number badge + ancestor element badge + comment
