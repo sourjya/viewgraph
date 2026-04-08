@@ -366,11 +366,28 @@ function unfreeze() {
 function copySelector(btn) {
   if (!currentEl) return;
   const selector = bestSelector(currentEl);
-  navigator.clipboard.writeText(selector).then(() => {
+
+  // Clipboard API may fail in content script context; use fallback
+  const doCopy = navigator.clipboard
+    ? navigator.clipboard.writeText(selector).catch(() => fallbackCopy(selector))
+    : Promise.resolve(fallbackCopy(selector));
+
+  doCopy.then(() => {
     const original = btn.innerHTML;
     btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-    setTimeout(() => { btn.innerHTML = original; }, 1200);
+    setTimeout(() => { btn.innerHTML = original; stop(); }, 1200);
   });
+}
+
+/** Fallback copy using a temporary textarea (works in all contexts). */
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  Object.assign(ta.style, { position: 'fixed', left: '-9999px' });
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  ta.remove();
 }
 
 // ---------------------------------------------------------------------------

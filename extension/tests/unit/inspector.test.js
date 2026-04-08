@@ -227,6 +227,18 @@ describe('bestSelector', () => {
     const sel = bestSelector(document.querySelector('span'));
     expect(sel).not.toContain('nth-child');
   });
+
+  it('returns a non-empty string for any element', () => {
+    document.body.innerHTML = '<div><p><span>X</span></p></div>';
+    const sel = bestSelector(document.querySelector('span'));
+    expect(sel.length).toBeGreaterThan(0);
+  });
+
+  it('testid selector is valid CSS selector syntax', () => {
+    document.body.innerHTML = '<button data-testid="my-btn">X</button>';
+    const sel = bestSelector(document.querySelector('button'));
+    expect(sel).toMatch(/^\[data-testid="[^"]+"\]$/);
+  });
 });
 
 describe('buildMetaLine formatting', () => {

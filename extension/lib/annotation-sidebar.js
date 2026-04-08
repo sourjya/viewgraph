@@ -49,6 +49,7 @@ export function create() {
 
   sidebarEl.append(toggle, list);
   document.documentElement.appendChild(sidebarEl);
+  refresh();
 }
 
 /** Refresh the sidebar list from current annotations. */
@@ -58,7 +59,20 @@ export function refresh() {
   if (!list) return;
   list.innerHTML = '';
 
-  for (const ann of getAnnotations()) {
+  const anns = getAnnotations();
+  if (anns.length === 0) {
+    const hint = document.createElement('div');
+    hint.setAttribute(ATTR, 'hint');
+    hint.textContent = 'Shift + drag to select a region';
+    Object.assign(hint.style, {
+      padding: '12px 10px', color: '#666', fontSize: '11px',
+      textAlign: 'center', fontStyle: 'italic',
+    });
+    list.appendChild(hint);
+    return;
+  }
+
+  for (const ann of anns) {
     const entry = document.createElement('div');
     entry.setAttribute(ATTR, 'entry');
     Object.assign(entry.style, {

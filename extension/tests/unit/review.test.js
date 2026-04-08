@@ -128,4 +128,10 @@ describe('review mode lifecycle', () => {
     stop();
     expect(getAnnotations()).toHaveLength(0);
   });
+
+  it('annotations are empty after start (sidebar shows hint)', () => {
+    start();
+    expect(getAnnotations()).toHaveLength(0);
+    stop();
+  });
 });
