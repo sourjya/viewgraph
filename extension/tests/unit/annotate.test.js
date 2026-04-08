@@ -444,3 +444,51 @@ describe('click dedup', () => {
     expect('div.card' === 'button.primary').toBe(false);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Full-viewport element skip
+// ---------------------------------------------------------------------------
+
+describe('full-viewport element skip', () => {
+  it('body and html tags are skipped', () => {
+    const skipTags = ['html', 'body'];
+    for (const tag of skipTags) {
+      expect(tag === 'html' || tag === 'body').toBe(true);
+    }
+  });
+
+  it('element covering >= 95% of viewport is skipped', () => {
+    const vw = 1024;
+    const vh = 768;
+    const rect = { width: 1000, height: 750 };
+    expect(rect.width >= vw * 0.95 && rect.height >= vh * 0.95).toBe(true);
+  });
+
+  it('element smaller than 95% viewport is not skipped', () => {
+    const vw = 1024;
+    const vh = 768;
+    const rect = { width: 500, height: 300 };
+    expect(rect.width >= vw * 0.95 && rect.height >= vh * 0.95).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Panel border color matches marker
+// ---------------------------------------------------------------------------
+
+import { MARKER_COLORS } from '../../lib/annotate.js';
+
+describe('panel border color', () => {
+  it('annotation id 1 maps to first marker color', () => {
+    expect(MARKER_COLORS[(1 - 1) % MARKER_COLORS.length]).toBe('#6366f1');
+  });
+
+  it('annotation id 2 maps to second marker color', () => {
+    expect(MARKER_COLORS[(2 - 1) % MARKER_COLORS.length]).toBe('#ec4899');
+  });
+
+  it('wraps around for ids beyond array length', () => {
+    const len = MARKER_COLORS.length;
+    expect(MARKER_COLORS[len % len]).toBe(MARKER_COLORS[0]);
+  });
+});

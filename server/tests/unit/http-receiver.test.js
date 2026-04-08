@@ -49,6 +49,15 @@ describe('HTTP receiver', () => {
     expect(res.body.status).toBe('ok');
   });
 
+  it('GET /health returns capturesDir and writable status', async () => {
+    const res = await req(port, 'GET', '/health');
+    expect(res.body).toHaveProperty('capturesDir');
+    expect(res.body).toHaveProperty('dirExists');
+    expect(res.body).toHaveProperty('writable');
+    expect(typeof res.body.dirExists).toBe('boolean');
+    expect(typeof res.body.writable).toBe('boolean');
+  });
+
   it('GET /requests/pending returns pending requests', async () => {
     queue.create('http://localhost:5173');
     queue.create('http://localhost:3000');
