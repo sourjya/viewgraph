@@ -1,5 +1,5 @@
 {
-  "====METADATA====": {
+  "metadata": {
     "format": "viewgraph-v2",
     "captureMode": "review",
     "timestamp": "2026-04-08T07:15:00.000Z",
@@ -14,7 +14,7 @@
     },
     "annotationCount": 2
   },
-  "====NODES====": {
+  "nodes": {
     "high": [
       { "id": "btn002", "tag": "button", "text": "View Chain", "bbox": { "x": 865, "y": 14, "w": 99, "h": 36 }, "actions": ["click"], "cluster": "c1" }
     ],
@@ -27,7 +27,7 @@
       { "id": "spn003", "tag": "span", "text": "", "bbox": { "x": 0, "y": 0, "w": 0, "h": 0 }, "actions": [], "cluster": "c2" }
     ]
   },
-  "====SUMMARY====": {
+  "summary": {
     "layout": "dashboard with job table",
     "styles": { "primaryColors": ["#3b82f6"], "fonts": ["Inter"], "spacing": "12px" },
     "clusters": [
@@ -35,20 +35,20 @@
       { "id": "c2", "label": "Decorative", "bbox": { "x": 0, "y": 0, "w": 0, "h": 0 }, "elementCount": 1 }
     ]
   },
-  "====RELATIONS====": {
+  "relations": {
     "parentChild": [
       { "parent": "div004", "child": "div005" },
       { "parent": "div004", "child": "tbl002" }
     ]
   },
-  "====DETAILS====": {
+  "details": {
     "btn002": {
       "selector": "button[data-testid='view-chain']",
       "attributes": { "data-testid": "view-chain", "role": "button" },
       "computedStyles": { "backgroundColor": "#3b82f6", "color": "#ffffff" }
     }
   },
-  "====ANNOTATIONS====": [
+  "annotations": [
     {
       "id": "ann-1",
       "type": "region",

@@ -1,9 +1,8 @@
 /**
  * ViewGraph v2 Parser
  *
- * Parses ViewGraph v2 capture JSON files. Supports both formats:
- * - Plain keys (ViewGraph v2.1+): "metadata", "nodes", "summary", etc.
- * - SiFR markers (legacy/Element to LLM): "====METADATA====", etc.
+ * Parses ViewGraph v2 capture JSON files using plain keys:
+ * "metadata", "nodes", "summary", "relations", "details", "annotations".
  *
  * Each function returns a result object { ok, data/error } - never throws.
  *
@@ -12,20 +11,6 @@
  * - parseSummary: medium, for get_page_summary (metadata + summary)
  * - parseCapture: full, for get_capture (all sections)
  */
-
-/**
- * Resolve a section from a parsed JSON object, checking plain key first,
- * then falling back to SiFR marker key for backward compatibility.
- */
-function getSection(raw, plainKey) {
-  const sifrKey = `====${plainKey.toUpperCase()}====`;
-  return raw[plainKey] ?? raw[sifrKey] ?? undefined;
-}
-
-/** Check if a section exists in either key format. */
-function hasSection(raw, plainKey) {
-  return getSection(raw, plainKey) !== undefined;
-}
 
 /**
  * Safely parse JSON, returning a result object instead of throwing.
@@ -47,11 +32,11 @@ export function parseMetadata(jsonString) {
   if (!parsed.ok) return parsed;
 
   const raw = parsed.data;
-  const meta = getSection(raw, 'metadata');
-  if (!meta) {
+  if (!raw.metadata) {
     return { ok: false, error: 'Missing metadata section' };
   }
 
+  const meta = raw.metadata;
   return {
     ok: true,
     data: {
@@ -62,7 +47,7 @@ export function parseMetadata(jsonString) {
       viewport: meta.viewport,
       nodeCount: meta.stats?.totalNodes ?? 0,
       captureMode: meta.captureMode ?? 'unknown',
-      hasAnnotations: hasSection(raw, 'annotations'),
+      hasAnnotations: 'annotations' in raw,
     },
   };
 }
@@ -75,19 +60,19 @@ export function parseCapture(jsonString) {
   if (!parsed.ok) return parsed;
 
   const raw = parsed.data;
-  if (!getSection(raw, 'metadata')) {
+  if (!raw.metadata) {
     return { ok: false, error: 'Missing metadata section' };
   }
 
   return {
     ok: true,
     data: {
-      metadata: getSection(raw, 'metadata'),
-      nodes: getSection(raw, 'nodes') ?? null,
-      summary: getSection(raw, 'summary') ?? null,
-      relations: getSection(raw, 'relations') ?? null,
-      details: getSection(raw, 'details') ?? null,
-      annotations: getSection(raw, 'annotations') ?? null,
+      metadata: raw.metadata,
+      nodes: raw.nodes ?? null,
+      summary: raw.summary ?? null,
+      relations: raw.relations ?? null,
+      details: raw.details ?? null,
+      annotations: raw.annotations ?? null,
     },
   };
 }
@@ -101,13 +86,12 @@ export function parseSummary(jsonString) {
   if (!parsed.ok) return parsed;
 
   const raw = parsed.data;
-  const meta = getSection(raw, 'metadata');
-  const summary = getSection(raw, 'summary');
-
-  if (!meta) {
+  if (!raw.metadata) {
     return { ok: false, error: 'Missing metadata section' };
   }
 
+  const meta = raw.metadata;
+  const summary = raw.summary;
   const salience = meta.stats?.salience ?? {};
 
   return {

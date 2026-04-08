@@ -28,7 +28,7 @@ describe('get_capture via MCP', () => {
     const result = await client.callTool({ name: 'get_capture', arguments: { filename: 'valid-capture.json' } });
 
     expect(result.isError).toBeFalsy();
-    expect(result.content[0].text).toContain('====METADATA====');
+    expect(result.content[0].text).toContain('"metadata"');
     expect(result.content[0].text).toContain('localhost:8040');
   });
 
