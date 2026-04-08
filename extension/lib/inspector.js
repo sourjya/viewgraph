@@ -264,8 +264,8 @@ function updateTooltip(el, rect) {
   tooltipEl.innerHTML = '';
   const line1 = document.createElement('div');
   line1.setAttribute(ATTR, 'line');
-  line1.textContent = breadcrumb;
-  Object.assign(line1.style, { color: '#93c5fd', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', direction: 'rtl', textAlign: 'left' });
+  line1.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>' + breadcrumb;
+  Object.assign(line1.style, { color: '#93c5fd', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', direction: 'rtl', textAlign: 'left', display: 'flex', alignItems: 'center' });
 
   const line2 = document.createElement('div');
   line2.setAttribute(ATTR, 'line');
@@ -363,9 +363,7 @@ function onWheel(e) {
 }
 
 function onKeyDown(e) {
-  if (e.key === 'Escape') {
-    if (frozen) { unfreeze(); } else { stop(); }
-  }
+  if (e.key === 'Escape') stop();
 }
 
 function onClick(e) {
