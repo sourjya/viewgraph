@@ -59,6 +59,9 @@ Merge Inspect and Review into a single **Annotate** mode.
 ### Keep both modes, add comment to inspect
 Add a text input to the inspect toolbar. This preserves the two-mode model but adds the missing comment capability to inspect. Rejected because it doesn't solve the mode confusion problem and keeps the duplicated code.
 
+### Sidebar mode toggle icons
+Keep both modes but add inspect/annotate toggle icons on the sidebar edge so users can switch without returning to the popup. Rejected because it makes switching easier but doesn't address the core problem: two modes that do almost the same thing. Inspect without commenting remains pointless, and users still need to understand when to use which mode.
+
 ### Three-way merge (Capture + Inspect + Review into one)
 Make the full-page capture also part of annotate mode. Rejected because full-page capture is a distinct action (capture everything vs. select specific things) and doesn't benefit from the annotation workflow.
 
