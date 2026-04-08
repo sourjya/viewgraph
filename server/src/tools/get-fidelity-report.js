@@ -22,7 +22,7 @@ export function register(server, capturesDir) {
     },
     async ({ filename }) => {
       const stem = filename.replace(/\.json$/, '');
-      const snapshotPath = path.join(capturesDir, 'snapshots', `${stem}.html`);
+      const snapshotPath = path.join(capturesDir, '..', 'snapshots', `${stem}.html`);
       const capturePath = path.join(capturesDir, filename);
 
       let captureJson, snapshotHtml;

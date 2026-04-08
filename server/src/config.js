@@ -4,7 +4,7 @@
  * Resolves the captures directory from multiple sources in priority order:
  *   1. Environment variable (VIEWGRAPH_CAPTURES_DIR)
  *   2. .viewgraphrc.json in the project root (or any ancestor directory)
- *   3. Default: ./captures relative to cwd
+ *   3. Default: .viewgraph/captures relative to cwd
  *
  * Handles WSL path translation automatically  -  if running in WSL and the
  * resolved path is a Windows-style path (C:\...), it's converted to the
@@ -103,7 +103,7 @@ export function resolveConfig(cwd = process.cwd()) {
   const capturesDir = resolvePath(
     process.env[ENV_CAPTURES_DIR]
     || fileConfig.capturesDir
-    || path.join(cwd, 'captures'),
+    || path.join(cwd, '.viewgraph', 'captures'),
   );
 
   const maxCaptures = parseInt(

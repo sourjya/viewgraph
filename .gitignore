@@ -28,3 +28,6 @@ Thumbs.db
 
 # Third-party artifacts for analysis (not our code)
 docs/artifacts/
+
+# ViewGraph captures (local dev artifacts, not committed)
+.viewgraph/

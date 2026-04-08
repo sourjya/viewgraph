@@ -35,10 +35,12 @@ describe('get_fidelity_report via MCP', () => {
   });
 
   it('returns fidelity report for paired capture + snapshot', async () => {
-    capturesDir = path.join(os.tmpdir(), `vg-fid-${Date.now()}`);
-    mkdirSync(path.join(capturesDir, 'snapshots'), { recursive: true });
+    const rootDir = path.join(os.tmpdir(), `vg-fid-${Date.now()}`);
+    capturesDir = path.join(rootDir, 'captures');
+    mkdirSync(capturesDir, { recursive: true });
+    mkdirSync(path.join(rootDir, 'snapshots'), { recursive: true });
     writeFileSync(path.join(capturesDir, 'viewgraph-test-123.json'), JSON.stringify(SAMPLE_CAPTURE));
-    writeFileSync(path.join(capturesDir, 'snapshots', 'viewgraph-test-123.html'), SAMPLE_HTML);
+    writeFileSync(path.join(rootDir, 'snapshots', 'viewgraph-test-123.html'), SAMPLE_HTML);
 
     const { client, cleanup: c } = await createTestClient((s) => register(s, capturesDir));
     cleanup = c;

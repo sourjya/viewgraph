@@ -30,7 +30,7 @@ afterEach(() => {
 describe('resolveConfig', () => {
   it('uses defaults when no config file or env var', () => {
     const config = resolveConfig(tmpDir);
-    expect(config.capturesDir).toBe(path.resolve(tmpDir, 'captures'));
+    expect(config.capturesDir).toBe(path.resolve(tmpDir, '.viewgraph', 'captures'));
     expect(config.maxCaptures).toBe(50);
   });
 
@@ -77,6 +77,6 @@ describe('resolveConfig', () => {
     writeFileSync(path.join(tmpDir, '.viewgraphrc.json'), 'not json{{{');
     const config = resolveConfig(tmpDir);
     // Falls back to defaults
-    expect(config.capturesDir).toBe(path.resolve(tmpDir, 'captures'));
+    expect(config.capturesDir).toBe(path.resolve(tmpDir, '.viewgraph', 'captures'));
   });
 });

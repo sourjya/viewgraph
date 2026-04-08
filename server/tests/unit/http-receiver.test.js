@@ -30,7 +30,8 @@ describe('HTTP receiver', () => {
   let queue, receiver, port, capturesDir;
 
   beforeEach(async () => {
-    capturesDir = path.join(os.tmpdir(), `vg-test-${Date.now()}`);
+    const rootDir = path.join(os.tmpdir(), `vg-test-${Date.now()}`);
+    capturesDir = path.join(rootDir, 'captures');
     mkdirSync(capturesDir, { recursive: true });
     queue = createRequestQueue({ maxSize: 10, ttlMs: 60000 });
     receiver = createHttpReceiver({ queue, capturesDir, port: 0 });
@@ -141,7 +142,7 @@ describe('HTTP receiver', () => {
     }, html);
     expect(res.status).toBe(201);
     expect(res.body.filename).toBe('viewgraph-localhost-2026-04-08-120612.html');
-    const filePath = path.join(capturesDir, 'snapshots', res.body.filename);
+    const filePath = path.join(capturesDir, '..', 'snapshots', res.body.filename);
     const written = readFileSync(filePath, 'utf-8');
     expect(written).toContain('<p>Hello</p>');
   });

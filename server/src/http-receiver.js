@@ -135,7 +135,7 @@ export function createHttpReceiver({ queue, capturesDir, port = 9876 }) {
         return json(res, 413, { error: 'Payload too large (max 10MB)' });
       }
 
-      const snapshotsDir = path.join(capturesDir, 'snapshots');
+      const snapshotsDir = path.join(capturesDir, '..', 'snapshots');
       await mkdir(snapshotsDir, { recursive: true });
       const filename = `${filenameStem}.html`;
       await writeFile(path.join(snapshotsDir, filename), body);
