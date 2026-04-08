@@ -14,6 +14,7 @@ import { getAnnotations, removeAnnotation } from './review.js';
 
 const ATTR = 'data-vg-review';
 let sidebarEl = null;
+let badgeEl = null;
 let collapsed = false;
 
 /** Create and mount the sidebar. */
@@ -39,17 +40,48 @@ export function create() {
     background: 'transparent', color: '#a5b4fc', fontSize: '11px', fontWeight: '600',
     cursor: 'pointer', textAlign: 'left',
   });
-  toggle.addEventListener('click', () => {
-    collapsed = !collapsed;
-    sidebarEl.style.transform = collapsed ? 'translateX(170px)' : 'translateX(0)';
-  });
+  toggle.addEventListener('click', () => toggleCollapse());
 
   const list = document.createElement('div');
   list.setAttribute(ATTR, 'list');
 
   sidebarEl.append(toggle, list);
   document.documentElement.appendChild(sidebarEl);
+
+  // Collapsed badge - hidden initially
+  badgeEl = document.createElement('div');
+  badgeEl.setAttribute(ATTR, 'collapse-badge');
+  Object.assign(badgeEl.style, {
+    position: 'fixed', top: '60px', right: '0', zIndex: '2147483646',
+    width: '32px', height: '32px', borderRadius: '8px 0 0 8px',
+    background: '#6366f1', color: '#fff', fontSize: '12px', fontWeight: '600',
+    display: 'none', alignItems: 'center', justifyContent: 'center',
+    cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+    boxShadow: '-2px 0 8px rgba(0,0,0,0.3)',
+  });
+  badgeEl.title = 'Show annotations';
+  badgeEl.addEventListener('click', () => toggleCollapse());
+  document.documentElement.appendChild(badgeEl);
+
   refresh();
+}
+
+function toggleCollapse() {
+  collapsed = !collapsed;
+  if (collapsed) {
+    sidebarEl.style.transform = 'translateX(100%)';
+    badgeEl.style.display = 'flex';
+    updateBadgeCount();
+  } else {
+    sidebarEl.style.transform = 'translateX(0)';
+    badgeEl.style.display = 'none';
+  }
+}
+
+function updateBadgeCount() {
+  if (!badgeEl) return;
+  const count = getAnnotations().length;
+  badgeEl.textContent = count || '0';
 }
 
 /** Refresh the sidebar list from current annotations. */
@@ -103,10 +135,13 @@ export function refresh() {
     entry.append(label, del);
     list.appendChild(entry);
   }
+
+  updateBadgeCount();
 }
 
 /** Remove the sidebar from the DOM. */
 export function destroy() {
   if (sidebarEl) { sidebarEl.remove(); sidebarEl = null; }
+  if (badgeEl) { badgeEl.remove(); badgeEl = null; }
   collapsed = false;
 }

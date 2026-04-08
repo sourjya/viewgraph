@@ -216,6 +216,11 @@ export function start(callbacks = {}) {
   document.addEventListener('mousedown', onMouseDown, true);
   document.addEventListener('mousemove', onMouseMove, true);
   document.addEventListener('mouseup', onMouseUp, true);
+  document.addEventListener('keydown', onReviewKeyDown, true);
+}
+
+function onReviewKeyDown(e) {
+  if (e.key === 'Escape') stop();
 }
 
 /** Stop review mode and clean up all overlays. */
@@ -228,6 +233,7 @@ export function stop() {
   document.removeEventListener('mousedown', onMouseDown, true);
   document.removeEventListener('mousemove', onMouseMove, true);
   document.removeEventListener('mouseup', onMouseUp, true);
+  document.removeEventListener('keydown', onReviewKeyDown, true);
 
   clearAnnotations();
 }
