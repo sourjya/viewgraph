@@ -185,7 +185,7 @@ function createActionBar() {
   Object.assign(bar.style, {
     position: 'fixed', zIndex: '2147483647',
     display: 'flex', gap: '2px', padding: '3px',
-    background: 'rgba(0,0,0,0.88)', borderRadius: '6px',
+    background: 'rgba(30,30,50,0.92)', borderRadius: '6px',
   });
 
   const btnBase = {
