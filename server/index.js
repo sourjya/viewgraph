@@ -13,6 +13,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { readFile } from 'fs/promises';
+import { existsSync, mkdirSync } from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
 
@@ -105,6 +106,17 @@ let httpReceiver;
 async function main() {
   console.error(`${LOG_PREFIX} ViewGraph MCP Server v${SERVER_VERSION}`);
   console.error(`${LOG_PREFIX} Captures dir: ${CAPTURES_DIR}`);
+
+  // Validate and auto-create captures directory
+  if (!existsSync(CAPTURES_DIR)) {
+    try {
+      mkdirSync(CAPTURES_DIR, { recursive: true });
+      console.error(`${LOG_PREFIX} Created captures dir: ${CAPTURES_DIR}`);
+    } catch (err) {
+      console.error(`${LOG_PREFIX} ERROR: Cannot create captures dir: ${err.message}`);
+      process.exit(1);
+    }
+  }
 
   // Generate or read shared secret for HTTP receiver authentication.
   // Set VIEWGRAPH_HTTP_SECRET env var to use a fixed token, otherwise
