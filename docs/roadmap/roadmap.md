@@ -91,7 +91,7 @@ and read annotations from review-mode captures.
 **Goal:** Kiro can request captures from the extension via the MCP server.
 
 **Spec:** [`.kiro/specs/mcp-request-bridge/`](../../.kiro/specs/mcp-request-bridge/)
-**Status:** Not Started
+**Status:** Complete
 
 | # | Task | Details |
 |---|---|---|

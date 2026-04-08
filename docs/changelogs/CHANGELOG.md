@@ -8,11 +8,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Milestone 3: MCP Request Bridge
+- Request queue: in-memory Map-based queue with TTL, lazy expiry, URL normalization
+- HTTP receiver: Node.js built-in http server with /health, /requests/pending, /requests/:id/ack, /captures endpoints
+- MCP tool: request_capture - queue a capture request for the browser extension
+- MCP tool: get_request_status - poll for capture request completion
+- Full lifecycle integration test: request -> poll -> ack -> submit -> completed
+- 21 new tests across 4 files (106 total, 24 files)
+
 ### Documentation
-- Spec index: added extension-core (M4) and singlefile-fidelity specs, corrected M3 status to Not Started
+- Spec index: added extension-core (M4) and singlefile-fidelity specs
 - Roadmap: marked M1+M2 Complete, linked M3 and M4 specs, added singlefile-fidelity cross-cutting spec
-- Main README: updated test count (120/25), added M3 Bidirectional Tools section
-- Server README: added M3 planned tools section, updated test count (120/25)
+- Main README: added M3 Bidirectional Tools section
+- Server README: added M3 planned tools section
 - Extension README: added extension-core spec link
 
 ### Fixed

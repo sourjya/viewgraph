@@ -65,7 +65,7 @@ The server uses stdio transport for MCP communication. Register it in your MCP h
 ## Testing
 
 ```bash
-npm test                 # single run (120 tests, 25 files)
+npm test                 # single run (106 tests, 24 files)
 npm run test:watch       # watch mode
 ```
 

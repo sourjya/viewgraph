@@ -12,7 +12,7 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 
 | Component | Description | Status |
 |---|---|---|
-| [`server/`](./server/) | MCP server - reads capture files, exposes 11 query/analysis tools | M1+M2 Complete |
+| [`server/`](./server/) | MCP server - reads capture files, exposes 13 query/analysis/request tools | M1+M2+M3 Complete |
 | [`extension/`](./extension/) | Firefox/Chrome extension - captures DOM, screenshots, annotations | Scaffolded |
 
 ## Quick Start
@@ -43,7 +43,7 @@ npm run dev:ext        # start extension dev server (Chrome)
 ## Testing
 
 ```bash
-npm test               # all tests (120 tests, 25 files)
+npm test               # all tests (106 tests, 24 files)
 npm run test:server    # server only
 ```
 
