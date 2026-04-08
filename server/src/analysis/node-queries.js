@@ -23,14 +23,30 @@ const ROLE_MAP = {
 /**
  * Flatten high/med/low node tiers into a single array.
  * Each node gets a `salience` field indicating its original tier.
+ *
+ * Handles two formats:
+ * - Array format (our fixtures): { high: [node, node], med: [...] }
+ * - Nested SiFR format (real captures): { high: { tag: { nodeId: nodeData } } }
  */
 export function flattenNodes(parsed) {
   const result = [];
   for (const tier of ['high', 'med', 'low']) {
-    const tierNodes = parsed.nodes?.[tier];
-    if (!Array.isArray(tierNodes)) continue;
-    for (const node of tierNodes) {
-      result.push({ ...node, salience: tier });
+    const tierData = parsed.nodes?.[tier];
+    if (!tierData) continue;
+
+    if (Array.isArray(tierData)) {
+      // Array format: each element is a node object with id, tag, etc.
+      for (const node of tierData) {
+        result.push({ ...node, salience: tier });
+      }
+    } else if (typeof tierData === 'object') {
+      // Nested SiFR format: { tag: { nodeId: { parent, cluster, ... } } }
+      for (const [tag, nodes] of Object.entries(tierData)) {
+        if (typeof nodes !== 'object' || nodes === null) continue;
+        for (const [nodeId, nodeData] of Object.entries(nodes)) {
+          result.push({ id: nodeId, tag, ...nodeData, salience: tier });
+        }
+      }
     }
   }
   return result;
@@ -55,8 +71,25 @@ export function filterInteractive(nodes) {
 
 /**
  * Get the DETAILS entry for a specific node by id.
- * DETAILS is keyed by node id directly in the current fixture format.
+ *
+ * Handles two formats:
+ * - Flat format (our fixtures): details[nodeId] = { selector, attributes, ... }
+ * - Nested SiFR format: details[tier][tag][nodeId] = { selector, attributes, ... }
  */
 export function getNodeDetails(parsed, nodeId) {
-  return parsed.details?.[nodeId] ?? null;
+  const details = parsed.details;
+  if (!details) return null;
+
+  // Flat format: direct lookup
+  if (details[nodeId]) return details[nodeId];
+
+  // Nested SiFR format: search through tiers and tags
+  for (const tier of ['high', 'med', 'low']) {
+    const tierData = details[tier];
+    if (!tierData || typeof tierData !== 'object') continue;
+    for (const tagEntries of Object.values(tierData)) {
+      if (tagEntries?.[nodeId]) return tagEntries[nodeId];
+    }
+  }
+  return null;
 }
