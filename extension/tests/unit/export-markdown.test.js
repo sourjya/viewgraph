@@ -97,3 +97,22 @@ describe('formatMarkdown', () => {
     expect(md).toContain('**Size:** 200 x 50px');
   });
 });
+
+  it('includes severity tag when set', () => {
+    const anns = [{ id: 1, comment: 'fix', ancestor: 'h1', severity: 'critical' }];
+    const md = formatMarkdown(anns, META);
+    expect(md).toContain('### #1 - h1 [CRITICAL]');
+  });
+
+  it('omits severity tag when not set', () => {
+    const anns = [{ id: 1, comment: 'fix', ancestor: 'h1' }];
+    const md = formatMarkdown(anns, META);
+    expect(md).toContain('### #1 - h1');
+    expect(md).not.toContain('[');
+  });
+
+  it('includes severity tag for minor', () => {
+    const anns = [{ id: 2, comment: 'tweak', ancestor: 'div', severity: 'minor' }];
+    const md = formatMarkdown(anns, META);
+    expect(md).toContain('[MINOR]');
+  });

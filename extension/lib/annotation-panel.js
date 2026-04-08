@@ -8,7 +8,7 @@
  * @see lib/review.js - annotation state management
  */
 
-import { updateComment, removeAnnotation, MARKER_COLORS } from './annotate.js';
+import { updateComment, updateSeverity, removeAnnotation, MARKER_COLORS } from './annotate.js';
 
 const ATTR = 'data-vg-annotate';
 let panelEl = null;
@@ -61,11 +61,32 @@ export function show(annotation, callbacks = {}) {
 
   header.append(title, deleteBtn, closeBtn);
 
+  // Severity dropdown
+  const severity = document.createElement('select');
+  severity.setAttribute(ATTR, 'severity');
+  for (const opt of ['--', 'Critical', 'Major', 'Minor']) {
+    const o = document.createElement('option');
+    o.value = opt === '--' ? '' : opt.toLowerCase();
+    o.textContent = opt;
+    if ((annotation.severity || '') === o.value) o.selected = true;
+    severity.appendChild(o);
+  }
+  Object.assign(severity.style, {
+    width: '100%', padding: '4px 6px', marginBottom: '6px',
+    background: '#16161e', border: '1px solid #333', borderRadius: '4px',
+    color: '#e0e0e0', fontSize: '12px', fontFamily: 'system-ui, sans-serif',
+    outline: 'none', cursor: 'pointer',
+  });
+  severity.addEventListener('change', () => {
+    updateSeverity(annotation.id, severity.value);
+    if (onCommentChange) onCommentChange(annotation.id);
+  });
+
   // Textarea for comment
   const textarea = document.createElement('textarea');
   textarea.setAttribute(ATTR, 'input');
   textarea.value = annotation.comment;
-  textarea.placeholder = 'Add a comment...';
+  textarea.placeholder = 'What should this look like?\ne.g. "font should be 14px" or "label should say Email Address"';
   Object.assign(textarea.style, {
     width: '100%', minHeight: '60px', padding: '6px 8px',
     background: '#16161e', border: '1px solid #333', borderRadius: '4px',
@@ -79,7 +100,7 @@ export function show(annotation, callbacks = {}) {
   textarea.addEventListener('focus', () => { textarea.style.borderColor = '#6366f1'; });
   textarea.addEventListener('blur', () => { textarea.style.borderColor = '#333'; });
 
-  panelEl.append(header, textarea);
+  panelEl.append(header, severity, textarea);
 
   // Position near the annotation region, avoiding sidebar and screen edges
   const panelWidth = 240;

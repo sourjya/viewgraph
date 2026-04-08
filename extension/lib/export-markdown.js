@@ -36,7 +36,8 @@ export function formatMarkdown(annotations, metadata, options = {}) {
   for (const ann of annotations) {
     const label = ann.ancestor || ann.type || 'element';
     const prefix = ann.resolved ? '[RESOLVED] ' : '';
-    lines.push(`### #${ann.id} - ${label}`);
+    const sevTag = ann.severity ? ` [${ann.severity.toUpperCase()}]` : '';
+    lines.push(`### #${ann.id} - ${label}${sevTag}`);
     lines.push(`${prefix}${ann.comment || '(no comment)'}`);
     if (ann.element) {
       const el = ann.element;

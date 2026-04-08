@@ -595,6 +595,12 @@ export function updateComment(id, comment) {
   if (ann) { ann.comment = comment; save(); }
 }
 
+/** Update the severity of an annotation. */
+export function updateSeverity(id, severity) {
+  const ann = annotations.find((a) => a.id === id);
+  if (ann) { ann.severity = severity; save(); }
+}
+
 export function toggleResolved(id) {
   const ann = annotations.find((a) => a.id === id);
   if (!ann) return null;
