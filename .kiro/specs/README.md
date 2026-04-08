@@ -7,7 +7,7 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | M1 | MCP Server Core Tools | [`mcp-server-core/`](./mcp-server-core/) | Complete |
 | M2 | MCP Analysis Tools | [`mcp-analysis-tools/`](./mcp-analysis-tools/) | Complete |
 | M3 | MCP Request Bridge | [`mcp-request-bridge/`](./mcp-request-bridge/) | Complete |
-| M4 | Extension Core Capture | [`extension-core/`](./extension-core/) | Not Started |
+| M4 | Extension Core Capture | [`extension-core/`](./extension-core/) | Complete |
 | - | SingleFile Fidelity | [`singlefile-fidelity/`](./singlefile-fidelity/) | Not Started |
 
 ## Architecture Decisions

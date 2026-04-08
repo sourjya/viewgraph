@@ -8,6 +8,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Milestone 4: Extension Core Capture
+- DOM traverser: depth-first walk, element extraction, parent-child nids, alias generation, CSS selectors
+- Salience scorer: weighted scoring (interactivity, testid, aria, viewport, size, semantic tags), 3-tier classification
+- Serializer: ViewGraph v2.1 JSON with metadata, summary, nodes, relations, details sections
+- Content script: on-demand injection, capture message handler, HTML snapshot support
+- Popup UI: Capture Page button, status display (info/success/error states)
+- Background service worker: capture orchestration, screenshot, HTTP push to MCP server
+- HTML snapshot serializer for fidelity measurement
+- Extension unit tests: traverser (15), salience (13), serializer (10) = 38 tests via vitest+jsdom
+- Total project: 156 tests (118 server + 38 extension) across 29 files
+
 ### Milestone 3: MCP Request Bridge
 - Request queue: in-memory Map-based queue with TTL, lazy expiry, URL normalization
 - HTTP receiver: Node.js built-in http server with /health, /requests/pending, /requests/:id/ack, /captures endpoints
