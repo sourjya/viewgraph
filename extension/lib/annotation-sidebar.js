@@ -40,7 +40,7 @@ export function create() {
 
   const toggle = document.createElement('button');
   toggle.setAttribute(ATTR, 'toggle');
-  toggle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Review Notes';
+  toggle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>ViewGraph: Review Notes';
   Object.assign(toggle.style, {
     flex: '1', padding: '10px', border: 'none',
     background: 'transparent', color: '#a5b4fc', fontSize: '13px', fontWeight: '600',
