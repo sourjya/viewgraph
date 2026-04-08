@@ -88,6 +88,43 @@ describe('buildBreadcrumb', () => {
     const dotCount = (result.match(/\./g) || []).length;
     expect(dotCount).toBeLessThanOrEqual(2);
   });
+
+  it('target element is always the last segment', () => {
+    document.body.innerHTML = '<div class="card-group"><div class="card"><div class="card-body"><form><div class="input-group"><input class="form-control" type="email"></div></form></div></div></div>';
+    const input = document.querySelector('input');
+    const result = buildBreadcrumb(input);
+    const segments = result.split(' > ');
+    expect(segments[segments.length - 1]).toBe('input.form-control');
+  });
+
+  it('preserves full path for deeply nested real-world DOM', () => {
+    document.body.innerHTML = '<div id="root"><div class="bg-light min-vh-100"><div class="container"><div class="row justify-content-center"><div class="col-md-6">X</div></div></div></div></div>';
+    const target = document.querySelector('.col-md-6');
+    const result = buildBreadcrumb(target);
+    expect(result).toContain('div#root');
+    expect(result).toContain('div.col-md-6');
+    // Every ancestor is present
+    expect(result.split(' > ').length).toBe(5);
+  });
+
+  it('skips underscore-prefixed classes', () => {
+    document.body.innerHTML = '<div class="_internal visible">X</div>';
+    const result = buildBreadcrumb(document.querySelector('div'));
+    expect(result).not.toContain('_internal');
+    expect(result).toContain('visible');
+  });
+
+  it('skips classes longer than 25 chars', () => {
+    document.body.innerHTML = '<div class="abcdefghijklmnopqrstuvwxyz short">X</div>';
+    const result = buildBreadcrumb(document.querySelector('div'));
+    expect(result).not.toContain('abcdefghijklmnopqrstuvwxyz');
+    expect(result).toContain('short');
+  });
+
+  it('returns empty-like string for body element itself', () => {
+    const result = buildBreadcrumb(document.body);
+    expect(result).toBe('');
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -172,6 +209,24 @@ describe('bestSelector', () => {
     const sel = bestSelector(second);
     expect(sel).toContain('nth-child');
   });
+
+  it('testid selector uses bracket notation', () => {
+    document.body.innerHTML = '<input data-testid="email-input">';
+    const sel = bestSelector(document.querySelector('input'));
+    expect(sel).toBe('[data-testid="email-input"]');
+  });
+
+  it('id selector uses hash notation', () => {
+    document.body.innerHTML = '<form id="login-form">X</form>';
+    const sel = bestSelector(document.querySelector('form'));
+    expect(sel).toBe('#login-form');
+  });
+
+  it('structural selector does not use nth-child for only child', () => {
+    document.body.innerHTML = '<div><span>Only</span></div>';
+    const sel = bestSelector(document.querySelector('span'));
+    expect(sel).not.toContain('nth-child');
+  });
 });
 
 describe('buildMetaLine formatting', () => {
@@ -197,5 +252,26 @@ describe('buildMetaLine formatting', () => {
     const meta = buildMetaLine(document.querySelector('div'));
     expect(meta).not.toContain('aria: none');
     expect(meta).not.toContain('aria:');
+  });
+
+  it('dimensions are always the last segment', () => {
+    document.body.innerHTML = '<button data-testid="x" role="button" aria-label="Y">Z</button>';
+    const meta = buildMetaLine(document.querySelector('button'));
+    expect(meta).toMatch(/\d+x\d+$/);
+  });
+
+  it('uses consistent pipe separator format', () => {
+    document.body.innerHTML = '<div>X</div>';
+    const meta = buildMetaLine(document.querySelector('div'));
+    // Every pipe should have spaces around it
+    const pipes = meta.match(/\|/g) || [];
+    const spacedPipes = meta.match(/  \|  /g) || [];
+    expect(pipes.length).toBe(spacedPipes.length);
+  });
+
+  it('testid value is shown verbatim', () => {
+    document.body.innerHTML = '<input data-testid="email-input">';
+    const meta = buildMetaLine(document.querySelector('input'));
+    expect(meta).toContain('testid: email-input');
   });
 });
