@@ -152,11 +152,17 @@ export function traverseDOM() {
     ];
 
     const childNids = [];
+    // Walk regular children
     for (const child of el.children) {
-      const childNid = nextNid; // peek at what the child's nid will be
       walk(child, nid);
-      // If the child was actually added (visible), record its nid
       if (nidMap.has(child)) childNids.push(nidMap.get(child));
+    }
+    // Walk shadow DOM children if present
+    if (el.shadowRoot) {
+      for (const child of el.shadowRoot.children) {
+        walk(child, nid);
+        if (nidMap.has(child)) childNids.push(nidMap.get(child));
+      }
     }
 
     const record = {

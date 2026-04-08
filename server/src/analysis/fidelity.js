@@ -38,6 +38,17 @@ export function parseSnapshot(html) {
     // Extract data-testid
     const tidMatch = match[2].match(/data-testid="([^"]*)"/);
     if (tidMatch) testids.push(tidMatch[1]);
+
+    // Parse shadow DOM content serialized by the snapshot serializer
+    const shadowMatch = match[2].match(/data-vg-shadow="([^"]*)"/);
+    if (shadowMatch) {
+      const shadowHtml = shadowMatch[1].replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+      const shadowResult = parseSnapshot(shadowHtml);
+      totalElements += shadowResult.totalElements;
+      interactiveCount += shadowResult.interactiveCount;
+      testids.push(...shadowResult.testids);
+      textLength += shadowResult.textLength;
+    }
   }
 
   // Rough text content extraction: strip all tags, measure length
