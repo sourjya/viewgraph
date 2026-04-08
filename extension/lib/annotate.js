@@ -185,7 +185,13 @@ function createTooltip() {
 }
 
 function highlight(el) {
-  if (!el || el.hasAttribute(ATTR)) return;
+  if (!el) return;
+  // Skip our own UI elements and their children
+  let node = el;
+  while (node && node !== document.documentElement) {
+    if (node.hasAttribute && node.hasAttribute(ATTR)) return;
+    node = node.parentElement;
+  }
   currentEl = el;
   const rect = el.getBoundingClientRect();
   const depth = getDepth(el);
