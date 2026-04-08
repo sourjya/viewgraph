@@ -193,22 +193,30 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
   }
 
   return {
-    /** Start the HTTP server. Returns the actual port (useful when port=0). */
+    /** Start the HTTP server. Tries up to 3 ports if the default is in use. */
     start() {
-      return new Promise((resolve, reject) => {
+      const MAX_RETRIES = 3;
+      let attempt = 0;
+      const tryListen = (tryPort) => new Promise((resolve, reject) => {
         server = createServer(handleRequest);
         server.on('error', (err) => {
-          if (err.code === 'EADDRINUSE') {
-            process.stderr.write(`${LOG_PREFIX} Port ${port} already in use. Run: ./scripts/server-stop.sh or kill $(lsof -ti:${port})\n`);
+          if (err.code === 'EADDRINUSE' && attempt < MAX_RETRIES) {
+            attempt++;
+            const nextPort = tryPort + 1;
+            process.stderr.write(`${LOG_PREFIX} Port ${tryPort} in use, trying ${nextPort}\n`);
+            server.close();
+            tryListen(nextPort).then(resolve, reject);
+          } else {
+            reject(err);
           }
-          reject(err);
         });
-        server.listen(port, '127.0.0.1', () => {
+        server.listen(tryPort, '127.0.0.1', () => {
           const actualPort = server.address().port;
           process.stderr.write(`${LOG_PREFIX} HTTP receiver listening on 127.0.0.1:${actualPort}\n`);
           resolve(actualPort);
         });
       });
+      return tryListen(port);
     },
 
     /** Stop the HTTP server. */
