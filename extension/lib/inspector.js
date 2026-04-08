@@ -184,41 +184,53 @@ function createActionBar() {
   bar.setAttribute(ATTR, 'actionbar');
   Object.assign(bar.style, {
     position: 'fixed', zIndex: '2147483647',
-    display: 'flex', gap: '4px', padding: '4px',
+    display: 'flex', gap: '2px', padding: '3px',
     background: 'rgba(0,0,0,0.88)', borderRadius: '6px',
-    fontFamily: 'system-ui, sans-serif', fontSize: '12px',
   });
 
-  const btnStyle = {
-    border: 'none', borderRadius: '4px', padding: '5px 10px',
-    cursor: 'pointer', fontSize: '12px', fontWeight: '500',
-    display: 'flex', alignItems: 'center', gap: '4px',
+  const btnBase = {
+    border: 'none', borderRadius: '4px', padding: '5px',
+    cursor: 'pointer', display: 'flex', alignItems: 'center',
+    justifyContent: 'center', width: '28px', height: '28px',
+    background: 'transparent', transition: 'background 0.12s',
   };
 
-  // Capture button
-  const captureBtn = document.createElement('button');
-  captureBtn.setAttribute(ATTR, 'btn');
-  captureBtn.textContent = 'Capture';
-  Object.assign(captureBtn.style, { ...btnStyle, background: '#6366f1', color: '#fff' });
+  // Capture subtree
+  const captureBtn = makeIconBtn(
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e5e7eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg>',
+    'Capture subtree', btnBase,
+  );
   captureBtn.addEventListener('click', (e) => { e.stopPropagation(); captureSubtree(currentEl); });
 
-  // Copy Selector button
-  const copyBtn = document.createElement('button');
-  copyBtn.setAttribute(ATTR, 'btn');
-  copyBtn.textContent = 'Copy Selector';
-  Object.assign(copyBtn.style, { ...btnStyle, background: '#374151', color: '#e5e7eb' });
+  // Copy selector
+  const copyBtn = makeIconBtn(
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e5e7eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>',
+    'Copy selector', btnBase,
+  );
   copyBtn.addEventListener('click', (e) => { e.stopPropagation(); copySelector(copyBtn); });
 
-  // Cancel button
-  const cancelBtn = document.createElement('button');
-  cancelBtn.setAttribute(ATTR, 'btn');
-  cancelBtn.textContent = 'Cancel';
-  Object.assign(cancelBtn.style, { ...btnStyle, background: '#374151', color: '#9ca3af' });
+  // Cancel
+  const cancelBtn = makeIconBtn(
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>',
+    'Cancel', btnBase,
+  );
   cancelBtn.addEventListener('click', (e) => { e.stopPropagation(); unfreeze(); });
 
   bar.append(captureBtn, copyBtn, cancelBtn);
   document.documentElement.appendChild(bar);
   return bar;
+}
+
+/** Create an icon button with hover effect and title tooltip. */
+function makeIconBtn(svgHtml, title, baseStyle) {
+  const btn = document.createElement('button');
+  btn.setAttribute(ATTR, 'btn');
+  btn.title = title;
+  btn.innerHTML = svgHtml;
+  Object.assign(btn.style, baseStyle);
+  btn.addEventListener('mouseenter', () => { btn.style.background = 'rgba(255,255,255,0.1)'; });
+  btn.addEventListener('mouseleave', () => { btn.style.background = 'transparent'; });
+  return btn;
 }
 
 // ---------------------------------------------------------------------------
@@ -297,14 +309,9 @@ function copySelector(btn) {
   if (!currentEl) return;
   const selector = bestSelector(currentEl);
   navigator.clipboard.writeText(selector).then(() => {
-    // Show tick confirmation, then fade back
-    const original = btn.textContent;
-    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied';
-    Object.assign(btn.style, { background: '#059669', color: '#fff' });
-    setTimeout(() => {
-      btn.textContent = original;
-      Object.assign(btn.style, { background: '#374151', color: '#e5e7eb' });
-    }, 1200);
+    const original = btn.innerHTML;
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    setTimeout(() => { btn.innerHTML = original; }, 1200);
   });
 }
 
