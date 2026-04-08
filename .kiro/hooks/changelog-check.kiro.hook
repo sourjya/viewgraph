@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "name": "Changelog Check",
+  "description": "Reminds to update docs/changelogs/CHANGELOG.md when source files are edited",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.js",
+      "**/*.ts"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A source file was just edited. Check if docs/changelogs/CHANGELOG.md has been updated in this session. If not, remind yourself to update the changelog with a consolidated, grouped entry describing the change, affected components, and rationale before the next commit. Write one entry per feature -- not one per file edit."
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "sifr-mcp-bridge",
+  "version": "0.1.0",
+  "description": "Browser extension + MCP server for AI-powered UI capture, auditing, and annotation",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "server",
+    "extension"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev --workspace=server",
+    "dev:ext": "npm run dev --workspace=extension",
+    "build:ext": "npm run build --workspace=extension",
+    "test": "npm run test --workspaces --if-present",
+    "test:server": "npm run test --workspace=server",
+    "test:ext": "npm run test --workspace=extension",
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.0",
+    "globals": "^17.4.0"
+  }
+}

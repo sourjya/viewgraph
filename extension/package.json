@@ -1,0 +1,20 @@
+{
+  "name": "sifr-capture",
+  "version": "0.1.0",
+  "description": "Browser extension for capturing DOM structure, screenshots, and annotations for AI-powered UI analysis",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt --browser firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build --browser firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip --browser firefox",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "wxt": "^0.20.20"
+  }
+}
