@@ -82,3 +82,23 @@ annotateBtn.addEventListener('click', async () => {
     showStatus('error', err.message);
   }
 });
+
+// ---------------------------------------------------------------------------
+// Connection status - ping MCP server health endpoint on popup open
+// ---------------------------------------------------------------------------
+
+const connDot = document.getElementById('connDot');
+const connText = document.getElementById('connText');
+
+(async () => {
+  try {
+    const res = await fetch('http://localhost:9876/health', { signal: AbortSignal.timeout(2000) });
+    const data = await res.json();
+    connDot.className = 'conn-dot connected';
+    connText.textContent = data.writable ? 'MCP server connected' : 'Connected (dir not writable)';
+    connText.title = data.capturesDir || '';
+  } catch {
+    connDot.className = 'conn-dot failed';
+    connText.textContent = 'MCP server offline';
+  }
+})();
