@@ -33,12 +33,13 @@ Each milestone below will be converted into a full Kiro spec under
 
 ---
 
-## Milestone 1: MCP Server — Core Tools (Days 2-4)
+## Milestone 1: MCP Server — Core Tools (Days 2-4) 🔧
 
 **Goal:** MCP server reads existing ViewGraph capture files from disk and exposes
 core query tools to Kiro.
 
-**Spec:** `.kiro/specs/mcp-server-core/`
+**Spec:** [`.kiro/specs/mcp-server-core/`](../../.kiro/specs/mcp-server-core/)
+**Status:** In Progress
 
 | # | Task | Details |
 |---|---|---|

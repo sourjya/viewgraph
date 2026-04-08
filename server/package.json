@@ -1,7 +1,7 @@
 {
   "name": "viewgraph-mcp-server",
   "version": "0.1.0",
-  "description": "MCP server exposing Sifr capture tools to AI coding assistants",
+  "description": "MCP server exposing ViewGraph capture tools to AI coding assistants",
   "type": "module",
   "main": "index.js",
   "scripts": {
