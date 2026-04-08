@@ -2,16 +2,16 @@
  * Hover Inspector
  *
  * Interactive element inspection overlay for the ViewGraph extension.
- * Activated from the popup via "Inspect Element" mode. Provides:
+ * Activated from the popup via "Inspect Element" mode.
  *
- * - Hover overlay: transparent highlight positioned over the hovered element
- * - Rich tooltip: tag, role, testid, aria-label, bbox, depth info
- * - Scroll-wheel DOM walking: scroll up = parent, scroll down = first child
- * - Click to capture: captures the selected element's subtree as ViewGraph JSON
- * - Escape to cancel: cleans up all overlays and exits inspect mode
+ * UX flow:
+ * 1. Hover: overlay highlights element, tooltip shows CSS breadcrumb + metadata
+ * 2. Scroll-wheel: navigate DOM tree (up = parent, down = first child)
+ * 3. Click: freeze selection, show action bar (Capture / Copy Selector / Cancel)
+ * 4. Escape: cancel and clean up at any point
  *
- * All DOM elements created by the inspector use a `data-vg-inspector`
- * attribute so they can be excluded from captures and cleaned up reliably.
+ * All inspector DOM elements use `data-vg-inspector` for cleanup and
+ * exclusion from captures.
  *
  * @see docs/roadmap/roadmap.md - Milestone 5
  */
@@ -28,11 +28,11 @@ const ATTR = 'data-vg-inspector';
 
 /** Overlay colors by nesting depth (cycles after 5). */
 const DEPTH_COLORS = [
-  'rgba(66, 133, 244, 0.25)',   // blue
-  'rgba(52, 168, 83, 0.25)',    // green
-  'rgba(251, 188, 4, 0.25)',    // yellow
-  'rgba(234, 67, 53, 0.25)',    // red
-  'rgba(171, 71, 188, 0.25)',   // purple
+  'rgba(66, 133, 244, 0.25)',
+  'rgba(52, 168, 83, 0.25)',
+  'rgba(251, 188, 4, 0.25)',
+  'rgba(234, 67, 53, 0.25)',
+  'rgba(171, 71, 188, 0.25)',
 ];
 
 const BORDER_COLORS = [
@@ -48,9 +48,11 @@ const BORDER_COLORS = [
 // ---------------------------------------------------------------------------
 
 let active = false;
+let frozen = false;  // true after click, shows action bar
 let currentEl = null;
 let overlayEl = null;
 let tooltipEl = null;
+let actionBarEl = null;
 
 // ---------------------------------------------------------------------------
 // DOM helpers
@@ -71,7 +73,6 @@ function getDepth(el) {
 function deepElementFromPoint(x, y) {
   let el = document.elementFromPoint(x, y);
   if (!el) return null;
-  // Walk into shadow roots
   while (el.shadowRoot) {
     const inner = el.shadowRoot.elementFromPoint(x, y);
     if (!inner || inner === el) break;
@@ -80,31 +81,82 @@ function deepElementFromPoint(x, y) {
   return el;
 }
 
-/** Build tooltip text for an element. */
-export function buildTooltipText(el) {
+/**
+ * Build a compact CSS selector segment for one element.
+ * Shows tag + significant classes (max 2) or id.
+ */
+function selectorSegment(el) {
   const tag = el.tagName.toLowerCase();
-  const parts = [tag];
+  if (el.id) return `${tag}#${el.id}`;
+  const classes = [...el.classList].filter((c) => !c.startsWith('_') && c.length < 25).slice(0, 2);
+  return classes.length ? `${tag}.${classes.join('.')}` : tag;
+}
 
-  const role = el.getAttribute('role');
-  if (role) parts.push(`role="${role}"`);
+/**
+ * Build a CSS breadcrumb path from the element up to body.
+ * Returns something like: div.card-group > div.card.p-4 > div.card-body
+ * Truncates from the left if too long.
+ */
+export function buildBreadcrumb(el, maxLen = 60) {
+  const segments = [];
+  let node = el;
+  while (node && node !== document.body && node !== document.documentElement) {
+    segments.unshift(selectorSegment(node));
+    node = node.parentElement;
+  }
+  let path = segments.join(' > ');
+  // Truncate from the left if too long, keeping the target element visible
+  if (path.length > maxLen && segments.length > 2) {
+    const last = segments.slice(-2).join(' > ');
+    path = '... > ' + last;
+  }
+  return path;
+}
 
+/**
+ * Build the metadata line: testid, role, aria-label, dimensions.
+ * Only includes attributes that exist.
+ */
+export function buildMetaLine(el) {
+  const parts = [];
   const testid = el.getAttribute('data-testid');
-  if (testid) parts.push(`testid="${testid}"`);
-
+  if (testid) parts.push(`testid: ${testid}`);
+  const role = el.getAttribute('role');
+  if (role) parts.push(`role: ${role}`);
   const label = el.getAttribute('aria-label');
-  if (label) parts.push(`aria="${label}"`);
-
-  if (el.id) parts.push(`#${el.id}`);
-
+  if (label) parts.push(`aria: ${label}`);
   const rect = el.getBoundingClientRect();
   parts.push(`${Math.round(rect.width)}x${Math.round(rect.height)}`);
-  parts.push(`depth:${getDepth(el)}`);
+  return parts.join('  |  ');
+}
 
-  return parts.join('  ');
+/**
+ * Get the best selector for copying: testid > id > css path.
+ */
+export function bestSelector(el) {
+  const testid = el.getAttribute('data-testid');
+  if (testid) return `[data-testid="${testid}"]`;
+  if (el.id) return `#${el.id}`;
+  // Build a structural CSS selector
+  const parts = [];
+  let node = el;
+  while (node && node !== document.body) {
+    const tag = node.tagName.toLowerCase();
+    const parent = node.parentElement;
+    if (!parent) { parts.unshift(tag); break; }
+    const siblings = [...parent.children].filter((c) => c.tagName === node.tagName);
+    if (siblings.length === 1) {
+      parts.unshift(tag);
+    } else {
+      parts.unshift(`${tag}:nth-child(${[...parent.children].indexOf(node) + 1})`);
+    }
+    node = parent;
+  }
+  return parts.join(' > ');
 }
 
 // ---------------------------------------------------------------------------
-// Overlay + Tooltip creation
+// Overlay + Tooltip + Action Bar creation
 // ---------------------------------------------------------------------------
 
 function createOverlay() {
@@ -123,17 +175,60 @@ function createTooltip() {
   el.setAttribute(ATTR, 'tooltip');
   Object.assign(el.style, {
     position: 'fixed', pointerEvents: 'none', zIndex: '2147483647',
-    background: 'rgba(0,0,0,0.85)', color: '#fff', padding: '4px 8px',
+    background: 'rgba(0,0,0,0.88)', color: '#fff', padding: '5px 10px',
     borderRadius: '4px', fontSize: '11px', fontFamily: 'monospace',
-    whiteSpace: 'nowrap', maxWidth: '500px', overflow: 'hidden',
-    textOverflow: 'ellipsis', transition: 'all 0.08s ease-out',
+    lineHeight: '1.5', maxWidth: '600px', overflow: 'hidden',
+    transition: 'all 0.08s ease-out',
   });
   document.documentElement.appendChild(el);
   return el;
 }
 
+/** Create the action bar that appears on click-to-freeze. */
+function createActionBar() {
+  const bar = document.createElement('div');
+  bar.setAttribute(ATTR, 'actionbar');
+  Object.assign(bar.style, {
+    position: 'fixed', zIndex: '2147483647',
+    display: 'flex', gap: '4px', padding: '4px',
+    background: 'rgba(0,0,0,0.88)', borderRadius: '6px',
+    fontFamily: 'system-ui, sans-serif', fontSize: '12px',
+  });
+
+  const btnStyle = {
+    border: 'none', borderRadius: '4px', padding: '5px 10px',
+    cursor: 'pointer', fontSize: '12px', fontWeight: '500',
+    display: 'flex', alignItems: 'center', gap: '4px',
+  };
+
+  // Capture button
+  const captureBtn = document.createElement('button');
+  captureBtn.setAttribute(ATTR, 'btn');
+  captureBtn.textContent = 'Capture';
+  Object.assign(captureBtn.style, { ...btnStyle, background: '#6366f1', color: '#fff' });
+  captureBtn.addEventListener('click', (e) => { e.stopPropagation(); captureSubtree(currentEl); });
+
+  // Copy Selector button
+  const copyBtn = document.createElement('button');
+  copyBtn.setAttribute(ATTR, 'btn');
+  copyBtn.textContent = 'Copy Selector';
+  Object.assign(copyBtn.style, { ...btnStyle, background: '#374151', color: '#e5e7eb' });
+  copyBtn.addEventListener('click', (e) => { e.stopPropagation(); copySelector(copyBtn); });
+
+  // Cancel button
+  const cancelBtn = document.createElement('button');
+  cancelBtn.setAttribute(ATTR, 'btn');
+  cancelBtn.textContent = 'Cancel';
+  Object.assign(cancelBtn.style, { ...btnStyle, background: '#374151', color: '#9ca3af' });
+  cancelBtn.addEventListener('click', (e) => { e.stopPropagation(); unfreeze(); });
+
+  bar.append(captureBtn, copyBtn, cancelBtn);
+  document.documentElement.appendChild(bar);
+  return bar;
+}
+
 // ---------------------------------------------------------------------------
-// Highlight logic
+// Highlight + Tooltip update
 // ---------------------------------------------------------------------------
 
 function highlight(el) {
@@ -143,7 +238,6 @@ function highlight(el) {
   const depth = getDepth(el);
   const colorIdx = depth % DEPTH_COLORS.length;
 
-  // Position overlay
   Object.assign(overlayEl.style, {
     top: `${rect.top}px`, left: `${rect.left}px`,
     width: `${rect.width}px`, height: `${rect.height}px`,
@@ -152,12 +246,91 @@ function highlight(el) {
     display: 'block',
   });
 
-  // Position tooltip above the element, or below if near top
-  tooltipEl.textContent = buildTooltipText(el);
-  const tooltipY = rect.top > 30 ? rect.top - 28 : rect.bottom + 4;
+  updateTooltip(el, rect);
+}
+
+/** Update tooltip with breadcrumb path + metadata line. */
+function updateTooltip(el, rect) {
+  const breadcrumb = buildBreadcrumb(el);
+  const meta = buildMetaLine(el);
+
+  // Two-line tooltip: breadcrumb on top, metadata below
+  tooltipEl.innerHTML = '';
+  const line1 = document.createElement('div');
+  line1.setAttribute(ATTR, 'line');
+  line1.textContent = breadcrumb;
+  Object.assign(line1.style, { color: '#93c5fd', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' });
+
+  const line2 = document.createElement('div');
+  line2.setAttribute(ATTR, 'line');
+  line2.textContent = meta;
+  Object.assign(line2.style, { color: '#d1d5db', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '10px' });
+
+  tooltipEl.append(line1, line2);
+
+  const tooltipY = rect.top > 50 ? rect.top - 46 : rect.bottom + 6;
   Object.assign(tooltipEl.style, {
     top: `${tooltipY}px`, left: `${rect.left}px`, display: 'block',
   });
+}
+
+// ---------------------------------------------------------------------------
+// Freeze / Unfreeze (click-to-freeze with action bar)
+// ---------------------------------------------------------------------------
+
+function freeze() {
+  if (!currentEl) return;
+  frozen = true;
+
+  // Show action bar below the overlay
+  actionBarEl = createActionBar();
+  const rect = currentEl.getBoundingClientRect();
+  const barY = rect.bottom + 6;
+  const barX = Math.max(4, rect.left);
+  Object.assign(actionBarEl.style, { top: `${barY}px`, left: `${barX}px` });
+}
+
+function unfreeze() {
+  frozen = false;
+  if (actionBarEl) { actionBarEl.remove(); actionBarEl = null; }
+}
+
+// ---------------------------------------------------------------------------
+// Copy selector with tick confirmation
+// ---------------------------------------------------------------------------
+
+function copySelector(btn) {
+  if (!currentEl) return;
+  const selector = bestSelector(currentEl);
+  navigator.clipboard.writeText(selector).then(() => {
+    // Show tick confirmation, then fade back
+    const original = btn.textContent;
+    btn.textContent = '✓ Copied';
+    Object.assign(btn.style, { background: '#059669', color: '#fff' });
+    setTimeout(() => {
+      btn.textContent = original;
+      Object.assign(btn.style, { background: '#374151', color: '#e5e7eb' });
+    }, 1200);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Subtree capture
+// ---------------------------------------------------------------------------
+
+function captureSubtree(rootEl) {
+  const viewport = { width: window.innerWidth, height: window.innerHeight };
+  const { elements, relations } = traverseDOM(rootEl);
+  const scored = scoreAll(elements, viewport);
+  const capture = serialize(scored, relations);
+  capture.metadata.captureMode = 'subtree-inspect';
+  capture.metadata.inspectRoot = {
+    tag: rootEl.tagName.toLowerCase(),
+    testid: rootEl.getAttribute('data-testid') || null,
+    selector: bestSelector(rootEl),
+  };
+  chrome.runtime.sendMessage({ type: 'inspect-capture', capture });
+  stop();
 }
 
 // ---------------------------------------------------------------------------
@@ -165,23 +338,21 @@ function highlight(el) {
 // ---------------------------------------------------------------------------
 
 function onMouseMove(e) {
+  if (frozen) return;  // Don't move highlight while action bar is showing
   const el = deepElementFromPoint(e.clientX, e.clientY);
   if (el && el !== currentEl) highlight(el);
 }
 
-/** Scroll-wheel DOM walking: up = parent, down = first visible child. */
 function onWheel(e) {
-  if (!currentEl) return;
+  if (!currentEl || frozen) return;
   e.preventDefault();
   e.stopPropagation();
 
   let next;
   if (e.deltaY < 0) {
-    // Scroll up = parent
     next = currentEl.parentElement;
     if (!next || next === document.documentElement) return;
   } else {
-    // Scroll down = first visible child element
     next = [...currentEl.children].find(
       (c) => !c.hasAttribute(ATTR) && c.offsetWidth > 0 && c.offsetHeight > 0,
     );
@@ -191,49 +362,28 @@ function onWheel(e) {
 }
 
 function onKeyDown(e) {
-  if (e.key === 'Escape') stop();
+  if (e.key === 'Escape') {
+    if (frozen) { unfreeze(); } else { stop(); }
+  }
 }
 
 function onClick(e) {
   if (!currentEl) return;
+  // Ignore clicks on action bar buttons (they have their own handlers)
+  if (e.target.hasAttribute(ATTR)) return;
   e.preventDefault();
   e.stopPropagation();
-  captureSubtree(currentEl);
-}
-
-// ---------------------------------------------------------------------------
-// Subtree capture
-// ---------------------------------------------------------------------------
-
-/**
- * Capture the selected element's subtree as ViewGraph JSON and send
- * it to the background script for push to the MCP server.
- */
-function captureSubtree(rootEl) {
-  const viewport = { width: window.innerWidth, height: window.innerHeight };
-  const { elements, relations } = traverseDOM(rootEl);
-  const scored = scoreAll(elements, viewport);
-  const capture = serialize(scored, relations);
-  // Tag as subtree capture
-  capture.metadata.captureMode = 'subtree-inspect';
-  capture.metadata.inspectRoot = {
-    tag: rootEl.tagName.toLowerCase(),
-    testid: rootEl.getAttribute('data-testid') || null,
-    selector: rootEl.id ? `#${rootEl.id}` : rootEl.tagName.toLowerCase(),
-  };
-
-  chrome.runtime.sendMessage({ type: 'inspect-capture', capture });
-  stop();
+  if (frozen) { unfreeze(); } else { freeze(); }
 }
 
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
-/** Start inspect mode. */
 export function start() {
   if (active) return;
   active = true;
+  frozen = false;
   overlayEl = createOverlay();
   tooltipEl = createTooltip();
 
@@ -243,10 +393,10 @@ export function start() {
   document.addEventListener('click', onClick, true);
 }
 
-/** Stop inspect mode and clean up. */
 export function stop() {
   if (!active) return;
   active = false;
+  frozen = false;
   currentEl = null;
 
   document.removeEventListener('mousemove', onMouseMove, true);
@@ -254,13 +404,12 @@ export function stop() {
   document.removeEventListener('keydown', onKeyDown, true);
   document.removeEventListener('click', onClick, true);
 
-  // Remove all inspector DOM elements
   document.querySelectorAll(`[${ATTR}]`).forEach((el) => el.remove());
   overlayEl = null;
   tooltipEl = null;
+  actionBarEl = null;
 }
 
-/** Whether inspect mode is currently active. */
 export function isActive() {
   return active;
 }
