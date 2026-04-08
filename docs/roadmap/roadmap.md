@@ -300,6 +300,14 @@ installable globally.
 
 ---
 
+## Future: Product and GTM
+
+See [product-positioning.md](./product-positioning.md) for positioning,
+messaging, audience strategy, content plan, and launch narrative. To be
+executed when the product is demo-ready.
+
+---
+
 ## Risk Register
 
 | Risk | Impact | Mitigation |
