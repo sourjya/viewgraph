@@ -6,6 +6,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ---
 
+## [Unreleased]
+
+### Milestone 3: MCP Request Bridge
+- Request queue: in-memory Map-based queue with TTL, lazy expiry, URL normalization
+- HTTP receiver: Node.js built-in http server with /health, /requests/pending, /requests/:id/ack, /captures endpoints
+- MCP tool: request_capture - queue a capture request for the browser extension
+- MCP tool: get_request_status - poll for capture request completion
+- Full lifecycle integration test: request -> poll -> ack -> submit -> completed
+- 21 new tests across 4 files (106 total, 24 files)
+
+---
+
 ## [0.1.0] - 2026-04-08
 
 ### Added

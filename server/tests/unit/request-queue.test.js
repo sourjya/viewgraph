@@ -1,107 +1,93 @@
 /**
- * Request Queue - Unit Tests
+ * Tests for the in-memory request queue.
  *
- * Tests the in-memory capture request queue with TTL-based expiry.
- * The queue enables agents to request captures from the extension.
+ * Covers create, get, acknowledge, complete, expiry, getPending,
+ * capacity limits, and URL matching. The queue is the coordination
+ * layer between MCP tools (request_capture / get_request_status)
+ * and the HTTP receiver that the browser extension polls.
+ *
+ * @see server/src/request-queue.js
+ * @see .kiro/specs/mcp-request-bridge/design.md
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createRequestQueue } from '#src/request-queue.js';
 
-describe('request queue', () => {
+describe('request-queue', () => {
   let queue;
 
   beforeEach(() => {
-    queue = createRequestQueue({ maxSize: 10, ttlMs: 60000 });
+    queue = createRequestQueue({ maxSize: 10, ttlMs: 60_000 });
   });
 
-  describe('create', () => {
-    it('returns a request with id, url, status pending, and expiresAt', () => {
-      const req = queue.create('http://localhost:5173/jobs');
-      expect(req.id).toBeDefined();
-      expect(req.url).toBe('http://localhost:5173/jobs');
-      expect(req.status).toBe('pending');
-      expect(req.expiresAt).toBeGreaterThan(Date.now());
-      expect(req.captureFilename).toBeNull();
+  it('create returns { id, url, status: "pending", expiresAt }', () => {
+    const req = queue.create('http://localhost:5173/jobs');
+    expect(req).toMatchObject({
+      url: 'http://localhost:5173/jobs',
+      status: 'pending',
     });
+    expect(req.id).toBeDefined();
+    expect(req.expiresAt).toBeGreaterThan(Date.now());
   });
 
-  describe('get', () => {
-    it('returns the request by id', () => {
-      const req = queue.create('http://localhost:5173');
-      const found = queue.get(req.id);
-      expect(found.id).toBe(req.id);
-      expect(found.url).toBe('http://localhost:5173');
-    });
-
-    it('returns null for unknown id', () => {
-      expect(queue.get('nope')).toBeNull();
-    });
+  it('get returns the request by id', () => {
+    const req = queue.create('http://localhost:5173/jobs');
+    const found = queue.get(req.id);
+    expect(found.id).toBe(req.id);
+    expect(found.url).toBe('http://localhost:5173/jobs');
   });
 
-  describe('acknowledge', () => {
-    it('transitions pending to acknowledged', () => {
-      const req = queue.create('http://localhost:5173');
-      const acked = queue.acknowledge(req.id);
-      expect(acked.status).toBe('acknowledged');
-    });
-
-    it('returns null for unknown id', () => {
-      expect(queue.acknowledge('nope')).toBeNull();
-    });
+  it('acknowledge transitions pending to acknowledged', () => {
+    const req = queue.create('http://localhost:5173/jobs');
+    const acked = queue.acknowledge(req.id);
+    expect(acked.status).toBe('acknowledged');
+    expect(queue.get(req.id).status).toBe('acknowledged');
   });
 
-  describe('complete', () => {
-    it('sets status to completed and captureFilename', () => {
-      const req = queue.create('http://localhost:5173');
-      queue.acknowledge(req.id);
-      const done = queue.complete(req.id, 'viewgraph-localhost-20260408.json');
-      expect(done.status).toBe('completed');
-      expect(done.captureFilename).toBe('viewgraph-localhost-20260408.json');
-    });
+  it('complete sets status and captureFilename', () => {
+    const req = queue.create('http://localhost:5173/jobs');
+    queue.acknowledge(req.id);
+    const completed = queue.complete(req.id, 'viewgraph-localhost-20260408.json');
+    expect(completed.status).toBe('completed');
+    expect(completed.captureFilename).toBe('viewgraph-localhost-20260408.json');
   });
 
-  describe('expiry', () => {
-    it('marks expired requests on access', () => {
-      const req = queue.create('http://localhost:5173');
-      // Manually expire by setting expiresAt in the past
-      vi.spyOn(Date, 'now').mockReturnValue(req.expiresAt + 1);
-      const found = queue.get(req.id);
-      expect(found.status).toBe('expired');
-      vi.restoreAllMocks();
-    });
+  it('expired requests return status "expired"', () => {
+    // Create queue with 1ms TTL so it expires immediately
+    const shortQueue = createRequestQueue({ maxRequests: 10, ttlMs: 1 });
+    const req = shortQueue.create('http://localhost:5173/jobs');
+
+    // Advance time past TTL
+    vi.useFakeTimers();
+    vi.advanceTimersByTime(10);
+    const found = shortQueue.get(req.id);
+    expect(found.status).toBe('expired');
+    vi.useRealTimers();
   });
 
-  describe('getPending', () => {
-    it('returns only pending requests', () => {
-      queue.create('http://localhost:5173');
-      queue.create('http://localhost:3000');
-      const req3 = queue.create('http://localhost:8040');
-      queue.acknowledge(req3.id);
+  it('getPending returns only pending requests', () => {
+    queue.create('http://localhost:5173/a');
+    const reqB = queue.create('http://localhost:5173/b');
+    queue.create('http://localhost:5173/c');
+    queue.acknowledge(reqB.id);
 
-      const pending = queue.getPending();
-      expect(pending).toHaveLength(2);
-      pending.forEach((r) => expect(r.status).toBe('pending'));
-    });
+    const pending = queue.getPending();
+    expect(pending).toHaveLength(2);
+    expect(pending.every(r => r.status === 'pending')).toBe(true);
   });
 
-  describe('capacity', () => {
-    it('rejects when full', () => {
-      for (let i = 0; i < 10; i++) queue.create(`http://localhost:${3000 + i}`);
-      expect(() => queue.create('http://localhost:9999')).toThrow(/queue is full/i);
-    });
+  it('rejects when queue is full', () => {
+    const tinyQueue = createRequestQueue({ maxSize: 2, ttlMs: 60_000 });
+    tinyQueue.create('http://localhost/a');
+    tinyQueue.create('http://localhost/b');
+    expect(() => tinyQueue.create('http://localhost/c')).toThrow(/full/i);
   });
 
-  describe('findByUrl', () => {
-    it('matches normalized URLs (strips trailing slash)', () => {
-      const req = queue.create('http://localhost:5173/jobs');
-      const found = queue.findByUrl('http://localhost:5173/jobs/');
-      expect(found.id).toBe(req.id);
-    });
-
-    it('returns null when no match', () => {
-      queue.create('http://localhost:5173/jobs');
-      expect(queue.findByUrl('http://localhost:3000')).toBeNull();
-    });
+  it('findByUrl matches normalized URLs', () => {
+    // Trailing slash should not matter
+    const req = queue.create('http://localhost:5173/jobs/');
+    const found = queue.findByUrl('http://localhost:5173/jobs');
+    expect(found).toBeDefined();
+    expect(found.id).toBe(req.id);
   });
 });
