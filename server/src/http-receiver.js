@@ -102,14 +102,12 @@ export function createHttpReceiver({ queue, capturesDir, port = 9876, secret = n
 
     // GET /health - server status, captures dir, and writability check
     if (method === 'GET' && url === '/health') {
-      let dirExists = false;
+      const { existsSync, accessSync, constants: fsConstants } = await import('fs');
+      const dirExists = existsSync(capturesDir);
       let writable = false;
-      try {
-        const { accessSync, constants: fsConstants } = await import('fs');
-        dirExists = true;
-        accessSync(capturesDir, fsConstants.W_OK);
-        writable = true;
-      } catch { /* dir missing or not writable */ }
+      if (dirExists) {
+        try { accessSync(capturesDir, fsConstants.W_OK); writable = true; } catch { /* not writable */ }
+      }
       return json(res, 200, { status: 'ok', capturesDir, dirExists, writable, pending: queue.getPending().length });
     }
 
