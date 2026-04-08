@@ -79,6 +79,11 @@ New:
 
 Three equal-width icon buttons with tooltips. Same disabled-when-empty behavior.
 
+Icons (Lucide-style, 14px, stroke currentColor, stroke-width 2):
+- **Send to Kiro** - paper plane (`M22 2L11 13M22 2l-7 20-4-9-9-4z`) - existing
+- **Copy Markdown** - file-text (`M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z` + lines) - matches doc/notes theme
+- **Download Report** - download (`M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4` + arrow down) - universal download action
+
 ## Settings Integration
 
 Add `includeScreenshots` to the existing `vg-settings` storage key:
