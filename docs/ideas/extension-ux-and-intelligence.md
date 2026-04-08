@@ -87,7 +87,88 @@ requestIdleCallback(() => {
 
 ---
 
-## Part 2: Intelligence / Memory Feature
+## Part 2: Annotation Lifecycle
+
+### Persistence across page reloads
+
+Annotations are stored in `chrome.storage.local` keyed by URL. On page
+load, the content script checks for existing annotations and re-renders
+them by re-finding elements via their selectors.
+
+```json
+{
+  "http://localhost:5173/jobs": {
+    "annotations": [
+      {
+        "id": "ann-1",
+        "selector": "button[data-testid='view-chain']",
+        "backupSelectors": ["button:nth-child(2)", "//button[text()='View Chain']"],
+        "comment": "Should open in side panel",
+        "status": "open",
+        "captureTimestamp": "2026-04-08T07:15:00Z"
+      }
+    ]
+  }
+}
+```
+
+### Live re-validation on reload
+
+When the page reloads, the extension doesn't just re-render annotations
+blindly. It re-evaluates each one against the live DOM:
+
+1. Re-find element by primary selector, fall back to backup selectors
+2. If the annotation was tied to a scan finding (e.g., "missing aria-label"),
+   re-run that specific check against the live element
+3. Update the annotation status based on the result
+
+### Annotation status and color coding
+
+| Status | Color | Border | Meaning |
+|---|---|---|---|
+| `open` | Orange | Solid orange | Issue still present |
+| `resolved` | Green | Solid green + checkmark | Issue fixed since annotation |
+| `stale` | Grey | Dashed grey, dimmed | Element no longer found on page |
+| `wontfix` | Grey | Solid grey, strikethrough | Manually dismissed by user |
+
+The color change is immediate and visual. Developer reloads the page after
+a fix and sees annotations flip from orange to green without any manual
+action.
+
+### Re-validation rules
+
+| Annotation type | How to check "resolved" |
+|---|---|
+| Missing testid | Element now has `data-testid` attribute |
+| Missing aria-label | Element now has `aria-label` or visible text |
+| Missing alt | Image now has `alt` attribute |
+| Missing form label | Input now has `aria-label` or associated label |
+| General comment | Cannot auto-resolve - user must dismiss manually |
+| Layout issue | Compare current bbox against annotated bbox |
+
+### MCP server integration
+
+The server can also drive annotation lifecycle:
+
+```
+Agent: [calls get_annotations({ filename: "before.json" })]
+  -> sees 5 open annotations
+
+Agent: fixes the issues in code
+
+User: reloads page, extension captures fresh state
+
+Agent: [calls compare_annotations({ original: "before.json", current: "after.json" })]
+  -> returns: { resolved: 3, open: 1, stale: 1 }
+```
+
+New MCP tool: `compare_annotations` - checks each annotation from the
+original capture against the new capture. Returns resolution status per
+annotation.
+
+---
+
+## Part 3: Intelligence / Memory Feature
 
 ### The idea
 
@@ -217,16 +298,71 @@ labels. Consider adding an ESLint rule: jsx-a11y/label-has-associated-control."
 
 ### Storage
 
-- Per-project: `.viewgraph/intelligence.json` (committed, shared with team)
-- Per-user: `~/.viewgraph/intelligence/` (personal patterns)
-- Capture history index: `.viewgraph/history.json` (list of past captures
-  with scan result summaries)
+Extension storage (in-browser):
+
+| API | Use | Limit |
+|---|---|---|
+| `chrome.storage.local` | Annotations per URL, user preferences | 10MB (unlimited with `unlimitedStorage` permission) |
+| `chrome.storage.session` | Current session state, active mode | 10MB, cleared on browser close |
+| `chrome.storage.sync` | User preferences that sync across devices | 100KB |
+| `IndexedDB` | Scan history, intelligence data, heatmap data | Hundreds of MB |
+
+Project-level storage (on disk, committed to repo):
+
+| File | Use |
+|---|---|
+| `.viewgraph/intelligence.json` | Learned patterns, team-shared |
+| `.viewgraph/history.json` | Capture history index with scan summaries |
+| `.viewgraph/captures/` | Capture files |
+
+The extension owns raw data collection in IndexedDB. It periodically
+writes a summary to `.viewgraph/intelligence.json` so the MCP server
+and team members can access it.
+
+### Project Health Dashboard
+
+Visual dashboard in the extension popup or options page. Inspired by
+GitHub contribution heatmaps and spaced repetition confidence trackers.
+
+#### Capture activity heatmap
+
+GitHub-style grid showing capture activity by day. Color intensity
+indicates issue density:
+
+- Light green: clean captures (few/no issues)
+- Yellow: moderate issues
+- Orange/red: many issues found
+- Grey: no captures that day
+
+#### Project health confidence tiers
+
+| Tier | Color | Meaning |
+|---|---|---|
+| Resolved | Green | Issue found, fixed, verified across 3+ captures |
+| Improving | Yellow-green | Issue count decreasing over time |
+| Stable | Yellow | Same issues persist, not getting worse |
+| Recurring | Orange | Issues keep coming back after fixes |
+| Degrading | Red | New issues appearing, getting worse |
+| Not tracked | Grey | No history yet |
+
+#### Health score ring
+
+Circular progress indicator showing overall project health as a
+percentage - proportion of scans passing cleanly across recent captures.
+
+#### Where it lives
+
+- **Extension popup:** Quick glance at health score and recent activity
+- **Extension options page:** Full dashboard with heatmap, tiers, history
+- **MCP tool:** `get_project_health()` returns the same data for agent context
 
 ### MCP Tools (future)
 
 | Tool | Purpose |
 |---|---|
+| `compare_annotations` | Check annotation resolution status between two captures |
 | `get_intelligence` | Return learned patterns and recommendations |
+| `get_project_health` | Return health score, heatmap data, confidence tiers |
 | `get_style_profile` | Return project's learned style profile |
 | `check_watchlist` | Run watchlist checks against a capture |
 | `check_style_drift` | Compare capture against style profile |
@@ -234,11 +370,16 @@ labels. Consider adding an ESLint rule: jsx-a11y/label-has-associated-control."
 
 ### Roadmap Placement
 
-- Extension UI patterns: M4-M6 (extension milestones)
+- Extension UI patterns (toolbar, comments, highlights): M4-M6
+- Annotation persistence and re-rendering: M6
+- Annotation live re-validation and color coding: M6
+- `compare_annotations` MCP tool: M6
 - Capture history tracking: M9
+- Project health dashboard: M9
 - Recurring issue detection: M9
 - Style profile: M9
 - Regression watchlist: M9
+- `get_project_health` MCP tool: M9
 - Agent mistake tracking: post-M9 (requires agent-side integration)
 - Team intelligence: far future
 
