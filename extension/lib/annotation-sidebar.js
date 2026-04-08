@@ -25,31 +25,47 @@ export function create() {
   sidebarEl.setAttribute(ATTR, 'sidebar');
   Object.assign(sidebarEl.style, {
     position: 'fixed', top: '60px', right: '0', zIndex: '2147483646',
-    width: '200px', maxHeight: 'calc(100vh - 120px)', overflowY: 'auto',
+    width: '300px', maxHeight: 'calc(100vh - 120px)', overflowY: 'auto',
     background: '#1e1e2e', borderLeft: '1px solid #333', borderRadius: '8px 0 0 8px',
-    fontFamily: 'system-ui, sans-serif', fontSize: '11px',
+    fontFamily: 'system-ui, sans-serif', fontSize: '13px',
     boxShadow: '-2px 0 12px rgba(0,0,0,0.3)', transition: 'transform 0.2s',
   });
 
-  // Toggle button
+  // Header row: toggle label + collapse chevron + close button
+  const header = document.createElement('div');
+  header.setAttribute(ATTR, 'header');
+  Object.assign(header.style, {
+    display: 'flex', alignItems: 'center', borderBottom: '1px solid #333',
+  });
+
   const toggle = document.createElement('button');
   toggle.setAttribute(ATTR, 'toggle');
   toggle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Review Notes';
   Object.assign(toggle.style, {
-    width: 'calc(100% - 28px)', padding: '10px', border: 'none', borderBottom: '1px solid #333',
-    background: 'transparent', color: '#a5b4fc', fontSize: '12px', fontWeight: '600',
-    cursor: 'pointer', textAlign: 'left', display: 'inline-block',
+    flex: '1', padding: '10px', border: 'none',
+    background: 'transparent', color: '#a5b4fc', fontSize: '13px', fontWeight: '600',
+    cursor: 'pointer', textAlign: 'left',
   });
   toggle.addEventListener('click', () => toggleCollapse());
 
-  // Close button - dismisses review mode, hides markers
+  // Collapse chevron
+  const collapseBtn = document.createElement('button');
+  collapseBtn.setAttribute(ATTR, 'btn');
+  collapseBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+  collapseBtn.title = 'Collapse panel';
+  Object.assign(collapseBtn.style, {
+    border: 'none', background: 'transparent', cursor: 'pointer',
+    padding: '6px', display: 'flex', alignItems: 'center',
+  });
+  collapseBtn.addEventListener('click', () => toggleCollapse());
+
+  // Close button
   const closeBtn = document.createElement('button');
   closeBtn.setAttribute(ATTR, 'close');
   closeBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
   Object.assign(closeBtn.style, {
-    width: '28px', padding: '6px', border: 'none', borderBottom: '1px solid #333',
-    background: 'transparent', cursor: 'pointer', display: 'inline-flex',
-    alignItems: 'center', justifyContent: 'center', verticalAlign: 'top',
+    border: 'none', background: 'transparent', cursor: 'pointer',
+    padding: '6px', display: 'flex', alignItems: 'center',
   });
   closeBtn.title = 'Close review mode';
   closeBtn.addEventListener('mouseenter', () => { closeBtn.style.background = 'rgba(255,255,255,0.05)'; });
@@ -58,6 +74,8 @@ export function create() {
     chrome.runtime.sendMessage({ type: 'dismiss-review' });
     destroy();
   });
+
+  header.append(toggle, collapseBtn, closeBtn);
 
   const list = document.createElement('div');
   list.setAttribute(ATTR, 'list');
@@ -69,7 +87,7 @@ export function create() {
   Object.assign(sendBtn.style, {
     width: 'calc(100% - 16px)', margin: '8px', padding: '7px 10px',
     border: 'none', borderRadius: '6px', background: '#6366f1', color: '#fff',
-    fontSize: '11px', fontWeight: '600', cursor: 'pointer',
+    fontSize: '12px', fontWeight: '600', cursor: 'pointer',
     fontFamily: 'system-ui, sans-serif', transition: 'background 0.12s',
   });
   sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#5558e6'; });
@@ -81,7 +99,7 @@ export function create() {
     setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Kiro'; sendBtn.style.background = '#6366f1'; }, 2000);
   });
 
-  sidebarEl.append(toggle, closeBtn, list, sendBtn);
+  sidebarEl.append(header, list, sendBtn);
   document.documentElement.appendChild(sidebarEl);
 
   // Collapsed badge - hidden initially
@@ -134,7 +152,7 @@ export function refresh() {
     hint.setAttribute(ATTR, 'hint');
     hint.textContent = 'Shift + drag to select a region';
     Object.assign(hint.style, {
-      padding: '12px 10px', color: '#666', fontSize: '11px',
+      padding: '16px 12px', color: '#666', fontSize: '12px',
       textAlign: 'center', fontStyle: 'italic',
     });
     list.appendChild(hint);
@@ -145,7 +163,7 @@ export function refresh() {
     const entry = document.createElement('div');
     entry.setAttribute(ATTR, 'entry');
     Object.assign(entry.style, {
-      padding: '6px 10px', borderBottom: '1px solid #2a2a3a',
+      padding: '8px 12px', borderBottom: '1px solid #2a2a3a',
       cursor: 'pointer', display: 'flex', justifyContent: 'space-between',
       alignItems: 'center', transition: 'background 0.1s',
     });
@@ -201,6 +219,15 @@ export function refresh() {
   }
 
   updateBadgeCount();
+
+  // Disable Send when no annotations
+  const sendBtn = sidebarEl.querySelector(`[${ATTR}="send"]`);
+  if (sendBtn) {
+    const hasNotes = anns.length > 0;
+    sendBtn.disabled = !hasNotes;
+    sendBtn.style.opacity = hasNotes ? '1' : '0.4';
+    sendBtn.style.cursor = hasNotes ? 'pointer' : 'default';
+  }
 }
 
 /** Remove the sidebar from the DOM. */
