@@ -116,7 +116,7 @@ export function resolveConfig(cwd = process.cwd()) {
   const httpPort = parseInt(
     process.env[ENV_HTTP_PORT]
     || fileConfig.httpPort
-    || '0', // 0 = disabled
+    || '9876',
     10,
   );
 
