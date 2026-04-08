@@ -15,7 +15,7 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 | Component | Description | Status |
 |---|---|---|
 | [`server/`](./server/) | MCP server - reads capture files, exposes 15 query/analysis/request tools | M1+M2+M3 Complete |
-| [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, inspector, annotations | M4+M5 Complete |
+| [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, inspector, annotations | M4+M5+M6 Complete |
 
 ## Getting Started
 
@@ -92,9 +92,9 @@ npm run dev:ext        # start extension dev server (Chrome HMR)
 ## Testing
 
 ```bash
-npm test               # all tests (214 tests, 31 files)
+npm test               # all tests (228 tests, 32 files)
 npm run test:server    # server only (128 tests)
-npm run test:ext       # extension only (86 tests)
+npm run test:ext       # extension only (100 tests)
 ```
 
 ## MCP Tools

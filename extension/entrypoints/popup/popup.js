@@ -7,6 +7,7 @@
 
 const captureBtn = document.getElementById('captureBtn');
 const inspectBtn = document.getElementById('inspectBtn');
+const reviewBtn = document.getElementById('reviewBtn');
 const statusEl = document.getElementById('status');
 
 /** Show a status message with a given type (info, success, error). */
@@ -50,6 +51,26 @@ inspectBtn.addEventListener('click', async () => {
         files: ['content-scripts/content.js'],
       });
       await chrome.tabs.sendMessage(tab.id, { type: 'toggle-inspect' });
+    }
+    window.close();
+  } catch (err) {
+    showStatus('error', err.message);
+  }
+});
+
+/** Toggle review mode on the active tab. */
+reviewBtn.addEventListener('click', async () => {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id) { showStatus('error', 'No active tab'); return; }
+    try {
+      await chrome.tabs.sendMessage(tab.id, { type: 'toggle-review' });
+    } catch {
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['content-scripts/content.js'],
+      });
+      await chrome.tabs.sendMessage(tab.id, { type: 'toggle-review' });
     }
     window.close();
   } catch (err) {

@@ -101,6 +101,19 @@ export default defineBackground(() => {
       return true;
     }
 
+    // Handle review-mode send - push annotated capture to server
+    if (message.type === 'send-review') {
+      (async () => {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!tab?.id) { sendResponse({ ok: false, error: 'No active tab' }); return; }
+        const result = await chrome.tabs.sendMessage(tab.id, { type: 'send-review' });
+        if (!result?.ok) { sendResponse({ ok: false, error: result?.error }); return; }
+        const pushResult = await pushToServer(result.capture);
+        sendResponse({ ok: true, pushed: !!pushResult, filename: pushResult?.filename });
+      })();
+      return true;
+    }
+
     if (message.type !== 'capture') return false;
 
     (async () => {

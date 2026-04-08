@@ -15,6 +15,9 @@ import { scoreAll } from '../lib/salience.js';
 import { serialize } from '../lib/serializer.js';
 import { captureSnapshot } from '../lib/html-snapshot.js';
 import { start as startInspect, stop as stopInspect, isActive as isInspecting } from '../lib/inspector.js';
+import { start as startReview, stop as stopReview, isActive as isReviewing, getAnnotations as getReviewAnnotations } from '../lib/review.js';
+import { show as showPanel } from '../lib/annotation-panel.js';
+import { create as createSidebar, refresh as refreshSidebar, destroy as destroySidebar } from '../lib/annotation-sidebar.js';
 
 export default defineContentScript({
   matches: ['<all_urls>'],
@@ -39,6 +42,37 @@ export default defineContentScript({
       if (message.type === 'toggle-inspect') {
         if (isInspecting()) { stopInspect(); } else { startInspect(); }
         sendResponse({ ok: true, active: isInspecting() });
+        return true;
+      }
+
+      if (message.type === 'toggle-review') {
+        if (isReviewing()) {
+          destroySidebar();
+          stopReview();
+        } else {
+          startReview({
+            onAdd: (ann) => { showPanel(ann); refreshSidebar(); },
+            onRemove: () => { refreshSidebar(); },
+          });
+          createSidebar();
+        }
+        sendResponse({ ok: true, active: isReviewing() });
+        return true;
+      }
+
+      if (message.type === 'send-review') {
+        // Bundle annotations with a full page capture
+        const viewport = { width: window.innerWidth, height: window.innerHeight };
+        const { elements, relations } = traverseDOM();
+        const scored = scoreAll(elements, viewport);
+        const capture = serialize(scored, relations);
+        capture.metadata.captureMode = 'review';
+        capture.annotations = getReviewAnnotations().map((a) => ({
+          id: a.id, region: a.region, comment: a.comment, nodeIds: a.nids,
+        }));
+        destroySidebar();
+        stopReview();
+        sendResponse({ ok: true, capture });
         return true;
       }
 
