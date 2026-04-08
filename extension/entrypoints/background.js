@@ -74,7 +74,7 @@ export default defineBackground(() => {
         if (screenshot) {
           // Generate screenshot filename matching capture convention
           const hostname = new URL(capture.metadata.url).hostname;
-          const ts = capture.metadata.timestamp.replace(/[:.]/g, '').replace('T', '-').slice(0, 15);
+          const ts = capture.metadata.timestamp.replace(/[:.]/g, '').replace('T', '-').slice(0, 17);
           capture.metadata.screenshot = `viewgraph-${hostname}-${ts}.png`;
         }
 
