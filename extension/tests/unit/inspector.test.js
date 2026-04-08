@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { buildBreadcrumb, buildMetaLine, bestSelector } from '../../lib/inspector.js';
+import { buildBreadcrumb, buildMetaLine, bestSelector, getRole } from '../../lib/inspector.js';
 
 let restore;
 
@@ -273,5 +273,56 @@ describe('buildMetaLine formatting', () => {
     document.body.innerHTML = '<input data-testid="email-input">';
     const meta = buildMetaLine(document.querySelector('input'));
     expect(meta).toContain('testid: email-input');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getRole - implicit ARIA role detection
+// ---------------------------------------------------------------------------
+
+describe('getRole', () => {
+  it('returns explicit role attribute when set', () => {
+    document.body.innerHTML = '<div role="navigation">X</div>';
+    expect(getRole(document.querySelector('div'))).toBe('navigation');
+  });
+
+  it('returns implicit role for input', () => {
+    document.body.innerHTML = '<input type="email">';
+    expect(getRole(document.querySelector('input'))).toBe('textbox');
+  });
+
+  it('returns implicit role for button', () => {
+    document.body.innerHTML = '<button>Click</button>';
+    expect(getRole(document.querySelector('button'))).toBe('button');
+  });
+
+  it('returns implicit role for nav', () => {
+    document.body.innerHTML = '<nav>Menu</nav>';
+    expect(getRole(document.querySelector('nav'))).toBe('navigation');
+  });
+
+  it('returns implicit role for img', () => {
+    document.body.innerHTML = '<img src="x.png" alt="photo">';
+    expect(getRole(document.querySelector('img'))).toBe('img');
+  });
+
+  it('returns implicit role for textarea', () => {
+    document.body.innerHTML = '<textarea></textarea>';
+    expect(getRole(document.querySelector('textarea'))).toBe('textbox');
+  });
+
+  it('returns implicit role for select', () => {
+    document.body.innerHTML = '<select><option>A</option></select>';
+    expect(getRole(document.querySelector('select'))).toBe('combobox');
+  });
+
+  it('returns null for generic div with no role', () => {
+    document.body.innerHTML = '<div>X</div>';
+    expect(getRole(document.querySelector('div'))).toBeNull();
+  });
+
+  it('explicit role overrides implicit role', () => {
+    document.body.innerHTML = '<nav role="menubar">X</nav>';
+    expect(getRole(document.querySelector('nav'))).toBe('menubar');
   });
 });

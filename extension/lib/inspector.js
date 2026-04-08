@@ -107,6 +107,25 @@ export function buildBreadcrumb(el) {
   return segments.join(' > ');
 }
 
+/** Implicit ARIA roles for common HTML elements. Browsers compute these
+ *  but el.getAttribute('role') only returns explicit roles. */
+const IMPLICIT_ROLES = {
+  a: 'link', button: 'button', h1: 'heading', h2: 'heading', h3: 'heading',
+  h4: 'heading', h5: 'heading', h6: 'heading', img: 'img', input: 'textbox',
+  nav: 'navigation', main: 'main', header: 'banner', footer: 'contentinfo',
+  aside: 'complementary', form: 'form', select: 'combobox', textarea: 'textbox',
+  table: 'table', ul: 'list', ol: 'list', li: 'listitem', dialog: 'dialog',
+  details: 'group', summary: 'button', progress: 'progressbar', meter: 'meter',
+};
+
+/** Get the ARIA role: explicit attribute > computedRole API > implicit lookup. */
+export function getRole(el) {
+  const explicit = el.getAttribute('role');
+  if (explicit) return explicit;
+  if (el.computedRole) return el.computedRole;
+  return IMPLICIT_ROLES[el.tagName.toLowerCase()] || null;
+}
+
 /**
  * Build the metadata line: testid, role, aria-label, dimensions.
  * Only includes attributes that exist.
@@ -115,7 +134,7 @@ export function buildMetaLine(el) {
   const parts = [];
   const testid = el.getAttribute('data-testid');
   parts.push(testid ? `testid: ${testid}` : 'testid: none');
-  const role = el.getAttribute('role');
+  const role = getRole(el);
   parts.push(role ? `role: ${role}` : 'role: none');
   const label = el.getAttribute('aria-label');
   if (label) parts.push(`aria: ${label}`);
@@ -263,6 +282,7 @@ function updateTooltip(el, rect) {
   tooltipEl.innerHTML = '';
 
   // Row 1: crosshair icon + breadcrumb (clips from left via rtl on text span)
+  // Last segment (target element) is bold white for emphasis
   const line1 = document.createElement('div');
   line1.setAttribute(ATTR, 'line');
   Object.assign(line1.style, { display: 'flex', alignItems: 'center', gap: '5px' });
@@ -271,9 +291,21 @@ function updateTooltip(el, rect) {
   icon1.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>';
   Object.assign(icon1.style, { flexShrink: '0', display: 'flex' });
 
+  const segments = breadcrumb.split(' > ');
   const text1 = document.createElement('span');
-  text1.textContent = breadcrumb;
-  Object.assign(text1.style, { color: '#93c5fd', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', direction: 'rtl', textAlign: 'left', flex: '1', minWidth: '0' });
+  Object.assign(text1.style, { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', direction: 'rtl', textAlign: 'left', flex: '1', minWidth: '0' });
+  if (segments.length > 1) {
+    const ancestors = document.createElement('span');
+    ancestors.textContent = segments.slice(0, -1).join(' > ') + ' > ';
+    Object.assign(ancestors.style, { color: '#93c5fd' });
+    const target = document.createElement('span');
+    target.textContent = segments[segments.length - 1];
+    Object.assign(target.style, { color: '#e0e7ff', fontWeight: '600' });
+    text1.append(ancestors, target);
+  } else {
+    text1.textContent = breadcrumb;
+    Object.assign(text1.style, { color: '#e0e7ff', fontWeight: '600' });
+  }
 
   line1.append(icon1, text1);
 
