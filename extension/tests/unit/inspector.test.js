@@ -66,6 +66,28 @@ describe('buildBreadcrumb', () => {
     expect(result).toContain('span');
     expect(result).toContain('div.very-long-class-name');
   });
+
+  it('always ends with the target element (tail visible)', () => {
+    document.body.innerHTML = '<div id="root"><div class="bg-light"><div class="container"><div class="row"><div class="col-md-6">X</div></div></div></div></div>';
+    const target = document.querySelector('.col-md-6');
+    const result = buildBreadcrumb(target);
+    expect(result).toMatch(/div\.col-md-6$/);
+  });
+
+  it('does not include body or html in path', () => {
+    document.body.innerHTML = '<div>X</div>';
+    const result = buildBreadcrumb(document.querySelector('div'));
+    expect(result).not.toContain('body');
+    expect(result).not.toContain('html');
+  });
+
+  it('limits to 2 classes per segment', () => {
+    document.body.innerHTML = '<div class="a b c d e">X</div>';
+    const result = buildBreadcrumb(document.querySelector('div'));
+    // Should have at most 2 classes (a.b), not all 5
+    const dotCount = (result.match(/\./g) || []).length;
+    expect(dotCount).toBeLessThanOrEqual(2);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -130,5 +152,50 @@ describe('bestSelector', () => {
     const second = document.querySelectorAll('span')[1];
     const sel = bestSelector(second);
     expect(sel).toContain('span');
+  });
+
+  it('does not return testid selector when testid is absent', () => {
+    document.body.innerHTML = '<div id="main">X</div>';
+    const sel = bestSelector(document.querySelector('div'));
+    expect(sel).not.toContain('data-testid');
+  });
+
+  it('does not return id selector when id is absent', () => {
+    document.body.innerHTML = '<div><span>X</span></div>';
+    const sel = bestSelector(document.querySelector('span'));
+    expect(sel).not.toContain('#');
+  });
+
+  it('structural selector distinguishes siblings of same tag', () => {
+    document.body.innerHTML = '<ul><li>A</li><li>B</li><li>C</li></ul>';
+    const second = document.querySelectorAll('li')[1];
+    const sel = bestSelector(second);
+    expect(sel).toContain('nth-child');
+  });
+});
+
+describe('buildMetaLine formatting', () => {
+  it('shows all attributes when present', () => {
+    document.body.innerHTML = '<button data-testid="save" role="button" aria-label="Save changes">S</button>';
+    const meta = buildMetaLine(document.querySelector('button'));
+    expect(meta).toContain('testid: save');
+    expect(meta).toContain('role: button');
+    expect(meta).toContain('aria: Save changes');
+    expect(meta).not.toContain('none');
+  });
+
+  it('shows none for all missing attributes', () => {
+    document.body.innerHTML = '<div>X</div>';
+    const meta = buildMetaLine(document.querySelector('div'));
+    expect(meta).toContain('testid: none');
+    expect(meta).toContain('role: none');
+    expect(meta).not.toContain('aria:');
+  });
+
+  it('does not show aria: none when aria-label is absent', () => {
+    document.body.innerHTML = '<div>X</div>';
+    const meta = buildMetaLine(document.querySelector('div'));
+    expect(meta).not.toContain('aria: none');
+    expect(meta).not.toContain('aria:');
   });
 });
