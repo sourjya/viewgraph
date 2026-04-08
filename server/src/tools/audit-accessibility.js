@@ -1,0 +1,54 @@
+/**
+ * MCP Tool: audit_accessibility
+ *
+ * Runs accessibility audit rules against all nodes in a capture.
+ * Returns issues grouped by severity (error, warning).
+ */
+
+import { z } from 'zod';
+import { readFile } from 'fs/promises';
+import { PROJECT_NAME } from '../constants.js';
+import { validateCapturePath } from '../utils/validate-path.js';
+import { parseCapture } from '../parsers/viewgraph-v2.js';
+import { flattenNodes, getNodeDetails } from '../analysis/node-queries.js';
+import { auditNode } from '../analysis/a11y-rules.js';
+
+export function register(server, _indexer, capturesDir) {
+  server.tool(
+    'audit_accessibility',
+    `Audit a ${PROJECT_NAME} capture for accessibility issues. ` +
+    'Checks for: missing aria-labels, missing alt text, unlabeled form inputs, ' +
+    'buttons without accessible names. Returns issues grouped by severity.',
+    {
+      filename: z.string().describe('Capture filename'),
+    },
+    async ({ filename }) => {
+      let filePath;
+      try { filePath = validateCapturePath(filename, capturesDir); } catch {
+        return { content: [{ type: 'text', text: `Error: Invalid filename - ${filename}` }], isError: true };
+      }
+      try {
+        const content = await readFile(filePath, 'utf-8');
+        const result = parseCapture(content);
+        if (!result.ok) return { content: [{ type: 'text', text: `Error: ${result.error}` }], isError: true };
+
+        const nodes = flattenNodes(result.data);
+        const allIssues = [];
+        for (const node of nodes) {
+          const details = getNodeDetails(result.data, node.id);
+          allIssues.push(...auditNode(node, details));
+        }
+
+        const grouped = {
+          errors: allIssues.filter((i) => i.severity === 'error'),
+          warnings: allIssues.filter((i) => i.severity === 'warning'),
+          total: allIssues.length,
+        };
+        return { content: [{ type: 'text', text: JSON.stringify(grouped, null, 2) }] };
+      } catch (err) {
+        if (err.code === 'ENOENT') return { content: [{ type: 'text', text: `Error: Capture not found: ${filename}` }], isError: true };
+        return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+      }
+    },
+  );
+}
