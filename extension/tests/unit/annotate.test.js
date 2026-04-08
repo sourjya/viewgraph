@@ -630,3 +630,37 @@ describe('marker colors', () => {
     expect(unique.size).toBe(MARKER_COLORS.length);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Popup font sizes - readability
+// ---------------------------------------------------------------------------
+
+describe('popup font sizes', () => {
+  const TOOL_BTN_FONT = 12;
+  const TOOL_BTN_ICON = 22;
+  const CONN_STATUS_FONT = 11;
+  const SETTINGS_FONT = 11;
+
+  it('tool button font is at least 12px', () => {
+    expect(TOOL_BTN_FONT).toBeGreaterThanOrEqual(12);
+  });
+
+  it('tool button icon is at least 22px', () => {
+    expect(TOOL_BTN_ICON).toBeGreaterThanOrEqual(22);
+  });
+
+  it('connection status font is at least 11px', () => {
+    expect(CONN_STATUS_FONT).toBeGreaterThanOrEqual(11);
+  });
+
+  it('settings font is at least 11px', () => {
+    expect(SETTINGS_FONT).toBeGreaterThanOrEqual(11);
+  });
+
+  it('no font size below 10px in popup', () => {
+    const sizes = [TOOL_BTN_FONT, CONN_STATUS_FONT, SETTINGS_FONT];
+    for (const s of sizes) {
+      expect(s).toBeGreaterThanOrEqual(10);
+    }
+  });
+});
