@@ -12,7 +12,7 @@
  * for anything that must survive termination.
  */
 
-import { SERVER_BASE_URL as SERVER_URL } from '../lib/constants.js';
+import { SERVER_BASE_URL as SERVER_URL, discoverServer } from '../lib/constants.js';
 
 const PROJECT_MAPPINGS_KEY = 'vg-project-mappings';
 
@@ -59,10 +59,11 @@ async function authHeaders() {
  */
 async function pushToServer(capture, capturesDir = null) {
   try {
+    const serverUrl = await discoverServer(capturesDir) || SERVER_URL;
     const auth = await authHeaders();
     const headers = { 'content-type': 'application/json', ...auth };
     if (capturesDir) headers['x-captures-dir'] = capturesDir;
-    const res = await fetch(`${SERVER_URL}/captures`, {
+    const res = await fetch(`${serverUrl}/captures`, {
       method: 'POST',
       headers,
       body: JSON.stringify(capture),

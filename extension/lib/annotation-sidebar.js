@@ -12,6 +12,7 @@
 import { show as showPanel } from './annotation-panel.js';
 import { getAnnotations, removeAnnotation, toggleResolved, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate } from './annotate.js';
 import { formatMarkdown } from './export-markdown.js';
+import { discoverServer } from './constants.js';
 
 const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
@@ -56,10 +57,11 @@ export function create() {
     width: '8px', height: '8px', borderRadius: '50%',
     background: '#666', flexShrink: '0', transition: 'background 0.3s',
   });
-  fetch('http://localhost:9876/health', { signal: AbortSignal.timeout(2000) })
-    .then((r) => r.json())
-    .then((d) => { statusDot.style.background = '#4ade80'; statusDot.title = d.writable ? 'MCP server connected' : 'Connected (dir not writable)'; })
-    .catch(() => { statusDot.style.background = '#f87171'; statusDot.title = 'MCP server offline'; });
+  discoverServer()
+    .then((url) => {
+      if (url) { statusDot.style.background = '#4ade80'; statusDot.title = `MCP server: ${url}`; }
+      else { statusDot.style.background = '#f87171'; statusDot.title = 'MCP server offline'; }
+    });
 
   // Collapse chevron
   const collapseBtn = document.createElement('button');

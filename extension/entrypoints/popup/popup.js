@@ -87,16 +87,21 @@ annotateBtn.addEventListener('click', async () => {
 // Connection status - ping MCP server health endpoint on popup open
 // ---------------------------------------------------------------------------
 
+import { discoverServer, DEFAULT_HTTP_PORT, PORT_SCAN_RANGE } from '../../lib/constants.js';
+
 const connDot = document.getElementById('connDot');
 const connText = document.getElementById('connText');
 
 (async () => {
   try {
-    const res = await fetch('http://localhost:9876/health', { signal: AbortSignal.timeout(2000) });
+    const serverUrl = await discoverServer();
+    if (!serverUrl) throw new Error('No server found');
+    const res = await fetch(`${serverUrl}/health`, { signal: AbortSignal.timeout(2000) });
     const data = await res.json();
+    const port = new URL(serverUrl).port;
     connDot.className = 'conn-dot connected';
     connText.textContent = data.writable ? 'MCP connected' : 'Connected (dir not writable)';
-    connText.title = `Server: localhost:9876\nCaptures: ${data.capturesDir || 'unknown'}`;
+    connText.title = `Server: localhost:${port}\nCaptures: ${data.capturesDir || 'unknown'}`;
   } catch {
     connDot.className = 'conn-dot failed';
     connText.textContent = 'MCP server offline';
