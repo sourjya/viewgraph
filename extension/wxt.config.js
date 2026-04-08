@@ -12,7 +12,7 @@ export default defineConfig({
   manifest: {
     name: 'ViewGraph Capture',
     description: 'Capture DOM structure, screenshots, and annotations for AI-powered UI analysis',
-    permissions: ['activeTab', 'storage'],
+    permissions: ['activeTab', 'storage', 'scripting'],
     optional_permissions: ['tabs'],
     host_permissions: ['<all_urls>'],
   },

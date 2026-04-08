@@ -60,8 +60,18 @@ export default defineBackground(() => {
           return;
         }
 
-        // Send capture message to content script
-        const result = await chrome.tabs.sendMessage(tab.id, { type: 'capture' });
+        // Send capture message to content script, injecting it first if needed
+        let result;
+        try {
+          result = await chrome.tabs.sendMessage(tab.id, { type: 'capture' });
+        } catch {
+          // Content script not loaded yet - inject it on demand
+          await chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ['content-scripts/content.js'],
+          });
+          result = await chrome.tabs.sendMessage(tab.id, { type: 'capture' });
+        }
         if (!result?.ok) {
           sendResponse({ ok: false, error: result?.error || 'Content script capture failed' });
           return;
