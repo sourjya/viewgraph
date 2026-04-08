@@ -11,6 +11,7 @@
 
 import { show as showPanel } from './annotation-panel.js';
 import { getAnnotations, removeAnnotation, toggleResolved, hideMarkers, stop as stopAnnotate } from './annotate.js';
+import { formatMarkdown } from './export-markdown.js';
 
 const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
@@ -81,26 +82,71 @@ export function create() {
   const list = document.createElement('div');
   list.setAttribute(ATTR, 'list');
 
-  // Send button - bundles annotations + capture and pushes to MCP server
+  // Export buttons row
+  const exportRow = document.createElement('div');
+  exportRow.setAttribute(ATTR, 'export-row');
+  Object.assign(exportRow.style, {
+    display: 'flex', gap: '4px', margin: '8px', marginTop: '4px',
+  });
+
+  const btnStyle = {
+    flex: '1', padding: '7px 4px', border: 'none', borderRadius: '6px',
+    color: '#fff', fontSize: '10px', fontWeight: '600', cursor: 'pointer',
+    fontFamily: 'system-ui, sans-serif', transition: 'background 0.12s',
+    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
+  };
+
+  // Send to Kiro
   const sendBtn = document.createElement('button');
   sendBtn.setAttribute(ATTR, 'send');
-  sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Kiro';
-  Object.assign(sendBtn.style, {
-    width: 'calc(100% - 16px)', margin: '8px', padding: '7px 10px',
-    border: 'none', borderRadius: '6px', background: '#6366f1', color: '#fff',
-    fontSize: '12px', fontWeight: '600', cursor: 'pointer',
-    fontFamily: 'system-ui, sans-serif', transition: 'background 0.12s',
-  });
+  sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send';
+  Object.assign(sendBtn.style, { ...btnStyle, background: '#6366f1' });
+  sendBtn.title = 'Send to Kiro';
   sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#5558e6'; });
   sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = '#6366f1'; });
   sendBtn.addEventListener('click', () => {
     chrome.runtime.sendMessage({ type: 'send-review' });
     sendBtn.textContent = 'Sent!';
     sendBtn.style.background = '#059669';
-    setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Kiro'; sendBtn.style.background = '#6366f1'; }, 2000);
+    setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send'; sendBtn.style.background = '#6366f1'; }, 2000);
   });
 
-  sidebarEl.append(header, list, sendBtn);
+  // Copy Markdown
+  const copyBtn = document.createElement('button');
+  copyBtn.setAttribute(ATTR, 'copy-md');
+  copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Copy MD';
+  Object.assign(copyBtn.style, { ...btnStyle, background: '#374151' });
+  copyBtn.title = 'Copy as Markdown';
+  copyBtn.addEventListener('mouseenter', () => { copyBtn.style.background = '#4b5563'; });
+  copyBtn.addEventListener('mouseleave', () => { copyBtn.style.background = '#374151'; });
+  copyBtn.addEventListener('click', () => {
+    const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString() };
+    const md = formatMarkdown(getAnnotations(), meta);
+    navigator.clipboard.writeText(md).then(() => {
+      copyBtn.textContent = 'Copied!';
+      copyBtn.style.background = '#059669';
+      setTimeout(() => { copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Copy MD'; copyBtn.style.background = '#374151'; }, 2000);
+    });
+  });
+
+  // Download Report
+  const dlBtn = document.createElement('button');
+  dlBtn.setAttribute(ATTR, 'download');
+  dlBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Report';
+  Object.assign(dlBtn.style, { ...btnStyle, background: '#374151' });
+  dlBtn.title = 'Download Report (Markdown + Screenshots)';
+  dlBtn.addEventListener('mouseenter', () => { dlBtn.style.background = '#4b5563'; });
+  dlBtn.addEventListener('mouseleave', () => { dlBtn.style.background = '#374151'; });
+  dlBtn.addEventListener('click', () => {
+    chrome.runtime.sendMessage({ type: 'download-report' });
+    dlBtn.textContent = 'Saving...';
+    dlBtn.style.background = '#059669';
+    setTimeout(() => { dlBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Report'; dlBtn.style.background = '#374151'; }, 2000);
+  });
+
+  exportRow.append(sendBtn, copyBtn, dlBtn);
+
+  sidebarEl.append(header, list, exportRow);
   document.documentElement.appendChild(sidebarEl);
 
   // Collapsed badge - hidden initially
@@ -223,14 +269,13 @@ export function refresh() {
 
   updateBadgeCount();
 
-  // Disable Send when no annotations
-  const sendBtn = sidebarEl.querySelector(`[${ATTR}="send"]`);
-  if (sendBtn) {
-    const hasNotes = anns.length > 0;
-    sendBtn.disabled = !hasNotes;
-    sendBtn.style.opacity = hasNotes ? '1' : '0.4';
-    sendBtn.style.cursor = hasNotes ? 'pointer' : 'default';
-  }
+  // Disable export buttons when no annotations
+  const hasNotes = anns.length > 0;
+  sidebarEl.querySelectorAll(`[${ATTR}="send"], [${ATTR}="copy-md"], [${ATTR}="download"]`).forEach((btn) => {
+    btn.disabled = !hasNotes;
+    btn.style.opacity = hasNotes ? '1' : '0.4';
+    btn.style.cursor = hasNotes ? 'pointer' : 'default';
+  });
 }
 
 /** Remove the sidebar from the DOM. */

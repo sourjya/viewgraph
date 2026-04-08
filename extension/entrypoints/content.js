@@ -20,6 +20,8 @@ import {
 } from '../lib/annotate.js';
 import { show as showPanel } from '../lib/annotation-panel.js';
 import { create as createSidebar, refresh as refreshSidebar, destroy as destroySidebar } from '../lib/annotation-sidebar.js';
+import { cropRegions } from '../lib/screenshot-crop.js';
+import { buildReportZip } from '../lib/export-zip.js';
 
 export default defineContentScript({
   matches: ['<all_urls>'],
@@ -69,6 +71,30 @@ export default defineContentScript({
         destroySidebar();
         stopAnnotate();
         sendResponse({ ok: true });
+        return true;
+      }
+
+      if (message.type === 'build-report') {
+        (async () => {
+          try {
+            const anns = getAnnotations();
+            const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString() };
+            const screenshots = message.screenshot ? await cropRegions(message.screenshot, anns) : [];
+            const blob = await buildReportZip(anns, meta, screenshots);
+            // Trigger download via object URL
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const host = location.hostname || 'page';
+            const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            a.href = url;
+            a.download = `viewgraph-review-${host}-${ts}.zip`;
+            a.click();
+            URL.revokeObjectURL(url);
+            sendResponse({ ok: true });
+          } catch (err) {
+            sendResponse({ ok: false, error: err.message });
+          }
+        })();
         return true;
       }
 
