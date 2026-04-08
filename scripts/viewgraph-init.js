@@ -14,7 +14,7 @@
  * @see .kiro/specs/multi-export/requirements.md
  */
 
-import { existsSync, mkdirSync, writeFileSync, accessSync, constants as fsConstants } from 'fs';
+import { existsSync, mkdirSync, writeFileSync, readFileSync, appendFileSync, accessSync, constants as fsConstants } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -68,7 +68,7 @@ function writeMcpConfig(filePath) {
   let existing = {};
   if (existsSync(filePath)) {
     try {
-      existing = JSON.parse(require('fs').readFileSync(filePath, 'utf-8'));
+      existing = JSON.parse(readFileSync(filePath, 'utf-8'));
     } catch { /* overwrite if corrupt */ }
   }
   const config = mcpConfig();
@@ -119,9 +119,9 @@ if (agent) {
 // 4. Add .viewgraph to .gitignore if not already there
 const gitignorePath = path.join(CWD, '.gitignore');
 if (existsSync(gitignorePath)) {
-  const content = require('fs').readFileSync(gitignorePath, 'utf-8');
+  const content = readFileSync(gitignorePath, 'utf-8');
   if (!content.includes('.viewgraph/captures')) {
-    require('fs').appendFileSync(gitignorePath, '\n# ViewGraph captures\n.viewgraph/captures/\n');
+    appendFileSync(gitignorePath, '\n# ViewGraph captures\n.viewgraph/captures/\n');
     console.log('  Updated .gitignore');
   }
 } else {
