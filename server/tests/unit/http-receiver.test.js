@@ -293,3 +293,74 @@ describe('config capturesDir resolution', () => {
     if (orig) { process.env.VIEWGRAPH_CAPTURES_DIR = orig; } else { delete process.env.VIEWGRAPH_CAPTURES_DIR; }
   });
 });
+
+// ---------------------------------------------------------------------------
+// Auth: disabled when no secret, enforced when secret set
+// ---------------------------------------------------------------------------
+
+describe('HTTP auth with no secret (localhost-only)', () => {
+  let queue, receiver, port, capturesDir;
+
+  beforeEach(async () => {
+    const rootDir = path.join(os.tmpdir(), `vg-noauth-${Date.now()}`);
+    capturesDir = path.join(rootDir, 'captures');
+    mkdirSync(capturesDir, { recursive: true });
+    queue = createRequestQueue({ maxSize: 10, ttlMs: 60000 });
+    receiver = createHttpReceiver({ queue, capturesDir, port: 0, secret: null });
+    port = await receiver.start();
+  });
+
+  afterEach(async () => {
+    await receiver.stop();
+    rmSync(capturesDir, { recursive: true, force: true });
+  });
+
+  it('POST /captures succeeds without auth header when secret is null', async () => {
+    const capture = { metadata: { url: 'http://test', timestamp: new Date().toISOString(), viewport: { width: 1024, height: 768 } }, nodes: [] };
+    const res = await req(port, 'POST', '/captures', capture);
+    expect(res.status).toBe(201);
+  });
+
+  it('GET /health succeeds without auth', async () => {
+    const res = await req(port, 'GET', '/health');
+    expect(res.status).toBe(200);
+  });
+});
+
+describe('HTTP auth with secret set', () => {
+  let queue, receiver, port, capturesDir;
+  const SECRET = 'test-secret-token';
+
+  beforeEach(async () => {
+    const rootDir = path.join(os.tmpdir(), `vg-auth-${Date.now()}`);
+    capturesDir = path.join(rootDir, 'captures');
+    mkdirSync(capturesDir, { recursive: true });
+    queue = createRequestQueue({ maxSize: 10, ttlMs: 60000 });
+    receiver = createHttpReceiver({ queue, capturesDir, port: 0, secret: SECRET });
+    port = await receiver.start();
+  });
+
+  afterEach(async () => {
+    await receiver.stop();
+    rmSync(capturesDir, { recursive: true, force: true });
+  });
+
+  it('POST /captures rejected without auth header', async () => {
+    const capture = { metadata: { url: 'http://test', timestamp: new Date().toISOString(), viewport: { width: 1024, height: 768 } }, nodes: [] };
+    const res = await req(port, 'POST', '/captures', capture);
+    expect(res.status).toBe(401);
+    expect(res.body.error).toContain('Unauthorized');
+  });
+
+  it('POST /captures succeeds with correct Bearer token', async () => {
+    const capture = { metadata: { url: 'http://test', timestamp: new Date().toISOString(), viewport: { width: 1024, height: 768 } }, nodes: [] };
+    const res = await req(port, 'POST', '/captures', capture, { authorization: `Bearer ${SECRET}` });
+    expect(res.status).toBe(201);
+  });
+
+  it('POST /captures rejected with wrong token', async () => {
+    const capture = { metadata: { url: 'http://test', timestamp: new Date().toISOString(), viewport: { width: 1024, height: 768 } }, nodes: [] };
+    const res = await req(port, 'POST', '/captures', capture, { authorization: 'Bearer wrong-token' });
+    expect(res.status).toBe(401);
+  });
+});
