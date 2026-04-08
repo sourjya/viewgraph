@@ -6,8 +6,7 @@
  */
 
 const captureBtn = document.getElementById('captureBtn');
-const inspectBtn = document.getElementById('inspectBtn');
-const reviewBtn = document.getElementById('reviewBtn');
+const annotateBtn = document.getElementById('annotateBtn');
 const statusEl = document.getElementById('status');
 const settingsBtn = document.getElementById('settingsBtn');
 const settingsPanel = document.getElementById('settingsPanel');
@@ -65,39 +64,18 @@ captureBtn.addEventListener('click', async () => {
 });
 
 /** Toggle inspect mode on the active tab. */
-inspectBtn.addEventListener('click', async () => {
+annotateBtn.addEventListener('click', async () => {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id) { showStatus('error', 'No active tab'); return; }
-    // Inject content script if not already loaded, then toggle inspect
     try {
-      await chrome.tabs.sendMessage(tab.id, { type: 'toggle-inspect' });
+      await chrome.tabs.sendMessage(tab.id, { type: 'toggle-annotate' });
     } catch {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         files: ['content-scripts/content.js'],
       });
-      await chrome.tabs.sendMessage(tab.id, { type: 'toggle-inspect' });
-    }
-    window.close();
-  } catch (err) {
-    showStatus('error', err.message);
-  }
-});
-
-/** Toggle review mode on the active tab. */
-reviewBtn.addEventListener('click', async () => {
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!tab?.id) { showStatus('error', 'No active tab'); return; }
-    try {
-      await chrome.tabs.sendMessage(tab.id, { type: 'toggle-review' });
-    } catch {
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ['content-scripts/content.js'],
-      });
-      await chrome.tabs.sendMessage(tab.id, { type: 'toggle-review' });
+      await chrome.tabs.sendMessage(tab.id, { type: 'toggle-annotate' });
     }
     window.close();
   } catch (err) {

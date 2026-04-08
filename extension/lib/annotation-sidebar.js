@@ -10,9 +10,10 @@
  */
 
 import { show as showPanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, toggleResolved } from './review.js';
+import { getAnnotations, removeAnnotation, toggleResolved, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate } from './annotate.js';
+import { formatMarkdown } from './export-markdown.js';
 
-const ATTR = 'data-vg-review';
+const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
 let badgeEl = null;
 let collapsed = false;
@@ -40,7 +41,7 @@ export function create() {
 
   const toggle = document.createElement('button');
   toggle.setAttribute(ATTR, 'toggle');
-  toggle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Review Notes';
+  toggle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>ViewGraph: Review Notes';
   Object.assign(toggle.style, {
     flex: '1', padding: '10px', border: 'none',
     background: 'transparent', color: '#a5b4fc', fontSize: '13px', fontWeight: '600',
@@ -71,7 +72,8 @@ export function create() {
   closeBtn.addEventListener('mouseenter', () => { closeBtn.style.background = 'rgba(255,255,255,0.05)'; });
   closeBtn.addEventListener('mouseleave', () => { closeBtn.style.background = 'transparent'; });
   closeBtn.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'dismiss-review' });
+    hideMarkers();
+    stopAnnotate();
     destroy();
   });
 
@@ -80,26 +82,71 @@ export function create() {
   const list = document.createElement('div');
   list.setAttribute(ATTR, 'list');
 
-  // Send button - bundles annotations + capture and pushes to MCP server
+  // Export buttons row
+  const exportRow = document.createElement('div');
+  exportRow.setAttribute(ATTR, 'export-row');
+  Object.assign(exportRow.style, {
+    display: 'flex', gap: '4px', margin: '8px', marginTop: '4px',
+  });
+
+  const btnStyle = {
+    flex: '1', padding: '7px 4px', border: 'none', borderRadius: '6px',
+    color: '#fff', fontSize: '10px', fontWeight: '600', cursor: 'pointer',
+    fontFamily: 'system-ui, sans-serif', transition: 'background 0.12s',
+    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
+  };
+
+  // Send to Kiro
   const sendBtn = document.createElement('button');
   sendBtn.setAttribute(ATTR, 'send');
-  sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Kiro';
-  Object.assign(sendBtn.style, {
-    width: 'calc(100% - 16px)', margin: '8px', padding: '7px 10px',
-    border: 'none', borderRadius: '6px', background: '#6366f1', color: '#fff',
-    fontSize: '12px', fontWeight: '600', cursor: 'pointer',
-    fontFamily: 'system-ui, sans-serif', transition: 'background 0.12s',
-  });
+  sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send';
+  Object.assign(sendBtn.style, { ...btnStyle, background: '#6366f1' });
+  sendBtn.title = 'Send to Kiro';
   sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#5558e6'; });
   sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = '#6366f1'; });
   sendBtn.addEventListener('click', () => {
     chrome.runtime.sendMessage({ type: 'send-review' });
     sendBtn.textContent = 'Sent!';
     sendBtn.style.background = '#059669';
-    setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Kiro'; sendBtn.style.background = '#6366f1'; }, 2000);
+    setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send'; sendBtn.style.background = '#6366f1'; }, 2000);
   });
 
-  sidebarEl.append(header, list, sendBtn);
+  // Copy Markdown
+  const copyBtn = document.createElement('button');
+  copyBtn.setAttribute(ATTR, 'copy-md');
+  copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Copy MD';
+  Object.assign(copyBtn.style, { ...btnStyle, background: '#374151' });
+  copyBtn.title = 'Copy as Markdown';
+  copyBtn.addEventListener('mouseenter', () => { copyBtn.style.background = '#4b5563'; });
+  copyBtn.addEventListener('mouseleave', () => { copyBtn.style.background = '#374151'; });
+  copyBtn.addEventListener('click', () => {
+    const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString(), viewport: { width: window.innerWidth, height: window.innerHeight }, browser: navigator.userAgent.match(/Chrome\/[\d.]+|Firefox\/[\d.]+/)?.[0] || 'Unknown' };
+    const md = formatMarkdown(getAnnotations(), meta);
+    navigator.clipboard.writeText(md).then(() => {
+      copyBtn.textContent = 'Copied!';
+      copyBtn.style.background = '#059669';
+      setTimeout(() => { copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Copy MD'; copyBtn.style.background = '#374151'; }, 2000);
+    });
+  });
+
+  // Download Report
+  const dlBtn = document.createElement('button');
+  dlBtn.setAttribute(ATTR, 'download');
+  dlBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Report';
+  Object.assign(dlBtn.style, { ...btnStyle, background: '#374151' });
+  dlBtn.title = 'Download Report (Markdown + Screenshots)';
+  dlBtn.addEventListener('mouseenter', () => { dlBtn.style.background = '#4b5563'; });
+  dlBtn.addEventListener('mouseleave', () => { dlBtn.style.background = '#374151'; });
+  dlBtn.addEventListener('click', () => {
+    chrome.runtime.sendMessage({ type: 'download-report' });
+    dlBtn.textContent = 'Saving...';
+    dlBtn.style.background = '#059669';
+    setTimeout(() => { dlBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Report'; dlBtn.style.background = '#374151'; }, 2000);
+  });
+
+  exportRow.append(sendBtn, copyBtn, dlBtn);
+
+  sidebarEl.append(header, list, exportRow);
   document.documentElement.appendChild(sidebarEl);
 
   // Collapsed badge - hidden initially
@@ -127,16 +174,19 @@ function toggleCollapse() {
     sidebarEl.style.transform = 'translateX(100%)';
     badgeEl.style.display = 'flex';
     updateBadgeCount();
+    pauseAnnotate();
   } else {
     sidebarEl.style.transform = 'translateX(0)';
     badgeEl.style.display = 'none';
+    resumeAnnotate();
   }
 }
 
 function updateBadgeCount() {
   if (!badgeEl) return;
   const count = getAnnotations().length;
-  badgeEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>${count}</span>`;
+  // Large chat bubble with count centered inside
+  badgeEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg><span style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px"><svg style="position:absolute;top:0;left:0" width="40" height="40" viewBox="0 0 24 24" fill="#6366f1" stroke="#a5b4fc" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span style="position:relative;margin-top:-6px;color:#fff;font-size:14px;font-weight:700;z-index:1">${count}</span></span>`;
 }
 
 /** Refresh the sidebar list from current annotations. */
@@ -167,16 +217,37 @@ export function refresh() {
       cursor: 'pointer', display: 'flex', justifyContent: 'space-between',
       alignItems: 'center', transition: 'background 0.1s',
     });
-    entry.addEventListener('mouseenter', () => { entry.style.background = '#22223a'; });
-    entry.addEventListener('mouseleave', () => { entry.style.background = 'transparent'; });
+    entry.addEventListener('mouseenter', () => {
+      entry.style.background = '#22223a';
+      entry._expandTimer = setTimeout(() => {
+        label.style.whiteSpace = 'normal';
+        label.style.maxHeight = '120px';
+      }, 400);
+    });
+    entry.addEventListener('mouseleave', () => {
+      entry.style.background = 'transparent';
+      clearTimeout(entry._expandTimer);
+      label.style.whiteSpace = 'nowrap';
+      label.style.maxHeight = '20px';
+    });
 
     const label = document.createElement('span');
     Object.assign(label.style, {
       color: ann.resolved ? '#666' : '#c8c8d0', overflow: 'hidden',
       textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1',
+      maxHeight: '20px', transition: 'max-height 0.25s ease, white-space 0s',
     });
 
-    // Ancestor element badge + comment
+    // Number badge + ancestor element badge + comment
+    const numBadge = document.createElement('span');
+    numBadge.textContent = `#${ann.id}`;
+    Object.assign(numBadge.style, {
+      background: '#6366f1', color: '#fff', fontSize: '9px', fontWeight: '700',
+      padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
+      fontFamily: 'system-ui, sans-serif',
+    });
+    label.appendChild(numBadge);
+
     if (ann.ancestor) {
       const elBadge = document.createElement('span');
       elBadge.textContent = ann.ancestor;
@@ -221,14 +292,13 @@ export function refresh() {
 
   updateBadgeCount();
 
-  // Disable Send when no annotations
-  const sendBtn = sidebarEl.querySelector(`[${ATTR}="send"]`);
-  if (sendBtn) {
-    const hasNotes = anns.length > 0;
-    sendBtn.disabled = !hasNotes;
-    sendBtn.style.opacity = hasNotes ? '1' : '0.4';
-    sendBtn.style.cursor = hasNotes ? 'pointer' : 'default';
-  }
+  // Disable export buttons when no annotations
+  const hasNotes = anns.length > 0;
+  sidebarEl.querySelectorAll(`[${ATTR}="send"], [${ATTR}="copy-md"], [${ATTR}="download"]`).forEach((btn) => {
+    btn.disabled = !hasNotes;
+    btn.style.opacity = hasNotes ? '1' : '0.4';
+    btn.style.cursor = hasNotes ? 'pointer' : 'default';
+  });
 }
 
 /** Remove the sidebar from the DOM. */

@@ -114,6 +114,22 @@ export default defineBackground(() => {
       return true;
     }
 
+    // Handle download report - capture viewport screenshot and send to content script for cropping
+    if (message.type === 'download-report') {
+      (async () => {
+        try {
+          const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+          if (!tab?.id) { sendResponse({ ok: false, error: 'No active tab' }); return; }
+          const dataUrl = await chrome.tabs.captureVisibleTab(null, { format: 'png' });
+          await chrome.tabs.sendMessage(tab.id, { type: 'build-report', screenshot: dataUrl });
+          sendResponse({ ok: true });
+        } catch (err) {
+          sendResponse({ ok: false, error: err.message });
+        }
+      })();
+      return true;
+    }
+
     if (message.type !== 'capture') return false;
 
     (async () => {
