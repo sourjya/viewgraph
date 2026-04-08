@@ -306,6 +306,11 @@ See [product-positioning.md](./product-positioning.md) for positioning,
 messaging, audience strategy, content plan, and launch narrative. To be
 executed when the product is demo-ready.
 
+See [problem-feature-mapping.md](./problem-feature-mapping.md) for how each
+core problem (weak tests, brittle selectors, missed regressions, vague QA
+handoffs, bad a11y fixes, poor layout reproduction, hallucinated UI) maps
+to specific ViewGraph features, tools, workflows, and remaining gaps.
+
 ---
 
 ## Risk Register
