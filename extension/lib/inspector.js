@@ -195,16 +195,16 @@ function createActionBar() {
     background: 'transparent', transition: 'background 0.12s',
   };
 
-  // Capture subtree
+  // Capture subtree - camera icon
   const captureBtn = makeIconBtn(
-    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e5e7eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg>',
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e5e7eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>',
     'Capture subtree', btnBase,
   );
   captureBtn.addEventListener('click', (e) => { e.stopPropagation(); captureSubtree(currentEl); });
 
-  // Copy selector
+  // Copy selector - clipboard icon
   const copyBtn = makeIconBtn(
-    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e5e7eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>',
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e5e7eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>',
     'Copy selector', btnBase,
   );
   copyBtn.addEventListener('click', (e) => { e.stopPropagation(); copySelector(copyBtn); });
