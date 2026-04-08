@@ -31,4 +31,31 @@ describe('get_annotations via MCP', () => {
     const annotations = JSON.parse(result.content[0].text);
     expect(annotations).toEqual([]);
   });
+
+  it('returns annotations with ancestor labels from review capture', async () => {
+    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    cleanup = c;
+    const result = await client.callTool({ name: 'get_annotations', arguments: { filename: 'review-capture.json' } });
+    const annotations = JSON.parse(result.content[0].text);
+    expect(annotations).toHaveLength(3);
+    expect(annotations[0].ancestor).toBe('div.card.p-4');
+    expect(annotations[1].ancestor).toBe('div.card.text-white');
+  });
+
+  it('includes resolved status in annotations', async () => {
+    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    cleanup = c;
+    const result = await client.callTool({ name: 'get_annotations', arguments: { filename: 'review-capture.json' } });
+    const annotations = JSON.parse(result.content[0].text);
+    expect(annotations[2].resolved).toBe(true);
+    expect(annotations[0].resolved).toBeUndefined();
+  });
+
+  it('returns empty array for subtree capture', async () => {
+    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    cleanup = c;
+    const result = await client.callTool({ name: 'get_annotations', arguments: { filename: 'subtree-capture.json' } });
+    const annotations = JSON.parse(result.content[0].text);
+    expect(annotations).toEqual([]);
+  });
 });

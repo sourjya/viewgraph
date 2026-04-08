@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "format": "viewgraph-v2",
+    "captureMode": "review",
+    "timestamp": "2026-04-08T22:30:00.000Z",
+    "url": "http://localhost:3000/login",
+    "title": "Login - Shanti",
+    "viewport": { "width": 1440, "height": 900 },
+    "stats": {
+      "totalNodes": 8,
+      "salience": { "high": 3, "med": 3, "low": 2 },
+      "clusters": 2
+    },
+    "annotationCount": 3
+  },
+  "nodes": {
+    "high": [
+      { "id": "inp001", "tag": "input", "text": "", "bbox": { "x": 100, "y": 300, "w": 350, "h": 40 }, "actions": ["input"], "cluster": "c1", "attributes": { "type": "email", "placeholder": "Email" } },
+      { "id": "inp002", "tag": "input", "text": "", "bbox": { "x": 100, "y": 360, "w": 350, "h": 40 }, "actions": ["input"], "cluster": "c1", "attributes": { "type": "password", "placeholder": "Password" } },
+      { "id": "btn001", "tag": "button", "text": "Login", "bbox": { "x": 100, "y": 420, "w": 120, "h": 40 }, "actions": ["click"], "cluster": "c1" }
+    ],
+    "med": [
+      { "id": "div001", "tag": "div", "text": "", "bbox": { "x": 60, "y": 180, "w": 450, "h": 350 }, "actions": [], "cluster": "c1", "attributes": { "class": "card p-4" } },
+      { "id": "h1001", "tag": "h1", "text": "Login", "bbox": { "x": 100, "y": 200, "w": 200, "h": 50 }, "actions": [], "cluster": "c1" },
+      { "id": "div002", "tag": "div", "text": "", "bbox": { "x": 540, "y": 180, "w": 500, "h": 350 }, "actions": [], "cluster": "c2", "attributes": { "class": "card text-white" } }
+    ],
+    "low": [
+      { "id": "p001", "tag": "p", "text": "Sign In to your account", "bbox": { "x": 100, "y": 255, "w": 200, "h": 20 }, "actions": [], "cluster": "c1" },
+      { "id": "p002", "tag": "p", "text": "Manage your household tasks", "bbox": { "x": 600, "y": 350, "w": 380, "h": 20 }, "actions": [], "cluster": "c2" }
+    ]
+  },
+  "summary": {
+    "layout": "split login form with hero panel",
+    "styles": { "primaryColors": ["#6366f1", "#ffffff"], "fonts": ["system-ui"], "spacing": "16px" },
+    "clusters": [
+      { "id": "c1", "label": "Login form", "bbox": { "x": 60, "y": 180, "w": 450, "h": 350 }, "elementCount": 6 },
+      { "id": "c2", "label": "Hero panel", "bbox": { "x": 540, "y": 180, "w": 500, "h": 350 }, "elementCount": 2 }
+    ]
+  },
+  "relations": {
+    "parentChild": [
+      { "parent": "div001", "child": "h1001" },
+      { "parent": "div001", "child": "p001" },
+      { "parent": "div001", "child": "inp001" },
+      { "parent": "div001", "child": "inp002" },
+      { "parent": "div001", "child": "btn001" },
+      { "parent": "div002", "child": "p002" }
+    ]
+  },
+  "details": {
+    "inp001": {
+      "selector": "input[type='email']",
+      "attributes": { "type": "email", "placeholder": "Email", "role": "textbox" }
+    },
+    "inp002": {
+      "selector": "input[type='password']",
+      "attributes": { "type": "password", "placeholder": "Password" }
+    },
+    "btn001": {
+      "selector": "button.btn-primary",
+      "attributes": { "role": "button" },
+      "computedStyles": { "backgroundColor": "#6366f1", "color": "#ffffff" }
+    }
+  },
+  "annotations": [
+    {
+      "id": 1,
+      "region": { "x": 60, "y": 180, "width": 450, "height": 350 },
+      "comment": "card out of alignment",
+      "nodeIds": [1, 2, 3, 4, 5, 6],
+      "ancestor": "div.card.p-4"
+    },
+    {
+      "id": 2,
+      "region": { "x": 540, "y": 180, "width": 500, "height": 350 },
+      "comment": "don't like this color",
+      "nodeIds": [7, 8],
+      "ancestor": "div.card.text-white"
+    },
+    {
+      "id": 3,
+      "region": { "x": 100, "y": 420, "width": 120, "height": 40 },
+      "comment": "button needs loading state",
+      "nodeIds": [3],
+      "ancestor": "button",
+      "resolved": true
+    }
+  ]
+}
