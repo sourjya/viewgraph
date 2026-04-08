@@ -97,6 +97,7 @@ function onMouseUp(e) {
   const annotation = { id, region, comment: '', nids, ancestor };
   annotations.push(annotation);
   createMarker(annotation, rect);
+  flashElements(rect);
   save();
   if (onAnnotationAdded) onAnnotationAdded(annotation);
 }
@@ -219,6 +220,24 @@ function createMarker(annotation, selRect) {
 function removeMarker(id) {
   const marker = document.querySelector(`[${ATTR}="marker-${id}"]`);
   if (marker) marker.remove();
+}
+
+/** Brief highlight pulse on intersected elements after selection. */
+function flashElements(selRect) {
+  const elements = document.body.querySelectorAll('*');
+  for (let i = 0; i < elements.length; i++) {
+    const el = elements[i];
+    if (el.hasAttribute(ATTR)) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) continue;
+    const ox = Math.max(0, Math.min(r.right, selRect.right) - Math.max(r.left, selRect.left));
+    const oy = Math.max(0, Math.min(r.bottom, selRect.bottom) - Math.max(r.top, selRect.top));
+    if (ox * oy < r.width * r.height * 0.5) continue;
+
+    const prev = el.style.outline;
+    el.style.outline = '2px solid rgba(99,102,241,0.6)';
+    setTimeout(() => { el.style.outline = prev; }, 300);
+  }
 }
 
 // ---------------------------------------------------------------------------
