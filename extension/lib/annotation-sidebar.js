@@ -49,6 +49,18 @@ export function create() {
   });
   toggle.addEventListener('click', () => toggleCollapse());
 
+  // Connection status dot in header
+  const statusDot = document.createElement('span');
+  statusDot.setAttribute(ATTR, 'status-dot');
+  Object.assign(statusDot.style, {
+    width: '8px', height: '8px', borderRadius: '50%',
+    background: '#666', flexShrink: '0', transition: 'background 0.3s',
+  });
+  fetch('http://localhost:9876/health', { signal: AbortSignal.timeout(2000) })
+    .then((r) => r.json())
+    .then((d) => { statusDot.style.background = '#4ade80'; statusDot.title = d.writable ? 'MCP server connected' : 'Connected (dir not writable)'; })
+    .catch(() => { statusDot.style.background = '#f87171'; statusDot.title = 'MCP server offline'; });
+
   // Collapse chevron
   const collapseBtn = document.createElement('button');
   collapseBtn.setAttribute(ATTR, 'btn');
@@ -77,7 +89,7 @@ export function create() {
     destroy();
   });
 
-  header.append(toggle, collapseBtn, closeBtn);
+  header.append(toggle, statusDot, collapseBtn, closeBtn);
 
   const list = document.createElement('div');
   list.setAttribute(ATTR, 'list');
