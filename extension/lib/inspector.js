@@ -120,9 +120,9 @@ export function buildBreadcrumb(el, maxLen = 80) {
 export function buildMetaLine(el) {
   const parts = [];
   const testid = el.getAttribute('data-testid');
-  parts.push(testid ? `testid: ${testid}` : 'no testid');
+  parts.push(testid ? `testid: ${testid}` : 'testid: none');
   const role = el.getAttribute('role');
-  parts.push(role ? `role: ${role}` : 'no role');
+  parts.push(role ? `role: ${role}` : 'role: none');
   const label = el.getAttribute('aria-label');
   if (label) parts.push(`aria: ${label}`);
   const rect = el.getBoundingClientRect();

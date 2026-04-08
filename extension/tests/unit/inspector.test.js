@@ -84,14 +84,14 @@ describe('buildMetaLine', () => {
     expect(buildMetaLine(document.querySelector('div'))).toContain('200x50');
   });
 
-  it('shows no testid when missing', () => {
+  it('shows testid: none when missing', () => {
     document.body.innerHTML = '<div>X</div>';
-    expect(buildMetaLine(document.querySelector('div'))).toContain('no testid');
+    expect(buildMetaLine(document.querySelector('div'))).toContain('testid: none');
   });
 
-  it('shows no role when missing', () => {
+  it('shows role: none when missing', () => {
     document.body.innerHTML = '<div>X</div>';
-    expect(buildMetaLine(document.querySelector('div'))).toContain('no role');
+    expect(buildMetaLine(document.querySelector('div'))).toContain('role: none');
   });
 
   it('separates multiple attributes with pipe', () => {
