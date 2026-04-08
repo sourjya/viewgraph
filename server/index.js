@@ -100,6 +100,7 @@ let watcher;
 let httpReceiver;
 
 async function main() {
+  console.error(`${LOG_PREFIX} ViewGraph MCP Server v${SERVER_VERSION}`);
   console.error(`${LOG_PREFIX} Captures dir: ${CAPTURES_DIR}`);
 
   // Start HTTP receiver for extension communication
