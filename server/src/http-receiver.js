@@ -1,0 +1,137 @@
+/**
+ * HTTP Receiver
+ *
+ * Lightweight HTTP server enabling the browser extension to poll for
+ * capture requests and submit completed captures. Uses Node.js built-in
+ * http module - no Express or other dependencies.
+ *
+ * Endpoints:
+ * - GET  /health             -> { status: "ok", pending: N }
+ * - GET  /requests/pending   -> { requests: [...] }
+ * - POST /requests/:id/ack   -> { id, status: "acknowledged" }
+ * - POST /captures           -> { filename, requestId? }
+ */
+
+import { createServer } from 'http';
+import { writeFile } from 'fs/promises';
+import path from 'path';
+
+const MAX_BODY = 5 * 1024 * 1024; // 5MB
+
+/** Generate a capture filename from metadata. */
+function generateFilename(metadata) {
+  const url = metadata.url || 'unknown';
+  let hostname;
+  try { hostname = new URL(url).hostname; } catch { hostname = 'unknown'; }
+  const ts = (metadata.timestamp || new Date().toISOString())
+    .replace(/[:.]/g, '').replace('T', '-').slice(0, 15);
+  return `viewgraph-${hostname}-${ts}.json`;
+}
+
+/** Read the full request body with size limit. */
+function readBody(req) {
+  return new Promise((resolve, reject) => {
+    let size = 0;
+    const chunks = [];
+    req.on('data', (chunk) => {
+      size += chunk.length;
+      if (size > MAX_BODY) { req.destroy(); reject(new Error('Payload too large')); return; }
+      chunks.push(chunk);
+    });
+    req.on('end', () => resolve(Buffer.concat(chunks).toString()));
+    req.on('error', reject);
+  });
+}
+
+/** Send a JSON response. */
+function json(res, status, data) {
+  res.writeHead(status, { 'content-type': 'application/json', 'access-control-allow-origin': '*' });
+  res.end(JSON.stringify(data));
+}
+
+/**
+ * Create an HTTP receiver.
+ * @param {{ queue: object, capturesDir: string, port?: number }} options
+ */
+export function createHttpReceiver({ queue, capturesDir, port = 9876 }) {
+  let server;
+
+  async function handleRequest(req, res) {
+    const { method, url } = req;
+
+    // CORS preflight
+    if (method === 'OPTIONS') {
+      res.writeHead(204, {
+        'access-control-allow-origin': '*',
+        'access-control-allow-methods': 'GET, POST, OPTIONS',
+        'access-control-allow-headers': 'content-type',
+      });
+      return res.end();
+    }
+
+    // GET /health
+    if (method === 'GET' && url === '/health') {
+      return json(res, 200, { status: 'ok', pending: queue.getPending().length });
+    }
+
+    // GET /requests/pending
+    if (method === 'GET' && url === '/requests/pending') {
+      const pending = queue.getPending().map((r) => ({ id: r.id, url: r.url, createdAt: r.createdAt }));
+      return json(res, 200, { requests: pending });
+    }
+
+    // POST /requests/:id/ack
+    const ackMatch = method === 'POST' && url.match(/^\/requests\/([^/]+)\/ack$/);
+    if (ackMatch) {
+      const acked = queue.acknowledge(ackMatch[1]);
+      if (!acked) return json(res, 404, { error: 'Request not found' });
+      return json(res, 200, { id: acked.id, status: acked.status });
+    }
+
+    // POST /captures
+    if (method === 'POST' && url === '/captures') {
+      let body;
+      try { body = await readBody(req); } catch {
+        return json(res, 413, { error: 'Payload too large (max 5MB)' });
+      }
+      let capture;
+      try { capture = JSON.parse(body); } catch {
+        return json(res, 400, { error: 'Invalid JSON' });
+      }
+      if (!capture.metadata) return json(res, 400, { error: 'Missing metadata section' });
+
+      const filename = generateFilename(capture.metadata);
+      await writeFile(path.join(capturesDir, filename), JSON.stringify(capture, null, 2));
+
+      // Check if this completes a pending request
+      const match = queue.findByUrl(capture.metadata.url);
+      if (match) queue.complete(match.id, filename);
+
+      return json(res, 201, { filename, requestId: match?.id ?? null });
+    }
+
+    json(res, 404, { error: 'Not found' });
+  }
+
+  return {
+    /** Start the HTTP server. Returns the actual port (useful when port=0). */
+    start() {
+      return new Promise((resolve) => {
+        server = createServer(handleRequest);
+        server.listen(port, '127.0.0.1', () => {
+          const actualPort = server.address().port;
+          process.stderr.write(`[viewgraph] HTTP receiver listening on 127.0.0.1:${actualPort}\n`);
+          resolve(actualPort);
+        });
+      });
+    },
+
+    /** Stop the HTTP server. */
+    stop() {
+      return new Promise((resolve) => {
+        if (!server) return resolve();
+        server.close(resolve);
+      });
+    },
+  };
+}
