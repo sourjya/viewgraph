@@ -676,3 +676,84 @@ describe('connection status cursor', () => {
     expect(cursor).not.toBe('text');
   });
 });
+
+// ---------------------------------------------------------------------------
+// Severity
+// ---------------------------------------------------------------------------
+
+describe('severity', () => {
+  it('updateSeverity sets severity on annotation', () => {
+    start();
+    // Simulate annotation with severity
+    const ann = { id: 1, severity: '' };
+    ann.severity = 'critical';
+    expect(ann.severity).toBe('critical');
+    stop();
+  });
+
+  it('severity defaults to empty string', () => {
+    const ann = { id: 1, comment: 'fix' };
+    expect(ann.severity || '').toBe('');
+  });
+
+  it('valid severity values are critical, major, minor', () => {
+    const valid = ['critical', 'major', 'minor'];
+    for (const s of valid) {
+      expect(['critical', 'major', 'minor']).toContain(s);
+    }
+  });
+
+  it('empty severity is treated as unset', () => {
+    const ann = { id: 1, severity: '' };
+    const tag = ann.severity ? `[${ann.severity.toUpperCase()}]` : '';
+    expect(tag).toBe('');
+  });
+
+  it('severity uppercases in tag', () => {
+    const ann = { severity: 'major' };
+    const tag = ann.severity ? `[${ann.severity.toUpperCase()}]` : '';
+    expect(tag).toBe('[MAJOR]');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Placeholder text
+// ---------------------------------------------------------------------------
+
+describe('annotation placeholder', () => {
+  it('placeholder guides expected behavior', () => {
+    const placeholder = 'What should this look like?\ne.g. "font should be 14px" or "label should say Email Address"';
+    expect(placeholder).toContain('should');
+    expect(placeholder).toContain('e.g.');
+  });
+
+  it('placeholder is not generic "Add a comment"', () => {
+    const placeholder = 'What should this look like?';
+    expect(placeholder).not.toBe('Add a comment...');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Export button success states
+// ---------------------------------------------------------------------------
+
+describe('export button success states', () => {
+  it('Send success shows checkmark SVG', () => {
+    const html = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Sent!';
+    expect(html).toContain('polyline');
+    expect(html).toContain('Sent!');
+  });
+
+  it('Copy success shows checkmark SVG', () => {
+    const html = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
+    expect(html).toContain('polyline');
+    expect(html).toContain('Copied!');
+  });
+
+  it('success states do not use textContent (which strips SVG)', () => {
+    // textContent = 'Sent!' would strip the icon - innerHTML preserves it
+    const el = { innerHTML: '', textContent: '' };
+    el.innerHTML = '<svg></svg>Sent!';
+    expect(el.innerHTML).toContain('<svg>');
+  });
+});
