@@ -97,7 +97,7 @@ function selectorSegment(el) {
  * Returns something like: div.card-group > div.card.p-4 > div.card-body
  * Truncates from the left if too long.
  */
-export function buildBreadcrumb(el, maxLen = 60) {
+export function buildBreadcrumb(el, maxLen = 80) {
   const segments = [];
   let node = el;
   while (node && node !== document.body && node !== document.documentElement) {
@@ -105,10 +105,10 @@ export function buildBreadcrumb(el, maxLen = 60) {
     node = node.parentElement;
   }
   let path = segments.join(' > ');
-  // Truncate from the left if too long, keeping the target element visible
-  if (path.length > maxLen && segments.length > 2) {
-    const last = segments.slice(-2).join(' > ');
-    path = '... > ' + last;
+  // Only truncate if genuinely too long, and keep at least 3 segments visible
+  if (path.length > maxLen && segments.length > 3) {
+    const kept = segments.slice(-3).join(' > ');
+    path = '... > ' + kept;
   }
   return path;
 }
@@ -120,9 +120,9 @@ export function buildBreadcrumb(el, maxLen = 60) {
 export function buildMetaLine(el) {
   const parts = [];
   const testid = el.getAttribute('data-testid');
-  if (testid) parts.push(`testid: ${testid}`);
+  parts.push(testid ? `testid: ${testid}` : 'no testid');
   const role = el.getAttribute('role');
-  if (role) parts.push(`role: ${role}`);
+  parts.push(role ? `role: ${role}` : 'no role');
   const label = el.getAttribute('aria-label');
   if (label) parts.push(`aria: ${label}`);
   const rect = el.getBoundingClientRect();

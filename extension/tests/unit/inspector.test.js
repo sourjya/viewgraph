@@ -50,8 +50,8 @@ describe('buildBreadcrumb', () => {
     expect(buildBreadcrumb(span)).toBe('div#main > span');
   });
 
-  it('truncates long paths from the left', () => {
-    document.body.innerHTML = '<div class="very-long-class-name"><div class="another-long-class"><div class="deep-nested"><span>X</span></div></div></div>';
+  it('truncates very long paths from the left', () => {
+    document.body.innerHTML = '<div class="very-long-class-name"><div class="another-long-class"><div class="yet-another-long"><div class="deep-nested"><span>X</span></div></div></div></div>';
     const span = document.querySelector('span');
     const result = buildBreadcrumb(span, 40);
     expect(result).toContain('... >');
@@ -82,6 +82,16 @@ describe('buildMetaLine', () => {
   it('always includes dimensions', () => {
     document.body.innerHTML = '<div>X</div>';
     expect(buildMetaLine(document.querySelector('div'))).toContain('200x50');
+  });
+
+  it('shows no testid when missing', () => {
+    document.body.innerHTML = '<div>X</div>';
+    expect(buildMetaLine(document.querySelector('div'))).toContain('no testid');
+  });
+
+  it('shows no role when missing', () => {
+    document.body.innerHTML = '<div>X</div>';
+    expect(buildMetaLine(document.querySelector('div'))).toContain('no role');
   });
 
   it('separates multiple attributes with pipe', () => {
