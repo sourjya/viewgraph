@@ -39,7 +39,7 @@ function mcpConfig() {
       viewgraph: {
         command: 'node',
         args: [SERVER_ENTRY],
-        env: { VIEWGRAPH_CAPTURES_DIR: '.viewgraph/captures' },
+        env: { VIEWGRAPH_CAPTURES_DIR: path.resolve(CWD, '.viewgraph', 'captures') },
       },
     },
   };
