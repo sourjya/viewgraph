@@ -53,9 +53,9 @@ export function create() {
   badgeEl.setAttribute(ATTR, 'collapse-badge');
   Object.assign(badgeEl.style, {
     position: 'fixed', top: '60px', right: '0', zIndex: '2147483646',
-    width: '32px', height: '32px', borderRadius: '8px 0 0 8px',
-    background: '#6366f1', color: '#fff', fontSize: '12px', fontWeight: '600',
-    display: 'none', alignItems: 'center', justifyContent: 'center',
+    width: '28px', padding: '6px 0', borderRadius: '8px 0 0 8px',
+    background: '#6366f1', color: '#fff', fontSize: '11px', fontWeight: '600',
+    display: 'none', flexDirection: 'column', alignItems: 'center', gap: '2px',
     cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
     boxShadow: '-2px 0 8px rgba(0,0,0,0.3)',
   });
@@ -81,7 +81,7 @@ function toggleCollapse() {
 function updateBadgeCount() {
   if (!badgeEl) return;
   const count = getAnnotations().length;
-  badgeEl.textContent = count || '0';
+  badgeEl.innerHTML = `<span>${count}</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`;
 }
 
 /** Refresh the sidebar list from current annotations. */
