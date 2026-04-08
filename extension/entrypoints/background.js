@@ -60,6 +60,7 @@ async function authHeaders() {
 async function pushToServer(capture, capturesDir = null) {
   try {
     const serverUrl = await discoverServer(capturesDir) || SERVER_URL;
+    console.log('[viewgraph] pushToServer: url', serverUrl, 'capturesDir', capturesDir);
     const auth = await authHeaders();
     const headers = { 'content-type': 'application/json', ...auth };
     if (capturesDir) headers['x-captures-dir'] = capturesDir;
@@ -68,9 +69,12 @@ async function pushToServer(capture, capturesDir = null) {
       headers,
       body: JSON.stringify(capture),
     });
+    console.log('[viewgraph] pushToServer: response', res.status);
     if (res.ok) return await res.json();
-  } catch {
-    // Server not running - that's fine, capture still succeeded locally
+    const err = await res.text();
+    console.error('[viewgraph] pushToServer: error', res.status, err);
+  } catch (e) {
+    console.error('[viewgraph] pushToServer: fetch failed', e.message);
   }
   return null;
 }
@@ -127,11 +131,15 @@ export default defineBackground(() => {
     if (message.type === 'send-review') {
       (async () => {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        console.log('[viewgraph] send-review: tab', tab?.url);
         if (!tab?.id) { sendResponse({ ok: false, error: 'No active tab' }); return; }
         const result = await chrome.tabs.sendMessage(tab.id, { type: 'send-review' });
+        console.log('[viewgraph] send-review: content script result', result?.ok, result?.error);
         if (!result?.ok) { sendResponse({ ok: false, error: result?.error }); return; }
         const dir = tab.url ? await lookupCapturesDir(tab.url) : null;
+        console.log('[viewgraph] send-review: capturesDir lookup', dir);
         const pushResult = await pushToServer(result.capture, dir);
+        console.log('[viewgraph] send-review: push result', pushResult);
         sendResponse({ ok: true, pushed: !!pushResult, filename: pushResult?.filename });
       })();
       return true;

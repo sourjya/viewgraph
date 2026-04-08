@@ -24,18 +24,22 @@ let _cachedUrl = null;
 let _cacheExpiry = 0;
 export async function discoverServer(targetDir = null) {
   if (_cachedUrl && Date.now() < _cacheExpiry) return _cachedUrl;
+  let fallback = null;
   for (let p = DEFAULT_HTTP_PORT; p < DEFAULT_HTTP_PORT + PORT_SCAN_RANGE; p++) {
     try {
       const res = await fetch(`http://127.0.0.1:${p}/health`, { signal: AbortSignal.timeout(500) });
       const data = await res.json();
       if (data.status === 'ok') {
-        // If targetDir specified, match against server's capturesDir
-        if (targetDir && data.capturesDir !== targetDir) continue;
-        _cachedUrl = `http://127.0.0.1:${p}`;
-        _cacheExpiry = Date.now() + 30000;
-        return _cachedUrl;
+        if (!targetDir || data.capturesDir === targetDir) {
+          _cachedUrl = `http://127.0.0.1:${p}`;
+          _cacheExpiry = Date.now() + 30000;
+          return _cachedUrl;
+        }
+        if (!fallback) fallback = `http://127.0.0.1:${p}`;
       }
     } catch { /* port not responding */ }
   }
-  return null;
+  // No exact match - use any healthy server
+  if (fallback) { _cachedUrl = fallback; _cacheExpiry = Date.now() + 30000; }
+  return fallback;
 }

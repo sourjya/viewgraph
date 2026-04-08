@@ -119,7 +119,10 @@ export function create() {
   sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#5558e6'; });
   sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = '#6366f1'; });
   sendBtn.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'send-review' });
+    console.log('[viewgraph] Send clicked, chrome.runtime available:', !!chrome?.runtime?.sendMessage);
+    chrome.runtime.sendMessage({ type: 'send-review' }, (response) => {
+      console.log('[viewgraph] Send response:', response, 'lastError:', chrome.runtime.lastError?.message);
+    });
     sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Sent!';
     sendBtn.style.background = '#059669';
     setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send'; sendBtn.style.background = '#6366f1'; }, 2000);
