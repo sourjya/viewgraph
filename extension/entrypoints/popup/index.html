@@ -115,11 +115,11 @@
       background: #1a1a2a;
       border-radius: 6px;
     }
-    .settings-panel.visible { display: block; }
+    .settings-panel.visible { display: block; border-top: 1px solid #2a2a3a; padding-top: 10px; margin-top: 8px; }
     .settings-panel label {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       padding: 4px 0;
       font-size: 10px;
       color: #9898a8;
@@ -127,8 +127,25 @@
     }
     .settings-panel label:hover { color: #c8c8d0; }
     .settings-panel input[type="checkbox"] {
-      accent-color: #6366f1;
-      width: 13px; height: 13px;
+      appearance: none; -webkit-appearance: none;
+      width: 28px; height: 16px; border-radius: 8px;
+      background: #3a3a4a; position: relative; cursor: pointer;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .settings-panel input[type="checkbox"]::after {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #888; transition: transform 0.2s, background 0.2s;
+    }
+    .settings-panel input[type="checkbox"]:checked {
+      background: #6366f1;
+    }
+    .settings-panel input[type="checkbox"]:checked::after {
+      transform: translateX(12px); background: #fff;
+    }
+    .settings-panel input[type="checkbox"]:disabled {
+      opacity: 0.5; cursor: default;
     }
   </style>
 </head>
