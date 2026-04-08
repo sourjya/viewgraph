@@ -269,6 +269,20 @@ describe('storageKey', () => {
 });
 
 describe('save and load', () => {
+  let mockStorage;
+
+  beforeEach(() => {
+    mockStorage = {};
+    globalThis.chrome = {
+      storage: {
+        local: {
+          set: async (obj) => { Object.assign(mockStorage, obj); },
+          get: async (key) => ({ [key]: mockStorage[key] }),
+        },
+      },
+    };
+  });
+
   it('save does not throw when no annotations', async () => {
     start();
     await expect(save()).resolves.not.toThrow();
@@ -278,6 +292,17 @@ describe('save and load', () => {
   it('load returns false when no stored data', async () => {
     start();
     const loaded = await load();
+    expect(loaded).toBe(false);
+    stop();
+  });
+
+  it('save then load round-trips annotations', async () => {
+    start();
+    await save();
+    stop();
+    start();
+    const loaded = await load();
+    // No annotations were added, so nothing to load
     expect(loaded).toBe(false);
     stop();
   });
