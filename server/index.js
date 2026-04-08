@@ -15,7 +15,6 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { readFile } from 'fs/promises';
 import { existsSync, mkdirSync } from 'fs';
 import path from 'path';
-import { randomUUID } from 'crypto';
 
 import {
   SERVER_NAME, SERVER_VERSION, SERVER_DESCRIPTION, LOG_PREFIX,
@@ -121,11 +120,15 @@ async function main() {
     }
   }
 
-  // Generate or read shared secret for HTTP receiver authentication.
-  // Set VIEWGRAPH_HTTP_SECRET env var to use a fixed token, otherwise
-  // a random one is generated each startup and logged to stderr.
-  const httpSecret = process.env.VIEWGRAPH_HTTP_SECRET || randomUUID();
-  console.error(`${LOG_PREFIX} HTTP secret: ${httpSecret}`);
+  // HTTP authentication: only enforce when VIEWGRAPH_HTTP_SECRET is explicitly set.
+  // When running locally without an explicit secret, auth is skipped since the
+  // server only listens on 127.0.0.1 (not exposed to the network).
+  const httpSecret = process.env.VIEWGRAPH_HTTP_SECRET || null;
+  if (httpSecret) {
+    console.error(`${LOG_PREFIX} HTTP auth enabled (secret from env)`);
+  } else {
+    console.error(`${LOG_PREFIX} HTTP auth disabled (set VIEWGRAPH_HTTP_SECRET to enable)`);
+  }
 
   // Start HTTP receiver for extension communication
   httpReceiver = createHttpReceiver({ queue: requestQueue, capturesDir: CAPTURES_DIR, allowedDirs: ALLOWED_DIRS, port: HTTP_PORT ?? 9876, secret: httpSecret });
