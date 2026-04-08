@@ -281,7 +281,19 @@ function freeze() {
   frozen = true;
   hideHoverUI();
   const id = nextId++;
-  const annotation = { id, type: 'element', region, comment: '', nids: [], ancestor };
+  const cs = window.getComputedStyle(currentEl);
+  const element = {
+    tag: currentEl.tagName.toLowerCase(),
+    selector: bestSelector(currentEl),
+    text: (currentEl.textContent || '').trim().slice(0, 80) || null,
+    placeholder: currentEl.getAttribute('placeholder') || null,
+    type: currentEl.getAttribute('type') || null,
+    fontSize: cs.fontSize,
+    fontFamily: cs.fontFamily.split(',')[0].trim(),
+    color: cs.color,
+    bg: cs.backgroundColor,
+  };
+  const annotation = { id, type: 'element', region, comment: '', nids: [], ancestor, element };
   annotations.push(annotation);
   createMarker(annotation, rect);
   save();

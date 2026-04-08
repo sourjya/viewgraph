@@ -84,10 +84,11 @@ describe('formatMarkdown', () => {
   });
 
   it('includes element details when present', () => {
-    const anns = [{ id: 1, region: { width: 350, height: 40 }, comment: 'fix', ancestor: 'input', element: { tag: 'input', selector: 'input[type="email"]' } }];
+    const anns = [{ id: 1, region: { width: 350, height: 40 }, comment: 'fix', ancestor: 'input', element: { tag: 'input', selector: 'input[type="email"]', placeholder: 'Email', fontSize: '16px', fontFamily: 'system-ui' } }];
     const md = formatMarkdown(anns, META);
-    expect(md).toContain('`<input>`');
+    expect(md).toContain('`<input placeholder="Email">`');
     expect(md).toContain('`input[type="email"]`');
+    expect(md).toContain('**Font:** 16px / system-ui');
   });
 
   it('includes region size', () => {

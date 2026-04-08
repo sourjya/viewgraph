@@ -39,8 +39,12 @@ export function formatMarkdown(annotations, metadata, options = {}) {
     lines.push(`### #${ann.id} - ${label}`);
     lines.push(`${prefix}${ann.comment || '(no comment)'}`);
     if (ann.element) {
-      if (ann.element.tag) lines.push(`- **Element:** \`<${ann.element.tag}>\``);
-      if (ann.element.selector) lines.push(`- **Selector:** \`${ann.element.selector}\``);
+      const el = ann.element;
+      const tag = el.placeholder ? `<${el.tag} placeholder="${el.placeholder}">` : el.type ? `<${el.tag} type="${el.type}">` : `<${el.tag}>`;
+      lines.push(`- **Element:** \`${tag}\``);
+      if (el.selector) lines.push(`- **Selector:** \`${el.selector}\``);
+      if (el.text) lines.push(`- **Text:** "${el.text}"`);
+      if (el.fontSize) lines.push(`- **Font:** ${el.fontSize} / ${el.fontFamily || ''}`);
     }
     if (ann.region && ann.region.width) {
       lines.push(`- **Size:** ${ann.region.width} x ${ann.region.height}px`);
