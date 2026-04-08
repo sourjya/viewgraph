@@ -1,0 +1,47 @@
+{
+  "metadata": {
+    "format": "viewgraph-v2",
+    "captureMode": "subtree-inspect",
+    "timestamp": "2026-04-08T22:35:00.000Z",
+    "url": "http://localhost:3000/login",
+    "title": "Login - Shanti",
+    "viewport": { "width": 1440, "height": 900 },
+    "inspectRoot": {
+      "tag": "div",
+      "selector": "div.card.p-4",
+      "testid": null
+    },
+    "stats": {
+      "totalNodes": 3,
+      "salience": { "high": 1, "med": 1, "low": 1 },
+      "clusters": 1
+    }
+  },
+  "nodes": {
+    "high": [
+      { "id": "btn001", "tag": "button", "text": "Login", "bbox": { "x": 100, "y": 420, "w": 120, "h": 40 }, "actions": ["click"], "cluster": "c1" }
+    ],
+    "med": [
+      { "id": "inp001", "tag": "input", "text": "", "bbox": { "x": 100, "y": 300, "w": 350, "h": 40 }, "actions": ["input"], "cluster": "c1", "attributes": { "type": "email" } }
+    ],
+    "low": [
+      { "id": "p001", "tag": "p", "text": "Sign In to your account", "bbox": { "x": 100, "y": 255, "w": 200, "h": 20 }, "actions": [], "cluster": "c1" }
+    ]
+  },
+  "summary": {
+    "layout": "login form subtree",
+    "styles": { "primaryColors": ["#6366f1"], "fonts": ["system-ui"], "spacing": "16px" },
+    "clusters": [
+      { "id": "c1", "label": "Login form", "bbox": { "x": 60, "y": 180, "w": 450, "h": 350 }, "elementCount": 3 }
+    ]
+  },
+  "relations": {
+    "parentChild": []
+  },
+  "details": {
+    "btn001": {
+      "selector": "button.btn-primary",
+      "attributes": { "role": "button" }
+    }
+  }
+}

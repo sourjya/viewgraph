@@ -8,6 +8,35 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Extension UX Improvements
+- Popup: dark background fills edge-to-edge, header icon alignment fixed
+- Inspector: copy selector uses fallback textarea method, shows tick confirmation, returns to inspect mode
+- Inspector: action bar click detection walks DOM tree to prevent false unfreeze on SVG clicks
+- Review: shift+drag fixed with stopPropagation, Escape exits review mode
+- Review: annotation sidebar renamed to "Review Notes" with chat icon header
+- Review: collapsed sidebar shows horizontal badge with chat icon + count + chevron (doubled size)
+- Review: empty state hint "Shift + drag to select a region"
+- Review: common ancestor label on markers (e.g. div.card.p-4) in monospace
+- Review: brief 500ms outline flash on intersected elements after drag-select
+- Review: comment changes sync to sidebar in real-time
+- Review: annotation panel has close button + click-outside-to-dismiss
+- Review: manual resolve toggle (circle/checkmark) with strikethrough on comment only
+- Review: annotations persist to chrome.storage.local keyed by URL
+- Review: "Send to Kiro" button in sidebar (disabled when empty)
+- Review: clicking Review again loads saved annotations from storage
+- Modes are mutually exclusive: inspect exits review, review exits inspect, capture exits both
+- Settings footer in popup: gear icon toggles JSON/HTML/Screenshot capture options
+- Capture message simplified to "Captured N elements" (no filename)
+- 134 extension tests
+
+### Milestone 7: Deployment, Testing, and Automation
+- Build script: `scripts/build-extension.sh` - Chrome/Firefox/all targets
+- Version bump: `scripts/bump-version.sh` - semver validation, updates all package.json files
+- CI script: `scripts/ci.sh` - install, lint, server tests, extension tests, build
+- Test fixtures: review-capture.json (3 annotations with ancestor labels, 1 resolved), subtree-capture.json
+- Server setup runbook: `docs/runbooks/server-setup.md`
+- 265 total tests (131 server + 134 extension)
+
 ### Milestone 6: Review Mode + Annotations
 - Region selector: shift+drag to draw selection rectangles
 - Numbered markers: colored overlays with badge numbers on selected regions
