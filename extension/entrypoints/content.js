@@ -51,7 +51,12 @@ export default defineContentScript({
             onAdd: (ann) => { showPanel(ann, { onChange: () => refreshSidebar() }); refreshSidebar(); },
             onRemove: () => { refreshSidebar(); },
           });
-          await loadAnnotations();
+          loadAnnotations().then(() => {
+            destroySidebar();
+            createSidebar();
+            sendResponse({ ok: true, active: isReviewing() });
+          });
+          return true;
         }
         destroySidebar();
         createSidebar();
