@@ -138,6 +138,31 @@ Your AI agent can now use ViewGraph tools:
 > find_missing_testids filename="viewgraph-localhost-20260408-120612.json"
 ```
 
+## Workflows
+
+### For developers with AI agents
+
+1. Open your app in Chrome, click **Annotate** in the ViewGraph popup
+2. Click elements or shift+drag regions, add comments describing what to fix
+3. Click **Send to Kiro** - annotations bundle with the full DOM capture
+4. In your AI agent, ask about the annotations - it has full DOM context to implement fixes
+
+### For testers and reviewers
+
+ViewGraph works without an AI agent. Testers annotate the UI the same way, then export their notes:
+
+1. Open the app in Chrome, click **Annotate**
+2. Click or shift+drag to select problem areas, add comments
+3. Export your review:
+   - **Copy Markdown** - copies a structured bug report to clipboard, paste into Jira/Linear/GitHub
+   - **Download Report** - saves a ZIP with markdown report + cropped screenshots per annotation
+
+No MCP server needed. No AI agent needed. The extension works standalone for anyone who needs to document UI issues.
+
+### For teams
+
+A tester annotates and exports to markdown. A developer annotates and sends to Kiro. Both use the same tool, same workflow, same annotation format. The only difference is where the notes go.
+
 ## Development
 
 ```bash
