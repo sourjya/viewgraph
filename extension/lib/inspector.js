@@ -305,7 +305,7 @@ function copySelector(btn) {
   navigator.clipboard.writeText(selector).then(() => {
     // Show tick confirmation, then fade back
     const original = btn.textContent;
-    btn.textContent = '✓ Copied';
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied';
     Object.assign(btn.style, { background: '#059669', color: '#fff' });
     setTimeout(() => {
       btn.textContent = original;
