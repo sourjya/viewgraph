@@ -21,7 +21,7 @@
 
 import { readFileSync, existsSync } from 'fs';
 import path from 'path';
-import { ENV_CAPTURES_DIR, ENV_MAX_CAPTURES, ENV_HTTP_PORT, LOG_PREFIX, PROJECT_PREFIX } from './constants.js';
+import { ENV_CAPTURES_DIR, ENV_MAX_CAPTURES, ENV_HTTP_PORT, LOG_PREFIX, PROJECT_PREFIX, DEFAULT_HTTP_PORT } from './constants.js';
 
 const CONFIG_FILENAME = `.${PROJECT_PREFIX}rc.json`;
 
@@ -116,7 +116,7 @@ export function resolveConfig(cwd = process.cwd()) {
   const httpPort = parseInt(
     process.env[ENV_HTTP_PORT]
     || fileConfig.httpPort
-    || '9876',
+    || String(DEFAULT_HTTP_PORT),
     10,
   );
 

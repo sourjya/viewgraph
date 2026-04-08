@@ -27,3 +27,6 @@ export const ENV_HTTP_PORT = `${PROJECT_PREFIX.toUpperCase()}_HTTP_PORT`;
 
 /** Stderr log prefix. */
 export const LOG_PREFIX = `[${PROJECT_PREFIX}]`;
+
+/** Default HTTP receiver port for extension communication. */
+export const DEFAULT_HTTP_PORT = 9876;

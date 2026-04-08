@@ -12,8 +12,7 @@
  * for anything that must survive termination.
  */
 
-/** Default MCP server HTTP receiver URL. */
-const SERVER_URL = 'http://127.0.0.1:9876';
+import { SERVER_BASE_URL as SERVER_URL } from '../lib/constants.js';
 
 /**
  * Push a capture to the MCP server. Fails silently if server is not running.
