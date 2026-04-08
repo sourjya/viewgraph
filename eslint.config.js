@@ -1,5 +1,5 @@
 /**
- * ESLint Configuration — Sifr MCP Bridge
+ * ESLint Configuration — ViewGraph
  *
  * Flat config format (ESLint 9+). Applies recommended rules across both
  * server/ and extension/ workspaces. ES modules throughout.

@@ -54,7 +54,7 @@ Terminal output capture can be unreliable in some environments (TTY issues). Alw
 - Use Zod for all input validation schemas
 - Tool descriptions are prompts for the LLM, not documentation for humans
 - Cap tool response sizes at ~100KB -- include metadata for truncated results
-- Validate all file paths against `SIFR_CAPTURES_DIR` root -- no path traversal
+- Validate all file paths against `VIEWGRAPH_CAPTURES_DIR` root -- no path traversal
 - Use `InMemoryTransport` for integration tests
 - Implement graceful shutdown on SIGINT/SIGTERM
 

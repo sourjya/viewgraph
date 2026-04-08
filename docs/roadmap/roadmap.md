@@ -1,4 +1,4 @@
-# Sifr MCP Bridge — Project Roadmap
+# ViewGraph — Project Roadmap
 
 **Created:** 2026-04-08
 **Status:** Active
@@ -35,25 +35,25 @@ Each milestone below will be converted into a full Kiro spec under
 
 ## Milestone 1: MCP Server — Core Tools (Days 2-4)
 
-**Goal:** MCP server reads existing Sifr capture files from disk and exposes
+**Goal:** MCP server reads existing ViewGraph capture files from disk and exposes
 core query tools to Kiro.
 
 **Spec:** `.kiro/specs/mcp-server-core/`
 
 | # | Task | Details |
 |---|---|---|
-| 1.1 | File watcher | Watch `SIFR_CAPTURES_DIR` for new `.json` files. Use `chokidar` (not `fs.watch` — unreliable on WSL/Windows boundary). |
+| 1.1 | File watcher | Watch `VIEWGRAPH_CAPTURES_DIR` for new `.json` files. Use `chokidar` (not `fs.watch` — unreliable on WSL/Windows boundary). |
 | 1.2 | Indexer | Parse `====METADATA====` from each capture, maintain in-memory index (filename, url, title, timestamp, node count). Rebuild on startup. |
-| 1.3 | Sifr v2 parser | Parse all sections (METADATA, NODES, SUMMARY, RELATIONS, DETAILS, ANNOTATIONS). |
+| 1.3 | ViewGraph v2 parser | Parse all sections (METADATA, NODES, SUMMARY, RELATIONS, DETAILS, ANNOTATIONS). |
 | 1.4 | Tool: `list_captures` | Input: `{ limit?, url_filter? }`. Returns array of capture metadata. |
 | 1.5 | Tool: `get_latest_capture` | Input: `{ url_filter? }`. Returns full JSON or summary if >100KB. |
-| 1.6 | Tool: `get_capture` | Input: `{ filename }`. Returns full Sifr JSON. Path validation against captures dir. |
+| 1.6 | Tool: `get_capture` | Input: `{ filename }`. Returns full ViewGraph JSON. Path validation against captures dir. |
 | 1.7 | Tool: `get_page_summary` | Input: `{ filename }`. Returns extracted summary: url, title, layout, styles, element counts, clusters. |
 | 1.8 | Integration tests | Use `InMemoryTransport` to test all 4 tools end-to-end. |
 | 1.9 | Manual Kiro test | Register server, verify tools appear, test with real capture file. |
 
 **Exit criteria:** Kiro can list captures, get the latest, query a specific capture,
-and get a page summary — all from existing Sifr JSON files on disk.
+and get a page summary — all from existing ViewGraph JSON files on disk.
 
 **Effort:** 2-3 days
 
@@ -107,19 +107,19 @@ request to a polling client, and `get_request_status` returns the result.
 
 ## Milestone 4: Firefox Extension — Core Capture (Days 10-15)
 
-**Goal:** Working Firefox extension with popup UI, DOM traversal, and Sifr JSON output.
+**Goal:** Working Firefox extension with popup UI, DOM traversal, and ViewGraph JSON output.
 
 **Spec:** `.kiro/specs/extension-core/`
 
 | # | Task | Details |
 |---|---|---|
 | 4.1 | WXT project setup | Configure for Firefox MV3, manifest permissions, build pipeline. |
-| 4.2 | Popup UI | Mode switcher with Screenshot, Sifr Capture, Select Element buttons. Status display. |
+| 4.2 | Popup UI | Mode switcher with Screenshot, ViewGraph Capture, Select Element buttons. Status display. |
 | 4.3 | DOM traverser | Content script: walk DOM tree, extract tag/role/name/bbox/selectors/attributes. |
 | 4.4 | Salience scorer | Classify elements as high/med/low based on interactivity, size, visibility. |
 | 4.5 | Spatial clusterer | Group nearby elements into clusters with bounding boxes. |
 | 4.6 | Style extractor | Extract computed styles: colors, fonts, layout properties. |
-| 4.7 | Serializer | Format output as Sifr v2 JSON with all sections. |
+| 4.7 | Serializer | Format output as ViewGraph v2 JSON with all sections. |
 | 4.8 | Disk output | Save JSON via `browser.downloads.download()` to captures dir. |
 | 4.9 | Full-page screenshot | Scroll-and-stitch via `captureVisibleTab`. Handle Firefox MV3 bugs. |
 | 4.10 | MCP push | POST capture JSON + base64 screenshot to MCP server `/capture` endpoint. |
@@ -146,7 +146,7 @@ MCP server. Kiro can request a capture and receive the result.
 | 5.2 | Rich tooltip | Show tag, role, accessible name, data-testid, bbox dimensions, depth. |
 | 5.3 | Scroll-wheel DOM walking | Scroll up = parent, scroll down = child. Update overlay + tooltip in real-time. |
 | 5.4 | Shadow DOM piercing | `shadowRoot.elementFromPoint()` for open shadow roots. |
-| 5.5 | Click to capture | Capture selected element's subtree as Sifr JSON. |
+| 5.5 | Click to capture | Capture selected element's subtree as ViewGraph JSON. |
 | 5.6 | Escape to cancel | Clean up overlay and tooltip on Escape. |
 | 5.7 | Cross-browser testing | Verify overlay positioning, tooltip rendering, scroll behavior in Chrome + Firefox. |
 
@@ -173,7 +173,7 @@ and click to capture a subtree.
 | 6.6 | Delete flow | Remove overlay, annotation, sidebar entry. Keyboard shortcut. |
 | 6.7 | Resize handles | Drag edges of existing selections to resize. |
 | 6.8 | Review Mode send | Bundle all annotations + full page capture + screenshot. Save/push. |
-| 6.9 | ANNOTATIONS section | Serialize annotations into Sifr JSON output. |
+| 6.9 | ANNOTATIONS section | Serialize annotations into ViewGraph JSON output. |
 | 6.10 | End-to-end test | Create annotations in extension → verify Kiro reads them via `get_annotations`. |
 
 **Exit criteria:** User can enter Review Mode, make multiple annotated selections,
@@ -217,14 +217,14 @@ and send a bundled capture that Kiro can read and act on.
 | 7.12 | Extension integration tests | WXT test utils for popup UI, inspector overlay, annotation panel. |
 | 7.13 | E2E smoke test | Script that: starts server → loads extension → captures a test page → verifies Kiro can read the capture. |
 | 7.14 | CI script | `scripts/ci.sh` — runs lint + all tests. Can be wired to GitHub Actions later. |
-| 7.15 | Test fixtures | Sample Sifr captures (standard + annotated) in `server/tests/fixtures/`. |
+| 7.15 | Test fixtures | Sample ViewGraph captures (standard + annotated) in `server/tests/fixtures/`. |
 
 ### Manual Testing Checklist
 
 | # | Test | Steps |
 |---|---|---|
 | M1 | Quick screenshot | Click 📸 → verify PNG saved to captures dir |
-| M2 | Sifr capture | Click 📋 → verify JSON + PNG saved, push to MCP |
+| M2 | ViewGraph capture | Click 📋 → verify JSON + PNG saved, push to MCP |
 | M3 | Select element | Click 🎯 → hover → scroll to parent → click → verify subtree JSON |
 | M4 | Review mode | Enter review → drag-select region → annotate → send → verify in Kiro |
 | M5 | Remote capture | In Kiro: `request_capture` → verify extension fulfills → result returned |

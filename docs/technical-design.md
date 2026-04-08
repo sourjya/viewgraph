@@ -1,4 +1,4 @@
-# Sifr MCP Bridge — Technical Design Document
+# ViewGraph — Technical Design Document
 
 **Date:** 2026-04-08
 **Status:** Concept — ready for implementation
@@ -21,7 +21,7 @@ design reference, and on-demand remote capture from the IDE.
 Firefox Extension                    Disk                    MCP Server                 Kiro
 ─────────────────                    ────                    ──────────                 ────
 Click capture button ──► Write JSON+PNG ──► Watches folder ──► Exposes as MCP tools
-  or fulfill request     sifr-captures/     Indexes captures    get_latest_capture()
+  or fulfill request     viewgraph-captures/     Indexes captures    get_latest_capture()
                                             Parses metadata     list_captures()
                                                                 get_capture(id)
                                                                 get_page_summary()
@@ -41,7 +41,7 @@ Click capture button ──► Write JSON+PNG ──► Watches folder ──►
 
 ---
 
-## Component 1: Firefox Extension (Sifr Capture)
+## Component 1: Firefox Extension (ViewGraph Capture)
 
 ### What It Captures
 
@@ -67,7 +67,7 @@ with a mode switcher. Modes are split into two tiers based on workflow:
 | Mode | Icon | Behavior | Output |
 |---|---|---|---|
 | 📸 Screenshot | Camera | Immediate full-page scroll-stitch PNG | PNG only |
-| 📋 Sifr Capture | Document | Immediate DOM traverse + screenshot | JSON + PNG |
+| 📋 ViewGraph Capture | Document | Immediate DOM traverse + screenshot | JSON + PNG |
 | 🎯 Select Element | Crosshair | Enter hover-inspect mode, click to capture one element subtree | JSON (subtree) + element screenshot |
 
 **Tier 2 — Review Mode (batch, annotate, then send):**
@@ -87,11 +87,11 @@ them, then publish as a bundle.
 
 ```
 ┌─────────────────────────────────┐
-│  Sifr Capture                   │
+│  ViewGraph Capture                   │
 │                                 │
 │  ┌───────┐ ┌───────┐ ┌───────┐ │
 │  │  📸   │ │  📋   │ │  🎯   │ │  ← Quick-fire row
-│  │ Shot  │ │ Sifr  │ │ Elem  │ │
+│  │ Shot  │ │ ViewGraph  │ │ Elem  │ │
 │  └───────┘ └───────┘ └───────┘ │
 │                                 │
 │  ┌─────────────────────────────┐│
@@ -100,7 +100,7 @@ them, then publish as a bundle.
 │  └─────────────────────────────┘│
 │                                 │
 │  Status: Ready                  │
-│  Output: SIFR (v2) ▼           │
+│  Output: VIEWGRAPH (v2) ▼           │
 │  ☑ Save to file                 │
 │  ☑ Push to MCP                  │
 │                                 │
@@ -291,21 +291,21 @@ async function captureFullPage(tabId) {
 ### Output Format
 
 The JSON output varies by capture mode. Quick-fire modes produce the standard
-Sifr format. Review Mode adds an `ANNOTATIONS` section and optional
+ViewGraph format. Review Mode adds an `ANNOTATIONS` section and optional
 `SELECTIONS` for region captures.
 
-**Standard capture (Screenshot, Sifr Capture, Select Element):**
+**Standard capture (Screenshot, ViewGraph Capture, Select Element):**
 
 ```json
 {
   "====METADATA====": {
-    "format": "sifr-v2",
-    "captureMode": "sifr-capture",
+    "format": "viewgraph-v2",
+    "captureMode": "viewgraph-capture",
     "timestamp": "2026-04-08T06:08:15.214Z",
     "url": "http://localhost:8040/projects",
     "title": "Projects - AI Video Editor",
     "viewport": { "width": 1696, "height": 799 },
-    "screenshot": "sifr-localhost-2026-04-08T060815.png",
+    "screenshot": "viewgraph-localhost-2026-04-08T060815.png",
     "stats": {
       "totalNodes": 375,
       "salience": { "high": 6, "med": 286, "low": 83 },
@@ -324,7 +324,7 @@ Sifr format. Review Mode adds an `ANNOTATIONS` section and optional
 ```json
 {
   "====METADATA====": {
-    "format": "sifr-v2",
+    "format": "viewgraph-v2",
     "captureMode": "review",
     "timestamp": "...",
     "url": "...",
@@ -389,8 +389,8 @@ Firefox Extension
 
 | Setting | Default | Description |
 |---|---|---|
-| `outputDir` | `~/Downloads/sifr-captures/` | Where JSON and PNG files are saved |
-| `filenamePattern` | `sifr-{hostname}-{timestamp}.json` | Output filename template (PNG uses same basename) |
+| `outputDir` | `~/Downloads/viewgraph-captures/` | Where JSON and PNG files are saved |
+| `filenamePattern` | `viewgraph-{hostname}-{timestamp}.json` | Output filename template (PNG uses same basename) |
 | `autoCapture` | false | Capture on every page load (for regression) |
 | `salience.minLevel` | `low` | Minimum salience to include (low/med/high) |
 | `maxNodes` | 500 | Cap on total nodes to prevent huge files |
@@ -403,7 +403,7 @@ Firefox Extension
 | `screenshot.maxViewports` | 20 | Max viewport-heights to capture (caps very tall pages) |
 | `pollInterval` | 3000 | Milliseconds between polls to `GET /pending` (0 = disabled) |
 | `requestTimeout` | 30000 | Max ms to wait for a requested capture to complete |
-| `defaultMode` | `sifr-capture` | Default capture mode on popup open (`screenshot`, `sifr-capture`, `select-element`, `review`) |
+| `defaultMode` | `viewgraph-capture` | Default capture mode on popup open (`screenshot`, `viewgraph-capture`, `select-element`, `review`) |
 | `inspector.tooltipFields` | `["tag","role","name","testid","bbox"]` | Fields shown in hover inspector tooltip |
 | `inspector.nestingColors` | `["#3b82f6","#22c55e","#f97316","#ef4444"]` | Overlay colors for nesting levels (leaf → ancestor) |
 | `region.overlapThreshold` | 0.5 | Min fraction of element area that must intersect selection rectangle |
@@ -429,14 +429,14 @@ async function outputCapture(json, screenshotBlob) {
   const jsonBlob = new Blob([JSON.stringify(json)], { type: 'application/json' });
   await browser.downloads.download({
     url: URL.createObjectURL(jsonBlob),
-    filename: `sifr-captures/${basename}.json`,
+    filename: `viewgraph-captures/${basename}.json`,
   });
 
   // Write screenshot PNG to disk (if enabled)
   if (screenshotBlob) {
     await browser.downloads.download({
       url: URL.createObjectURL(screenshotBlob),
-      filename: `sifr-captures/${basename}.png`,
+      filename: `viewgraph-captures/${basename}.png`,
     });
   }
 
@@ -500,7 +500,7 @@ export function startPolling(endpoint, interval) {
 
 ---
 
-## Component 2: MCP Server (sifr-mcp-server)
+## Component 2: MCP Server (viewgraph-mcp-server)
 
 ### Architecture
 
@@ -511,7 +511,7 @@ A Node.js MCP server that:
 4. Exposes MCP tools for Kiro to query captures
 
 ```
-sifr-mcp-server/
+viewgraph-mcp-server/
 ├── package.json
 ├── index.js               (MCP server entry point)
 ├── src/
@@ -531,7 +531,7 @@ sifr-mcp-server/
 │   │   ├── request-capture.js
 │   │   └── get-request-status.js
 │   └── parsers/
-│       ├── sifr-v2.js     (parse Sifr v2 format)
+│       ├── viewgraph-v2.js     (parse ViewGraph v2 format)
 │       └── summary.js     (extract human-readable summary from capture)
 ```
 
@@ -540,8 +540,8 @@ sifr-mcp-server/
 | Tool | Input | Output | Use Case |
 |---|---|---|---|
 | `list_captures` | `{ limit?, url_filter? }` | Array of `{ filename, url, title, timestamp, node_count }` | Browse available captures |
-| `get_latest_capture` | `{ url_filter? }` | Full Sifr JSON (or summary if too large) | Quick access to most recent |
-| `get_capture` | `{ filename }` | Full Sifr JSON | Access specific capture |
+| `get_latest_capture` | `{ url_filter? }` | Full ViewGraph JSON (or summary if too large) | Quick access to most recent |
+| `get_capture` | `{ filename }` | Full ViewGraph JSON | Access specific capture |
 | `get_page_summary` | `{ filename }` | `{ url, title, layout, styles, element_counts, clusters }` | Quick overview without full JSON |
 | `get_elements_by_role` | `{ filename, role }` | Elements matching role: buttons, links, inputs, headings, images | Targeted element queries |
 | `get_interactive_elements` | `{ filename }` | All clickable/editable elements with selectors and labels | Test generation input |
@@ -622,7 +622,7 @@ export function startHttpReceiver(port, { onCapture, requestQueue }) {
     req.on('end', () => {
       if (req.method === 'POST' && url.pathname === '/capture') {
         const data = JSON.parse(body);
-        const filename = `sifr-push-${Date.now()}.json`;
+        const filename = `viewgraph-push-${Date.now()}.json`;
         onCapture(filename, data);
         if (data.request_id) requestQueue.complete(data.request_id, filename);
         res.writeHead(200);
@@ -700,9 +700,9 @@ export class RequestQueue {
 ### Configuration
 
 ```json
-// sifr-mcp-config.json
+// viewgraph-mcp-config.json
 {
-  "capturesDir": "/mnt/c/Users/sourj/Downloads/sifr-captures",
+  "capturesDir": "/mnt/c/Users/sourj/Downloads/viewgraph-captures",
   "httpPort": 9090,
   "enableHttpReceiver": true,
   "maxCapturesInMemory": 50,
@@ -721,12 +721,12 @@ In any project's `.kiro/settings/mcp.json`:
 ```json
 {
   "mcpServers": {
-    "sifr": {
+    "viewgraph": {
       "command": "node",
-      "args": ["/home/sourjya/coding/sifr-mcp-server/index.js"],
+      "args": ["/home/sourjya/coding/viewgraph-mcp-server/index.js"],
       "env": {
-        "SIFR_CAPTURES_DIR": "/mnt/c/Users/sourj/Downloads/sifr-captures",
-        "SIFR_HTTP_PORT": "9090"
+        "VIEWGRAPH_CAPTURES_DIR": "/mnt/c/Users/sourj/Downloads/viewgraph-captures",
+        "VIEWGRAPH_HTTP_PORT": "9090"
       }
     }
   }
@@ -737,7 +737,7 @@ In any project's `.kiro/settings/mcp.json`:
 
 **UI Audit:**
 ```
-You: Read the latest Sifr capture and audit for accessibility issues
+You: Read the latest ViewGraph capture and audit for accessibility issues
 Kiro: [calls audit_accessibility] Found 3 issues:
       - btn003 "Delete" has no aria-label
       - input "search" missing associated <label>
@@ -812,7 +812,7 @@ Kiro: [calls get_annotations] Found 2 annotations:
 ┌──────────────────────────┐
 │  Firefox Browser          │
 │                           │
-│  User clicks Sifr button  │
+│  User clicks ViewGraph button  │
 │  ── OR ──                 │
 │  Poller receives request  │
 │  from MCP server          │
@@ -847,7 +847,7 @@ Kiro: [calls get_annotations] Found 2 annotations:
      │         │
      ▼         ▼
 ┌──────────────────────────┐
-│  sifr-mcp-server          │
+│  viewgraph-mcp-server          │
 │                           │
 │  fs.watch ◄── disk        │
 │  HTTP ◄──── push          │
@@ -1053,7 +1053,7 @@ throw new McpError(ErrorCode.InvalidParams, 'Path traversal not allowed');
 All file paths must be validated against an allowed root directory:
 
 ```javascript
-const ALLOWED_ROOT = process.env.SIFR_CAPTURES_DIR;
+const ALLOWED_ROOT = process.env.VIEWGRAPH_CAPTURES_DIR;
 
 function validatePath(filePath) {
   const resolved = path.resolve(filePath);
@@ -1127,7 +1127,7 @@ the format entirely. Here's the contract:
 
 **For standard captures (no annotations):**
 Kiro calls `get_capture` or `get_page_summary` → receives structured JSON →
-reasons about it directly. The Sifr format's section headers (`====NODES====`,
+reasons about it directly. The ViewGraph format's section headers (`====NODES====`,
 `====DETAILS====`) are self-describing. Kiro already handles JSON natively.
 
 **For annotated captures (Review Mode):**
@@ -1165,23 +1165,23 @@ the user's comments. This keeps context tight.
 ### Format Extensibility
 
 The annotation layer is format-agnostic. If the capture format changes from
-Sifr v2 to a future bundle format (with accessibility trees, provenance, etc.),
+ViewGraph v2 to a future bundle format (with accessibility trees, provenance, etc.),
 annotations still work — they reference nodes by UID, and UIDs are stable
 across format versions.
 
-If a non-Sifr format is used (e.g., raw CDP DOMSnapshot), the MCP server's
+If a non-ViewGraph format is used (e.g., raw CDP DOMSnapshot), the MCP server's
 parser normalizes it into the same node structure with UIDs, and annotations
 attach identically.
 
-### Kiro Steering for Sifr Captures
+### Kiro Steering for ViewGraph Captures
 
 No special Kiro configuration is needed beyond the MCP server registration.
 However, a steering doc can improve Kiro's behavior with captures:
 
 ```markdown
-# Sifr Capture Handling (optional steering doc)
+# ViewGraph Capture Handling (optional steering doc)
 
-When working with Sifr captures via MCP tools:
+When working with ViewGraph captures via MCP tools:
 
 1. Always call `get_annotations` first if the capture has `captureMode: "review"`
 2. Use annotation comments as the primary task list — each annotation is a change request
@@ -1249,7 +1249,7 @@ provides a strong foundation for agentic coding workflows.
 - **Effort:** 1-2 days
 
 ### Phase 3: Firefox Extension — Core (replaces Element-to-LLM)
-- Popup UI with mode switcher (Screenshot, Sifr Capture, Select Element)
+- Popup UI with mode switcher (Screenshot, ViewGraph Capture, Select Element)
 - DOM traversal with salience scoring
 - Spatial clustering + style extraction
 - Full-page scroll-and-stitch screenshot capture
@@ -1319,7 +1319,7 @@ The MCP server and extension are standalone tools, not tied to any specific code
    Full JSON only via explicit `get_capture`. Keeps LLM context manageable.
 4. **Index persistence:** Rebuild from files on startup. No SQLite. Files are
    source of truth, index is an in-memory cache. <1s scan for 50 captures.
-5. **Capture publish timing:** Two-tier model. Quick-fire modes (Screenshot, Sifr
+5. **Capture publish timing:** Two-tier model. Quick-fire modes (Screenshot, ViewGraph
    Capture, Select Element) publish immediately on click. Review Mode batches
    all selections and annotations, publishes only when user clicks Send/Save.
    This balances speed for simple captures with flexibility for annotated reviews.

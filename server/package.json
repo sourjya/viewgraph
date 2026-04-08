@@ -1,5 +1,5 @@
 {
-  "name": "sifr-mcp-server",
+  "name": "viewgraph-mcp-server",
   "version": "0.1.0",
   "description": "MCP server exposing Sifr capture tools to AI coding assistants",
   "type": "module",

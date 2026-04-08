@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the Sifr MCP Bridge project.
+All notable changes to the ViewGraph project.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
@@ -20,3 +20,6 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Code review prompt, TDD tasks template, security reviewer agent
 - Technical design document with full architecture spec
 - Project roadmap with 8 milestones (docs/roadmap/roadmap.md)
+
+### Changed
+- Renamed project from Sifr to ViewGraph across all config, source, and documentation files

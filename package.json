@@ -1,7 +1,7 @@
 {
-  "name": "sifr-mcp-bridge",
+  "name": "viewgraph",
   "version": "0.1.0",
-  "description": "Browser extension + MCP server for AI-powered UI capture, auditing, and annotation",
+  "description": "Browser extension + MCP server for AI-powered UI capture, auditing, and annotation — ViewGraph",
   "private": true,
   "type": "module",
   "workspaces": [

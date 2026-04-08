@@ -16,7 +16,6 @@ inclusion: always
 ## Project Structure
 
 ```
-sifr-mcp-server/
 ├── extension/                 (Firefox extension -- WXT project)
 │   ├── manifest.json
 │   ├── background.js          (service worker)

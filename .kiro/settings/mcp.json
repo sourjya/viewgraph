@@ -1,11 +1,11 @@
 {
   "mcpServers": {
-    "sifr": {
+    "viewgraph": {
       "command": "node",
       "args": ["/home/sourjya/coding/sifr-mcp-server/server/index.js"],
       "env": {
-        "SIFR_CAPTURES_DIR": "/mnt/c/Users/sourj/Downloads/sifr-captures",
-        "SIFR_HTTP_PORT": "9090"
+        "VIEWGRAPH_CAPTURES_DIR": "/mnt/c/Users/sourj/Downloads/viewgraph-captures",
+        "VIEWGRAPH_HTTP_PORT": "9090"
       }
     }
   }

@@ -1,5 +1,5 @@
 /**
- * Background Service Worker — Sifr Capture Extension
+ * Background Service Worker — ViewGraph Capture Extension
  *
  * Orchestrates capture flow: receives messages from popup/content scripts,
  * coordinates DOM traversal + screenshot capture, and handles output
@@ -8,5 +8,5 @@
  */
 
 export default defineBackground(() => {
-  console.log('Sifr Capture background service worker started');
+  console.log('ViewGraph Capture background service worker started');
 });

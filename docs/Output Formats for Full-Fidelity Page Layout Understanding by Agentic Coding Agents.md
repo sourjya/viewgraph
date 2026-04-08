@@ -8,7 +8,7 @@ For web pages, the most “complete” machine-ingestable foundation today is **
 
 For native mobile screens, parity comes from capturing both **view hierarchy** and **accessibility hierarchy** (they can diverge), plus screenshots. Android’s official documentation explicitly notes that an accessibility tree may not map one-to-one to the view hierarchy, because custom views may expose a virtual accessibility subtree. iOS automation similarly depends heavily on accessibility identifiers, labels, and frames exposed through accessibility APIs and UI testing frameworks. citeturn4search1turn4search2turn4search6turn3search22turn10search0
 
-Your current SIFR v2 approach already contains several critical ingredients (salience, clusters, selectors, computed styles, bounding boxes). The provided sample capture includes explicit metadata (viewport, devicePixelRatio, user agent), hierarchical nodes grouped by salience, spatial clusters with bounding boxes, inter-element relations, and detailed per-node selectors and attributes such as ARIA and test IDs. fileciteturn0file0 fileciteturn0file1  
+Your current ViewGraph v2 approach already contains several critical ingredients (salience, clusters, selectors, computed styles, bounding boxes). The provided sample capture includes explicit metadata (viewport, devicePixelRatio, user agent), hierarchical nodes grouped by salience, spatial clusters with bounding boxes, inter-element relations, and detailed per-node selectors and attributes such as ARIA and test IDs. fileciteturn0file0 fileciteturn0file1  
 The biggest step-change to make it “agentic-ready” is to add: **authoritative screenshot grounding**, **accessibility-tree capture and DOM-to-AX mapping**, **incremental diff streams**, and **a security and provenance envelope**.
 
 ## Survey of page-layout representation formats
@@ -53,7 +53,7 @@ Primary references for the dominant mechanisms above: DOM model and UI event sem
 
 **Annotation standards are the glue for screenshot grounding.** The Web Annotation Data Model supports selecting segments of resources using selectors, including SVG-based selectors for geometric regions. IIIF’s Presentation API explicitly moved from Open Annotation to the W3C Web Annotation model, which is a strong signal that Web Annotation is the modern interoperable choice for image-region annotations and provenance in this space. COCO and LabelMe provide widely-used conventions for bounding boxes, segmentations, and polygon annotations in computer vision datasets. citeturn0search3turn7search4turn7search0turn7search2turn7search3
 
-**How SIFR fits in this landscape.** Your SIFR v2 output is effectively a hybrid between a DOM-derived layout snapshot and a test-oriented element map: it stores metadata, a salience-filtered node tree, spatial clusters, relations, and detailed selectors plus attributes and computed styles. This is precisely the shape that helps agents conserve context while still having precise selectors and geometry. fileciteturn0file0 fileciteturn0file1
+**How ViewGraph fits in this landscape.** Your ViewGraph v2 output is effectively a hybrid between a DOM-derived layout snapshot and a test-oriented element map: it stores metadata, a salience-filtered node tree, spatial clusters, relations, and detailed selectors plus attributes and computed styles. This is precisely the shape that helps agents conserve context while still having precise selectors and geometry. fileciteturn0file0 fileciteturn0file1
 
 image_group{"layout":"carousel","aspect_ratio":"16:9","query":["Chrome DevTools accessibility tree panel screenshot","Chrome DevTools Elements panel DOM inspector screenshot","Android Studio Layout Inspector view hierarchy screenshot","Xcode view debugger hierarchy screenshot"],"num_per_query":1}
 
@@ -69,7 +69,7 @@ A **tree** for containment plus **edges** for non-tree relations (label-for, des
 
 A **canonical coordinate frame** plus explicit conversions: CSS pixel coordinates (viewport-relative), scrolling offsets, and device pixel ratio for web; screen coordinates and bounds for mobile. Standard APIs describe bounding boxes relative to the viewport and require clear definition of what “bounding box” means. citeturn20search1turn0search0turn4search6turn4search1
 
-A **stable identifier strategy**: internal node IDs (for cross-file joins), plus one or more stable selectors (data-testid, accessibilityIdentifier, resource-id). Your current SIFR v2 already stores test IDs and ARIA attributes within element details. fileciteturn0file0 citeturn4search2turn4search1
+A **stable identifier strategy**: internal node IDs (for cross-file joins), plus one or more stable selectors (data-testid, accessibilityIdentifier, resource-id). Your current ViewGraph v2 already stores test IDs and ARIA attributes within element details. fileciteturn0file0 citeturn4search2turn4search1
 
 ### Tokenization, size limits, and incremental updates
 
@@ -77,7 +77,7 @@ In practice, complete UI trees are large enough to blow past real-world context 
 
 Therefore, agent-friendly inputs need:
 
-**Progressive disclosure**: a small summary first (above-the-fold, salient nodes, key clusters), then tool calls to fetch subtrees or details on demand. This aligns with SIFR’s salience model and clustering strategy. fileciteturn0file1
+**Progressive disclosure**: a small summary first (above-the-fold, salient nodes, key clusters), then tool calls to fetch subtrees or details on demand. This aligns with ViewGraph's salience model and clustering strategy. fileciteturn0file1
 
 **Patchable updates**: JSON Patch provides a standardized patch document format for updating JSON documents, and JSON Merge Patch provides a simpler “merge-like” alternative. For streaming binary representations, CBOR sequences are designed to concatenate independent CBOR items for streaming. citeturn5search3turn18search3turn18search2
 
@@ -127,7 +127,7 @@ The most future-proof approach is to define a **platform-neutral Core UI Graph**
 Name it whatever you like. Here is a concrete, implementable conceptual model:
 
 **A. Manifest and provenance envelope**
-- Capture metadata: URL or app screen identifier, timestamp, viewport/screen size, devicePixelRatio, locale, and tool versions, similar to what SIFR already stores. fileciteturn0file0
+- Capture metadata: URL or app screen identifier, timestamp, viewport/screen size, devicePixelRatio, locale, and tool versions, similar to what ViewGraph already stores. fileciteturn0file0
 - Provenance chain: capture tool, transformation steps, redactions, diff base IDs, consistent with W3C provenance concepts. citeturn19search1turn19search0
 
 **B. Evidence artifacts**
@@ -326,9 +326,9 @@ This JSON is intentionally minimal but captures the join points that matter (IDs
 }
 ```
 
-### Example payload grounded in your current SIFR v2 structure
+### Example payload grounded in your current ViewGraph v2 structure
 
-Your SIFR v2 already provides: per-page metadata, salience buckets, clusters, element bounding boxes, selectors, attributes like `data-testid`, and ARIA attributes, plus computed styles. In short: it is an excellent “summary-first” representation. fileciteturn0file0 fileciteturn0file1  
+Your ViewGraph v2 already provides: per-page metadata, salience buckets, clusters, element bounding boxes, selectors, attributes like `data-testid`, and ARIA attributes, plus computed styles. In short: it is an excellent “summary-first” representation. fileciteturn0file0 fileciteturn0file1  
 To make it a full capture bundle, add artifact references (screenshots, optional HAR, optional AX snapshot) and an explicit node-to-screenshot binding table. The web platform protocols already expose the necessary raw sources: DOMSnapshot for layout and the Accessibility domain for AX trees. citeturn0search0turn0search1turn21search3
 
 ### Example payload for a native mobile screen
@@ -412,7 +412,7 @@ Grounded selection: the agent chooses elements by role and accessible name (more
 
 Action-feedback loops: the agent should validate assumptions by acting, recapturing, and diffing, aligning with ReAct-style reasoning plus acting and with findings from web agent benchmarks. citeturn12search0turn12search2turn12search7
 
-Retrieval augmentation: index per-node text, roles, selectors, and cluster summaries; then retrieve relevant nodes for a task such as “generate Playwright tests for all buttons lacking data-testid.” Your SIFR MCP Bridge concept already describes MCP tools like listing captures, querying elements by role, and comparing captures. fileciteturn0file1
+Retrieval augmentation: index per-node text, roles, selectors, and cluster summaries; then retrieve relevant nodes for a task such as “generate Playwright tests for all buttons lacking data-testid.” Your ViewGraph MCP Bridge concept already describes MCP tools like listing captures, querying elements by role, and comparing captures. fileciteturn0file1
 
 ## Evaluation metrics, trade-offs, and a prioritized roadmap
 
