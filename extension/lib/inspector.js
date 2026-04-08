@@ -185,7 +185,7 @@ function createActionBar() {
   Object.assign(bar.style, {
     position: 'fixed', zIndex: '2147483647',
     display: 'flex', gap: '2px', padding: '3px',
-    background: 'rgba(30,30,50,0.92)', borderRadius: '6px',
+    background: 'rgba(55,48,90,0.95)', borderRadius: '6px',
   });
 
   const btnBase = {
@@ -260,17 +260,37 @@ function updateTooltip(el, rect) {
   const breadcrumb = buildBreadcrumb(el);
   const meta = buildMetaLine(el);
 
-  // Two-line tooltip: breadcrumb on top, metadata below
   tooltipEl.innerHTML = '';
+
+  // Row 1: crosshair icon + breadcrumb (clips from left via rtl on text span)
   const line1 = document.createElement('div');
   line1.setAttribute(ATTR, 'line');
-  line1.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>' + breadcrumb;
-  Object.assign(line1.style, { color: '#93c5fd', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', direction: 'rtl', textAlign: 'left', display: 'flex', alignItems: 'center' });
+  Object.assign(line1.style, { display: 'flex', alignItems: 'center', gap: '5px' });
 
+  const icon1 = document.createElement('span');
+  icon1.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>';
+  Object.assign(icon1.style, { flexShrink: '0', display: 'flex' });
+
+  const text1 = document.createElement('span');
+  text1.textContent = breadcrumb;
+  Object.assign(text1.style, { color: '#93c5fd', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', direction: 'rtl', textAlign: 'left', flex: '1', minWidth: '0' });
+
+  line1.append(icon1, text1);
+
+  // Row 2: tag icon + metadata
   const line2 = document.createElement('div');
   line2.setAttribute(ATTR, 'line');
-  line2.textContent = meta;
-  Object.assign(line2.style, { color: '#d1d5db', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '10px' });
+  Object.assign(line2.style, { display: 'flex', alignItems: 'center', gap: '5px' });
+
+  const icon2 = document.createElement('span');
+  icon2.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1" fill="#6b7280"/></svg>';
+  Object.assign(icon2.style, { flexShrink: '0', display: 'flex' });
+
+  const text2 = document.createElement('span');
+  text2.textContent = meta;
+  Object.assign(text2.style, { color: '#9ca3af', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '10px' });
+
+  line2.append(icon2, text2);
 
   tooltipEl.append(line1, line2);
 
