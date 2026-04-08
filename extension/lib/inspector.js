@@ -265,7 +265,7 @@ function updateTooltip(el, rect) {
   const line1 = document.createElement('div');
   line1.setAttribute(ATTR, 'line');
   line1.textContent = breadcrumb;
-  Object.assign(line1.style, { color: '#93c5fd', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' });
+  Object.assign(line1.style, { color: '#93c5fd', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', direction: 'rtl', textAlign: 'left' });
 
   const line2 = document.createElement('div');
   line2.setAttribute(ATTR, 'line');
