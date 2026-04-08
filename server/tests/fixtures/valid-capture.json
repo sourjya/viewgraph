@@ -1,5 +1,5 @@
 {
-  "====METADATA====": {
+  "metadata": {
     "format": "viewgraph-v2",
     "captureMode": "sifr-capture",
     "timestamp": "2026-04-08T06:08:15.214Z",
@@ -13,7 +13,7 @@
       "clusters": 3
     }
   },
-  "====NODES====": {
+  "nodes": {
     "high": [
       { "id": "btn001", "tag": "button", "text": "Create Project", "bbox": { "x": 100, "y": 50, "w": 150, "h": 40 }, "actions": ["click"], "cluster": "c1" },
       { "id": "nav001", "tag": "a", "text": "Dashboard", "bbox": { "x": 10, "y": 10, "w": 100, "h": 30 }, "actions": ["click"], "cluster": "c2" }
@@ -33,7 +33,7 @@
       { "id": "spn002", "tag": "span", "text": "", "bbox": { "x": 0, "y": 0, "w": 0, "h": 0 }, "actions": [], "cluster": "c1" }
     ]
   },
-  "====SUMMARY====": {
+  "summary": {
     "layout": "single-column with header nav and data table",
     "styles": {
       "primaryColors": ["#6366f1", "#ffffff", "#1e1e2e"],
@@ -46,7 +46,7 @@
       { "id": "c3", "label": "Search", "bbox": { "x": 500, "y": 50, "w": 200, "h": 35 }, "elementCount": 2 }
     ]
   },
-  "====RELATIONS====": {
+  "relations": {
     "parentChild": [
       { "parent": "div001", "child": "h1_001" },
       { "parent": "div001", "child": "tbl001" },
@@ -57,7 +57,7 @@
       { "label": "spn001", "target": "inp001" }
     ]
   },
-  "====DETAILS====": {
+  "details": {
     "btn001": {
       "selector": "button.btn-primary[data-testid='create-project']",
       "attributes": { "data-testid": "create-project", "role": "button", "aria-label": "Create new project" },

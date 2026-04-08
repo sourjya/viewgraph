@@ -17,17 +17,17 @@ import { readFile } from 'fs/promises';
 
 /** Minimal valid capture for watcher to index. */
 const VALID_CAPTURE = JSON.stringify({
-  '====METADATA====': {
+  metadata: {
     format: 'viewgraph-v2',
-    version: '2.0.0',
+    version: '2.1.0',
     timestamp: '2026-04-08T06:08:15.214Z',
     url: 'http://localhost:8040/projects',
     title: 'Test Page',
     viewport: { width: 1696, height: 799 },
     stats: { totalNodes: 10 },
   },
-  '====NODES====': {},
-  '====SUMMARY====': {},
+  nodes: {},
+  summary: {},
 });
 
 describe('watcher + indexer integration', () => {
