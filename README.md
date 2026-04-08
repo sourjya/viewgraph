@@ -14,39 +14,87 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 
 | Component | Description | Status |
 |---|---|---|
-| [`server/`](./server/) | MCP server - reads capture files, exposes 13 query/analysis/request tools | M1+M2+M3 Complete |
-| [`extension/`](./extension/) | Firefox/Chrome extension - captures DOM, screenshots, annotations | M4 Core Complete |
+| [`server/`](./server/) | MCP server - reads capture files, exposes 15 query/analysis/request tools | M1+M2+M3 Complete |
+| [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, inspector, annotations | M4+M5 Complete |
 
-## Quick Start
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+ (LTS)
+- npm
+- Chrome (for extension development)
+
+### 1. Clone and install
 
 ```bash
-# In your project
-npm install viewgraph -D
-npx viewgraph init          # auto-detect agent, write config, set up captures folder
-
-# Then install the browser extension
-# Firefox: https://addons.mozilla.org/en-US/firefox/addon/viewgraph/
-# Chrome:  (coming soon)
+git clone https://github.com/sourjya/viewgraph.git
+cd viewgraph
+npm install
 ```
 
-The `init` command detects your dev URLs from package.json, writes
-`.viewgraphrc.json`, and configures your MCP agent (Kiro, Cursor, Claude Code,
-Windsurf). The extension auto-discovers your project and routes captures to
-the right folder.
+This installs dependencies for both the server and extension workspaces.
 
-For development on ViewGraph itself:
+### 2. Build the extension
 
 ```bash
-npm install
-npm run dev:server     # start MCP server
-npm run dev:ext        # start extension dev server (Chrome)
+npm run build:ext
+```
+
+The built extension is output to `extension/.output/chrome-mv3/`.
+
+### 3. Load the extension in Chrome
+
+1. Open `chrome://extensions/` in Chrome
+2. Enable **Developer mode** (toggle in top-right)
+3. Click **Load unpacked**
+4. Select the folder: `<your-path>/viewgraph/extension/.output/chrome-mv3`
+5. The ViewGraph icon appears in your toolbar
+
+### 4. Start the MCP server
+
+```bash
+npm run dev:server
+```
+
+The server starts on stdio (for MCP) and an HTTP receiver on `localhost:9876` (for the extension). You'll see a shared secret token logged - configure this in the extension options if you want authenticated pushes.
+
+### 5. Capture a page
+
+1. Navigate to any web page in Chrome
+2. Click the **ViewGraph** icon in the toolbar
+3. Click **Capture** - captures the full page DOM as ViewGraph JSON
+4. Click **Inspect** - hover over elements to see structure, click to freeze, then:
+   - Camera icon: capture the selected element's subtree
+   - Clipboard icon: copy the best CSS selector to clipboard
+   - X icon: cancel
+
+Captures are saved to `.viewgraph/captures/` and pushed to the MCP server automatically.
+
+### 6. Query captures via MCP
+
+Your AI agent can now use ViewGraph tools:
+
+```
+> list_captures
+> get_page_summary filename="viewgraph-localhost-20260408-120612.json"
+> audit_accessibility filename="viewgraph-localhost-20260408-120612.json"
+> find_missing_testids filename="viewgraph-localhost-20260408-120612.json"
+```
+
+## Development
+
+```bash
+npm run dev:server     # start MCP server with file watcher
+npm run dev:ext        # start extension dev server (Chrome HMR)
 ```
 
 ## Testing
 
 ```bash
-npm test               # all tests (174 tests, 31 files)
-npm run test:server    # server only
+npm test               # all tests (214 tests, 31 files)
+npm run test:server    # server only (128 tests)
+npm run test:ext       # extension only (86 tests)
 ```
 
 ## MCP Tools
@@ -72,7 +120,7 @@ npm run test:server    # server only
 | `get_annotations` | Human annotations from review-mode captures |
 | `get_annotated_capture` | Capture filtered to annotated nodes + comments |
 
-### Bidirectional Tools (M3 - planned)
+### Bidirectional Tools (M3)
 
 | Tool | Description |
 |---|---|
@@ -93,12 +141,13 @@ scripts/         Git and build scripts
 ## Documentation
 
 - [Roadmap](./docs/roadmap/roadmap.md) - milestone plan (9 milestones)
+- [Security Assessment](./docs/architecture/security-assessment.md) - threat model and mitigations
 - [Spec Index](./.kiro/specs/README.md) - Kiro specs, ADRs, architecture docs
 - [ViewGraph v2 Format Spec](./docs/architecture/viewgraph-v2-format.md) - capture format (v2.1.0)
 - [Format Research](./docs/architecture/viewgraph-format-research.md) - format analysis and design rationale
 - [Scans and Recommendations](./docs/architecture/scans-and-recommendations.md) - 22 automated scans
-- [Universal Agent Integration](./docs/decisions/ADR-001-universal-agent-integration.md) - multi-tool architecture (Kiro, Claude Code, Cursor, Windsurf)
-- [Multi-Project Routing](./docs/decisions/ADR-002-multi-project-capture-routing.md) - how the extension routes captures to the right project
+- [Universal Agent Integration](./docs/decisions/ADR-001-universal-agent-integration.md) - multi-tool architecture
+- [Multi-Project Routing](./docs/decisions/ADR-002-multi-project-capture-routing.md) - capture routing
 
 ## License
 
