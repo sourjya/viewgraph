@@ -42,6 +42,10 @@ Terminal output capture can be unreliable in some environments (TTY issues). Alw
 ## Code Style
 
 - ES modules (`import`/`export`) throughout -- no CommonJS `require()`
+- **Import paths:** Use `#src/` subpath imports for cross-directory imports. Same-directory `./` imports are fine. Never use `../` to go more than one level up. Deep relative paths like `../../../src/` are forbidden.
+  - Good: `import { parseCapture } from '#src/parsers/viewgraph-v2.js'`
+  - Good: `import { LOG_PREFIX } from './constants.js'` (same directory)
+  - Bad: `import { parseCapture } from '../../../src/parsers/viewgraph-v2.js'`
 - Use parameterized queries for all database operations -- never string interpolation
 - Separation of concerns: keep services as separate modules/classes
 - Use interfaces/abstractions for shared behavior, then extend

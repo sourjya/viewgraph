@@ -6,7 +6,7 @@
  */
 
 import { z } from 'zod';
-import { PROJECT_NAME } from '../constants.js';
+import { PROJECT_NAME } from '#src/constants.js';
 
 export function register(server, indexer) {
   server.tool(

@@ -8,8 +8,8 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import path from 'path';
-import { flattenNodes, filterByRole, filterInteractive, getNodeDetails } from '../../../src/analysis/node-queries.js';
-import { parseCapture } from '../../../src/parsers/viewgraph-v2.js';
+import { flattenNodes, filterByRole, filterInteractive, getNodeDetails } from '#src/analysis/node-queries.js';
+import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 
 const FIXTURES = path.resolve(import.meta.dirname, '../../fixtures');
 const validCapture = parseCapture(readFileSync(path.join(FIXTURES, 'valid-capture.json'), 'utf-8'));

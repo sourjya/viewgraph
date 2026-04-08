@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { auditNode, RULES } from '../../../src/analysis/a11y-rules.js';
+import { auditNode, RULES } from '#src/analysis/a11y-rules.js';
 
 describe('a11y rules', () => {
   describe('missing-aria-label', () => {

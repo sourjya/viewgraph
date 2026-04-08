@@ -4,6 +4,10 @@
   "description": "MCP server exposing ViewGraph capture tools to AI coding assistants",
   "type": "module",
   "main": "index.js",
+  "imports": {
+    "#src/*.js": "./src/*.js",
+    "#src/*": "./src/*"
+  },
   "scripts": {
     "dev": "node index.js",
     "test": "vitest run",

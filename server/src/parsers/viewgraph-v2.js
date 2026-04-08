@@ -1,27 +1,31 @@
 /**
  * ViewGraph v2 Parser
  *
- * Parses ViewGraph v2 capture JSON files. The format uses section delimiters
- * like "====METADATA====" as top-level keys. Each function returns a result
- * object { ok, data/error }  -  never throws.
+ * Parses ViewGraph v2 capture JSON files. Supports both formats:
+ * - Plain keys (ViewGraph v2.1+): "metadata", "nodes", "summary", etc.
+ * - SiFR markers (legacy/Element to LLM): "====METADATA====", etc.
+ *
+ * Each function returns a result object { ok, data/error } - never throws.
  *
  * Three parse levels for different use cases:
- * - parseMetadata: fast, for indexing (reads only METADATA + checks ANNOTATIONS)
- * - parseSummary: medium, for get_page_summary (METADATA + SUMMARY)
+ * - parseMetadata: fast, for indexing (reads only metadata + checks annotations)
+ * - parseSummary: medium, for get_page_summary (metadata + summary)
  * - parseCapture: full, for get_capture (all sections)
  */
 
-import { FORMAT_VERSION } from '../constants.js';
+/**
+ * Resolve a section from a parsed JSON object, checking plain key first,
+ * then falling back to SiFR marker key for backward compatibility.
+ */
+function getSection(raw, plainKey) {
+  const sifrKey = `====${plainKey.toUpperCase()}====`;
+  return raw[plainKey] ?? raw[sifrKey] ?? undefined;
+}
 
-// Section key constants  -  match the JSON top-level keys
-const SECTIONS = {
-  METADATA: '====METADATA====',
-  NODES: '====NODES====',
-  SUMMARY: '====SUMMARY====',
-  RELATIONS: '====RELATIONS====',
-  DETAILS: '====DETAILS====',
-  ANNOTATIONS: '====ANNOTATIONS====',
-};
+/** Check if a section exists in either key format. */
+function hasSection(raw, plainKey) {
+  return getSection(raw, plainKey) !== undefined;
+}
 
 /**
  * Safely parse JSON, returning a result object instead of throwing.
@@ -35,17 +39,17 @@ function safeParse(jsonString) {
 }
 
 /**
- * Extract metadata from a capture  -  fast path for indexing.
- * Only reads the METADATA section and checks for ANNOTATIONS presence.
+ * Extract metadata from a capture - fast path for indexing.
+ * Only reads the metadata section and checks for annotations presence.
  */
 export function parseMetadata(jsonString) {
   const parsed = safeParse(jsonString);
   if (!parsed.ok) return parsed;
 
   const raw = parsed.data;
-  const meta = raw[SECTIONS.METADATA];
+  const meta = getSection(raw, 'metadata');
   if (!meta) {
-    return { ok: false, error: 'Missing ====METADATA==== section' };
+    return { ok: false, error: 'Missing metadata section' };
   }
 
   return {
@@ -58,50 +62,50 @@ export function parseMetadata(jsonString) {
       viewport: meta.viewport,
       nodeCount: meta.stats?.totalNodes ?? 0,
       captureMode: meta.captureMode ?? 'unknown',
-      hasAnnotations: SECTIONS.ANNOTATIONS in raw,
+      hasAnnotations: hasSection(raw, 'annotations'),
     },
   };
 }
 
 /**
- * Full parse of all sections  -  for get_capture and detailed analysis.
+ * Full parse of all sections - for get_capture and detailed analysis.
  */
 export function parseCapture(jsonString) {
   const parsed = safeParse(jsonString);
   if (!parsed.ok) return parsed;
 
   const raw = parsed.data;
-  if (!raw[SECTIONS.METADATA]) {
-    return { ok: false, error: 'Missing ====METADATA==== section' };
+  if (!getSection(raw, 'metadata')) {
+    return { ok: false, error: 'Missing metadata section' };
   }
 
   return {
     ok: true,
     data: {
-      metadata: raw[SECTIONS.METADATA],
-      nodes: raw[SECTIONS.NODES] ?? null,
-      summary: raw[SECTIONS.SUMMARY] ?? null,
-      relations: raw[SECTIONS.RELATIONS] ?? null,
-      details: raw[SECTIONS.DETAILS] ?? null,
-      annotations: raw[SECTIONS.ANNOTATIONS] ?? null,
+      metadata: getSection(raw, 'metadata'),
+      nodes: getSection(raw, 'nodes') ?? null,
+      summary: getSection(raw, 'summary') ?? null,
+      relations: getSection(raw, 'relations') ?? null,
+      details: getSection(raw, 'details') ?? null,
+      annotations: getSection(raw, 'annotations') ?? null,
     },
   };
 }
 
 /**
- * Extract summary data  -  for get_page_summary tool.
- * Combines METADATA and SUMMARY into a compact overview.
+ * Extract summary data - for get_page_summary tool.
+ * Combines metadata and summary into a compact overview.
  */
 export function parseSummary(jsonString) {
   const parsed = safeParse(jsonString);
   if (!parsed.ok) return parsed;
 
   const raw = parsed.data;
-  const meta = raw[SECTIONS.METADATA];
-  const summary = raw[SECTIONS.SUMMARY];
+  const meta = getSection(raw, 'metadata');
+  const summary = getSection(raw, 'summary');
 
   if (!meta) {
-    return { ok: false, error: 'Missing ====METADATA==== section' };
+    return { ok: false, error: 'Missing metadata section' };
   }
 
   const salience = meta.stats?.salience ?? {};

@@ -7,10 +7,10 @@
 
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
-import { PROJECT_NAME } from '../constants.js';
-import { validateCapturePath } from '../utils/validate-path.js';
-import { parseCapture } from '../parsers/viewgraph-v2.js';
-import { flattenNodes, filterByRole, getNodeDetails } from '../analysis/node-queries.js';
+import { PROJECT_NAME } from '#src/constants.js';
+import { validateCapturePath } from '#src/utils/validate-path.js';
+import { parseCapture } from '#src/parsers/viewgraph-v2.js';
+import { flattenNodes, filterByRole, getNodeDetails } from '#src/analysis/node-queries.js';
 
 export function register(server, _indexer, capturesDir) {
   server.tool(

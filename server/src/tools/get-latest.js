@@ -7,9 +7,9 @@
 
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
-import { PROJECT_NAME } from '../constants.js';
-import { validateCapturePath } from '../utils/validate-path.js';
-import { parseSummary } from '../parsers/viewgraph-v2.js';
+import { PROJECT_NAME } from '#src/constants.js';
+import { validateCapturePath } from '#src/utils/validate-path.js';
+import { parseSummary } from '#src/parsers/viewgraph-v2.js';
 
 const MAX_INLINE_SIZE = 100 * 1024;
 

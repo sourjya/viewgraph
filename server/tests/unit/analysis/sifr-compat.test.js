@@ -9,8 +9,8 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import path from 'path';
-import { parseMetadata, parseCapture, parseSummary } from '../../../src/parsers/viewgraph-v2.js';
-import { flattenNodes, filterByRole, filterInteractive, getNodeDetails } from '../../../src/analysis/node-queries.js';
+import { parseMetadata, parseCapture, parseSummary } from '#src/parsers/viewgraph-v2.js';
+import { flattenNodes, filterByRole, filterInteractive, getNodeDetails } from '#src/analysis/node-queries.js';
 
 const FIXTURES = path.resolve(import.meta.dirname, '../../fixtures');
 const sifrContent = readFileSync(path.join(FIXTURES, 'sifr-real-capture.json'), 'utf-8');
