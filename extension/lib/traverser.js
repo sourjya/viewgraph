@@ -119,9 +119,10 @@ function extractRelations(el, nid, nidMap) {
 
 /**
  * Traverse the DOM tree and return structured element data.
+ * @param {Element} [root=document.body] - Root element to start traversal from
  * @returns {{ elements: Array, relations: Array }}
  */
-export function traverseDOM() {
+export function traverseDOM(root = document.body) {
   const elements = [];
   const nidMap = new WeakMap(); // Element -> nid
   const scrollX = window.scrollX;
@@ -195,11 +196,11 @@ export function traverseDOM() {
     elements.push(record);
   }
 
-  walk(document.body, null);
+  walk(root, null);
 
   // Extract relations in a second pass (all nids assigned)
   const relations = [];
-  for (const el of document.body.querySelectorAll('*')) {
+  for (const el of root.querySelectorAll('*')) {
     if (nidMap.has(el)) {
       relations.push(...extractRelations(el, nidMap.get(el), nidMap));
     }

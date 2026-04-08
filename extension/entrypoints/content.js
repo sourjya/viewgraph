@@ -14,6 +14,7 @@ import { traverseDOM } from '../lib/traverser.js';
 import { scoreAll } from '../lib/salience.js';
 import { serialize } from '../lib/serializer.js';
 import { captureSnapshot } from '../lib/html-snapshot.js';
+import { start as startInspect, stop as stopInspect, isActive as isInspecting } from '../lib/inspector.js';
 
 export default defineContentScript({
   matches: ['<all_urls>'],
@@ -21,21 +22,27 @@ export default defineContentScript({
 
   main() {
     chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-      if (message.type !== 'capture') return false;
-
-      try {
-        const viewport = { width: window.innerWidth, height: window.innerHeight };
-        const { elements, relations } = traverseDOM();
-        const scored = scoreAll(elements, viewport);
-        const capture = serialize(scored, relations);
-        // HTML snapshot for fidelity measurement (included if requested)
-        const snapshot = message.includeSnapshot ? captureSnapshot() : null;
-        sendResponse({ ok: true, capture, snapshot });
-      } catch (err) {
-        sendResponse({ ok: false, error: err.message });
+      if (message.type === 'capture') {
+        try {
+          const viewport = { width: window.innerWidth, height: window.innerHeight };
+          const { elements, relations } = traverseDOM();
+          const scored = scoreAll(elements, viewport);
+          const capture = serialize(scored, relations);
+          const snapshot = message.includeSnapshot ? captureSnapshot() : null;
+          sendResponse({ ok: true, capture, snapshot });
+        } catch (err) {
+          sendResponse({ ok: false, error: err.message });
+        }
+        return true;
       }
 
-      return true;
+      if (message.type === 'toggle-inspect') {
+        if (isInspecting()) { stopInspect(); } else { startInspect(); }
+        sendResponse({ ok: true, active: isInspecting() });
+        return true;
+      }
+
+      return false;
     });
   },
 });

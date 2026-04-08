@@ -93,6 +93,14 @@ async function captureScreenshot(tabId) {
 
 export default defineBackground(() => {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // Handle subtree capture from inspector - just push to server
+    if (message.type === 'inspect-capture') {
+      pushToServer(message.capture).then((result) => {
+        sendResponse({ ok: true, pushed: !!result, filename: result?.filename });
+      });
+      return true;
+    }
+
     if (message.type !== 'capture') return false;
 
     (async () => {

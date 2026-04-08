@@ -155,6 +155,7 @@ MCP server. Kiro can request a capture and receive the result.
 **Goal:** Interactive element inspection with DOM tree walking.
 
 **Spec:** `.kiro/specs/extension-inspector/`
+**Status:** Complete
 
 | # | Task | Details |
 |---|---|---|
