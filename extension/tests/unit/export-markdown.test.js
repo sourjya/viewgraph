@@ -71,6 +71,7 @@ describe('formatMarkdown', () => {
     const md = formatMarkdown([], {});
     expect(md).toContain('Untitled Page');
     expect(md).toContain('(unknown)');
+  });
 
   it('includes viewport when provided', () => {
     const md = formatMarkdown([], { ...META, viewport: { width: 1440, height: 900 } });
