@@ -29,7 +29,7 @@ identified below, and add capabilities the original format lacks.
 
 Research on LLM context compression consistently shows JSON is 20–50% more
 token-expensive than alternatives when representing arrays of similar objects
-[5][6][9][10]. The overhead comes from:
+(refs 5, 6, 9, 10). The overhead comes from:
 
 - Repeated key names in every object (e.g., `"tag"`, `"parent"`, `"children"`
   repeated per node)
@@ -37,7 +37,7 @@ token-expensive than alternatives when representing arrays of similar objects
   semantic value
 - Deeply nested objects compound the problem multiplicatively
 
-**Benchmarks (from [5]):**
+**Benchmarks (ref 5):**
 
 | Format | Token reduction vs JSON | Notes |
 |---|---|---|
@@ -47,8 +47,8 @@ token-expensive than alternatives when representing arrays of similar objects
 | Field filtering | 30–60% | Removing unused fields is the single biggest win |
 
 **Key insight:** Columnar JSON (keys declared once, data as parallel arrays)
-saves 35–45% tokens while remaining valid JSON [5]. This is exactly what CDP's
-`DOMSnapshot.captureSnapshot` uses [28] — a shared string table with integer
+saves 35–45% tokens while remaining valid JSON (ref 5). This is exactly what CDP's
+`DOMSnapshot.captureSnapshot` uses (ref 28) — a shared string table with integer
 indexes into it. The format was designed for wire efficiency, but it's also
 LLM-efficient.
 
@@ -73,7 +73,7 @@ only. Low-salience nodes get no styles unless explicitly requested via MCP tool.
 
 ### 1.4 LLMs lose focus in the middle of large contexts
 
-The "lost-in-the-middle" phenomenon is well-documented [5][14]: LLMs attend more
+The "lost-in-the-middle" phenomenon is well-documented (refs 5, 14): LLMs attend more
 strongly to the beginning and end of their context window. For captures, this
 means:
 
@@ -89,7 +89,7 @@ This matches SiFR's current ordering and should be preserved.
 ## 2. SiFR v2 Format Weaknesses
 
 Analysis based on reverse-engineering Element to LLM v2.8.1's `utils.min.js`
-(64KB minified) and sample capture files [1][2][3][4].
+(64KB minified) and sample capture files (refs 1, 2, 3, 4).
 
 ### 2.1 No formal specification
 
@@ -189,11 +189,11 @@ computed accessibility tree. The accessibility tree provides:
 - States (expanded, selected, checked, disabled)
 - The tree structure assistive technologies actually see
 
-Research from the FillApp browser agent paper [14] confirms that accessibility
+Research from the FillApp browser agent paper (ref 14) confirms that accessibility
 tree snapshots are the primary context for production browser agents, not raw
 DOM. Agents using AX trees achieve ~85% task success vs ~50% for DOM-only.
-The Chrome accessibility tree [30][31] provides computed names and roles that
-differ from raw DOM attributes [34][35].
+The Chrome accessibility tree (refs 30, 31) provides computed names and roles that
+differ from raw DOM attributes (refs 34, 35).
 
 **Recommendation:** Add an optional `====ACCESSIBILITY====` section containing
 the computed AX tree, or integrate AX data into NODES (role, name, state per
@@ -209,7 +209,7 @@ format, we expose standard-format exports as optional MCP tools.
 
 ### 3.1 CDP DOMSnapshot export
 
-**What:** Chrome DevTools Protocol's `DOMSnapshot.captureSnapshot` format [28].
+**What:** Chrome DevTools Protocol's `DOMSnapshot.captureSnapshot` format (ref 28).
 Columnar arrays with a shared string table. Flattened node tree with parallel
 layout and style arrays indexed by node position.
 
@@ -226,7 +226,7 @@ capture to CDP DOMSnapshot format.
 MCP and the CDP Accessibility domain. Each node has: role, name, description,
 value, focused, expanded, selected, checked, disabled, and children.
 
-**Why:** Browser agents (FillApp [14], Browser Use, Playwright MCP [37]) primarily
+**Why:** Browser agents (FillApp (ref 14), Browser Use, Playwright MCP (ref 37)) primarily
 consume AX tree snapshots. Exporting in this format makes ViewGraph captures
 directly usable by any AX-tree-consuming agent.
 
@@ -235,7 +235,7 @@ data from a ViewGraph capture and formats it as an AX tree snapshot.
 
 ### 3.3 W3C Web Annotation export
 
-**What:** The W3C Web Annotation Data Model (JSON-LD) [32][33] for the
+**What:** The W3C Web Annotation Data Model (JSON-LD) (refs 32, 33) for the
 ANNOTATIONS section. Each annotation becomes a Web Annotation with a
 `TextualBody` (the comment) and a `FragmentSelector` or `CssSelector`
 targeting the annotated elements.
