@@ -15,7 +15,7 @@ import { scoreAll } from '../lib/salience.js';
 import { serialize } from '../lib/serializer.js';
 import { captureSnapshot } from '../lib/html-snapshot.js';
 import { start as startInspect, stop as stopInspect, isActive as isInspecting } from '../lib/inspector.js';
-import { start as startReview, stop as stopReview, isActive as isReviewing, getAnnotations as getReviewAnnotations, load as loadAnnotations } from '../lib/review.js';
+import { start as startReview, stop as stopReview, isActive as isReviewing, getAnnotations as getReviewAnnotations, load as loadAnnotations, hideMarkers } from '../lib/review.js';
 import { show as showPanel } from '../lib/annotation-panel.js';
 import { create as createSidebar, refresh as refreshSidebar, destroy as destroySidebar } from '../lib/annotation-sidebar.js';
 
@@ -56,6 +56,14 @@ export default defineContentScript({
         destroySidebar();
         createSidebar();
         sendResponse({ ok: true, active: isReviewing() });
+        return true;
+      }
+
+      if (message.type === 'dismiss-review') {
+        hideMarkers();
+        destroySidebar();
+        stopReview();
+        sendResponse({ ok: true });
         return true;
       }
 

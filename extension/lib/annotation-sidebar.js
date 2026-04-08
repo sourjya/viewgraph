@@ -36,11 +36,28 @@ export function create() {
   toggle.setAttribute(ATTR, 'toggle');
   toggle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Review Notes';
   Object.assign(toggle.style, {
-    width: '100%', padding: '10px', border: 'none', borderBottom: '1px solid #333',
+    width: 'calc(100% - 28px)', padding: '10px', border: 'none', borderBottom: '1px solid #333',
     background: 'transparent', color: '#a5b4fc', fontSize: '12px', fontWeight: '600',
-    cursor: 'pointer', textAlign: 'left',
+    cursor: 'pointer', textAlign: 'left', display: 'inline-block',
   });
   toggle.addEventListener('click', () => toggleCollapse());
+
+  // Close button - dismisses review mode, hides markers
+  const closeBtn = document.createElement('button');
+  closeBtn.setAttribute(ATTR, 'close');
+  closeBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+  Object.assign(closeBtn.style, {
+    width: '28px', padding: '6px', border: 'none', borderBottom: '1px solid #333',
+    background: 'transparent', cursor: 'pointer', display: 'inline-flex',
+    alignItems: 'center', justifyContent: 'center', verticalAlign: 'top',
+  });
+  closeBtn.title = 'Close review mode';
+  closeBtn.addEventListener('mouseenter', () => { closeBtn.style.background = 'rgba(255,255,255,0.05)'; });
+  closeBtn.addEventListener('mouseleave', () => { closeBtn.style.background = 'transparent'; });
+  closeBtn.addEventListener('click', () => {
+    chrome.runtime.sendMessage({ type: 'dismiss-review' });
+    destroy();
+  });
 
   const list = document.createElement('div');
   list.setAttribute(ATTR, 'list');
@@ -64,7 +81,7 @@ export function create() {
     setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Kiro'; sendBtn.style.background = '#6366f1'; }, 2000);
   });
 
-  sidebarEl.append(toggle, list, sendBtn);
+  sidebarEl.append(toggle, closeBtn, list, sendBtn);
   document.documentElement.appendChild(sidebarEl);
 
   // Collapsed badge - hidden initially
@@ -136,8 +153,21 @@ export function refresh() {
     entry.addEventListener('mouseleave', () => { entry.style.background = 'transparent'; });
 
     const label = document.createElement('span');
-    label.textContent = `#${ann.id} ${ann.comment ? ann.comment.slice(0, 25) : '(no comment)'}`;
     Object.assign(label.style, { color: '#c8c8d0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1' });
+
+    // Ancestor element badge + comment
+    if (ann.ancestor) {
+      const elBadge = document.createElement('span');
+      elBadge.textContent = ann.ancestor;
+      Object.assign(elBadge.style, {
+        background: '#2a2a4a', color: '#93c5fd', fontSize: '9px', fontWeight: '500',
+        padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
+        fontFamily: 'SF Mono, Cascadia Code, monospace',
+      });
+      label.appendChild(elBadge);
+    }
+    const commentText = document.createTextNode(ann.comment || '(no comment)');
+    label.appendChild(commentText);
 
     // Click to scroll and show panel
     label.addEventListener('click', () => {

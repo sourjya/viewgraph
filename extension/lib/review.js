@@ -92,8 +92,9 @@ function onMouseUp(e) {
   };
 
   const nids = findIntersectingNodes(rect);
+  const ancestor = findCommonAncestor(rect) || null;
   const id = nextId++;
-  const annotation = { id, region, comment: '', nids };
+  const annotation = { id, region, comment: '', nids, ancestor };
   annotations.push(annotation);
   createMarker(annotation, rect);
   save();
@@ -284,6 +285,16 @@ export function clearAnnotations() {
   annotations = [];
   nextId = 1;
   document.querySelectorAll(`[${ATTR}]`).forEach((el) => el.remove());
+}
+
+/** Hide all markers from the page without clearing annotation data. */
+export function hideMarkers() {
+  document.querySelectorAll(`[${ATTR}]`).forEach((el) => el.remove());
+}
+
+/** Re-show markers for all current annotations. */
+export function showMarkers() {
+  for (const ann of annotations) createMarker(ann, null);
 }
 
 // ---------------------------------------------------------------------------
