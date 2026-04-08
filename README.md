@@ -1,6 +1,8 @@
-# ViewGraph
+<p align="center">
+  <img src="docs/logos/viewgraph-logo.png" alt="ViewGraph" width="420">
+</p>
 
-**The UI context layer for agentic coding.**
+<p align="center"><strong>The UI context layer for agentic coding.</strong></p>
 
 Browser extension + MCP server for AI-powered UI capture, auditing, and annotation.
 
