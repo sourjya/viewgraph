@@ -2,21 +2,21 @@
  * MCP Tool: get_latest_capture
  *
  * Returns the most recent capture, optionally filtered by URL.
- * If the capture is large (>100KB), returns a summary instead with a note
- * about the full size.
+ * If the capture is large (>100KB), returns a summary instead.
  */
 
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
+import { PROJECT_NAME } from '../constants.js';
 import { validateCapturePath } from '../utils/validate-path.js';
 import { parseSummary } from '../parsers/viewgraph-v2.js';
 
-const MAX_INLINE_SIZE = 100 * 1024; // 100KB
+const MAX_INLINE_SIZE = 100 * 1024;
 
 export function register(server, indexer, capturesDir) {
   server.tool(
     'get_latest_capture',
-    'Get the most recent ViewGraph DOM capture. Returns the full capture JSON ' +
+    `Get the most recent ${PROJECT_NAME} DOM capture. Returns the full capture JSON ` +
     'if under 100KB, otherwise returns a compact summary. Use url_filter to ' +
     'narrow to a specific site (e.g., "localhost:8040").',
     {

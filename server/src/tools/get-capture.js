@@ -1,24 +1,25 @@
 /**
  * MCP Tool: get_capture
  *
- * Returns the full ViewGraph JSON for a specific capture file.
+ * Returns the full capture JSON for a specific file.
  * Validates the filename against the captures directory to prevent path traversal.
  */
 
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
+import { PROJECT_NAME, PROJECT_PREFIX } from '../constants.js';
 import { validateCapturePath } from '../utils/validate-path.js';
 
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'get_capture',
-    'Retrieve the full ViewGraph DOM capture JSON for a specific file. ' +
+    `Retrieve the full ${PROJECT_NAME} DOM capture JSON for a specific file. ` +
     'Returns the complete capture including NODES, SUMMARY, RELATIONS, DETAILS, ' +
     'and ANNOTATIONS sections. For large captures (>100KB), consider using ' +
     'get_page_summary first for an overview. Use list_captures to find filenames.',
     {
       filename: z.string()
-        .describe('Capture filename (e.g., "viewgraph-localhost-2026-04-08T060815.json")'),
+        .describe(`Capture filename (e.g., "${PROJECT_PREFIX}-localhost-2026-04-08T060815.json")`),
     },
     async ({ filename }) => {
       let filePath;

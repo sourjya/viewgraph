@@ -2,8 +2,8 @@
  * ViewGraph MCP Server — Entry Point
  *
  * Starts the MCP server over stdio transport, exposing tools for querying,
- * analyzing, and comparing ViewGraph DOM captures. Kiro (or any MCP host)
- * spawns this process and communicates via JSON-RPC over stdin/stdout.
+ * analyzing, and comparing DOM captures. Kiro (or any MCP host) spawns
+ * this process and communicates via JSON-RPC over stdin/stdout.
  *
  * Wires together: file watcher → parser → indexer → MCP tools.
  *
@@ -15,6 +15,10 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { readFile } from 'fs/promises';
 import path from 'path';
 
+import {
+  SERVER_NAME, SERVER_VERSION, SERVER_DESCRIPTION,
+  ENV_CAPTURES_DIR, ENV_MAX_CAPTURES, LOG_PREFIX,
+} from './src/constants.js';
 import { createWatcher } from './src/watcher.js';
 import { createIndexer } from './src/indexer.js';
 import { parseMetadata } from './src/parsers/viewgraph-v2.js';
@@ -27,17 +31,17 @@ import { register as registerGetPageSummary } from './src/tools/get-page-summary
 // Configuration from environment
 // ---------------------------------------------------------------------------
 
-const CAPTURES_DIR = process.env.VIEWGRAPH_CAPTURES_DIR || path.join(process.cwd(), 'captures');
-const MAX_CAPTURES = parseInt(process.env.VIEWGRAPH_MAX_CAPTURES || '50', 10);
+const CAPTURES_DIR = process.env[ENV_CAPTURES_DIR] || path.join(process.cwd(), 'captures');
+const MAX_CAPTURES = parseInt(process.env[ENV_MAX_CAPTURES] || '50', 10);
 
 // ---------------------------------------------------------------------------
 // Server setup
 // ---------------------------------------------------------------------------
 
 const server = new McpServer({
-  name: 'viewgraph-mcp-server',
-  version: '0.1.0',
-  description: 'Exposes ViewGraph DOM capture tools for AI-powered UI auditing, test generation, and visual regression',
+  name: SERVER_NAME,
+  version: SERVER_VERSION,
+  description: SERVER_DESCRIPTION,
 });
 
 const indexer = createIndexer({ maxCaptures: MAX_CAPTURES });
@@ -59,10 +63,10 @@ async function indexFile(filename, filePath) {
     if (result.ok) {
       indexer.add(filename, result.data);
     } else {
-      console.error(`[viewgraph] Skipping ${filename}: ${result.error}`);
+      console.error(`${LOG_PREFIX} Skipping ${filename}: ${result.error}`);
     }
   } catch (err) {
-    console.error(`[viewgraph] Error reading ${filename}: ${err.message}`);
+    console.error(`${LOG_PREFIX} Error reading ${filename}: ${err.message}`);
   }
 }
 
@@ -73,19 +77,17 @@ async function indexFile(filename, filePath) {
 let watcher;
 
 async function main() {
-  console.error(`[viewgraph] Captures dir: ${CAPTURES_DIR}`);
+  console.error(`${LOG_PREFIX} Captures dir: ${CAPTURES_DIR}`);
 
-  // Start file watcher — indexes existing files on startup (ignoreInitial: false)
   watcher = createWatcher(CAPTURES_DIR, {
     onAdd: indexFile,
     onChange: indexFile,
     onRemove: (filename) => indexer.remove(filename),
   });
 
-  // Connect MCP transport
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error('[viewgraph] MCP server running on stdio');
+  console.error(`${LOG_PREFIX} MCP server running on stdio`);
 }
 
 // ---------------------------------------------------------------------------
@@ -93,7 +95,7 @@ async function main() {
 // ---------------------------------------------------------------------------
 
 function shutdown(signal) {
-  console.error(`[viewgraph] Shutting down (${signal})`);
+  console.error(`${LOG_PREFIX} Shutting down (${signal})`);
   if (watcher) watcher.close();
   process.exit(0);
 }
@@ -102,6 +104,6 @@ process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 main().catch((err) => {
-  console.error('[viewgraph] Fatal error:', err);
+  console.error(`${LOG_PREFIX} Fatal error:`, err);
   process.exit(1);
 });

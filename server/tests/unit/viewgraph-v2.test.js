@@ -9,6 +9,7 @@ import { readFile } from 'fs/promises';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { parseMetadata, parseCapture, parseSummary } from '../../src/parsers/viewgraph-v2.js';
+import { FORMAT_VERSION } from '../../src/constants.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const fixtures = path.join(__dirname, '..', 'fixtures');
@@ -57,7 +58,7 @@ describe('parseMetadata', () => {
   it('validates format version', async () => {
     const json = await loadFixture('valid-capture.json');
     const result = parseMetadata(json);
-    expect(result.data.format).toBe('viewgraph-v2');
+    expect(result.data.format).toBe(FORMAT_VERSION);
   });
 });
 

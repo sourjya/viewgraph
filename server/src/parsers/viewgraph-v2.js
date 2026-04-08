@@ -11,6 +11,8 @@
  * - parseCapture: full, for get_capture (all sections)
  */
 
+import { FORMAT_VERSION } from '../constants.js';
+
 // Section key constants — match the JSON top-level keys
 const SECTIONS = {
   METADATA: '====METADATA====',

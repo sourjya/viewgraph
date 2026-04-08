@@ -3,24 +3,24 @@
  *
  * Returns a compact summary of a capture — URL, title, viewport, layout,
  * styles, element counts, and clusters. Always small enough for LLM context.
- * Use this instead of get_capture when you need a quick overview.
  */
 
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
+import { PROJECT_NAME, PROJECT_PREFIX } from '../constants.js';
 import { validateCapturePath } from '../utils/validate-path.js';
 import { parseSummary } from '../parsers/viewgraph-v2.js';
 
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'get_page_summary',
-    'Get a compact summary of a ViewGraph capture: URL, title, viewport, ' +
+    `Get a compact summary of a ${PROJECT_NAME} capture: URL, title, viewport, ` +
     'layout description, color/font styles, element counts by salience level, ' +
     'and spatial clusters. Always lightweight — use this for a quick overview ' +
     'before deciding whether to fetch the full capture with get_capture.',
     {
       filename: z.string()
-        .describe('Capture filename (e.g., "viewgraph-localhost-2026-04-08T060815.json")'),
+        .describe(`Capture filename (e.g., "${PROJECT_PREFIX}-localhost-2026-04-08T060815.json")`),
     },
     async ({ filename }) => {
       let filePath;

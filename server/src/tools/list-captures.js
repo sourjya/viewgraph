@@ -6,11 +6,12 @@
  */
 
 import { z } from 'zod';
+import { PROJECT_NAME } from '../constants.js';
 
 export function register(server, indexer) {
   server.tool(
     'list_captures',
-    'List available ViewGraph DOM captures sorted by most recent first. ' +
+    `List available ${PROJECT_NAME} DOM captures sorted by most recent first. ` +
     'Returns filename, URL, title, timestamp, and node count for each capture. ' +
     'Use this to browse captures before fetching a specific one with get_capture. ' +
     'Supports filtering by URL substring (e.g., "localhost:8040" or "projects").',
