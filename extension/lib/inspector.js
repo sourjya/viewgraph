@@ -118,12 +118,14 @@ const IMPLICIT_ROLES = {
   details: 'group', summary: 'button', progress: 'progressbar', meter: 'meter',
 };
 
-/** Get the ARIA role: explicit attribute > computedRole API > implicit lookup. */
+/** Get the ARIA role with source info: explicit attribute > implicit lookup.
+ *  Returns { role, source } where source is 'explicit', 'implicit', or null. */
 export function getRole(el) {
   const explicit = el.getAttribute('role');
-  if (explicit) return explicit;
-  if (el.computedRole) return el.computedRole;
-  return IMPLICIT_ROLES[el.tagName.toLowerCase()] || null;
+  if (explicit) return { role: explicit, source: 'explicit' };
+  const implicit = IMPLICIT_ROLES[el.tagName.toLowerCase()] || null;
+  if (implicit) return { role: implicit, source: 'implicit' };
+  return { role: null, source: null };
 }
 
 /**
@@ -134,8 +136,12 @@ export function buildMetaLine(el) {
   const parts = [];
   const testid = el.getAttribute('data-testid');
   parts.push(testid ? `testid: ${testid}` : 'testid: none');
-  const role = getRole(el);
-  parts.push(role ? `role: ${role}` : 'role: none');
+  const { role, source } = getRole(el);
+  if (role && source === 'implicit') {
+    parts.push(`role: ${role} (implicit)`);
+  } else {
+    parts.push(role ? `role: ${role}` : 'role: none');
+  }
   const label = el.getAttribute('aria-label');
   if (label) parts.push(`aria: ${label}`);
   const rect = el.getBoundingClientRect();

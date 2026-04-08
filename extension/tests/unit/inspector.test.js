@@ -281,48 +281,71 @@ describe('buildMetaLine formatting', () => {
 // ---------------------------------------------------------------------------
 
 describe('getRole', () => {
-  it('returns explicit role attribute when set', () => {
+  it('returns explicit role with source', () => {
     document.body.innerHTML = '<div role="navigation">X</div>';
-    expect(getRole(document.querySelector('div'))).toBe('navigation');
+    const result = getRole(document.querySelector('div'));
+    expect(result).toEqual({ role: 'navigation', source: 'explicit' });
   });
 
   it('returns implicit role for input', () => {
     document.body.innerHTML = '<input type="email">';
-    expect(getRole(document.querySelector('input'))).toBe('textbox');
+    const result = getRole(document.querySelector('input'));
+    expect(result).toEqual({ role: 'textbox', source: 'implicit' });
   });
 
   it('returns implicit role for button', () => {
     document.body.innerHTML = '<button>Click</button>';
-    expect(getRole(document.querySelector('button'))).toBe('button');
+    expect(getRole(document.querySelector('button'))).toEqual({ role: 'button', source: 'implicit' });
   });
 
   it('returns implicit role for nav', () => {
     document.body.innerHTML = '<nav>Menu</nav>';
-    expect(getRole(document.querySelector('nav'))).toBe('navigation');
+    expect(getRole(document.querySelector('nav'))).toEqual({ role: 'navigation', source: 'implicit' });
   });
 
   it('returns implicit role for img', () => {
     document.body.innerHTML = '<img src="x.png" alt="photo">';
-    expect(getRole(document.querySelector('img'))).toBe('img');
+    expect(getRole(document.querySelector('img'))).toEqual({ role: 'img', source: 'implicit' });
   });
 
   it('returns implicit role for textarea', () => {
     document.body.innerHTML = '<textarea></textarea>';
-    expect(getRole(document.querySelector('textarea'))).toBe('textbox');
+    expect(getRole(document.querySelector('textarea'))).toEqual({ role: 'textbox', source: 'implicit' });
   });
 
   it('returns implicit role for select', () => {
     document.body.innerHTML = '<select><option>A</option></select>';
-    expect(getRole(document.querySelector('select'))).toBe('combobox');
+    expect(getRole(document.querySelector('select'))).toEqual({ role: 'combobox', source: 'implicit' });
   });
 
-  it('returns null for generic div with no role', () => {
+  it('returns null role for generic div', () => {
     document.body.innerHTML = '<div>X</div>';
-    expect(getRole(document.querySelector('div'))).toBeNull();
+    expect(getRole(document.querySelector('div'))).toEqual({ role: null, source: null });
   });
 
   it('explicit role overrides implicit role', () => {
     document.body.innerHTML = '<nav role="menubar">X</nav>';
-    expect(getRole(document.querySelector('nav'))).toBe('menubar');
+    expect(getRole(document.querySelector('nav'))).toEqual({ role: 'menubar', source: 'explicit' });
+  });
+});
+
+describe('buildMetaLine implicit/explicit role display', () => {
+  it('shows (implicit) tag for elements with implicit role', () => {
+    document.body.innerHTML = '<input type="email">';
+    const meta = buildMetaLine(document.querySelector('input'));
+    expect(meta).toContain('role: textbox (implicit)');
+  });
+
+  it('does not show (implicit) for explicit role', () => {
+    document.body.innerHTML = '<div role="navigation">X</div>';
+    const meta = buildMetaLine(document.querySelector('div'));
+    expect(meta).toContain('role: navigation');
+    expect(meta).not.toContain('(implicit)');
+  });
+
+  it('shows role: none for elements with no role at all', () => {
+    document.body.innerHTML = '<div>X</div>';
+    const meta = buildMetaLine(document.querySelector('div'));
+    expect(meta).toContain('role: none');
   });
 });
