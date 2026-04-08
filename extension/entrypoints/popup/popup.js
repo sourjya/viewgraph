@@ -41,8 +41,16 @@ inspectBtn.addEventListener('click', async () => {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id) { showStatus('error', 'No active tab'); return; }
-    await chrome.tabs.sendMessage(tab.id, { type: 'toggle-inspect' });
-    // Close popup so the user can interact with the page
+    // Inject content script if not already loaded, then toggle inspect
+    try {
+      await chrome.tabs.sendMessage(tab.id, { type: 'toggle-inspect' });
+    } catch {
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['content-scripts/content.js'],
+      });
+      await chrome.tabs.sendMessage(tab.id, { type: 'toggle-inspect' });
+    }
     window.close();
   } catch (err) {
     showStatus('error', err.message);
