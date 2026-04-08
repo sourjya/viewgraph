@@ -14,6 +14,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { readFile } from 'fs/promises';
 import path from 'path';
+import { randomUUID } from 'crypto';
 
 import {
   SERVER_NAME, SERVER_VERSION, SERVER_DESCRIPTION, LOG_PREFIX,
@@ -105,8 +106,14 @@ async function main() {
   console.error(`${LOG_PREFIX} ViewGraph MCP Server v${SERVER_VERSION}`);
   console.error(`${LOG_PREFIX} Captures dir: ${CAPTURES_DIR}`);
 
+  // Generate or read shared secret for HTTP receiver authentication.
+  // Set VIEWGRAPH_HTTP_SECRET env var to use a fixed token, otherwise
+  // a random one is generated each startup and logged to stderr.
+  const httpSecret = process.env.VIEWGRAPH_HTTP_SECRET || randomUUID();
+  console.error(`${LOG_PREFIX} HTTP secret: ${httpSecret}`);
+
   // Start HTTP receiver for extension communication
-  httpReceiver = createHttpReceiver({ queue: requestQueue, capturesDir: CAPTURES_DIR, port: HTTP_PORT ?? 9876 });
+  httpReceiver = createHttpReceiver({ queue: requestQueue, capturesDir: CAPTURES_DIR, port: HTTP_PORT ?? 9876, secret: httpSecret });
   await httpReceiver.start();
 
   watcher = createWatcher(CAPTURES_DIR, {
