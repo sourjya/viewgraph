@@ -33,13 +33,17 @@ import { register as registerAuditAccessibility } from '#src/tools/audit-accessi
 import { register as registerCompareCaptures } from '#src/tools/compare-captures.js';
 import { register as registerGetAnnotations } from '#src/tools/get-annotations.js';
 import { register as registerGetAnnotatedCapture } from '#src/tools/get-annotated-capture.js';
+import { register as registerRequestCapture } from '#src/tools/request-capture.js';
+import { register as registerGetRequestStatus } from '#src/tools/get-request-status.js';
+import { createRequestQueue } from '#src/request-queue.js';
+import { createHttpReceiver } from '#src/http-receiver.js';
 
 // ---------------------------------------------------------------------------
 // Configuration  -  env vars > .viewgraphrc.json > defaults
 // ---------------------------------------------------------------------------
 
 const config = resolveConfig();
-const { capturesDir: CAPTURES_DIR, maxCaptures: MAX_CAPTURES } = config;
+const { capturesDir: CAPTURES_DIR, maxCaptures: MAX_CAPTURES, httpPort: HTTP_PORT } = config;
 
 // ---------------------------------------------------------------------------
 // Server setup
@@ -50,6 +54,8 @@ const server = new McpServer({
   version: SERVER_VERSION,
   description: SERVER_DESCRIPTION,
 });
+
+const requestQueue = createRequestQueue();
 
 const indexer = createIndexer({ maxCaptures: MAX_CAPTURES });
 
@@ -65,6 +71,8 @@ registerAuditAccessibility(server, indexer, CAPTURES_DIR);
 registerCompareCaptures(server, indexer, CAPTURES_DIR);
 registerGetAnnotations(server, indexer, CAPTURES_DIR);
 registerGetAnnotatedCapture(server, indexer, CAPTURES_DIR);
+registerRequestCapture(server, requestQueue);
+registerGetRequestStatus(server, requestQueue);
 
 // ---------------------------------------------------------------------------
 // File indexing  -  parse metadata from a capture file and add to index
@@ -89,9 +97,14 @@ async function indexFile(filename, filePath) {
 // ---------------------------------------------------------------------------
 
 let watcher;
+let httpReceiver;
 
 async function main() {
   console.error(`${LOG_PREFIX} Captures dir: ${CAPTURES_DIR}`);
+
+  // Start HTTP receiver for extension communication
+  httpReceiver = createHttpReceiver({ queue: requestQueue, capturesDir: CAPTURES_DIR, port: HTTP_PORT ?? 9876 });
+  await httpReceiver.start();
 
   watcher = createWatcher(CAPTURES_DIR, {
     onAdd: indexFile,
@@ -110,6 +123,7 @@ async function main() {
 
 function shutdown(signal) {
   console.error(`${LOG_PREFIX} Shutting down (${signal})`);
+  if (httpReceiver) httpReceiver.stop();
   if (watcher) watcher.close();
   process.exit(0);
 }
