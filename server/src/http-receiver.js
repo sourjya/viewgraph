@@ -95,7 +95,7 @@ export function createHttpReceiver({ queue, capturesDir, port = 9876, secret = n
       res.writeHead(204, {
         'access-control-allow-origin': '*',
         'access-control-allow-methods': 'GET, POST, OPTIONS',
-        'access-control-allow-headers': 'content-type, authorization, x-capture-filename',
+        'access-control-allow-headers': 'content-type, authorization, x-capture-filename, x-captures-dir',
       });
       return res.end();
     }
@@ -139,9 +139,24 @@ export function createHttpReceiver({ queue, capturesDir, port = 9876, secret = n
       }
       if (!capture.metadata) return json(res, 400, { error: 'Missing metadata section' });
 
+      // Resolve target directory: x-captures-dir header overrides default
+      const overrideDir = req.headers['x-captures-dir'];
+      let targetDir = capturesDir;
+      if (overrideDir) {
+        const resolved = path.resolve(overrideDir);
+        // Must be an absolute path and must exist
+        if (!path.isAbsolute(resolved)) return json(res, 400, { error: 'x-captures-dir must be absolute' });
+        const { existsSync, mkdirSync } = await import('fs');
+        if (!existsSync(resolved)) {
+          try { mkdirSync(resolved, { recursive: true }); } catch {
+            return json(res, 400, { error: `Cannot create directory: ${resolved}` });
+          }
+        }
+        targetDir = resolved;
+      }
+
       const filename = generateFilename(capture.metadata);
-      // Validate the generated filename stays within the captures directory
-      const safePath = validateCapturePath(filename, capturesDir);
+      const safePath = validateCapturePath(filename, targetDir);
       await writeFile(safePath, JSON.stringify(capture, null, 2));
 
       // Check if this completes a pending request
