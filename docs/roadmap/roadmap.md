@@ -125,7 +125,7 @@ Spans server (snapshot receiver, fidelity comparator, `get_fidelity_report` tool
 **Goal:** Working Firefox extension with popup UI, DOM traversal, and ViewGraph JSON output.
 
 **Spec:** [`.kiro/specs/extension-core/`](../../.kiro/specs/extension-core/)
-**Status:** Not Started
+**Status:** Complete
 
 | # | Task | Details |
 |---|---|---|

@@ -6,11 +6,18 @@ Built with [WXT](https://wxt.dev/) for cross-browser Manifest V3 support.
 
 ## Status
 
-Scaffolded - core capture functionality is planned for [Milestone 4](../docs/roadmap/roadmap.md).
+Core capture pipeline complete - DOM traversal, salience scoring, serialization, popup UI, background orchestration, and HTTP push to MCP server.
 
 **Spec:** [`.kiro/specs/extension-core/`](../.kiro/specs/extension-core/) - DOM traversal, serialization, popup UI, background orchestration.
 
 See [Extension UX and Intelligence](../docs/ideas/extension-ux-and-intelligence.md) for planned UI patterns (floating toolbar, comment box, highlight overlay) and intelligence features.
+
+## Testing
+
+```bash
+npm test               # unit tests (38 tests, 3 files)
+npm run test:watch     # watch mode
+```
 
 ## Development
 
