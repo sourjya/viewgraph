@@ -34,6 +34,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Test fixtures: valid capture, annotated capture, malformed capture
 - 29 unit tests passing (parser: 11, indexer: 11, config: 6, smoke: 1)
 
+### Milestone 1: Integration Tests
+- Watcher integration test: file indexing on add, non-JSON filtering
+- MCP tool integration tests via InMemoryTransport: list_captures (4), get_capture (3), get_latest_capture (3), get_page_summary (2)
+- Test helper: createTestClient() for MCP server+client pair setup
+- 43 total tests across 9 files, all passing
+
 ### ViewGraph v2 Format Specification
 - Formal format spec: docs/architecture/viewgraph-v2-format.md (13 sections)
 - Format research doc: docs/architecture/viewgraph-format-research.md (40 references)
