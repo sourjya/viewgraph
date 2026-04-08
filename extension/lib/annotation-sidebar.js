@@ -10,9 +10,9 @@
  */
 
 import { show as showPanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, toggleResolved } from './review.js';
+import { getAnnotations, removeAnnotation, toggleResolved } from './annotate.js';
 
-const ATTR = 'data-vg-review';
+const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
 let badgeEl = null;
 let collapsed = false;
@@ -71,7 +71,7 @@ export function create() {
   closeBtn.addEventListener('mouseenter', () => { closeBtn.style.background = 'rgba(255,255,255,0.05)'; });
   closeBtn.addEventListener('mouseleave', () => { closeBtn.style.background = 'transparent'; });
   closeBtn.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'dismiss-review' });
+    chrome.runtime.sendMessage({ type: 'dismiss-annotate' });
     destroy();
   });
 

@@ -8,9 +8,9 @@
  * @see lib/review.js - annotation state management
  */
 
-import { updateComment, removeAnnotation } from './review.js';
+import { updateComment, removeAnnotation } from './annotate.js';
 
-const ATTR = 'data-vg-review';
+const ATTR = 'data-vg-annotate';
 let panelEl = null;
 let currentId = null;
 let onCommentChange = null;
