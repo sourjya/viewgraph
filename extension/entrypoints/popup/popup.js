@@ -95,8 +95,8 @@ const connText = document.getElementById('connText');
     const res = await fetch('http://localhost:9876/health', { signal: AbortSignal.timeout(2000) });
     const data = await res.json();
     connDot.className = 'conn-dot connected';
-    connText.textContent = data.writable ? 'MCP server connected' : 'Connected (dir not writable)';
-    connText.title = data.capturesDir || '';
+    connText.textContent = data.writable ? 'MCP connected' : 'Connected (dir not writable)';
+    connText.title = `Server: localhost:9876\nCaptures: ${data.capturesDir || 'unknown'}`;
   } catch {
     connDot.className = 'conn-dot failed';
     connText.textContent = 'MCP server offline';
