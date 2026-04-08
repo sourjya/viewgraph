@@ -27,6 +27,14 @@ Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline,
 | `get_annotations` | Human annotations from review-mode captures |
 | `get_annotated_capture` | Capture filtered to annotated nodes + comments |
 
+### Bidirectional (M3 - planned)
+
+| Tool | Description |
+|---|---|
+| `request_capture` | Request a capture from the browser extension via HTTP bridge |
+| `get_request_status` | Poll for capture request completion |
+| `get_fidelity_report` | Compare capture against HTML snapshot for fidelity metrics |
+
 ## Setup
 
 ```bash
@@ -57,7 +65,7 @@ The server uses stdio transport for MCP communication. Register it in your MCP h
 ## Testing
 
 ```bash
-npm test                 # single run (85 tests, 19 files)
+npm test                 # single run (120 tests, 25 files)
 npm run test:watch       # watch mode
 ```
 

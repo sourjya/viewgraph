@@ -39,7 +39,7 @@ Each milestone below will be converted into a full Kiro spec under
 core query tools to Kiro.
 
 **Spec:** [`.kiro/specs/mcp-server-core/`](../../.kiro/specs/mcp-server-core/)
-**Status:** In Progress
+**Status:** Complete
 
 | # | Task | Details |
 |---|---|---|
@@ -65,7 +65,7 @@ and get a page summary  -  all from existing ViewGraph JSON files on disk.
 **Goal:** Advanced query and analysis tools for UI auditing and test generation.
 
 **Spec:** [`.kiro/specs/mcp-analysis-tools/`](../../.kiro/specs/mcp-analysis-tools/)
-**Status:** In Progress
+**Status:** Complete
 
 | # | Task | Details |
 |---|---|---|
@@ -90,7 +90,8 @@ and read annotations from review-mode captures.
 
 **Goal:** Kiro can request captures from the extension via the MCP server.
 
-**Spec:** `.kiro/specs/mcp-request-bridge/`
+**Spec:** [`.kiro/specs/mcp-request-bridge/`](../../.kiro/specs/mcp-request-bridge/)
+**Status:** Not Started
 
 | # | Task | Details |
 |---|---|---|
@@ -107,11 +108,24 @@ request to a polling client, and `get_request_status` returns the result.
 
 ---
 
+## Cross-Cutting: SingleFile Fidelity Measurement
+
+**Goal:** Pair HTML snapshots with ViewGraph JSON captures to measure and track capture fidelity.
+
+**Spec:** [`.kiro/specs/singlefile-fidelity/`](../../.kiro/specs/singlefile-fidelity/)
+**Status:** Not Started
+
+Spans server (snapshot receiver, fidelity comparator, `get_fidelity_report` tool) and extension
+(HTML snapshot capture). Can be implemented incrementally alongside M3 and M4.
+
+---
+
 ## Milestone 4: Firefox Extension  -  Core Capture (Days 10-15)
 
 **Goal:** Working Firefox extension with popup UI, DOM traversal, and ViewGraph JSON output.
 
-**Spec:** `.kiro/specs/extension-core/`
+**Spec:** [`.kiro/specs/extension-core/`](../../.kiro/specs/extension-core/)
+**Status:** Not Started
 
 | # | Task | Details |
 |---|---|---|

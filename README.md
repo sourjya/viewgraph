@@ -43,7 +43,7 @@ npm run dev:ext        # start extension dev server (Chrome)
 ## Testing
 
 ```bash
-npm test               # all tests (85 tests, 19 files)
+npm test               # all tests (120 tests, 25 files)
 npm run test:server    # server only
 ```
 
@@ -69,6 +69,14 @@ npm run test:server    # server only
 | `compare_captures` | Diff two captures: added/removed elements, layout shifts, testid changes |
 | `get_annotations` | Human annotations from review-mode captures |
 | `get_annotated_capture` | Capture filtered to annotated nodes + comments |
+
+### Bidirectional Tools (M3 - planned)
+
+| Tool | Description |
+|---|---|
+| `request_capture` | Request a capture from the browser extension |
+| `get_request_status` | Poll for capture request completion |
+| `get_fidelity_report` | Compare capture against HTML snapshot for fidelity metrics |
 
 ## Project Structure
 

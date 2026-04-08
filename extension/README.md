@@ -8,6 +8,8 @@ Built with [WXT](https://wxt.dev/) for cross-browser Manifest V3 support.
 
 Scaffolded - core capture functionality is planned for [Milestone 4](../docs/roadmap/roadmap.md).
 
+**Spec:** [`.kiro/specs/extension-core/`](../.kiro/specs/extension-core/) - DOM traversal, serialization, popup UI, background orchestration.
+
 See [Extension UX and Intelligence](../docs/ideas/extension-ux-and-intelligence.md) for planned UI patterns (floating toolbar, comment box, highlight overlay) and intelligence features.
 
 ## Development

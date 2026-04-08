@@ -6,6 +6,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ---
 
+## [Unreleased]
+
+### Documentation
+- Spec index: added extension-core (M4) and singlefile-fidelity specs, corrected M3 status to Not Started
+- Roadmap: marked M1+M2 Complete, linked M3 and M4 specs, added singlefile-fidelity cross-cutting spec
+- Main README: updated test count (120/25), added M3 Bidirectional Tools section
+- Server README: added M3 planned tools section, updated test count (120/25)
+- Extension README: added extension-core spec link
+
+### Fixed
+- MCP config path updated from old `sifr-mcp-server` to `viewgraph` folder name
+
+---
+
 ## [0.1.0] - 2026-04-08
 
 ### Added
