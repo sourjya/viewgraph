@@ -28,7 +28,7 @@ export function create() {
     position: 'fixed', top: '60px', right: '0', zIndex: '2147483646',
     width: '300px', maxHeight: 'calc(100vh - 120px)', overflowY: 'auto',
     background: '#1e1e2e', borderLeft: '1px solid #333', borderRadius: '8px 0 0 8px',
-    fontFamily: 'system-ui, sans-serif', fontSize: '13px',
+    fontFamily: 'system-ui, sans-serif', fontSize: '14px',
     boxShadow: '-2px 0 12px rgba(0,0,0,0.3)', transition: 'transform 0.2s',
   });
 
@@ -44,7 +44,7 @@ export function create() {
   toggle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>ViewGraph: Review Notes';
   Object.assign(toggle.style, {
     flex: '1', padding: '10px', border: 'none',
-    background: 'transparent', color: '#a5b4fc', fontSize: '13px', fontWeight: '600',
+    background: 'transparent', color: '#a5b4fc', fontSize: '14px', fontWeight: '600',
     cursor: 'pointer', textAlign: 'left',
   });
   toggle.addEventListener('click', () => toggleCollapse());
@@ -103,7 +103,7 @@ export function create() {
 
   const btnStyle = {
     flex: '1', padding: '7px 4px', border: 'none', borderRadius: '6px',
-    color: '#fff', fontSize: '10px', fontWeight: '600', cursor: 'pointer',
+    color: '#fff', fontSize: '11px', fontWeight: '600', cursor: 'pointer',
     fontFamily: 'system-ui, sans-serif', transition: 'background 0.12s',
     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
   };
@@ -214,7 +214,7 @@ export function refresh() {
     hint.setAttribute(ATTR, 'hint');
     hint.textContent = 'Shift + drag to select a region';
     Object.assign(hint.style, {
-      padding: '16px 12px', color: '#666', fontSize: '12px',
+      padding: '16px 12px', color: '#666', fontSize: '13px',
       textAlign: 'center', fontStyle: 'italic',
     });
     list.appendChild(hint);
@@ -254,7 +254,7 @@ export function refresh() {
     const numBadge = document.createElement('span');
     numBadge.textContent = `#${ann.id}`;
     Object.assign(numBadge.style, {
-      background: '#6366f1', color: '#fff', fontSize: '9px', fontWeight: '700',
+      background: '#6366f1', color: '#fff', fontSize: '10px', fontWeight: '700',
       padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
       fontFamily: 'system-ui, sans-serif',
     });
@@ -264,7 +264,7 @@ export function refresh() {
       const elBadge = document.createElement('span');
       elBadge.textContent = ann.ancestor;
       Object.assign(elBadge.style, {
-        background: '#2a2a4a', color: '#93c5fd', fontSize: '9px', fontWeight: '500',
+        background: '#2a2a4a', color: '#93c5fd', fontSize: '10px', fontWeight: '500',
         padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
         fontFamily: 'SF Mono, Cascadia Code, monospace',
       });

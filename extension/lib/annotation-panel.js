@@ -45,7 +45,7 @@ export function show(annotation, callbacks = {}) {
 
   const title = document.createElement('span');
   title.textContent = `#${annotation.id}`;
-  Object.assign(title.style, { color: '#a5b4fc', fontSize: '12px', fontWeight: '600', flex: '1' });
+  Object.assign(title.style, { color: '#a5b4fc', fontSize: '13px', fontWeight: '600', flex: '1' });
 
   const deleteBtn = makeHeaderBtn(
     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>',
@@ -69,7 +69,7 @@ export function show(annotation, callbacks = {}) {
   Object.assign(textarea.style, {
     width: '100%', minHeight: '60px', padding: '6px 8px',
     background: '#16161e', border: '1px solid #333', borderRadius: '4px',
-    color: '#e0e0e0', fontSize: '12px', fontFamily: 'system-ui, sans-serif',
+    color: '#e0e0e0', fontSize: '13px', fontFamily: 'system-ui, sans-serif',
     resize: 'vertical', outline: 'none',
   });
   textarea.addEventListener('input', () => {
