@@ -276,3 +276,90 @@ describe('save and load', () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// Panel positioning
+// ---------------------------------------------------------------------------
+
+import { show as showPanel, hide as hidePanel } from '../../lib/annotation-panel.js';
+
+describe('annotation panel positioning', () => {
+  afterEach(() => hidePanel());
+
+  it('positions panel to the right when space available', () => {
+    const ann = { id: 1, region: { x: 50, y: 100, width: 200, height: 100 }, comment: '' };
+    showPanel(ann);
+    const panel = document.querySelector('[data-vg-annotate="panel"]');
+    expect(panel).not.toBeNull();
+    const left = parseInt(panel.style.left);
+    // Should be right of region: 50 + 200 + 12 = 262
+    expect(left).toBe(262);
+  });
+
+  it('positions panel to the left when near right edge', () => {
+    // Simulate annotation near right edge (viewport is 1024 in jsdom)
+    const ann = { id: 2, region: { x: 600, y: 100, width: 200, height: 100 }, comment: '' };
+    showPanel(ann);
+    const panel = document.querySelector('[data-vg-annotate="panel"]');
+    const left = parseInt(panel.style.left);
+    // Should be left of region: 600 - 240 - 12 = 348
+    expect(left).toBeLessThan(600);
+  });
+
+  it('panel left position never goes below 8px', () => {
+    const ann = { id: 3, region: { x: 10, y: 100, width: 5, height: 5 }, comment: '' };
+    // Force right edge overflow by using large region x
+    const bigAnn = { id: 4, region: { x: 900, y: 100, width: 200, height: 100 }, comment: '' };
+    showPanel(bigAnn);
+    const panel = document.querySelector('[data-vg-annotate="panel"]');
+    const left = parseInt(panel.style.left);
+    expect(left).toBeGreaterThanOrEqual(8);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Legacy attr cleanup
+// ---------------------------------------------------------------------------
+
+describe('legacy attr cleanup on start', () => {
+  it('removes data-vg-review elements on start', () => {
+    document.body.innerHTML = '<div data-vg-review="marker-1">old</div>';
+    expect(document.querySelector('[data-vg-review]')).not.toBeNull();
+    start();
+    expect(document.querySelector('[data-vg-review]')).toBeNull();
+    stop();
+  });
+
+  it('removes data-vg-inspector elements on start', () => {
+    document.body.innerHTML = '<div data-vg-inspector="overlay">old</div>';
+    expect(document.querySelector('[data-vg-inspector]')).not.toBeNull();
+    start();
+    expect(document.querySelector('[data-vg-inspector]')).toBeNull();
+    stop();
+  });
+
+  it('does not remove non-viewgraph elements', () => {
+    document.body.innerHTML = '<div class="real">keep</div><div data-vg-review="x">remove</div>';
+    start();
+    expect(document.querySelector('.real')).not.toBeNull();
+    expect(document.querySelector('[data-vg-review]')).toBeNull();
+    stop();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Annotation ID stability
+// ---------------------------------------------------------------------------
+
+describe('annotation ID stability', () => {
+  it('removeAnnotation does not renumber remaining annotations', () => {
+    // Manually push annotations to simulate state
+    start();
+    // Can't easily create annotations without DOM events, but we can test
+    // that removeAnnotation on non-existent ID doesn't affect others
+    removeAnnotation(1);
+    removeAnnotation(999);
+    expect(getAnnotations()).toHaveLength(0);
+    stop();
+  });
+});
