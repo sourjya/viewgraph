@@ -1,6 +1,6 @@
 # ADR-006: Merge Inspect and Review into Unified Annotate Mode
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-04-08
 **Deciders:** sourjya
 
