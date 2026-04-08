@@ -10,7 +10,7 @@
  */
 
 import { show as showPanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, toggleResolved } from './annotate.js';
+import { getAnnotations, removeAnnotation, toggleResolved, hideMarkers, stop as stopAnnotate } from './annotate.js';
 
 const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
@@ -71,7 +71,8 @@ export function create() {
   closeBtn.addEventListener('mouseenter', () => { closeBtn.style.background = 'rgba(255,255,255,0.05)'; });
   closeBtn.addEventListener('mouseleave', () => { closeBtn.style.background = 'transparent'; });
   closeBtn.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'dismiss-annotate' });
+    hideMarkers();
+    stopAnnotate();
     destroy();
   });
 
@@ -137,7 +138,7 @@ function updateBadgeCount() {
   if (!badgeEl) return;
   const count = getAnnotations().length;
   // Large chat bubble with count centered inside
-  badgeEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg><span style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px"><svg width="40" height="40" viewBox="0 0 24 24" fill="#6366f1" stroke="#a5b4fc" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span style="position:absolute;top:-2px;color:#fff;font-size:14px;font-weight:700">${count}</span></span>`;
+  badgeEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg><span style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px"><svg style="position:absolute;top:0;left:0" width="40" height="40" viewBox="0 0 24 24" fill="#6366f1" stroke="#a5b4fc" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span style="position:relative;margin-top:-6px;color:#fff;font-size:14px;font-weight:700;z-index:1">${count}</span></span>`;
 }
 
 /** Refresh the sidebar list from current annotations. */

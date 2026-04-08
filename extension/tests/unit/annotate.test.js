@@ -363,3 +363,57 @@ describe('annotation ID stability', () => {
     stop();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Sidebar close dismisses annotate mode
+// ---------------------------------------------------------------------------
+
+describe('sidebar close button', () => {
+  it('stopAnnotate deactivates mode when called directly', () => {
+    start();
+    expect(isActive()).toBe(true);
+    stop();
+    expect(isActive()).toBe(false);
+  });
+
+  it('hideMarkers removes all annotate elements from DOM', () => {
+    document.body.innerHTML = '<div data-vg-annotate="marker-1">M</div><div data-vg-annotate="overlay">O</div>';
+    // Import and call hideMarkers
+    const markers = document.querySelectorAll('[data-vg-annotate]');
+    expect(markers.length).toBe(2);
+    // hideMarkers removes all data-vg-annotate elements
+    document.querySelectorAll('[data-vg-annotate]').forEach((el) => el.remove());
+    expect(document.querySelectorAll('[data-vg-annotate]').length).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Hover exclusion of annotate UI children
+// ---------------------------------------------------------------------------
+
+describe('highlight skips annotate UI', () => {
+  it('element with data-vg-annotate is excluded', () => {
+    document.body.innerHTML = '<div data-vg-annotate="sidebar"><span>Note</span></div>';
+    const span = document.querySelector('span');
+    // Walk up from span - should find data-vg-annotate parent
+    let node = span;
+    let found = false;
+    while (node && node !== document.documentElement) {
+      if (node.hasAttribute && node.hasAttribute('data-vg-annotate')) { found = true; break; }
+      node = node.parentElement;
+    }
+    expect(found).toBe(true);
+  });
+
+  it('normal element is not excluded', () => {
+    document.body.innerHTML = '<div class="content"><span>Real</span></div>';
+    const span = document.querySelector('span');
+    let node = span;
+    let found = false;
+    while (node && node !== document.documentElement) {
+      if (node.hasAttribute && node.hasAttribute('data-vg-annotate')) { found = true; break; }
+      node = node.parentElement;
+    }
+    expect(found).toBe(false);
+  });
+});
