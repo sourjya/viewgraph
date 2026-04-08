@@ -443,8 +443,12 @@ function onKeyDown(e) {
 
 function onClick(e) {
   if (!currentEl) return;
-  // Ignore clicks on action bar buttons (they have their own handlers)
-  if (e.target.hasAttribute(ATTR)) return;
+  // Ignore clicks on action bar elements (buttons, icons inside them)
+  let node = e.target;
+  while (node && node !== document.documentElement) {
+    if (node.hasAttribute && node.hasAttribute(ATTR)) return;
+    node = node.parentElement;
+  }
   e.preventDefault();
   e.stopPropagation();
   if (frozen) { unfreeze(); } else { freeze(); }
