@@ -21,9 +21,21 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 
 ### Prerequisites
 
-- Node.js 18+ (LTS)
-- npm
-- Chrome (for extension development)
+| Requirement | Minimum Version | Notes |
+|---|---|---|
+| Node.js | 18.0.0+ (LTS) | Required for ES modules and MCP SDK |
+| npm | 9.0.0+ | Workspaces support required |
+| Chrome | 116+ | Manifest V3 service worker support |
+| Firefox | 109+ | Manifest V3 support (build with `--browser firefox`) |
+
+### Key Dependencies
+
+| Package | Version | Used In |
+|---|---|---|
+| `@modelcontextprotocol/sdk` | ^1.29.0 | Server - MCP protocol |
+| `zod` | ^3.x | Server - input validation |
+| `wxt` | ^0.20.20 | Extension - build framework |
+| `vitest` | ^4.1.3 | Both - test runner |
 
 ### 1. Clone and install
 
