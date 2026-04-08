@@ -60,11 +60,12 @@ and get a page summary  -  all from existing ViewGraph JSON files on disk.
 
 ---
 
-## Milestone 2: MCP Server  -  Analysis Tools (Days 5-7)
+## Milestone 2: MCP Server  -  Analysis Tools (Days 5-7) 🔧
 
 **Goal:** Advanced query and analysis tools for UI auditing and test generation.
 
-**Spec:** `.kiro/specs/mcp-analysis-tools/`
+**Spec:** [`.kiro/specs/mcp-analysis-tools/`](../../.kiro/specs/mcp-analysis-tools/)
+**Status:** In Progress
 
 | # | Task | Details |
 |---|---|---|
