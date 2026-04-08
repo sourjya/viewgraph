@@ -7,7 +7,7 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
-  findIntersectingNodes, updateComment, removeAnnotation,
+  findIntersectingNodes, findCommonAncestor, updateComment, removeAnnotation,
   getAnnotations, clearAnnotations, start, stop, isActive,
 } from '../../lib/review.js';
 
@@ -113,6 +113,46 @@ describe('removeAnnotation', () => {
     removeAnnotation(999);
     expect(getAnnotations().length).toBe(before);
     stop();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// findCommonAncestor
+// ---------------------------------------------------------------------------
+
+describe('findCommonAncestor', () => {
+  it('returns the parent element when selection covers siblings', () => {
+    document.body.innerHTML = '<div class="card-body"><span>A</span><span>B</span></div>';
+    const sel = { left: 0, top: 0, right: 200, bottom: 200, width: 200, height: 200 };
+    const result = findCommonAncestor(sel);
+    expect(result).toContain('div');
+  });
+
+  it('returns single element name when only one element selected', () => {
+    document.body.innerHTML = '<button class="btn primary">Click</button>';
+    const sel = { left: 0, top: 0, right: 200, bottom: 200, width: 200, height: 200 };
+    const result = findCommonAncestor(sel);
+    expect(result).toBe('button.btn.primary');
+  });
+
+  it('returns null when no elements in selection', () => {
+    document.body.innerHTML = '<div>X</div>';
+    const sel = { left: 500, top: 500, right: 600, bottom: 600, width: 100, height: 100 };
+    expect(findCommonAncestor(sel)).toBeNull();
+  });
+
+  it('includes id when element has one', () => {
+    document.body.innerHTML = '<form id="login"><input><input></form>';
+    const sel = { left: 0, top: 0, right: 200, bottom: 200, width: 200, height: 200 };
+    const result = findCommonAncestor(sel);
+    expect(result).toContain('#login');
+  });
+
+  it('excludes review overlay elements from ancestor calculation', () => {
+    document.body.innerHTML = '<div class="real"><span>A</span></div><div data-vg-review="marker">X</div>';
+    const sel = { left: 0, top: 0, right: 200, bottom: 200, width: 200, height: 200 };
+    const result = findCommonAncestor(sel);
+    expect(result).not.toBeNull();
   });
 });
 

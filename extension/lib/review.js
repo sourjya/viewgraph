@@ -95,7 +95,7 @@ function onMouseUp(e) {
   const id = nextId++;
   const annotation = { id, region, comment: '', nids };
   annotations.push(annotation);
-  createMarker(annotation);
+  createMarker(annotation, rect);
   if (onAnnotationAdded) onAnnotationAdded(annotation);
 }
 
@@ -128,11 +128,47 @@ export function findIntersectingNodes(selRect) {
   return results;
 }
 
+/**
+ * Find the lowest common ancestor of elements matching the given nids.
+ * Returns a compact selector segment for the ancestor.
+ */
+export function findCommonAncestor(selRect) {
+  const elements = document.body.querySelectorAll('*');
+  const matched = [];
+  for (let i = 0; i < elements.length; i++) {
+    const el = elements[i];
+    if (el.hasAttribute(ATTR)) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) continue;
+    const overlapX = Math.max(0, Math.min(r.right, selRect.right) - Math.max(r.left, selRect.left));
+    const overlapY = Math.max(0, Math.min(r.bottom, selRect.bottom) - Math.max(r.top, selRect.top));
+    if (overlapX * overlapY >= r.width * r.height * 0.5) matched.push(el);
+  }
+  if (matched.length === 0) return null;
+  if (matched.length === 1) return selectorSegment(matched[0]);
+
+  // Walk up from first element, find deepest ancestor that contains all
+  let ancestor = matched[0];
+  while (ancestor && ancestor !== document.body) {
+    if (matched.every((el) => ancestor.contains(el))) return selectorSegment(ancestor);
+    ancestor = ancestor.parentElement;
+  }
+  return null;
+}
+
+/** Build a compact selector segment for one element. */
+function selectorSegment(el) {
+  const tag = el.tagName.toLowerCase();
+  if (el.id) return `${tag}#${el.id}`;
+  const classes = [...el.classList].filter((c) => !c.startsWith('_') && c.length < 25).slice(0, 2);
+  return classes.length ? `${tag}.${classes.join('.')}` : tag;
+}
+
 // ---------------------------------------------------------------------------
 // Numbered markers
 // ---------------------------------------------------------------------------
 
-function createMarker(annotation) {
+function createMarker(annotation, selRect) {
   const { id, region } = annotation;
   const color = MARKER_COLORS[(id - 1) % MARKER_COLORS.length];
 
@@ -158,6 +194,23 @@ function createMarker(annotation) {
   });
 
   marker.appendChild(badge);
+
+  // Ancestor label - shows the common parent element of the selection
+  const ancestorName = selRect ? findCommonAncestor(selRect) : null;
+  if (ancestorName) {
+    const label = document.createElement('div');
+    label.setAttribute(ATTR, 'label');
+    label.textContent = ancestorName;
+    Object.assign(label.style, {
+      position: 'absolute', bottom: '-18px', left: '0',
+      background: color, color: '#fff', fontSize: '10px', fontWeight: '500',
+      padding: '1px 6px', borderRadius: '3px', whiteSpace: 'nowrap',
+      fontFamily: 'SF Mono, Cascadia Code, monospace',
+      opacity: '0.9',
+    });
+    marker.appendChild(label);
+  }
+
   document.documentElement.appendChild(marker);
 }
 
