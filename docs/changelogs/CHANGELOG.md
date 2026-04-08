@@ -25,10 +25,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Milestone 7c: Multi-Export Annotations
 - Three export buttons in sidebar: Send to Kiro / Copy Markdown / Download Report
 - Markdown formatter: structured bug report with ancestor labels, resolved status
+- Enriched markdown: viewport, browser, element tag/selector/placeholder, font size, region dimensions
 - Screenshot cropping: per-annotation viewport crops via canvas
 - ZIP assembly: markdown + cropped PNGs packaged via JSZip
 - All export buttons disabled when no annotations
-- 193 extension tests, 324 total
+- Annotation numbers (#id) shown in sidebar entries for page marker correlation
+- Sidebar entries expand on hover (400ms delay) to show full comment, collapse on mouseout
+- Sidebar collapse pauses annotation interaction (no accidental clicks)
+- Element annotations capture computed styles (fontSize, fontFamily, color, bg)
+- Ovoid toggle switches in popup settings with separator line
+- 197 extension tests, 328 total
 
 ### Extension UX Improvements
 - Popup: dark background fills edge-to-edge, header icon alignment fixed
