@@ -4,6 +4,8 @@ Browser extension + MCP server for AI-powered UI capture, auditing, and annotati
 
 ViewGraph captures structured DOM snapshots from any web page and exposes them to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/). Agents can query page structure, audit accessibility, find missing test IDs, compare captures, and act on human annotations  -  all through MCP tools.
 
+Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Windsurf**, **Cline**, **Aider**, and more. No agent-specific code  -  pure MCP protocol. Tools that don't support MCP can read `.viewgraph.json` capture files directly from disk.
+
 ## Components
 
 | Component | Description | Status |
@@ -42,6 +44,7 @@ scripts/         Git and build scripts
 - [Spec Index](./.kiro/specs/README.md)  -  Kiro specs
 - [ViewGraph v2 Format Spec](./docs/architecture/viewgraph-v2-format.md)  -  capture format
 - [Format Research](./docs/architecture/viewgraph-format-research.md)  -  format analysis and design rationale
+- [Universal Agent Integration](./docs/decisions/ADR-001-universal-agent-integration.md)  -  multi-tool architecture (Kiro, Claude Code, Cursor, Windsurf)
 
 ## License
 

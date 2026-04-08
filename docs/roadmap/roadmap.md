@@ -241,7 +241,32 @@ with one script. Manual testing checklist passes on Chrome + Firefox.
 
 ---
 
-## Milestone 8: Advanced Tools + Polish (Days 31+)
+## Milestone 8: Universal Agent Integration (Days 28-30)
+
+**Goal:** Plug-and-play support for all major agentic coding tools.
+
+**ADR:** [`docs/decisions/ADR-001-universal-agent-integration.md`](../decisions/ADR-001-universal-agent-integration.md)
+**Spec:** `.kiro/specs/universal-integration/`
+
+| # | Task | Details |
+|---|---|---|
+| 8.1 | Registration CLI | `npx viewgraph init` - auto-detect tool, write MCP config |
+| 8.2 | Tool detection | Detect Kiro, Claude Code, Cursor, Windsurf, Cline by config directory presence |
+| 8.3 | Streamable HTTP transport | `--transport http --port 9091` flag for remote/team scenarios |
+| 8.4 | npm package setup | `package.json` bin entry, publish as `viewgraph-mcp-server` |
+| 8.5 | Setup runbooks | Per-tool setup guides in `docs/runbooks/` (kiro, claude-code, cursor, windsurf) |
+| 8.6 | Health check CLI | `npx viewgraph doctor` - verify server starts, tools register, captures dir accessible |
+| 8.7 | Integration tests | Test stdio + HTTP transports, test init command for each tool |
+
+**Exit criteria:** `npx viewgraph init` works for Kiro, Claude Code, Cursor,
+and Windsurf. Server works over both stdio and HTTP transports. npm package
+installable globally.
+
+**Effort:** 2-3 days
+
+---
+
+## Milestone 9: Advanced Tools + Polish (Days 31+)
 
 **Goal:** Power features and production hardening.
 
@@ -249,13 +274,13 @@ with one script. Manual testing checklist passes on Chrome + Firefox.
 
 | # | Task | Details |
 |---|---|---|
-| 8.1 | Capture history timeline | Track captures per URL over time. Tool: `get_capture_history`. |
-| 8.2 | Accessibility tree capture | CDP Accessibility domain integration for computed a11y names/roles. |
-| 8.3 | Provenance metadata | Tag each field with source: measured/derived/inferred/user-provided. |
-| 8.4 | Incremental diffs | JSON Patch between captures for streaming/regression workflows. |
-| 8.5 | Extension settings page | Full options page with all configurable settings. |
-| 8.6 | Extension onboarding | Welcome page on install with feature walkthrough. |
-| 8.7 | Performance optimization | Lazy-load heavy modules, optimize DOM traversal for large pages. |
+| 9.1 | Capture history timeline | Track captures per URL over time. Tool: `get_capture_history`. |
+| 9.2 | Accessibility tree capture | CDP Accessibility domain integration for computed a11y names/roles. |
+| 9.3 | Provenance metadata | Tag each field with source: measured/derived/inferred/user-provided. |
+| 9.4 | Incremental diffs | JSON Patch between captures for streaming/regression workflows. |
+| 9.5 | Extension settings page | Full options page with all configurable settings. |
+| 9.6 | Extension onboarding | Welcome page on install with feature walkthrough. |
+| 9.7 | Performance optimization | Lazy-load heavy modules, optimize DOM traversal for large pages. |
 
 **Effort:** Ongoing
 
@@ -270,8 +295,8 @@ with one script. Manual testing checklist passes on Chrome + Firefox.
 | Week 3 | M4 (start) | Extension core: capture + screenshot + push |
 | Week 4 | M4 (finish) + M5 | Inspector + select element mode |
 | Week 5 | M6 | Review mode + annotations |
-| Week 6 | M7 | Deployment, testing, automation |
-| Ongoing | M8 | Advanced tools + polish |
+| Week 6 | M7 + M8 | Deployment + universal agent integration |
+| Ongoing | M9 | Advanced tools + polish |
 
 ---
 
