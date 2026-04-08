@@ -97,20 +97,14 @@ function selectorSegment(el) {
  * Returns something like: div.card-group > div.card.p-4 > div.card-body
  * Truncates from the left if too long.
  */
-export function buildBreadcrumb(el, maxLen = 80) {
+export function buildBreadcrumb(el) {
   const segments = [];
   let node = el;
   while (node && node !== document.body && node !== document.documentElement) {
     segments.unshift(selectorSegment(node));
     node = node.parentElement;
   }
-  let path = segments.join(' > ');
-  // Only truncate if genuinely too long, and keep at least 3 segments visible
-  if (path.length > maxLen && segments.length > 3) {
-    const kept = segments.slice(-3).join(' > ');
-    path = '... > ' + kept;
-  }
-  return path;
+  return segments.join(' > ');
 }
 
 /**
@@ -282,11 +276,11 @@ function freeze() {
   if (!currentEl) return;
   frozen = true;
 
-  // Show action bar below the overlay
+  // Show action bar below the tooltip
   actionBarEl = createActionBar();
-  const rect = currentEl.getBoundingClientRect();
-  const barY = rect.bottom + 6;
-  const barX = Math.max(4, rect.left);
+  const tooltipRect = tooltipEl.getBoundingClientRect();
+  const barY = tooltipRect.bottom + 4;
+  const barX = Math.max(4, tooltipRect.left);
   Object.assign(actionBarEl.style, { top: `${barY}px`, left: `${barX}px` });
 }
 

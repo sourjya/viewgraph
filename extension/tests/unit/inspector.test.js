@@ -50,12 +50,21 @@ describe('buildBreadcrumb', () => {
     expect(buildBreadcrumb(span)).toBe('div#main > span');
   });
 
-  it('truncates very long paths from the left', () => {
+  it('shows full path for nav elements with multiple classes', () => {
+    document.body.innerHTML = '<ul class="header-nav d-flex"><li class="nav-item"><button class="btn btn-success">Talk</button></li></ul>';
+    const btn = document.querySelector('button');
+    const result = buildBreadcrumb(btn);
+    expect(result).toBe('ul.header-nav.d-flex > li.nav-item > button.btn.btn-success');
+    expect(result).not.toContain('...');
+  });
+
+  it('never truncates with ellipsis', () => {
     document.body.innerHTML = '<div class="very-long-class-name"><div class="another-long-class"><div class="yet-another-long"><div class="deep-nested"><span>X</span></div></div></div></div>';
     const span = document.querySelector('span');
-    const result = buildBreadcrumb(span, 40);
-    expect(result).toContain('... >');
+    const result = buildBreadcrumb(span);
+    expect(result).not.toContain('...');
     expect(result).toContain('span');
+    expect(result).toContain('div.very-long-class-name');
   });
 });
 
