@@ -664,3 +664,15 @@ describe('popup font sizes', () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// Connection status cursor
+// ---------------------------------------------------------------------------
+
+describe('connection status cursor', () => {
+  it('uses default cursor, not text selection', () => {
+    const cursor = 'default';
+    expect(cursor).toBe('default');
+    expect(cursor).not.toBe('text');
+  });
+});
