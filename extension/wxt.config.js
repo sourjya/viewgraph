@@ -1,5 +1,5 @@
 /**
- * WXT Configuration — ViewGraph Capture Extension
+ * WXT Configuration  -  ViewGraph Capture Extension
  *
  * Configures the WXT build pipeline for cross-browser extension development.
  * Primary target is Firefox MV3, with Chrome as the dev environment

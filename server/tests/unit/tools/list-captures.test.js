@@ -1,5 +1,5 @@
 /**
- * list_captures — MCP Tool Integration Tests
+ * list_captures  -  MCP Tool Integration Tests
  *
  * Tests the full MCP protocol path: client → transport → server → handler → response.
  * Uses InMemoryTransport with a pre-populated indexer.

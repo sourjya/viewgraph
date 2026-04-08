@@ -1,5 +1,5 @@
 /**
- * Project Constants — Single Source of Truth
+ * Project Constants  -  Single Source of Truth
  *
  * All project-name-derived values live here. To rename the project,
  * change these constants and everything propagates automatically.
@@ -12,7 +12,7 @@ export const PROJECT_NAME = 'ViewGraph';
 /** Machine-readable prefix for env vars, log output, and identifiers. */
 export const PROJECT_PREFIX = 'viewgraph';
 
-/** MCP server identity — reported to hosts during initialization. */
+/** MCP server identity  -  reported to hosts during initialization. */
 export const SERVER_NAME = `${PROJECT_PREFIX}-mcp-server`;
 export const SERVER_VERSION = '0.1.0';
 export const SERVER_DESCRIPTION = `Exposes ${PROJECT_NAME} DOM capture tools for AI-powered UI auditing, test generation, and visual regression`;

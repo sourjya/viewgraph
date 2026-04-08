@@ -43,7 +43,7 @@ export function register(server, indexer, capturesDir) {
         if (size > MAX_INLINE_SIZE) {
           const summary = parseSummary(content);
           const text = summary.ok
-            ? `Latest capture: ${latest.filename} (${(size / 1024).toFixed(1)} KB — too large for inline, showing summary)\n\n${JSON.stringify(summary.data, null, 2)}\n\nUse get_capture("${latest.filename}") for the full data.`
+            ? `Latest capture: ${latest.filename} (${(size / 1024).toFixed(1)} KB  -  too large for inline, showing summary)\n\n${JSON.stringify(summary.data, null, 2)}\n\nUse get_capture("${latest.filename}") for the full data.`
             : `Latest capture: ${latest.filename} (${(size / 1024).toFixed(1)} KB). Could not parse summary. Use get_capture for full data.`;
           return { content: [{ type: 'text', text }] };
         }

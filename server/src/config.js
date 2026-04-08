@@ -6,7 +6,7 @@
  *   2. .viewgraphrc.json in the project root (or any ancestor directory)
  *   3. Default: ./captures relative to cwd
  *
- * Handles WSL path translation automatically — if running in WSL and the
+ * Handles WSL path translation automatically  -  if running in WSL and the
  * resolved path is a Windows-style path (C:\...), it's converted to the
  * /mnt/c/... equivalent. This lets users share one config file across
  * Windows (extension) and WSL (MCP server) environments.

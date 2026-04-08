@@ -1,5 +1,5 @@
 /**
- * ViewGraph MCP Server — Entry Point
+ * ViewGraph MCP Server  -  Entry Point
  *
  * Starts the MCP server over stdio transport, exposing tools for querying,
  * analyzing, and comparing DOM captures. Kiro (or any MCP host) spawns
@@ -7,7 +7,7 @@
  *
  * Wires together: file watcher → parser → indexer → MCP tools.
  *
- * CRITICAL: All logging goes to stderr — stdout is reserved for JSON-RPC.
+ * CRITICAL: All logging goes to stderr  -  stdout is reserved for JSON-RPC.
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -28,7 +28,7 @@ import { register as registerGetLatest } from './src/tools/get-latest.js';
 import { register as registerGetPageSummary } from './src/tools/get-page-summary.js';
 
 // ---------------------------------------------------------------------------
-// Configuration — env vars > .viewgraphrc.json > defaults
+// Configuration  -  env vars > .viewgraphrc.json > defaults
 // ---------------------------------------------------------------------------
 
 const config = resolveConfig();
@@ -53,7 +53,7 @@ registerGetLatest(server, indexer, CAPTURES_DIR);
 registerGetPageSummary(server, indexer, CAPTURES_DIR);
 
 // ---------------------------------------------------------------------------
-// File indexing — parse metadata from a capture file and add to index
+// File indexing  -  parse metadata from a capture file and add to index
 // ---------------------------------------------------------------------------
 
 async function indexFile(filename, filePath) {

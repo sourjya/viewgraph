@@ -1,7 +1,7 @@
 {
   "name": "viewgraph-capture",
   "version": "0.1.0",
-  "description": "Browser extension for capturing DOM structure, screenshots, and annotations for AI-powered UI analysis — ViewGraph",
+  "description": "Browser extension for capturing DOM structure, screenshots, and annotations for AI-powered UI analysis  -  ViewGraph",
   "type": "module",
   "scripts": {
     "dev": "wxt",

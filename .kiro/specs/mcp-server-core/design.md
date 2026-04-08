@@ -1,10 +1,10 @@
-# MCP Server Core Tools — Design
+# MCP Server Core Tools  -  Design
 
 ## Architecture
 
 ```
 server/
-├── index.js                 (entry point — wires everything together)
+├── index.js                 (entry point  -  wires everything together)
 ├── src/
 │   ├── watcher.js           (chokidar file watcher on captures dir)
 │   ├── indexer.js            (in-memory index: filename → metadata)
@@ -52,13 +52,13 @@ server/
 - Exports `parseMetadata(jsonString)` → metadata only (fast, for indexing)
 - Exports `parseSummary(jsonString)` → summary extraction for get_page_summary
 - Section delimiters: `====METADATA====`, `====NODES====`, etc.
-- Returns `{ ok: true, data }` or `{ ok: false, error }` — never throws
+- Returns `{ ok: true, data }` or `{ ok: false, error }`  -  never throws
 
 ### tools/*.js
 Each tool module exports a `register(server, indexer, capturesDir)` function
 that calls `server.tool(name, description, schema, handler)`.
 
-Tool descriptions are written for the LLM — they include when to use the tool,
+Tool descriptions are written for the LLM  -  they include when to use the tool,
 what the output looks like, and error conditions.
 
 ## Data Flow

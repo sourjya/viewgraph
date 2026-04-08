@@ -1,5 +1,5 @@
 /**
- * get_capture — MCP Tool Integration Tests
+ * get_capture  -  MCP Tool Integration Tests
  *
  * Tests full JSON retrieval, path traversal rejection, and missing file handling.
  * Uses InMemoryTransport with real fixture files on disk.

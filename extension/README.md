@@ -6,7 +6,7 @@ Built with [WXT](https://wxt.dev/) for cross-browser Manifest V3 support.
 
 ## Status
 
-Scaffolded — core capture functionality is planned for [Milestone 4](../docs/roadmap/roadmap.md).
+Scaffolded  -  core capture functionality is planned for [Milestone 4](../docs/roadmap/roadmap.md).
 
 ## Development
 

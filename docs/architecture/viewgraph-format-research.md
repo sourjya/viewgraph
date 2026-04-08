@@ -27,7 +27,7 @@ identified below, and add capabilities the original format lacks.
 
 ### 1.1 JSON overhead is significant for repeated structures
 
-Research on LLM context compression consistently shows JSON is 20–50% more
+Research on LLM context compression consistently shows JSON is 20-50% more
 token-expensive than alternatives when representing arrays of similar objects
 (refs 5, 6, 9, 10). The overhead comes from:
 
@@ -41,14 +41,14 @@ token-expensive than alternatives when representing arrays of similar objects
 
 | Format | Token reduction vs JSON | Notes |
 |---|---|---|
-| YAML | 10–25% | Minimal for small arrays; grows with array size |
-| Columnar JSON | 25–50% | Keys appear once; data as arrays. JSON-compatible |
-| Markdown tables | 20–40% | Headers once; highly effective for 100+ rows |
-| Field filtering | 30–60% | Removing unused fields is the single biggest win |
+| YAML | 10-25% | Minimal for small arrays; grows with array size |
+| Columnar JSON | 25-50% | Keys appear once; data as arrays. JSON-compatible |
+| Markdown tables | 20-40% | Headers once; highly effective for 100+ rows |
+| Field filtering | 30-60% | Removing unused fields is the single biggest win |
 
 **Key insight:** Columnar JSON (keys declared once, data as parallel arrays)
-saves 35–45% tokens while remaining valid JSON (ref 5). This is exactly what CDP's
-`DOMSnapshot.captureSnapshot` uses (ref 28) — a shared string table with integer
+saves 35-45% tokens while remaining valid JSON (ref 5). This is exactly what CDP's
+`DOMSnapshot.captureSnapshot` uses (ref 28)  -  a shared string table with integer
 indexes into it. The format was designed for wire efficiency, but it's also
 LLM-efficient.
 
@@ -107,7 +107,7 @@ a few tokens per node but:
 - Forces every consumer to maintain an abbreviation lookup table
 - Makes captures harder to read for humans debugging issues
 - LLMs already tokenize "button" efficiently (1 token in most tokenizers)
-- The savings are ~2 tokens per node × 300 nodes = ~600 tokens — negligible
+- The savings are ~2 tokens per node × 300 nodes = ~600 tokens  -  negligible
   compared to the 50K+ tokens in styles
 
 **Recommendation:** Use full HTML tag names. The readability gain far outweighs
@@ -115,7 +115,7 @@ the marginal token cost.
 
 ### 2.3 Node IDs are opaque and unstable
 
-SiFR generates IDs like `btn001`, `div003`, `a002` — a tag abbreviation plus a
+SiFR generates IDs like `btn001`, `div003`, `a002`  -  a tag abbreviation plus a
 sequential counter. These IDs are:
 - Unstable across captures (same element gets different IDs if capture order changes)
 - Opaque (no semantic meaning beyond tag type)
@@ -176,9 +176,9 @@ hundreds of relations that LLMs rarely use. The semantic relations (`labelFor`,
 
 **Recommendation:** Split relations into:
 - **Semantic relations** (always included): labelFor, describedBy, controls,
-  owns — derived from ARIA attributes
+  owns  -  derived from ARIA attributes
 - **Spatial relations** (optional, on-demand via MCP tool): above, leftOf,
-  overlaps — computed only when requested
+  overlaps  -  computed only when requested
 
 ### 2.8 No accessibility tree data
 
@@ -217,7 +217,7 @@ layout and style arrays indexed by node position.
 Playwright MCP, Chrome DevTools MCP, and browser automation tools. Developers
 building on CDP tooling can consume this directly.
 
-**MCP tool:** `export_cdp_snapshot({ filename })` — converts a ViewGraph
+**MCP tool:** `export_cdp_snapshot({ filename })`  -  converts a ViewGraph
 capture to CDP DOMSnapshot format.
 
 ### 3.2 Accessibility tree export
@@ -230,7 +230,7 @@ value, focused, expanded, selected, checked, disabled, and children.
 consume AX tree snapshots. Exporting in this format makes ViewGraph captures
 directly usable by any AX-tree-consuming agent.
 
-**MCP tool:** `export_ax_tree({ filename })` — extracts accessibility-relevant
+**MCP tool:** `export_ax_tree({ filename })`  -  extracts accessibility-relevant
 data from a ViewGraph capture and formats it as an AX tree snapshot.
 
 ### 3.3 W3C Web Annotation export
@@ -243,7 +243,7 @@ targeting the annotated elements.
 **Why:** Interoperability with annotation tools, IIIF viewers, and any system
 that consumes W3C Web Annotations. Makes our review-mode annotations portable.
 
-**MCP tool:** `export_annotations_w3c({ filename })` — converts ViewGraph
+**MCP tool:** `export_annotations_w3c({ filename })`  -  converts ViewGraph
 annotations to W3C Web Annotation JSON-LD.
 
 ### 3.4 Extension UI for export format selection
@@ -273,7 +273,7 @@ Based on the research above, these are the concrete changes from SiFR v2:
 | 1 | Full tag names, no abbreviations | Readability > marginal token savings |
 | 2 | Semantic node IDs incorporating testid/id/role | Stable, human-readable, debuggable |
 | 3 | Explicit coordinate frame in METADATA | Eliminates ambiguity for multimodal agents |
-| 4 | Progressive style disclosure (none in NODES, tiered in DETAILS) | 30–50% token reduction |
+| 4 | Progressive style disclosure (none in NODES, tiered in DETAILS) | 30-50% token reduction |
 | 5 | Split relations: semantic (always) vs spatial (on-demand) | Reduces default capture size |
 | 6 | Self-contained structural patterns in SUMMARY | LLM can understand without cross-referencing |
 | 7 | Optional ACCESSIBILITY section | Aligns with browser agent best practices |
@@ -314,11 +314,11 @@ standard-format exports.
   Store description states: "Raw HTML is bloated. Screenshots burn tokens.
   Accessibility trees miss visual context."
   https://chromewebstore.google.com/detail/element-to-llm/oofdfeinchhgnhlikkfdfcldbpcjcgnj
-- [3] Element to LLM, Firefox Add-ons version history (v2.6.0–v2.8.1 changelogs).
+- [3] Element to LLM, Firefox Add-ons version history (v2.6.0-v2.8.1 changelogs).
   Documents bug fixes for child prioritization, content script injection,
   and telemetry.
   https://addons.mozilla.org/en-US/firefox/addon/element-to-llm/versions/
-- [4] "Show HN: Element to LLM – Extension That Turns Runtime DOM into JSON
+- [4] "Show HN: Element to LLM - Extension That Turns Runtime DOM into JSON
   for LLMs." Hacker News discussion (4 comments). Author (Alechko/Insitu)
   describes use case: "the runtime state the browser is actually rendering."
   https://news.ycombinator.com/item?id=45041345
@@ -327,8 +327,8 @@ standard-format exports.
 
 - [5] Zhu, X. "Compressing LLM Context Windows: Efficient Data Formats and
   Context Management." Reinforcement Coding, 2026. Key finding: JSON is
-  20–50% more token-expensive than alternatives for repeated structures.
-  Columnar JSON saves 35–45%. Markdown tables save 20–40% for large arrays.
+  20-50% more token-expensive than alternatives for repeated structures.
+  Columnar JSON saves 35-45%. Markdown tables save 20-40% for large arrays.
   https://www.reinforcementcoding.com/blog/context-compression-efficient-data-formats
 - [6] Gilbertson, D. "LLM Output Formats: Why JSON Costs More Than TSV."
   Medium, 2024. Compares token usage across JSON, YAML, TSV, and custom
@@ -418,7 +418,7 @@ standard-format exports.
 ### Standard formats and protocols
 
 - [28] Chrome DevTools Protocol, DOMSnapshot domain. `captureSnapshot` returns
-  flattened arrays with shared string table — columnar format for wire and
+  flattened arrays with shared string table  -  columnar format for wire and
   token efficiency. Includes layout bounds, computed styles, paint order.
   https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot
 - [29] Chrome DevTools Protocol, Accessibility domain. Full AX tree snapshots
@@ -459,10 +459,10 @@ standard-format exports.
 
 ### Additional context from project docs
 
-- [39] `docs/ideas/technical-design.md` — ViewGraph project technical design
+- [39] `docs/ideas/technical-design.md`  -  ViewGraph project technical design
   document (internal). Full architecture spec for extension + MCP server.
 - [40] `docs/ideas/output-formats-for-full-fidelity-page-layout-understanding-
-  by-agentic-coding-agents.md` — Research survey of representation formats
+  by-agentic-coding-agents.md`  -  Research survey of representation formats
   for agentic coding agents (internal). Covers DOM, AX trees, CDP snapshots,
   PDF, SVG, design exports, native mobile, annotation standards. Proposes
   Unified Layout Capture Bundle (ULCB) schema.

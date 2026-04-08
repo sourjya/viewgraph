@@ -1,5 +1,5 @@
 /**
- * Popup Script — ViewGraph Capture Extension
+ * Popup Script  -  ViewGraph Capture Extension
  *
  * Mode switcher UI: quick-fire buttons (Screenshot, ViewGraph Capture, Select Element)
  * and Review Mode entry. Sends messages to background service worker to initiate

@@ -1,5 +1,5 @@
 /**
- * get_page_summary — MCP Tool Integration Tests
+ * get_page_summary  -  MCP Tool Integration Tests
  *
  * Tests summary extraction from a valid capture and error handling for missing files.
  * Uses InMemoryTransport with real fixture files on disk.

@@ -48,7 +48,7 @@ npm run test:watch       # watch mode
 ## Architecture
 
 ```
-index.js                 Entry point — wires watcher, indexer, tools
+index.js                 Entry point  -  wires watcher, indexer, tools
 src/
 ├── config.js            Config resolution (.viewgraphrc.json, env vars)
 ├── constants.js         Domain constants

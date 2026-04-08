@@ -3,7 +3,7 @@
  *
  * Parses ViewGraph v2 capture JSON files. The format uses section delimiters
  * like "====METADATA====" as top-level keys. Each function returns a result
- * object { ok, data/error } — never throws.
+ * object { ok, data/error }  -  never throws.
  *
  * Three parse levels for different use cases:
  * - parseMetadata: fast, for indexing (reads only METADATA + checks ANNOTATIONS)
@@ -13,7 +13,7 @@
 
 import { FORMAT_VERSION } from '../constants.js';
 
-// Section key constants — match the JSON top-level keys
+// Section key constants  -  match the JSON top-level keys
 const SECTIONS = {
   METADATA: '====METADATA====',
   NODES: '====NODES====',
@@ -35,7 +35,7 @@ function safeParse(jsonString) {
 }
 
 /**
- * Extract metadata from a capture — fast path for indexing.
+ * Extract metadata from a capture  -  fast path for indexing.
  * Only reads the METADATA section and checks for ANNOTATIONS presence.
  */
 export function parseMetadata(jsonString) {
@@ -64,7 +64,7 @@ export function parseMetadata(jsonString) {
 }
 
 /**
- * Full parse of all sections — for get_capture and detailed analysis.
+ * Full parse of all sections  -  for get_capture and detailed analysis.
  */
 export function parseCapture(jsonString) {
   const parsed = safeParse(jsonString);
@@ -89,7 +89,7 @@ export function parseCapture(jsonString) {
 }
 
 /**
- * Extract summary data — for get_page_summary tool.
+ * Extract summary data  -  for get_page_summary tool.
  * Combines METADATA and SUMMARY into a compact overview.
  */
 export function parseSummary(jsonString) {

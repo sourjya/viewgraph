@@ -1,5 +1,5 @@
 /**
- * Smoke test — verifies the test runner is wired up correctly.
+ * Smoke test  -  verifies the test runner is wired up correctly.
  * Replace with real tests as tools are implemented.
  */
 

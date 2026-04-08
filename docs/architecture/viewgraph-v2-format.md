@@ -14,14 +14,14 @@ for credits and analysis.
 
 ## 1. Overview
 
-ViewGraph v2 is a JSON format for representing captured web page state —
-structure, layout, styles, accessibility, and human annotations — optimized
+ViewGraph v2 is a JSON format for representing captured web page state  - 
+structure, layout, styles, accessibility, and human annotations  -  optimized
 for consumption by LLM-based coding agents via MCP tools.
 
 ### 1.1 Design goals
 
 1. **LLM-first:** Minimize tokens for equivalent information. Progressive
-   disclosure — summary first, details on demand.
+   disclosure  -  summary first, details on demand.
 2. **Human-readable:** Full tag names, semantic node IDs, no abbreviations.
 3. **Formally specified:** This document is the contract. Producers and
    consumers can be built independently.
@@ -77,7 +77,7 @@ deliberately does not. Reasons:
 - **Standard JSON:** No special characters in keys means standard schema
   validation, autocomplete, and tooling work out of the box
 - **LLMs parse JSON natively:** Models don't need visual markers to locate
-  top-level keys — they already understand JSON structure
+  top-level keys  -  they already understand JSON structure
 - **Zero overhead:** Eliminates ~10 characters of noise per key
 - **Greppability is equivalent:** `grep '"metadata"'` works as well as
   `grep "====METADATA===="`
@@ -297,7 +297,7 @@ IDs MUST be unique within a capture. IDs SHOULD be human-readable.
 
 ### 5.2 Node structure
 
-Each node in the NODES section contains structural information only — no
+Each node in the NODES section contains structural information only  -  no
 styles, no selectors, no attributes. Those live in DETAILS.
 
 | Field | Type | Required | Description |
@@ -318,7 +318,7 @@ styles, no selectors, no attributes. Those live in DETAILS.
 | `low` | Decorative, wrappers, low score | Minimal or none |
 
 Salience is computed by the producer using a weighted scoring algorithm.
-The spec does not mandate a specific algorithm — only that the three tiers
+The spec does not mandate a specific algorithm  -  only that the three tiers
 are populated and that `high` contains the most important interactive elements.
 
 ---
@@ -454,7 +454,7 @@ background, inset, outline, gap).
 
 ### 7.3 Hints (anomaly detection)
 
-High-salience nodes MAY include `hints` — detected anomalies that might
+High-salience nodes MAY include `hints`  -  detected anomalies that might
 indicate bugs or interesting layout behavior:
 
 | Hint type | Meaning |
@@ -579,7 +579,7 @@ as optional MCP tools and optional extension output.
 | Accessibility Tree | `export_ax_tree` | ☐ Accessibility Tree | Role/name/state tree |
 | W3C Web Annotation | `export_annotations_w3c` | ☐ W3C Annotations | JSON-LD with selectors |
 
-Exports are derived from the ViewGraph capture — they are views, not
+Exports are derived from the ViewGraph capture  -  they are views, not
 independent captures. The ViewGraph file is always the source of truth.
 
 ---
@@ -656,11 +656,11 @@ This specification was informed by the research documented in
   are concepts adapted from SiFR. No code was reused.
 - **Token efficiency:** Compact bbox arrays, progressive style disclosure, and
   columnar encoding options are informed by LLM context compression research
-  [research doc refs 5–13].
+  [research doc refs 5-13].
 - **Accessibility section:** Motivated by browser agent research showing AX tree
   snapshots as primary agent context [research doc ref 14], and CDP Accessibility
-  domain [research doc refs 28–31].
-- **Annotation export:** W3C Web Annotation Data Model [research doc refs 32–33].
+  domain [research doc refs 28-31].
+- **Annotation export:** W3C Web Annotation Data Model [research doc refs 32-33].
 - **Coordinate frame declaration:** Informed by CDP DOMSnapshot's explicit
   coordinate handling [research doc ref 28] and the ULCB schema proposal
   [research doc ref 40].

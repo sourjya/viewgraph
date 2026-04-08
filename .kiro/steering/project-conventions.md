@@ -4,6 +4,16 @@ inclusion: always
 
 # Project Conventions
 
+## Character Encoding - STRICT
+
+**Never use em dashes, en dashes, or other Unicode special punctuation anywhere in the project.**
+
+- No em dash (U+2014 `\u2014`) - use ` - ` (space-hyphen-space) instead
+- No en dash (U+2013 `\u2013`) - use `-` (hyphen) instead
+- No curly/smart quotes - use straight quotes `"` and `'`
+- This applies to: code, comments, labels, docs, changelogs, READMEs, specs, commit messages, tool descriptions, error messages - everything
+- Reason: em/en dashes render inconsistently across terminals, editors, and platforms. They break grep, cause encoding issues in some tools, and look unprofessional in code.
+
 Rules specific to this project's codebase, tools, and architecture.
 
 ## Git and Terminal Workflow

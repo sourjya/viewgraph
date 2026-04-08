@@ -1,4 +1,4 @@
-# ViewGraph — Project Roadmap
+# ViewGraph  -  Project Roadmap
 
 **Created:** 2026-04-08
 **Status:** Active
@@ -33,7 +33,7 @@ Each milestone below will be converted into a full Kiro spec under
 
 ---
 
-## Milestone 1: MCP Server — Core Tools (Days 2-4) 🔧
+## Milestone 1: MCP Server  -  Core Tools (Days 2-4) 🔧
 
 **Goal:** MCP server reads existing ViewGraph capture files from disk and exposes
 core query tools to Kiro.
@@ -43,7 +43,7 @@ core query tools to Kiro.
 
 | # | Task | Details |
 |---|---|---|
-| 1.1 | File watcher | Watch `VIEWGRAPH_CAPTURES_DIR` for new `.json` files. Use `chokidar` (not `fs.watch` — unreliable on WSL/Windows boundary). |
+| 1.1 | File watcher | Watch `VIEWGRAPH_CAPTURES_DIR` for new `.json` files. Use `chokidar` (not `fs.watch`  -  unreliable on WSL/Windows boundary). |
 | 1.2 | Indexer | Parse `====METADATA====` from each capture, maintain in-memory index (filename, url, title, timestamp, node count). Rebuild on startup. |
 | 1.3 | ViewGraph v2 parser | Parse all sections (METADATA, NODES, SUMMARY, RELATIONS, DETAILS, ANNOTATIONS). |
 | 1.4 | Tool: `list_captures` | Input: `{ limit?, url_filter? }`. Returns array of capture metadata. |
@@ -54,13 +54,13 @@ core query tools to Kiro.
 | 1.9 | Manual Kiro test | Register server, verify tools appear, test with real capture file. |
 
 **Exit criteria:** Kiro can list captures, get the latest, query a specific capture,
-and get a page summary — all from existing ViewGraph JSON files on disk.
+and get a page summary  -  all from existing ViewGraph JSON files on disk.
 
 **Effort:** 2-3 days
 
 ---
 
-## Milestone 2: MCP Server — Analysis Tools (Days 5-7)
+## Milestone 2: MCP Server  -  Analysis Tools (Days 5-7)
 
 **Goal:** Advanced query and analysis tools for UI auditing and test generation.
 
@@ -85,7 +85,7 @@ and read annotations from review-mode captures.
 
 ---
 
-## Milestone 3: MCP Server — Bidirectional Communication (Days 8-9)
+## Milestone 3: MCP Server  -  Bidirectional Communication (Days 8-9)
 
 **Goal:** Kiro can request captures from the extension via the MCP server.
 
@@ -106,7 +106,7 @@ request to a polling client, and `get_request_status` returns the result.
 
 ---
 
-## Milestone 4: Firefox Extension — Core Capture (Days 10-15)
+## Milestone 4: Firefox Extension  -  Core Capture (Days 10-15)
 
 **Goal:** Working Firefox extension with popup UI, DOM traversal, and ViewGraph JSON output.
 
@@ -194,19 +194,19 @@ and send a bundled capture that Kiro can read and act on.
 
 | # | Task | Details |
 |---|---|---|
-| 7.1 | Build script | `scripts/build-extension.sh` — runs WXT build for Firefox + Chrome. |
-| 7.2 | Package script | `scripts/package-extension.sh` — creates `.zip` for AMO submission. |
-| 7.3 | AMO submission guide | `docs/runbooks/amo-submission.md` — step-by-step for signing + publishing. |
-| 7.4 | Version bump script | `scripts/bump-version.sh` — updates manifest + package.json versions. |
+| 7.1 | Build script | `scripts/build-extension.sh`  -  runs WXT build for Firefox + Chrome. |
+| 7.2 | Package script | `scripts/package-extension.sh`  -  creates `.zip` for AMO submission. |
+| 7.3 | AMO submission guide | `docs/runbooks/amo-submission.md`  -  step-by-step for signing + publishing. |
+| 7.4 | Version bump script | `scripts/bump-version.sh`  -  updates manifest + package.json versions. |
 
 ### MCP Server Deployment
 
 | # | Task | Details |
 |---|---|---|
-| 7.5 | Install script | `scripts/install-server.sh` — `npm install` in server/, verify Node version. |
-| 7.6 | Kiro registration script | `scripts/register-mcp.sh` — writes/updates `.kiro/settings/mcp.json` in target project. |
-| 7.7 | Health check | `scripts/test-server.sh` — sends JSON-RPC initialize to server, verifies response. |
-| 7.8 | Startup docs | `docs/runbooks/server-setup.md` — how to configure captures dir, HTTP port, env vars. |
+| 7.5 | Install script | `scripts/install-server.sh`  -  `npm install` in server/, verify Node version. |
+| 7.6 | Kiro registration script | `scripts/register-mcp.sh`  -  writes/updates `.kiro/settings/mcp.json` in target project. |
+| 7.7 | Health check | `scripts/test-server.sh`  -  sends JSON-RPC initialize to server, verifies response. |
+| 7.8 | Startup docs | `docs/runbooks/server-setup.md`  -  how to configure captures dir, HTTP port, env vars. |
 
 ### Automated Testing
 
@@ -217,7 +217,7 @@ and send a bundled capture that Kiro can read and act on.
 | 7.11 | Extension unit tests | Vitest + jsdom for DOM traverser, salience scorer, serializer. |
 | 7.12 | Extension integration tests | WXT test utils for popup UI, inspector overlay, annotation panel. |
 | 7.13 | E2E smoke test | Script that: starts server → loads extension → captures a test page → verifies Kiro can read the capture. |
-| 7.14 | CI script | `scripts/ci.sh` — runs lint + all tests. Can be wired to GitHub Actions later. |
+| 7.14 | CI script | `scripts/ci.sh`  -  runs lint + all tests. Can be wired to GitHub Actions later. |
 | 7.15 | Test fixtures | Sample ViewGraph captures (standard + annotated) in `server/tests/fixtures/`. |
 
 ### Manual Testing Checklist

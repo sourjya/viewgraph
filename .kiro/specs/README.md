@@ -1,4 +1,4 @@
-# ViewGraph — Spec Index
+# ViewGraph  -  Spec Index
 
 Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`, and `tasks.md`.
 

@@ -1,4 +1,4 @@
-# MCP Server Core Tools — Tasks
+# MCP Server Core Tools  -  Tasks
 
 ## Overview
 
@@ -10,31 +10,31 @@ TDD mandatory: write failing tests first, then implement.
 ### Phase 1: Test Fixtures + Parser
 
 #### Step 1: Test Fixtures
-- [x] 1.1 Create `server/tests/fixtures/valid-capture.json` — minimal valid ViewGraph v2 capture with all sections
-- [x] 1.2 Create `server/tests/fixtures/annotated-capture.json` — capture with ANNOTATIONS section
-- [x] 1.3 Create `server/tests/fixtures/malformed-capture.json` — invalid JSON for error handling tests
+- [x] 1.1 Create `server/tests/fixtures/valid-capture.json`  -  minimal valid ViewGraph v2 capture with all sections
+- [x] 1.2 Create `server/tests/fixtures/annotated-capture.json`  -  capture with ANNOTATIONS section
+- [x] 1.3 Create `server/tests/fixtures/malformed-capture.json`  -  invalid JSON for error handling tests
   - _Requirements: FR-3.2_
 
-#### Step 2: ViewGraph v2 Parser — TDD Cycle
+#### Step 2: ViewGraph v2 Parser  -  TDD Cycle
 
 **RED Phase:**
-- [x] 2.1 Write tests for `parseMetadata` — extracts metadata from valid capture, returns error for malformed
-- [x] 2.2 Write tests for `parseCapture` — parses all sections, handles missing sections gracefully
-- [x] 2.3 Write tests for `parseSummary` — extracts summary data for get_page_summary
+- [x] 2.1 Write tests for `parseMetadata`  -  extracts metadata from valid capture, returns error for malformed
+- [x] 2.2 Write tests for `parseCapture`  -  parses all sections, handles missing sections gracefully
+- [x] 2.3 Write tests for `parseSummary`  -  extracts summary data for get_page_summary
   - File: `server/tests/unit/viewgraph-v2.test.js`
   - _Requirements: FR-3.1, FR-3.2, FR-3.3_
 
 **GREEN Phase:**
 - [x] 2.4 Implement `server/src/parsers/viewgraph-v2.js`
-  - `parseMetadata(jsonString)` — fast metadata-only extraction
-  - `parseCapture(jsonString)` — full parse of all sections
-  - `parseSummary(jsonString)` — summary extraction
-  - Never throws — returns `{ ok, data/error }`
+  - `parseMetadata(jsonString)`  -  fast metadata-only extraction
+  - `parseCapture(jsonString)`  -  full parse of all sections
+  - `parseSummary(jsonString)`  -  summary extraction
+  - Never throws  -  returns `{ ok, data/error }`
   - _Requirements: FR-3.1, FR-3.2, FR-3.3_
 
 ### Phase 2: Indexer
 
-#### Step 3: Indexer — TDD Cycle
+#### Step 3: Indexer  -  TDD Cycle
 
 **RED Phase:**
 - [x] 3.1 Write tests for indexer: add, remove, get, list (with limit/filter/sort), getLatest, eviction
@@ -66,10 +66,10 @@ TDD mandatory: write failing tests first, then implement.
 
 #### Step 5: Path Validation Utility
 
-- [x] 5.1 Implement `server/src/utils/validate-path.js` — shared path validation
+- [x] 5.1 Implement `server/src/utils/validate-path.js`  -  shared path validation
   - _Requirements: NFR-2_
 
-#### Step 6: list_captures — TDD Cycle
+#### Step 6: list_captures  -  TDD Cycle
 
 **RED Phase:**
 - [x] 6.1 Write integration tests using InMemoryTransport
@@ -85,7 +85,7 @@ TDD mandatory: write failing tests first, then implement.
   - Register tool with Zod schema, LLM-optimized description
   - _Requirements: FR-4.1 through FR-4.5_
 
-#### Step 7: get_capture — TDD Cycle
+#### Step 7: get_capture  -  TDD Cycle
 
 **RED Phase:**
 - [x] 7.1 Write integration tests
@@ -99,7 +99,7 @@ TDD mandatory: write failing tests first, then implement.
 - [x] 7.2 Implement `server/src/tools/get-capture.js`
   - _Requirements: FR-6.1 through FR-6.4_
 
-#### Step 8: get_latest_capture — TDD Cycle
+#### Step 8: get_latest_capture  -  TDD Cycle
 
 **RED Phase:**
 - [x] 8.1 Write integration tests
@@ -114,7 +114,7 @@ TDD mandatory: write failing tests first, then implement.
 - [x] 8.2 Implement `server/src/tools/get-latest.js`
   - _Requirements: FR-5.1 through FR-5.4_
 
-#### Step 9: get_page_summary — TDD Cycle
+#### Step 9: get_page_summary  -  TDD Cycle
 
 **RED Phase:**
 - [x] 9.1 Write integration tests

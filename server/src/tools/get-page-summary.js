@@ -1,7 +1,7 @@
 /**
  * MCP Tool: get_page_summary
  *
- * Returns a compact summary of a capture — URL, title, viewport, layout,
+ * Returns a compact summary of a capture  -  URL, title, viewport, layout,
  * styles, element counts, and clusters. Always small enough for LLM context.
  */
 
@@ -16,7 +16,7 @@ export function register(server, _indexer, capturesDir) {
     'get_page_summary',
     `Get a compact summary of a ${PROJECT_NAME} capture: URL, title, viewport, ` +
     'layout description, color/font styles, element counts by salience level, ' +
-    'and spatial clusters. Always lightweight — use this for a quick overview ' +
+    'and spatial clusters. Always lightweight  -  use this for a quick overview ' +
     'before deciding whether to fetch the full capture with get_capture.',
     {
       filename: z.string()
@@ -27,7 +27,7 @@ export function register(server, _indexer, capturesDir) {
       try {
         filePath = validateCapturePath(filename, capturesDir);
       } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid filename — ${filename}` }], isError: true };
+        return { content: [{ type: 'text', text: `Error: Invalid filename  -  ${filename}` }], isError: true };
       }
 
       try {

@@ -2,14 +2,14 @@
 
 Browser extension + MCP server for AI-powered UI capture, auditing, and annotation.
 
-ViewGraph captures structured DOM snapshots from any web page and exposes them to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/). Agents can query page structure, audit accessibility, find missing test IDs, compare captures, and act on human annotations — all through MCP tools.
+ViewGraph captures structured DOM snapshots from any web page and exposes them to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/). Agents can query page structure, audit accessibility, find missing test IDs, compare captures, and act on human annotations  -  all through MCP tools.
 
 ## Components
 
 | Component | Description | Status |
 |---|---|---|
-| [`server/`](./server/) | MCP server — reads capture files, exposes query tools | In Progress |
-| [`extension/`](./extension/) | Firefox/Chrome extension — captures DOM, screenshots, annotations | Scaffolded |
+| [`server/`](./server/) | MCP server  -  reads capture files, exposes query tools | In Progress |
+| [`extension/`](./extension/) | Firefox/Chrome extension  -  captures DOM, screenshots, annotations | Scaffolded |
 
 ## Quick Start
 
@@ -38,10 +38,10 @@ scripts/         Git and build scripts
 
 ## Documentation
 
-- [Roadmap](./docs/roadmap/roadmap.md) — milestone plan
-- [Spec Index](./.kiro/specs/README.md) — Kiro specs
-- [ViewGraph v2 Format Spec](./docs/architecture/viewgraph-v2-format.md) — capture format
-- [Format Research](./docs/architecture/viewgraph-format-research.md) — format analysis and design rationale
+- [Roadmap](./docs/roadmap/roadmap.md)  -  milestone plan
+- [Spec Index](./.kiro/specs/README.md)  -  Kiro specs
+- [ViewGraph v2 Format Spec](./docs/architecture/viewgraph-v2-format.md)  -  capture format
+- [Format Research](./docs/architecture/viewgraph-format-research.md)  -  format analysis and design rationale
 
 ## License
 

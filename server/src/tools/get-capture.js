@@ -26,7 +26,7 @@ export function register(server, _indexer, capturesDir) {
       try {
         filePath = validateCapturePath(filename, capturesDir);
       } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid filename — ${filename}` }], isError: true };
+        return { content: [{ type: 'text', text: `Error: Invalid filename  -  ${filename}` }], isError: true };
       }
 
       try {

@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createIndexer } from '../../src/indexer.js';
 
-// Helper — build a metadata entry
+// Helper  -  build a metadata entry
 function meta(filename, url, timestamp, nodeCount = 10) {
   return { filename, url, title: `Page: ${url}`, timestamp, viewport: { width: 1696, height: 799 }, nodeCount, captureMode: 'sifr-capture', hasAnnotations: false };
 }

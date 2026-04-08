@@ -2,7 +2,7 @@
  * MCP Tool Integration Test Helper
  *
  * Creates a connected MCP server+client pair using InMemoryTransport.
- * Tools are registered on the server, then called via the client —
+ * Tools are registered on the server, then called via the client  - 
  * exercising the full MCP protocol path (schema validation, handler, response).
  */
 

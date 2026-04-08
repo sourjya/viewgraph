@@ -1,5 +1,5 @@
 /**
- * File Watcher — Captures Directory
+ * File Watcher  -  Captures Directory
  *
  * Uses chokidar to watch for new/changed/deleted .json files in the captures
  * directory. chokidar is used instead of fs.watch for cross-platform reliability,

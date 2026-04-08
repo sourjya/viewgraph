@@ -1,5 +1,5 @@
 /**
- * get_latest_capture — MCP Tool Integration Tests
+ * get_latest_capture  -  MCP Tool Integration Tests
  *
  * Tests most-recent retrieval, URL filtering, and empty-index handling.
  * Uses InMemoryTransport with a pre-populated indexer and real fixture files.
