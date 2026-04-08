@@ -4,7 +4,7 @@ A self-contained demo that walks you through the full ViewGraph workflow:
 annotate bugs in the browser, send to Kiro, and watch them get fixed.
 
 **Time:** 5 minutes
-**Prerequisites:** ViewGraph extension installed, MCP server running
+**Prerequisites:** ViewGraph extension installed, MCP server running (see [Getting Started](../../README.md#getting-started) if first time)
 
 ## Setup
 
