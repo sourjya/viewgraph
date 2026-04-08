@@ -71,5 +71,28 @@ describe('formatMarkdown', () => {
     const md = formatMarkdown([], {});
     expect(md).toContain('Untitled Page');
     expect(md).toContain('(unknown)');
+
+  it('includes viewport when provided', () => {
+    const md = formatMarkdown([], { ...META, viewport: { width: 1440, height: 900 } });
+    expect(md).toContain('**Viewport:** 1440 x 900');
+  });
+
+  it('includes browser when provided', () => {
+    const md = formatMarkdown([], { ...META, browser: 'Chrome/126' });
+    expect(md).toContain('**Browser:** Chrome/126');
+  });
+
+  it('includes element details when present', () => {
+    const anns = [{ id: 1, region: { width: 350, height: 40 }, comment: 'fix', ancestor: 'input', element: { tag: 'input', selector: 'input[type="email"]' } }];
+    const md = formatMarkdown(anns, META);
+    expect(md).toContain('`<input>`');
+    expect(md).toContain('`input[type="email"]`');
+  });
+
+  it('includes region size', () => {
+    const anns = [{ id: 1, region: { x: 10, y: 10, width: 200, height: 50 }, comment: 'test', ancestor: 'div' }];
+    const md = formatMarkdown(anns, META);
+    expect(md).toContain('**Size:** 200 x 50px');
+  });
   });
 });

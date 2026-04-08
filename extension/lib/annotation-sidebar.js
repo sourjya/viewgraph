@@ -120,7 +120,7 @@ export function create() {
   copyBtn.addEventListener('mouseenter', () => { copyBtn.style.background = '#4b5563'; });
   copyBtn.addEventListener('mouseleave', () => { copyBtn.style.background = '#374151'; });
   copyBtn.addEventListener('click', () => {
-    const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString() };
+    const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString(), viewport: { width: window.innerWidth, height: window.innerHeight }, browser: navigator.userAgent.match(/Chrome\/[\d.]+|Firefox\/[\d.]+/)?.[0] || 'Unknown' };
     const md = formatMarkdown(getAnnotations(), meta);
     navigator.clipboard.writeText(md).then(() => {
       copyBtn.textContent = 'Copied!';
@@ -224,7 +224,16 @@ export function refresh() {
       textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1',
     });
 
-    // Ancestor element badge + comment
+    // Number badge + ancestor element badge + comment
+    const numBadge = document.createElement('span');
+    numBadge.textContent = `#${ann.id}`;
+    Object.assign(numBadge.style, {
+      background: '#6366f1', color: '#fff', fontSize: '9px', fontWeight: '700',
+      padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
+      fontFamily: 'system-ui, sans-serif',
+    });
+    label.appendChild(numBadge);
+
     if (ann.ancestor) {
       const elBadge = document.createElement('span');
       elBadge.textContent = ann.ancestor;

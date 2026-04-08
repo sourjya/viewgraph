@@ -9,8 +9,8 @@
 
 /**
  * Format annotations as a markdown bug report.
- * @param {Array} annotations - Array of { id, type, region, comment, ancestor, resolved }
- * @param {{ title: string, url: string, timestamp: string }} metadata - Page metadata
+ * @param {Array} annotations - Annotation objects with optional element details
+ * @param {{ title: string, url: string, timestamp: string, viewport?: object, browser?: string }} metadata
  * @param {{ includeScreenshots?: boolean }} options
  * @returns {string} Markdown string
  */
@@ -24,6 +24,8 @@ export function formatMarkdown(annotations, metadata, options = {}) {
   lines.push(`## ViewGraph Review - ${title}`);
   lines.push(`**URL:** ${metadata.url || '(unknown)'}`);
   lines.push(`**Date:** ${date}`);
+  if (metadata.viewport) lines.push(`**Viewport:** ${metadata.viewport.width} x ${metadata.viewport.height}`);
+  if (metadata.browser) lines.push(`**Browser:** ${metadata.browser}`);
   lines.push('');
 
   if (annotations.length === 0) {
@@ -36,6 +38,13 @@ export function formatMarkdown(annotations, metadata, options = {}) {
     const prefix = ann.resolved ? '[RESOLVED] ' : '';
     lines.push(`### #${ann.id} - ${label}`);
     lines.push(`${prefix}${ann.comment || '(no comment)'}`);
+    if (ann.element) {
+      if (ann.element.tag) lines.push(`- **Element:** \`<${ann.element.tag}>\``);
+      if (ann.element.selector) lines.push(`- **Selector:** \`${ann.element.selector}\``);
+    }
+    if (ann.region && ann.region.width) {
+      lines.push(`- **Size:** ${ann.region.width} x ${ann.region.height}px`);
+    }
     if (options.includeScreenshots) {
       lines.push(`![screenshot](screenshots/ann-${ann.id}.png)`);
     }
