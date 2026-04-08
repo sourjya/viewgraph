@@ -318,4 +318,24 @@ describe('save and load', () => {
     expect(loaded).toBe(false);
     stop();
   });
+
+  it('load works as .then() chain (non-async context)', () => {
+    start();
+    return load().then((loaded) => {
+      expect(loaded).toBe(false);
+      stop();
+    });
+  });
+
+  it('start then load does not throw', async () => {
+    start();
+    await expect(load()).resolves.toBe(false);
+    stop();
+  });
+
+  it('load after stop does not throw', async () => {
+    start();
+    stop();
+    await expect(load()).resolves.toBe(false);
+  });
 });
