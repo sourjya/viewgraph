@@ -39,10 +39,10 @@ Kiro / Claude / Cursor  <-- MCP protocol <-- ViewGraph server <-- .viewgraph.jso
 **Setup for any project:**
 
 1. Install ViewGraph once (clone this repo, `npm install`) - this is the only place Node.js is needed
-2. Register the MCP server in your AI agent's config (e.g., `.kiro/settings/mcp.json`)
+2. Run `node /path/to/viewgraph/scripts/viewgraph-init.js` from your project root - auto-detects your AI agent and writes the MCP config
 3. Install the browser extension in Chrome
-4. Open your app in Chrome - your app serves HTML to the browser like any web app
-5. Capture and annotate - the extension captures what's in the browser, pushes to the MCP server
+4. Configure project mappings in extension options (right-click icon → Options) - map URL patterns to capture directories
+5. Open your app in Chrome, annotate, and send - captures route to the right project folder
 6. Your AI agent queries captures via MCP tools - reads the JSON files, doesn't care what backend generated the HTML
 
 The ViewGraph server never touches your application code. It only reads `.viewgraph.json` capture files. Your project just needs a small MCP config file pointing to the ViewGraph server:
@@ -111,7 +111,7 @@ The built extension is output to `extension/.output/chrome-mv3/`.
 npm run dev:server
 ```
 
-The server starts on stdio (for MCP) and an HTTP receiver on `localhost:9876` (for the extension). You'll see a shared secret token logged - configure this in the extension options if you want authenticated pushes.
+The server starts on stdio (for MCP) and an HTTP receiver on `localhost:9876` (for the extension). You'll see a shared secret token logged - configure this in the extension options if you want authenticated pushes. The extension popup shows a green dot when connected.
 
 ### 5. Capture a page
 
@@ -122,6 +122,7 @@ The server starts on stdio (for MCP) and an HTTP receiver on `localhost:9876` (f
    - **Click** any element to select it and add a comment
    - **Shift+drag** to select a region and add a comment
    - **Scroll wheel** to navigate up/down the DOM tree while hovering
+   - Set **severity** (Critical/Major/Minor) on each annotation
    - Use the sidebar to manage, resolve, or delete annotations
    - Click **Send to Kiro** to push all annotations with context to your AI agent
    - Click **Copy MD** to copy a markdown bug report to clipboard
@@ -179,9 +180,9 @@ npm run dev:ext        # start extension dev server (Chrome HMR)
 ## Testing
 
 ```bash
-npm test               # all tests (232 tests)
-npm run test:server    # server only (131 tests)
-npm run test:ext       # extension only (101 tests)
+npm test               # all tests (276 tests)
+npm run test:server    # server only (132 tests)
+npm run test:ext       # extension only (144 tests)
 ```
 
 ## MCP Tools
