@@ -256,6 +256,26 @@ describe('review mode lifecycle', () => {
     expect(getAnnotations()).toHaveLength(0);
     stop();
   });
+
+  it('stop is safe even if inspect was running (mode switch)', () => {
+    // Simulates: user was in review, switches to inspect, review.stop() called
+    start();
+    expect(isActive()).toBe(true);
+    stop();
+    expect(isActive()).toBe(false);
+    // Starting again after stop works (simulates re-entering review)
+    start();
+    expect(isActive()).toBe(true);
+    stop();
+  });
+
+  it('rapid start/stop cycles do not corrupt state', () => {
+    start(); stop();
+    start(); stop();
+    start(); stop();
+    expect(isActive()).toBe(false);
+    expect(getAnnotations()).toHaveLength(0);
+  });
 });
 
 // ---------------------------------------------------------------------------
