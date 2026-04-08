@@ -15,6 +15,7 @@
 import { createServer } from 'http';
 import { writeFile } from 'fs/promises';
 import path from 'path';
+import { LOG_PREFIX } from './constants.js';
 
 const MAX_BODY = 5 * 1024 * 1024; // 5MB
 
@@ -116,11 +117,17 @@ export function createHttpReceiver({ queue, capturesDir, port = 9876 }) {
   return {
     /** Start the HTTP server. Returns the actual port (useful when port=0). */
     start() {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         server = createServer(handleRequest);
+        server.on('error', (err) => {
+          if (err.code === 'EADDRINUSE') {
+            process.stderr.write(`${LOG_PREFIX} Port ${port} already in use. Run: ./scripts/server-stop.sh or kill $(lsof -ti:${port})\n`);
+          }
+          reject(err);
+        });
         server.listen(port, '127.0.0.1', () => {
           const actualPort = server.address().port;
-          process.stderr.write(`[viewgraph] HTTP receiver listening on 127.0.0.1:${actualPort}\n`);
+          process.stderr.write(`${LOG_PREFIX} HTTP receiver listening on 127.0.0.1:${actualPort}\n`);
           resolve(actualPort);
         });
       });
