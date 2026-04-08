@@ -178,3 +178,118 @@ describe('HTTP receiver', () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// Multi-project routing - x-captures-dir header + allowedDirs
+// ---------------------------------------------------------------------------
+
+describe('multi-project capture routing', () => {
+  let queue, capturesDir, altDir, receiver, port;
+
+  beforeEach(async () => {
+    const rootDir = path.join(os.tmpdir(), `vg-route-${Date.now()}`);
+    capturesDir = path.join(rootDir, 'default-captures');
+    altDir = path.join(rootDir, 'project-b', '.viewgraph', 'captures');
+    mkdirSync(capturesDir, { recursive: true });
+    mkdirSync(altDir, { recursive: true });
+    queue = createRequestQueue({ maxSize: 10, ttlMs: 60000 });
+    receiver = createHttpReceiver({ queue, capturesDir, allowedDirs: [capturesDir, altDir], port: 0 });
+    port = await receiver.start();
+  });
+
+  afterEach(async () => {
+    await receiver.stop();
+    rmSync(path.dirname(capturesDir), { recursive: true, force: true });
+  });
+
+  const capture = (url = 'http://localhost:5173/login') => ({
+    metadata: { url, timestamp: new Date().toISOString(), viewport: { width: 1024, height: 768 } },
+    nodes: [],
+  });
+
+  it('writes to default capturesDir when no header', async () => {
+    const res = await req(port, 'POST', '/captures', capture());
+    expect(res.status).toBe(201);
+    expect(res.body.filename).toBeTruthy();
+    // File should exist in default dir
+    const filePath = path.join(capturesDir, res.body.filename);
+    expect(() => readFileSync(filePath)).not.toThrow();
+  });
+
+  it('writes to override dir when x-captures-dir matches allowedDirs', async () => {
+    const res = await req(port, 'POST', '/captures', capture(), { 'x-captures-dir': altDir });
+    expect(res.status).toBe(201);
+    const filePath = path.join(altDir, res.body.filename);
+    expect(() => readFileSync(filePath)).not.toThrow();
+  });
+
+  it('rejects x-captures-dir not in allowedDirs', async () => {
+    const badDir = path.join(os.tmpdir(), 'not-allowed');
+    const res = await req(port, 'POST', '/captures', capture(), { 'x-captures-dir': badDir });
+    expect(res.status).toBe(403);
+    expect(res.body.error).toContain('allowedDirs');
+  });
+
+  it('rejects path traversal in x-captures-dir', async () => {
+    const traversal = path.join(altDir, '..', '..', 'etc');
+    const res = await req(port, 'POST', '/captures', capture(), { 'x-captures-dir': traversal });
+    expect(res.status).toBe(403);
+  });
+
+  it('rejects relative path in x-captures-dir', async () => {
+    const res = await req(port, 'POST', '/captures', capture(), { 'x-captures-dir': '.viewgraph/captures' });
+    expect(res.status).toBe(403);
+  });
+
+  it('different URLs route to different dirs based on header', async () => {
+    const res1 = await req(port, 'POST', '/captures', capture('http://localhost:3000'), {});
+    const res2 = await req(port, 'POST', '/captures', capture('http://localhost:5173'), { 'x-captures-dir': altDir });
+    expect(res1.status).toBe(201);
+    expect(res2.status).toBe(201);
+    // res1 in default, res2 in altDir
+    expect(() => readFileSync(path.join(capturesDir, res1.body.filename))).not.toThrow();
+    expect(() => readFileSync(path.join(altDir, res2.body.filename))).not.toThrow();
+  });
+
+  it('auto-creates subdirectory within allowed parent', async () => {
+    const subDir = path.join(altDir, 'sub');
+    const res = await req(port, 'POST', '/captures', capture(), { 'x-captures-dir': subDir });
+    expect(res.status).toBe(201);
+    expect(() => readFileSync(path.join(subDir, res.body.filename))).not.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Config - absolute vs relative capturesDir
+// ---------------------------------------------------------------------------
+
+import { resolveConfig } from '#src/config.js';
+
+describe('config capturesDir resolution', () => {
+  it('resolves relative path to absolute', () => {
+    const config = resolveConfig('/home/user/project');
+    expect(path.isAbsolute(config.capturesDir)).toBe(true);
+  });
+
+  it('default capturesDir is always in allowedDirs', () => {
+    const config = resolveConfig('/home/user/project');
+    expect(config.allowedDirs).toContain(config.capturesDir);
+  });
+
+  it('env var override produces absolute path', () => {
+    const orig = process.env.VIEWGRAPH_CAPTURES_DIR;
+    process.env.VIEWGRAPH_CAPTURES_DIR = '/tmp/test-captures';
+    const config = resolveConfig('/home/user/project');
+    expect(config.capturesDir).toBe('/tmp/test-captures');
+    if (orig) { process.env.VIEWGRAPH_CAPTURES_DIR = orig; } else { delete process.env.VIEWGRAPH_CAPTURES_DIR; }
+  });
+
+  it('relative env var resolves against cwd', () => {
+    const orig = process.env.VIEWGRAPH_CAPTURES_DIR;
+    process.env.VIEWGRAPH_CAPTURES_DIR = '.viewgraph/captures';
+    const config = resolveConfig('/home/user/project');
+    expect(path.isAbsolute(config.capturesDir)).toBe(true);
+    expect(config.capturesDir).toContain('.viewgraph/captures');
+    if (orig) { process.env.VIEWGRAPH_CAPTURES_DIR = orig; } else { delete process.env.VIEWGRAPH_CAPTURES_DIR; }
+  });
+});
