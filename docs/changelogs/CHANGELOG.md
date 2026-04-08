@@ -35,10 +35,27 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - 29 unit tests passing (parser: 11, indexer: 11, config: 6, smoke: 1)
 
 ### Milestone 2: MCP Analysis Tools
-- Shared analysis modules: node-queries.js (flatten, filterByRole, filterInteractive, getNodeDetails), a11y-rules.js (3 rules), capture-diff.js (element matching, bbox diff, testid diff)
-- MCP tools: get_elements_by_role, get_interactive_elements, find_missing_testids, audit_accessibility, compare_captures, get_annotations, get_annotated_capture
-- 42 new tests (25 unit + 17 integration via InMemoryTransport)
-- 85 total tests across 19 files, all passing
+- Shared analysis modules: node-queries.js, a11y-rules.js (3 rules), capture-diff.js
+- 7 MCP tools: get_elements_by_role, get_interactive_elements, find_missing_testids, audit_accessibility, compare_captures, get_annotations, get_annotated_capture
+- Node queries handle both array and nested SiFR node formats
+
+### Refactoring and Standards
+- Parser: removed SiFR `====SECTION====` key fallback, plain keys only
+- Imports: converted all relative imports to `#src/` subpath aliases (Node.js native)
+- Character encoding: replaced all em/en dashes with hyphens project-wide
+- Steering: added character encoding rule, import path rule
+
+### Architecture and Documentation
+- ADR-001: Universal agent integration (Kiro, Claude Code, Cursor, Windsurf)
+- ADR-002: Multi-project capture routing (URL-to-project routing, discovery protocol)
+- ViewGraph v2 format spec updated to v2.1.0 (12 recommendations integrated)
+- Scans and recommendations catalog: 22 scans across 6 categories
+- Product positioning and GTM strategy
+- Problem-to-feature mapping for 7 core USPs
+- Extension UX ideas (annotation toolbar, comments) and intelligence/memory features
+- Format research doc expanded to 44 references, 20 improvement proposals
+
+### Milestone 1: Integration Tests
 ### Milestone 1: Integration Tests
 - Watcher integration test: file indexing on add, non-JSON filtering
 - MCP tool integration tests via InMemoryTransport: list_captures (4), get_capture (3), get_latest_capture (3), get_page_summary (2)

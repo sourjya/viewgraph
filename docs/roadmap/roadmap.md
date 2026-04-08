@@ -165,6 +165,8 @@ and click to capture a subtree.
 
 **Spec:** `.kiro/specs/extension-review-mode/`
 
+**UX Reference:** [`docs/ideas/extension-ux-and-intelligence.md`](../ideas/extension-ux-and-intelligence.md) - floating toolbar, comment box, highlight overlay patterns
+
 | # | Task | Details |
 |---|---|---|
 | 6.1 | Region selector | Shift+drag to draw rectangle. Blue dashed outline. |
@@ -271,6 +273,8 @@ installable globally.
 **Goal:** Power features and production hardening.
 
 **Spec:** `.kiro/specs/advanced-tools/`
+
+**Intelligence Reference:** [`docs/ideas/extension-ux-and-intelligence.md`](../ideas/extension-ux-and-intelligence.md) - recurring issue detection, regression watchlist, style profiles, agent mistake tracking
 
 | # | Task | Details |
 |---|---|---|
