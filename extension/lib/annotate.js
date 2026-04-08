@@ -312,7 +312,10 @@ function onMouseDown(e) {
     e.stopPropagation();
     if (frozen) unfreeze();
     hideHoverUI();
-    dragStart = { x: e.clientX, y: e.clientY };
+    dragStart = {
+      x: Math.max(0, Math.min(e.clientX, window.innerWidth)),
+      y: Math.max(0, Math.min(e.clientY, window.innerHeight)),
+    };
     selectionBox = document.createElement('div');
     selectionBox.setAttribute(ATTR, 'selection');
     Object.assign(selectionBox.style, {
@@ -328,12 +331,15 @@ function onMouseMove(e) {
   if (dragStart && selectionBox) {
     e.preventDefault();
     e.stopPropagation();
-    const x = Math.min(dragStart.x, e.clientX);
-    const y = Math.min(dragStart.y, e.clientY);
+    // Clamp to viewport bounds
+    const cx = Math.max(0, Math.min(e.clientX, window.innerWidth));
+    const cy = Math.max(0, Math.min(e.clientY, window.innerHeight));
+    const x = Math.min(dragStart.x, cx);
+    const y = Math.min(dragStart.y, cy);
     Object.assign(selectionBox.style, {
       left: `${x}px`, top: `${y}px`,
-      width: `${Math.abs(e.clientX - dragStart.x)}px`,
-      height: `${Math.abs(e.clientY - dragStart.y)}px`,
+      width: `${Math.abs(cx - dragStart.x)}px`,
+      height: `${Math.abs(cy - dragStart.y)}px`,
     });
     return;
   }
