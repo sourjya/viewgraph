@@ -76,17 +76,68 @@ describe('annotation state', () => {
     const b = getAnnotations();
     expect(a).not.toBe(b);
   });
+
+  it('mutating returned array does not affect internal state', () => {
+    start();
+    const arr = getAnnotations();
+    arr.push({ id: 99, fake: true });
+    expect(getAnnotations()).not.toContainEqual({ id: 99, fake: true });
+    stop();
+  });
+
+  it('clearAnnotations is safe when already empty', () => {
+    expect(() => clearAnnotations()).not.toThrow();
+    expect(getAnnotations()).toHaveLength(0);
+  });
 });
 
 describe('updateComment', () => {
   it('does not throw for non-existent id', () => {
     expect(() => updateComment(999, 'test')).not.toThrow();
   });
+
+  it('does not create an annotation for non-existent id', () => {
+    updateComment(999, 'ghost');
+    expect(getAnnotations()).toHaveLength(0);
+  });
 });
 
 describe('removeAnnotation', () => {
   it('does not throw for non-existent id', () => {
     expect(() => removeAnnotation(999)).not.toThrow();
+  });
+
+  it('does not affect other annotations when removing non-existent id', () => {
+    start();
+    const before = getAnnotations().length;
+    removeAnnotation(999);
+    expect(getAnnotations().length).toBe(before);
+    stop();
+  });
+});
+
+describe('findIntersectingNodes edge cases', () => {
+  it('returns nids starting from 1 (not 0)', () => {
+    document.body.innerHTML = '<div>A</div>';
+    const sel = { left: 0, top: 0, right: 200, bottom: 200, width: 200, height: 200 };
+    const nids = findIntersectingNodes(sel);
+    for (const nid of nids) {
+      expect(nid).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('returns empty for zero-size selection', () => {
+    document.body.innerHTML = '<div>A</div>';
+    const sel = { left: 50, top: 50, right: 50, bottom: 50, width: 0, height: 0 };
+    const nids = findIntersectingNodes(sel);
+    expect(nids).toHaveLength(0);
+  });
+
+  it('handles page with no elements', () => {
+    document.body.innerHTML = '';
+    const sel = { left: 0, top: 0, right: 200, bottom: 200, width: 200, height: 200 };
+    const nids = findIntersectingNodes(sel);
+    expect(nids).toHaveLength(0);
   });
 });
 
