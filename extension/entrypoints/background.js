@@ -14,6 +14,21 @@
 
 import { SERVER_BASE_URL as SERVER_URL } from '../lib/constants.js';
 
+const PROJECT_MAPPINGS_KEY = 'vg-project-mappings';
+
+/**
+ * Look up the capturesDir for a given page URL from project mappings.
+ * Returns null if no mapping matches (server uses its default).
+ */
+async function lookupCapturesDir(pageUrl) {
+  const result = await chrome.storage.sync.get(PROJECT_MAPPINGS_KEY);
+  const mappings = result[PROJECT_MAPPINGS_KEY] || [];
+  for (const { pattern, dir } of mappings) {
+    if (pattern === '*' || pageUrl.includes(pattern)) return dir;
+  }
+  return null;
+}
+
 /**
  * Read the shared secret from chrome.storage. Returns null if not set.
  * The user configures this in the extension options page after starting
@@ -39,14 +54,17 @@ async function authHeaders() {
 /**
  * Push a capture to the MCP server. Fails silently if server is not running.
  * @param {object} capture - ViewGraph JSON capture
+ * @param {string|null} capturesDir - Override captures directory from project mapping
  * @returns {Promise<{ filename: string } | null>}
  */
-async function pushToServer(capture) {
+async function pushToServer(capture, capturesDir = null) {
   try {
     const auth = await authHeaders();
+    const headers = { 'content-type': 'application/json', ...auth };
+    if (capturesDir) headers['x-captures-dir'] = capturesDir;
     const res = await fetch(`${SERVER_URL}/captures`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', ...auth },
+      headers,
       body: JSON.stringify(capture),
     });
     if (res.ok) return await res.json();
@@ -95,9 +113,12 @@ export default defineBackground(() => {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Handle subtree capture from inspector - just push to server
     if (message.type === 'inspect-capture') {
-      pushToServer(message.capture).then((result) => {
+      (async () => {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        const dir = tab?.url ? await lookupCapturesDir(tab.url) : null;
+        const result = await pushToServer(message.capture, dir);
         sendResponse({ ok: true, pushed: !!result, filename: result?.filename });
-      });
+      })();
       return true;
     }
 
@@ -108,7 +129,8 @@ export default defineBackground(() => {
         if (!tab?.id) { sendResponse({ ok: false, error: 'No active tab' }); return; }
         const result = await chrome.tabs.sendMessage(tab.id, { type: 'send-review' });
         if (!result?.ok) { sendResponse({ ok: false, error: result?.error }); return; }
-        const pushResult = await pushToServer(result.capture);
+        const dir = tab.url ? await lookupCapturesDir(tab.url) : null;
+        const pushResult = await pushToServer(result.capture, dir);
         sendResponse({ ok: true, pushed: !!pushResult, filename: pushResult?.filename });
       })();
       return true;
@@ -170,7 +192,8 @@ export default defineBackground(() => {
         }
 
         // Push to MCP server
-        const pushResult = await pushToServer(capture);
+        const dir = tab.url ? await lookupCapturesDir(tab.url) : null;
+        const pushResult = await pushToServer(capture, dir);
         const filename = pushResult?.filename || `viewgraph-capture-${Date.now()}.json`;
 
         // Push HTML snapshot if available
