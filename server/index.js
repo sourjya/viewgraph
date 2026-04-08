@@ -26,6 +26,13 @@ import { register as registerListCaptures } from './src/tools/list-captures.js';
 import { register as registerGetCapture } from './src/tools/get-capture.js';
 import { register as registerGetLatest } from './src/tools/get-latest.js';
 import { register as registerGetPageSummary } from './src/tools/get-page-summary.js';
+import { register as registerGetElementsByRole } from './src/tools/get-elements-by-role.js';
+import { register as registerGetInteractive } from './src/tools/get-interactive.js';
+import { register as registerFindMissingTestids } from './src/tools/find-missing-testids.js';
+import { register as registerAuditAccessibility } from './src/tools/audit-accessibility.js';
+import { register as registerCompareCaptures } from './src/tools/compare-captures.js';
+import { register as registerGetAnnotations } from './src/tools/get-annotations.js';
+import { register as registerGetAnnotatedCapture } from './src/tools/get-annotated-capture.js';
 
 // ---------------------------------------------------------------------------
 // Configuration  -  env vars > .viewgraphrc.json > defaults
@@ -51,6 +58,13 @@ registerListCaptures(server, indexer);
 registerGetCapture(server, indexer, CAPTURES_DIR);
 registerGetLatest(server, indexer, CAPTURES_DIR);
 registerGetPageSummary(server, indexer, CAPTURES_DIR);
+registerGetElementsByRole(server, indexer, CAPTURES_DIR);
+registerGetInteractive(server, indexer, CAPTURES_DIR);
+registerFindMissingTestids(server, indexer, CAPTURES_DIR);
+registerAuditAccessibility(server, indexer, CAPTURES_DIR);
+registerCompareCaptures(server, indexer, CAPTURES_DIR);
+registerGetAnnotations(server, indexer, CAPTURES_DIR);
+registerGetAnnotatedCapture(server, indexer, CAPTURES_DIR);
 
 // ---------------------------------------------------------------------------
 // File indexing  -  parse metadata from a capture file and add to index

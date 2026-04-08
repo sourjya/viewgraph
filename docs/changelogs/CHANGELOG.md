@@ -34,6 +34,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Test fixtures: valid capture, annotated capture, malformed capture
 - 29 unit tests passing (parser: 11, indexer: 11, config: 6, smoke: 1)
 
+### Milestone 2: MCP Analysis Tools
+- Shared analysis modules: node-queries.js (flatten, filterByRole, filterInteractive, getNodeDetails), a11y-rules.js (3 rules), capture-diff.js (element matching, bbox diff, testid diff)
+- MCP tools: get_elements_by_role, get_interactive_elements, find_missing_testids, audit_accessibility, compare_captures, get_annotations, get_annotated_capture
+- 42 new tests (25 unit + 17 integration via InMemoryTransport)
+- 85 total tests across 19 files, all passing
 ### Milestone 1: Integration Tests
 - Watcher integration test: file indexing on add, non-JSON filtering
 - MCP tool integration tests via InMemoryTransport: list_captures (4), get_capture (3), get_latest_capture (3), get_page_summary (2)
