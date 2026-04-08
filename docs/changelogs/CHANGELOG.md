@@ -8,6 +8,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Milestone 6: Review Mode + Annotations
+- Region selector: shift+drag to draw selection rectangles
+- Numbered markers: colored overlays with badge numbers on selected regions
+- Annotation panel: floating comment input with delete, anchored to region
+- Annotation sidebar: collapsible list, click to scroll + edit, inline delete
+- Node intersection: finds elements overlapping selection by >= 50%
+- Review-mode send: bundles annotations + full page capture, pushes to MCP server
+- Annotations serialized into capture JSON for MCP tool consumption
+- Popup Review button enabled with inject-first pattern
+- 14 review unit tests, 228 total tests (128 server + 100 extension)
+
 ### Milestone 5: Hover Inspector
 - Inspector module: hover overlay (depth-colored), rich tooltip, scroll-wheel DOM walking, shadow DOM piercing
 - Click-to-capture: captures selected element's subtree as ViewGraph JSON, pushes to MCP server

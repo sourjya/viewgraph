@@ -179,6 +179,7 @@ and click to capture a subtree.
 **Goal:** Drag-select regions, annotate with comments, batch send.
 
 **Spec:** `.kiro/specs/extension-review-mode/`
+**Status:** Complete
 
 **UX Reference:** [`docs/ideas/extension-ux-and-intelligence.md`](../ideas/extension-ux-and-intelligence.md) - floating toolbar, comment box, highlight overlay patterns
 
