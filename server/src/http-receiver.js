@@ -17,7 +17,20 @@ import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { LOG_PREFIX } from './constants.js';
 
+/**
+ * Capture payload limit. MCP tool responses target ~400KB for LLM context
+ * windows, so captures above 5MB indicate a problem (typical captures are
+ * 100-200KB for 200-element pages). Also prevents memory exhaustion from
+ * malicious/buggy clients. A page would need ~6000+ visible elements to
+ * approach this limit.
+ */
 const MAX_BODY = 5 * 1024 * 1024; // 5MB captures
+
+/**
+ * Snapshot payload limit. HTML snapshots include inline styles and are
+ * larger than JSON captures, but are only used for server-side fidelity
+ * comparison - never sent through MCP to the LLM.
+ */
 const MAX_SNAPSHOT = 10 * 1024 * 1024; // 10MB snapshots
 
 /** Generate a capture filename from metadata. */
