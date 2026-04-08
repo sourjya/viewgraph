@@ -25,3 +25,6 @@ Thumbs.db
 
 # Zone.Identifier files (WSL)
 *.Identifier
+
+# Third-party artifacts for analysis (not our code)
+docs/artifacts/
