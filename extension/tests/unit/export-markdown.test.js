@@ -95,5 +95,4 @@ describe('formatMarkdown', () => {
     const md = formatMarkdown(anns, META);
     expect(md).toContain('**Size:** 200 x 50px');
   });
-  });
 });
