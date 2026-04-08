@@ -3,14 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    body { width: 300px; padding: 16px; font-family: system-ui, sans-serif; }
-    h1 { font-size: 16px; margin: 0 0 12px; }
-    .status { color: #666; font-size: 12px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 280px;
+      padding: 16px;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .header h1 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .header .version {
+      font-size: 10px;
+      color: #888;
+    }
+    .capture-btn {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #6366f1;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .capture-btn:hover { background: #5558e6; }
+    .capture-btn:active { background: #4f46e5; }
+    .capture-btn:disabled {
+      background: #333;
+      color: #666;
+      cursor: not-allowed;
+    }
+    .status {
+      margin-top: 12px;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      line-height: 1.4;
+      display: none;
+    }
+    .status.visible { display: block; }
+    .status.info { background: #1e293b; color: #94a3b8; }
+    .status.success { background: #0f2a1f; color: #4ade80; }
+    .status.error { background: #2a0f0f; color: #f87171; }
   </style>
 </head>
 <body>
-  <h1>ViewGraph Capture</h1>
-  <p class="status">Ready</p>
+  <div class="header">
+    <h1>ViewGraph</h1>
+    <span class="version">v0.1.0</span>
+  </div>
+  <button class="capture-btn" id="captureBtn">Capture Page</button>
+  <div class="status" id="status"></div>
   <script type="module" src="./popup.js"></script>
 </body>
 </html>
