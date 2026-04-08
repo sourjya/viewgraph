@@ -140,6 +140,10 @@ Your AI agent can now use ViewGraph tools:
 > find_missing_testids filename="viewgraph-localhost-20260408-120612.json"
 ```
 
+### 7. Try the demo
+
+Open [`docs/demo/index.html`](./docs/demo/) in Chrome - a styled login page with 8 planted UI bugs. Annotate the issues, send to Kiro, and watch them get fixed. See the [demo walkthrough](./docs/demo/README.md) for step-by-step instructions.
+
 ## Workflows
 
 ### For developers with AI agents

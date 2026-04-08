@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<!--
+  ViewGraph Demo Page - "TaskFlow" Login
+
+  A styled login page with 8 intentional UI bugs for demonstrating
+  ViewGraph's annotation and MCP workflow. Open in Chrome, annotate
+  the issues, send to Kiro, and watch them get fixed.
+
+  See docs/demo/README.md for the walkthrough.
+
+  PLANTED BUGS (do not fix manually - let Kiro fix them via annotations):
+  1. Logo img missing alt text
+  2. Password field has type="text" (should be "password")
+  3. Login button has no accessible name (empty aria-label)
+  4. Email input missing data-testid
+  5. Card has mismatched border-radius (one corner is 0)
+  6. Footer link fails WCAG contrast (gray on gray)
+  7. Form missing aria-label
+  8. Heading uses px font-size that's too large
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow - Login</title>
+  <style>
+    /* ---- Reset & base ---- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ---- Card ---- */
+    .card {
+      background: #1e293b;
+      /* BUG 5: mismatched border-radius - top-right is 0 */
+      border-radius: 16px 0px 16px 16px;
+      border: 1px solid #334155;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    /* ---- Logo ---- */
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon svg { width: 24px; height: 24px; stroke: white; fill: none; stroke-width: 2; }
+
+    /* ---- Heading ---- */
+    h1 {
+      /* BUG 8: font-size too large - 42px is excessive for a login card */
+      font-size: 42px;
+      font-weight: 700;
+      color: #f1f5f9;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    /* ---- Form ---- */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 15px;
+      transition: border-color 0.2s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+    input::placeholder { color: #475569; }
+
+    /* ---- Button ---- */
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      margin-top: 8px;
+    }
+    .btn-login:hover { opacity: 0.9; }
+
+    /* ---- Divider ---- */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 24px 0;
+      color: #475569;
+      font-size: 12px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #334155;
+    }
+
+    /* ---- Social buttons ---- */
+    .social-btn {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #94a3b8;
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: border-color 0.2s;
+    }
+    .social-btn:hover { border-color: #6366f1; color: #e2e8f0; }
+    .social-btn svg { width: 18px; height: 18px; }
+
+    /* ---- Footer ---- */
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: #475569;
+    }
+    .footer a {
+      /* BUG 6: contrast fail - #475569 on #1e293b = 2.1:1 ratio (needs 4.5:1) */
+      color: #475569;
+      text-decoration: none;
+    }
+    .footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      <!-- BUG 1: img missing alt text -->
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='28'%3E%3Ctext x='0' y='22' font-family='system-ui' font-size='22' font-weight='700' fill='%23f1f5f9'%3ETaskFlow%3C/text%3E%3C/svg%3E" width="120" height="28">
+    </div>
+
+    <h1>Welcome back</h1>
+    <p class="subtitle">Sign in to your workspace</p>
+
+    <!-- BUG 7: form missing aria-label -->
+    <form onsubmit="return false">
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <!-- BUG 4: missing data-testid -->
+        <input type="email" id="email" placeholder="you@company.com">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <!-- BUG 2: type="text" instead of type="password" -->
+        <input type="text" id="password" placeholder="Enter your password" data-testid="password-input">
+      </div>
+
+      <!-- BUG 3: empty aria-label on button -->
+      <button class="btn-login" aria-label="">Sign in</button>
+    </form>
+
+    <div class="divider">or continue with</div>
+
+    <button class="social-btn" data-testid="google-login">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+      Google
+    </button>
+    <button class="social-btn" data-testid="github-login">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+      GitHub
+    </button>
+
+    <div class="footer">
+      Don't have an account? <a href="#">Create one</a>
+    </div>
+  </div>
+</body>
+</html>
