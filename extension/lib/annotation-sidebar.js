@@ -45,7 +45,26 @@ export function create() {
   const list = document.createElement('div');
   list.setAttribute(ATTR, 'list');
 
-  sidebarEl.append(toggle, list);
+  // Send button - bundles annotations + capture and pushes to MCP server
+  const sendBtn = document.createElement('button');
+  sendBtn.setAttribute(ATTR, 'send');
+  sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Kiro';
+  Object.assign(sendBtn.style, {
+    width: 'calc(100% - 16px)', margin: '8px', padding: '7px 10px',
+    border: 'none', borderRadius: '6px', background: '#6366f1', color: '#fff',
+    fontSize: '11px', fontWeight: '600', cursor: 'pointer',
+    fontFamily: 'system-ui, sans-serif', transition: 'background 0.12s',
+  });
+  sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#5558e6'; });
+  sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = '#6366f1'; });
+  sendBtn.addEventListener('click', () => {
+    chrome.runtime.sendMessage({ type: 'send-review' });
+    sendBtn.textContent = 'Sent!';
+    sendBtn.style.background = '#059669';
+    setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Kiro'; sendBtn.style.background = '#6366f1'; }, 2000);
+  });
+
+  sidebarEl.append(toggle, list, sendBtn);
   document.documentElement.appendChild(sidebarEl);
 
   // Collapsed badge - hidden initially

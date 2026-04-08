@@ -96,6 +96,7 @@ function onMouseUp(e) {
   const annotation = { id, region, comment: '', nids };
   annotations.push(annotation);
   createMarker(annotation, rect);
+  save();
   if (onAnnotationAdded) onAnnotationAdded(annotation);
 }
 
@@ -220,6 +221,35 @@ function removeMarker(id) {
 }
 
 // ---------------------------------------------------------------------------
+// Persistence - chrome.storage.local keyed by URL (origin + pathname)
+// ---------------------------------------------------------------------------
+
+/** Storage key for the current page. Strips query params and hash. */
+export function storageKey() {
+  return `vg-annotations:${location.origin}${location.pathname}`;
+}
+
+/** Save current annotations to chrome.storage.local. */
+export async function save() {
+  const key = storageKey();
+  const data = annotations.map(({ id, region, comment, nids }) => ({ id, region, comment, nids }));
+  await chrome.storage.local.set({ [key]: { annotations: data, nextId } });
+}
+
+/** Load annotations from chrome.storage.local. Returns true if any were loaded. */
+export async function load() {
+  const key = storageKey();
+  const result = await chrome.storage.local.get(key);
+  const stored = result[key];
+  if (!stored || !stored.annotations || stored.annotations.length === 0) return false;
+  annotations = stored.annotations;
+  nextId = stored.nextId || annotations.length + 1;
+  // Recreate markers (no selRect available, so no ancestor labels on reload)
+  for (const ann of annotations) createMarker(ann, null);
+  return true;
+}
+
+// ---------------------------------------------------------------------------
 // Annotation CRUD
 // ---------------------------------------------------------------------------
 
@@ -230,7 +260,7 @@ function removeMarker(id) {
  */
 export function updateComment(id, comment) {
   const ann = annotations.find((a) => a.id === id);
-  if (ann) ann.comment = comment;
+  if (ann) { ann.comment = comment; save(); }
 }
 
 /**
@@ -240,6 +270,7 @@ export function updateComment(id, comment) {
 export function removeAnnotation(id) {
   annotations = annotations.filter((a) => a.id !== id);
   removeMarker(id);
+  save();
   if (onAnnotationRemoved) onAnnotationRemoved(id);
 }
 

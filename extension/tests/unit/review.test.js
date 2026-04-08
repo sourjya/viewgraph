@@ -8,7 +8,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   findIntersectingNodes, findCommonAncestor, updateComment, removeAnnotation,
-  getAnnotations, clearAnnotations, start, stop, isActive,
+  getAnnotations, clearAnnotations, start, stop, isActive, storageKey, save, load,
 } from '../../lib/review.js';
 
 let restore;
@@ -242,6 +242,43 @@ describe('review mode lifecycle', () => {
   it('annotations are empty after start (sidebar shows hint)', () => {
     start();
     expect(getAnnotations()).toHaveLength(0);
+    stop();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Persistence
+// ---------------------------------------------------------------------------
+
+describe('storageKey', () => {
+  it('returns a string starting with vg-annotations:', () => {
+    expect(storageKey()).toMatch(/^vg-annotations:/);
+  });
+
+  it('includes origin and pathname', () => {
+    const key = storageKey();
+    expect(key).toContain(location.origin);
+    expect(key).toContain(location.pathname);
+  });
+
+  it('does not include query params or hash', () => {
+    const key = storageKey();
+    expect(key).not.toContain('?');
+    expect(key).not.toContain('#');
+  });
+});
+
+describe('save and load', () => {
+  it('save does not throw when no annotations', async () => {
+    start();
+    await expect(save()).resolves.not.toThrow();
+    stop();
+  });
+
+  it('load returns false when no stored data', async () => {
+    start();
+    const loaded = await load();
+    expect(loaded).toBe(false);
     stop();
   });
 });
