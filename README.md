@@ -17,6 +17,48 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 | [`server/`](./server/) | MCP server - reads capture files, exposes 15 query/analysis/request tools | M1+M2+M3 Complete |
 | [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, inspector, annotations | M4+M5+M6 Complete |
 
+## How It Works
+
+ViewGraph is a standalone tool that runs alongside your project - it doesn't embed into your codebase or require any changes to your application. It works with any web app regardless of the backend technology (Python, Ruby, Java, Go, PHP, etc.).
+
+```
+Your app (any language) --> serves HTML --> Chrome renders it --> Extension captures DOM
+                                                                        |
+                                                                        v
+Kiro / Claude / Cursor  <-- MCP protocol <-- ViewGraph server <-- .viewgraph.json files
+```
+
+**What you need on your machine:**
+
+| Component | Purpose |
+|---|---|
+| Node.js 18+ | Runs the ViewGraph MCP server (not part of your project) |
+| Chrome 116+ | Runs the ViewGraph browser extension |
+| Your language runtime | Runs your actual application (Python, Node, etc.) |
+
+**Setup for any project:**
+
+1. Install ViewGraph once (clone this repo, `npm install`) - this is the only place Node.js is needed
+2. Register the MCP server in your AI agent's config (e.g., `.kiro/settings/mcp.json`)
+3. Install the browser extension in Chrome
+4. Open your app in Chrome - your app serves HTML to the browser like any web app
+5. Capture and annotate - the extension captures what's in the browser, pushes to the MCP server
+6. Your AI agent queries captures via MCP tools - reads the JSON files, doesn't care what backend generated the HTML
+
+The ViewGraph server never touches your application code. It only reads `.viewgraph.json` capture files. Your project just needs a small MCP config file pointing to the ViewGraph server:
+
+```json
+{
+  "mcpServers": {
+    "viewgraph": {
+      "command": "node",
+      "args": ["/path/to/viewgraph/server/index.js"],
+      "env": { "VIEWGRAPH_CAPTURES_DIR": ".viewgraph/captures" }
+    }
+  }
+}
+```
+
 ## Getting Started
 
 ### Prerequisites
@@ -76,10 +118,12 @@ The server starts on stdio (for MCP) and an HTTP receiver on `localhost:9876` (f
 1. Navigate to any web page in Chrome
 2. Click the **ViewGraph** icon in the toolbar
 3. Click **Capture** - captures the full page DOM as ViewGraph JSON
-4. Click **Inspect** - hover over elements to see structure, click to freeze, then:
-   - Camera icon: capture the selected element's subtree
-   - Clipboard icon: copy the best CSS selector to clipboard
-   - X icon: cancel
+4. Click **Annotate** - enters annotation mode where you can:
+   - **Click** any element to select it and add a comment
+   - **Shift+drag** to select a region and add a comment
+   - **Scroll wheel** to navigate up/down the DOM tree while hovering
+   - Use the sidebar to manage, resolve, or delete annotations
+   - Click **Send to Kiro** to push all annotations with context to your AI agent
 
 Captures are saved to `.viewgraph/captures/` and pushed to the MCP server automatically.
 
