@@ -225,7 +225,7 @@ function createActionBar() {
     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e5e7eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>',
     'Capture subtree', btnBase,
   );
-  captureBtn.addEventListener('click', (e) => { e.stopPropagation(); captureSubtree(currentEl); });
+  captureBtn.addEventListener('click', (e) => { e.stopPropagation(); captureSubtree(captureBtn, currentEl); });
 
   // Copy selector - clipboard icon
   const copyBtn = makeIconBtn(
@@ -394,7 +394,7 @@ function fallbackCopy(text) {
 // Subtree capture
 // ---------------------------------------------------------------------------
 
-function captureSubtree(rootEl) {
+function captureSubtree(btn, rootEl) {
   const viewport = { width: window.innerWidth, height: window.innerHeight };
   const { elements, relations } = traverseDOM(rootEl);
   const scored = scoreAll(elements, viewport);
@@ -406,7 +406,10 @@ function captureSubtree(rootEl) {
     selector: bestSelector(rootEl),
   };
   chrome.runtime.sendMessage({ type: 'inspect-capture', capture });
-  stop();
+
+  const original = btn.innerHTML;
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  setTimeout(() => { btn.innerHTML = original; unfreeze(); }, 1200);
 }
 
 // ---------------------------------------------------------------------------
