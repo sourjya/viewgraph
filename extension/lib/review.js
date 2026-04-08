@@ -236,7 +236,7 @@ function flashElements(selRect) {
 
     const prev = el.style.outline;
     el.style.outline = '2px solid rgba(99,102,241,0.6)';
-    setTimeout(() => { el.style.outline = prev; }, 300);
+    setTimeout(() => { el.style.outline = prev; }, 500);
   }
 }
 
