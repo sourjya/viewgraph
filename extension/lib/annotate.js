@@ -303,7 +303,7 @@ function freeze() {
     color: cs.color,
     bg: cs.backgroundColor,
   };
-  const annotation = { id, type: 'element', region, comment: '', nids: [], ancestor, element };
+  const annotation = { id, uuid: crypto.randomUUID(), type: 'element', region, comment: '', severity: '', category: '', nids: [], ancestor, element, timestamp: new Date().toISOString() };
   annotations.push(annotation);
   createMarker(annotation, rect);
   save();
@@ -408,7 +408,7 @@ function onMouseUp(e) {
   const nids = findIntersectingNodes(rect);
   const ancestor = findCommonAncestor(rect) || null;
   const id = nextId++;
-  const annotation = { id, type: 'region', region, comment: '', nids, ancestor };
+  const annotation = { id, uuid: crypto.randomUUID(), type: 'region', region, comment: '', severity: '', category: '', nids, ancestor, timestamp: new Date().toISOString() };
   annotations.push(annotation);
   createMarker(annotation, rect);
   flashElements(rect);
@@ -599,6 +599,12 @@ export function updateComment(id, comment) {
 export function updateSeverity(id, severity) {
   const ann = annotations.find((a) => a.id === id);
   if (ann) { ann.severity = severity; save(); }
+}
+
+/** Update the category of an annotation. */
+export function updateCategory(id, category) {
+  const ann = annotations.find((a) => a.id === id);
+  if (ann) { ann.category = category; save(); }
 }
 
 export function toggleResolved(id) {

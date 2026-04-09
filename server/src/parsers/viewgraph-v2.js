@@ -53,6 +53,24 @@ export function parseMetadata(jsonString) {
 }
 
 /**
+ * Normalize annotations for backward compatibility.
+ * Old captures may lack uuid, severity, timestamp, resolved fields.
+ * Generates stable UUIDs from filename context when missing.
+ */
+function normalizeAnnotations(annotations) {
+  if (!annotations) return null;
+  return annotations.map((a, i) => ({
+    uuid: a.uuid || `legacy-${i}-${(a.id || i)}`,
+    type: a.type || 'element',
+    severity: a.severity || '',
+    timestamp: a.timestamp || null,
+    resolved: a.resolved || false,
+    resolution: a.resolution || null,
+    ...a,
+  }));
+}
+
+/**
  * Full parse of all sections - for get_capture and detailed analysis.
  */
 export function parseCapture(jsonString) {
@@ -72,7 +90,7 @@ export function parseCapture(jsonString) {
       summary: raw.summary ?? null,
       relations: raw.relations ?? null,
       details: raw.details ?? null,
-      annotations: raw.annotations ?? null,
+      annotations: normalizeAnnotations(raw.annotations),
     },
   };
 }

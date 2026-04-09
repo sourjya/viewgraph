@@ -339,6 +339,7 @@ See spec for full requirements, design, and task breakdown.
 | 8.8 | Setup runbooks | Per-tool setup guides in `docs/runbooks/` (kiro, claude-code, cursor, windsurf) |
 | 8.9 | Health check CLI | `npx viewgraph doctor` - verify server starts, tools register, captures dir accessible |
 | 8.10 | Integration tests | Test stdio + HTTP transports, test init command for each tool |
+| 8.11 | Team URL mappings | `.viewgraphrc.json` urlMappings for beta/staging/prod URLs, env tagging on captures, server exposes mappings via /health for extension auto-config |
 
 **Exit criteria:** `npx viewgraph init` works for Kiro, Claude Code, Cursor,
 and Windsurf. Server works over both stdio and HTTP transports. npm package

@@ -105,8 +105,11 @@ export default defineContentScript({
         const capture = serialize(scored, relations);
         capture.metadata.captureMode = 'review';
         capture.annotations = getAnnotations().map((a) => ({
-          id: a.id, type: a.type, region: a.region, comment: a.comment,
+          id: a.id, uuid: a.uuid, type: a.type, region: a.region,
+          comment: a.comment, severity: a.severity || '', category: a.category || '',
           nodeIds: a.nids, ancestor: a.ancestor,
+          timestamp: a.timestamp || new Date().toISOString(),
+          resolved: a.resolved || false, resolution: a.resolution || null,
         }));
         sendResponse({ ok: true, capture });
         return true;

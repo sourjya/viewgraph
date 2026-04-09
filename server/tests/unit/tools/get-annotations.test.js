@@ -48,7 +48,7 @@ describe('get_annotations via MCP', () => {
     const result = await client.callTool({ name: 'get_annotations', arguments: { filename: 'review-capture.json' } });
     const annotations = JSON.parse(result.content[0].text);
     expect(annotations[2].resolved).toBe(true);
-    expect(annotations[0].resolved).toBeUndefined();
+    expect(annotations[0].resolved).toBe(false);
   });
 
   it('returns empty array for subtree capture', async () => {

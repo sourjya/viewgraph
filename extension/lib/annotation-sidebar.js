@@ -239,7 +239,7 @@ export function refresh() {
       entry._expandTimer = setTimeout(() => {
         label.style.whiteSpace = 'normal';
         label.style.maxHeight = '120px';
-      }, 400);
+      }, 600);
     });
     entry.addEventListener('mouseleave', () => {
       entry.style.background = 'transparent';

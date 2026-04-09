@@ -18,7 +18,7 @@ function buildMetadata(elements) {
 
   return {
     format: 'viewgraph-v2',
-    version: '2.1.0',
+    version: '2.2.0',
     profile: 'readable',
     timestamp: new Date().toISOString(),
     url: window.location.href,
