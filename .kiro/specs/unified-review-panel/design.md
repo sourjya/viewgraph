@@ -53,11 +53,10 @@ Detection: check `tab.url` against these prefixes before attempting injection.
 ┌─ ViewGraph ──────────────── [×] ┐
 │ ● Connected (9877)    [gear]    │
 │                                  │
-│ ┌ 🔔 Kiro wants /dashboard ───┐ │  <- only when pending
-│ │        [Capture Now]         │ │
-│ └──────────────────────────────┘ │
-│                                  │
-│ Open (3)                         │
+│ Open (4)                         │
+│ 🔔 Kiro: capture /dashboard     │  <- request as timeline item
+│    "Need the nav layout"         │
+│    [Capture Now]                 │
 │ #1 h1 "fix font" [CRIT] [v][x] │
 │ #2 input "label"  [MAJ] [v][x] │
 │ 📝 "spacing off"  [MAJ] [v][x] │
@@ -73,6 +72,31 @@ Detection: check `tab.url` against these prefixes before attempting injection.
 │   Auth token: ****               │
 └──────────────────────────────────┘
 ```
+
+### Kiro Requests as Timeline Items
+
+When Kiro calls `request_capture`, the request appears in the timeline with a
+distinct bell icon (🔔), sorted chronologically with other items. Each request shows:
+
+- **URL** Kiro wants captured
+- **Guidance note** - what Kiro needs (e.g. "Need the nav layout after login")
+- **[Capture Now]** button - captures current page and completes the request
+
+Once captured, the request item transforms into a regular capture item (📸).
+Expired requests show as dimmed with "Expired" label.
+
+The `request_capture` MCP tool is extended with an optional `guidance` parameter:
+
+```
+request_capture(url, guidance?)
+```
+
+- `guidance` - brief instruction for the user (string, max 200 chars)
+  e.g. "Navigate to the dashboard and capture the sidebar layout"
+  e.g. "Capture the login page with validation errors showing"
+
+This tells the user not just what URL to capture, but what state the page
+should be in and what Kiro is looking for.
 
 ### Resolved Items Accordion
 

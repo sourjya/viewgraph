@@ -35,12 +35,13 @@ Redesign the ViewGraph extension sidebar into a unified review panel that merges
 - Page notes appear in the timeline alongside element annotations
 
 ### FR-4: Kiro Request Notifications
-- When Kiro calls `request_capture`, a notification banner appears at the top of the sidebar
-- Banner shows the requested URL and a "Capture Now" button
+- When Kiro calls `request_capture`, the request appears as a timeline item with a distinct icon
+- Request item shows: requested URL, guidance note (what to capture), and a "Capture Now" button
+- `request_capture` MCP tool extended with optional `guidance` parameter (max 200 chars)
 - Clicking "Capture Now" captures the current page and completes the request
-- Banner disappears after capture or when the request expires
-- Multiple pending requests stack vertically
-- If no requests are pending, no banner is shown (no empty state)
+- Completed requests transform into regular capture items in the timeline
+- Expired requests show as dimmed with "Expired" label
+- Requests are sorted chronologically alongside annotations and captures
 
 ### FR-5: Bidirectional Resolution Tracking
 - Each annotation has a globally unique ID (UUID)

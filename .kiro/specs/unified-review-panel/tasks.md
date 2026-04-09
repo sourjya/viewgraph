@@ -27,9 +27,9 @@
 - [ ] 3.1 Extension reads resolved state from server on sidebar open
 - [ ] 3.2 Resolved items show checkmark + resolution summary + "resolved by" label
 - [ ] 3.3 Offline state in chrome.storage, last-write-wins sync on reconnect
-- [ ] 3.4 Kiro request notification banner (poll /requests/pending)
-- [ ] 3.5 "Capture Now" button in banner completes pending request
-- [ ] 3.6 Hide banner when no pending requests
+- [ ] 3.4 Kiro requests as timeline items (bell icon, URL, guidance note, Capture Now button)
+- [ ] 3.5 Add `guidance` parameter to `request_capture` MCP tool
+- [ ] 3.6 Completed requests transform into capture items; expired requests show dimmed
 - [ ] 3.7 Tests: sync scenarios (server resolved, offline resolve, conflict, reconnect)
 
 ## Phase 4: Export Updates
