@@ -311,16 +311,68 @@ export function create() {
     }
   });
 
-  const optionsLink = document.createElement('a');
-  optionsLink.textContent = 'Project mappings & auth \u2192';
-  optionsLink.href = '#';
-  Object.assign(optionsLink.style, { color: '#a5b4fc', textDecoration: 'none', display: 'block', fontSize: '12px' });
-  optionsLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    chrome.runtime.sendMessage({ type: 'open-options' });
-  });
+  // Inline project mappings
+  const mappingsSection = document.createElement('div');
+  Object.assign(mappingsSection.style, { marginTop: '12px', borderTop: '1px solid #333', paddingTop: '10px' });
+  const mapLabel = document.createElement('div');
+  mapLabel.textContent = 'Project Mappings';
+  Object.assign(mapLabel.style, { color: '#9ca3af', fontSize: '11px', marginBottom: '4px', fontWeight: '600' });
+  const mapHint = document.createElement('div');
+  mapHint.textContent = 'URL pattern \u2192 captures directory';
+  Object.assign(mapHint.style, { color: '#555', fontSize: '10px', marginBottom: '8px' });
+  const mapList = document.createElement('div');
 
-  settingsBody.append(serverLine, optionsLink);
+  const MAPPINGS_KEY = 'vg-project-mappings';
+  const inputStyle = {
+    width: '100%', padding: '4px 6px', background: '#16161e', border: '1px solid #333',
+    borderRadius: '4px', color: '#e0e0e0', fontSize: '11px',
+    fontFamily: 'SF Mono, Cascadia Code, monospace', outline: 'none', boxSizing: 'border-box',
+  };
+
+  function addMappingRow(pattern, dir) {
+    const row = document.createElement('div');
+    Object.assign(row.style, { display: 'flex', gap: '4px', marginBottom: '4px', alignItems: 'center' });
+    const pInput = document.createElement('input');
+    pInput.placeholder = 'localhost:5173';
+    pInput.value = pattern || '';
+    Object.assign(pInput.style, { ...inputStyle, flex: '1' });
+    const dInput = document.createElement('input');
+    dInput.placeholder = '/path/to/captures';
+    dInput.value = dir || '';
+    Object.assign(dInput.style, { ...inputStyle, flex: '1' });
+    const rm = document.createElement('button');
+    rm.textContent = '\u00d7';
+    Object.assign(rm.style, { border: 'none', background: 'transparent', color: '#666', cursor: 'pointer', fontSize: '14px', padding: '0 2px' });
+    rm.addEventListener('click', () => { row.remove(); saveMappings(); });
+    pInput.addEventListener('change', saveMappings);
+    dInput.addEventListener('change', saveMappings);
+    row.append(pInput, dInput, rm);
+    mapList.appendChild(row);
+  }
+
+  function saveMappings() {
+    const rows = mapList.querySelectorAll('div');
+    const mappings = [];
+    for (const row of rows) {
+      const inputs = row.querySelectorAll('input');
+      if (inputs.length < 2) continue;
+      const p = inputs[0].value.trim();
+      const d = inputs[1].value.trim();
+      if (p && d) mappings.push({ pattern: p, dir: d });
+    }
+    chrome.storage.sync.set({ [MAPPINGS_KEY]: mappings });
+  }
+
+  const addBtn = document.createElement('button');
+  addBtn.textContent = '+ Add mapping';
+  Object.assign(addBtn.style, {
+    width: '100%', padding: '4px', background: 'transparent', border: '1px dashed #333',
+    borderRadius: '4px', color: '#666', fontSize: '10px', cursor: 'pointer', marginTop: '2px',
+  });
+  addBtn.addEventListener('click', () => addMappingRow('', ''));
+
+  mappingsSection.append(mapLabel, mapHint, mapList, addBtn);
+  settingsBody.append(serverLine, mappingsSection);
 
   // Capture options - toggle switches
   const captureOpts = document.createElement('div');
@@ -406,6 +458,13 @@ export function create() {
     list.style.display = 'none';
     footer.style.display = 'none';
     settingsScreen.style.display = 'block';
+    // Reload mappings each time settings opens
+    mapList.innerHTML = '';
+    chrome.storage.sync.get(MAPPINGS_KEY, (result) => {
+      const mappings = result[MAPPINGS_KEY] || [];
+      if (mappings.length === 0) addMappingRow('', '');
+      else for (const m of mappings) addMappingRow(m.pattern, m.dir);
+    });
   }
 
   /** Hide settings screen, restore timeline + footer. */
