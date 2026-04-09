@@ -40,11 +40,10 @@ Kiro / Claude / Cursor  <-- MCP protocol <-- ViewGraph server <-- .viewgraph.jso
 **Setup for any project:**
 
 1. Install ViewGraph once (clone this repo, `npm install`) - this is the only place Node.js is needed
-2. Run `node /path/to/viewgraph/scripts/viewgraph-init.js` from your project root - auto-detects your AI agent and writes the MCP config
-3. Install the browser extension in Chrome
-4. Configure project mappings in extension options (right-click icon → Options) - map URL patterns to capture directories
-5. Open your app in Chrome, annotate, and send - captures route to the right project folder
-6. Your AI agent queries captures via MCP tools - reads the JSON files, doesn't care what backend generated the HTML
+2. Install the browser extension in Chrome (build with `npm run build:ext`, load unpacked)
+3. Run `node /path/to/viewgraph/scripts/viewgraph-init.js` from your project root - auto-detects your AI agent, writes MCP config, and starts the server
+4. Open your app in Chrome, annotate, and send - captures route to the right project folder
+5. Your AI agent queries captures via MCP tools - reads the JSON files, doesn't care what backend generated the HTML
 
 The ViewGraph server never touches your application code. It only reads `.viewgraph.json` capture files. Your project just needs a small MCP config file pointing to the ViewGraph server:
 
@@ -106,28 +105,36 @@ The built extension is output to `extension/.output/chrome-mv3/`.
 4. Select the folder: `<your-path>/viewgraph/extension/.output/chrome-mv3`
 5. The ViewGraph icon appears in your toolbar
 
-### 4. Start the MCP server
+### 4. Initialize in your project
+
+From your project root (not the ViewGraph directory):
+
+```bash
+node /path/to/viewgraph/scripts/viewgraph-init.js
+```
+
+This auto-detects your AI agent, writes MCP config, creates `.viewgraph/captures/`, and starts the server. The extension popup shows a green dot when connected.
+
+For subsequent sessions, start the server directly:
 
 ```bash
 npm run dev:server
 ```
 
-The server starts on stdio (for MCP) and an HTTP receiver on `localhost:9876` (for the extension). You'll see a shared secret token logged - configure this in the extension options if you want authenticated pushes. The extension popup shows a green dot when connected.
-
 ### 5. Capture a page
 
 1. Navigate to any web page in Chrome
-2. Click the **ViewGraph** icon in the toolbar
-3. Click **Capture** - captures the full page DOM as ViewGraph JSON
-4. Click **Annotate** - enters annotation mode where you can:
-   - **Click** any element to select it and add a comment
-   - **Shift+drag** to select a region and add a comment
-   - **Scroll wheel** to navigate up/down the DOM tree while hovering
-   - Set **severity** (Critical/Major/Minor) on each annotation
-   - Use the sidebar to manage, resolve, or delete annotations
-   - Click **Send to Kiro** to push all annotations with context to your AI agent
-   - Click **Copy MD** to copy a markdown bug report to clipboard
-   - Click **Report** to download a ZIP with markdown + cropped screenshots
+2. Click the **ViewGraph** icon in the toolbar, then **Annotate**
+3. **Click** any element to select it and add a comment
+4. **Shift+drag** to select a region and add a comment
+5. **Scroll wheel** to navigate up/down the DOM tree while hovering
+6. Set **severity** and **category** on each annotation
+7. Use the sidebar to filter (All/Open/Resolved), resolve, or delete annotations
+8. Export:
+   - **Send to Kiro** - push annotations with full DOM context to your AI agent
+   - **Copy MD** - copy a markdown bug report to clipboard
+   - **Report** - download a ZIP with markdown + cropped screenshots
+9. **Save Page** captures a DOM snapshot; **Page Note** adds a page-level comment
 
 Captures are saved to `.viewgraph/captures/` and pushed to the MCP server automatically.
 
