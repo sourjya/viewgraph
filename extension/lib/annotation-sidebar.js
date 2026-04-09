@@ -157,6 +157,11 @@ export function create() {
   list.setAttribute(ATTR, 'list');
   Object.assign(list.style, { flex: '1', overflowY: 'auto', minHeight: '0' });
 
+  // Tab bar container - pinned between header and scrollable list
+  const tabContainer = document.createElement('div');
+  tabContainer.setAttribute(ATTR, 'tab-container');
+  Object.assign(tabContainer.style, { flexShrink: '0' });
+
   // Footer container - holds all footer rows
   const footer = document.createElement('div');
   footer.setAttribute(ATTR, 'footer');
@@ -469,7 +474,7 @@ export function create() {
     footer.style.display = '';
   }
 
-  sidebarEl.append(header, list, settingsScreen, footer);
+  sidebarEl.append(header, tabContainer, list, settingsScreen, footer);
   document.documentElement.appendChild(sidebarEl);
 
   // Collapsed badge - hidden initially
@@ -632,7 +637,8 @@ export function refresh() {
     tab.addEventListener('click', () => { activeFilter = key; refresh(); });
     tabBar.appendChild(tab);
   }
-  list.appendChild(tabBar);
+  tabContainer.innerHTML = '';
+  tabContainer.appendChild(tabBar);
 
   // Filtered items
   const visible = activeFilter === 'all' ? anns : activeFilter === 'open' ? open : resolved;
@@ -645,6 +651,9 @@ export function refresh() {
     Object.assign(empty.style, { padding: '16px 12px', color: '#666', fontSize: '12px', textAlign: 'center', fontStyle: 'italic' });
     list.appendChild(empty);
   }
+
+  // Auto-scroll to show newest item
+  list.scrollTop = list.scrollHeight;
 
   /** Severity/category chip colors. */
   const CHIP_COLORS = {

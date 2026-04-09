@@ -1095,3 +1095,67 @@ describe('resolveAnnotation', () => {
     expect(openCount).toBe(2);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Sidebar-annotation sync invariants
+// ---------------------------------------------------------------------------
+
+describe('sidebar-annotation sync', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('every annotation in getAnnotations has an id', () => {
+    addPageNote();
+    addPageNote();
+    for (const ann of getAnnotations()) {
+      expect(ann.id).toBeDefined();
+      expect(typeof ann.id).toBe('number');
+    }
+  });
+
+  it('new annotation appears in getAnnotations immediately', () => {
+    const before = getAnnotations().length;
+    addPageNote();
+    expect(getAnnotations().length).toBe(before + 1);
+  });
+
+  it('deleted annotation disappears from getAnnotations immediately', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    removeAnnotation(a.id);
+    const ids = getAnnotations().map((x) => x.id);
+    expect(ids).not.toContain(a.id);
+    expect(ids).toContain(b.id);
+  });
+
+  it('resolved annotation stays in getAnnotations', () => {
+    const a = addPageNote();
+    resolveAnnotation(a.id);
+    const ids = getAnnotations().map((x) => x.id);
+    expect(ids).toContain(a.id);
+  });
+
+  it('open filter count matches annotations without resolved flag', () => {
+    addPageNote();
+    const b = addPageNote();
+    addPageNote();
+    resolveAnnotation(b.id);
+    const all = getAnnotations();
+    const open = all.filter((x) => !x.resolved);
+    expect(open.length).toBe(all.length - 1);
+  });
+
+  it('annotation with empty comment is still in getAnnotations', () => {
+    const note = addPageNote();
+    updateComment(note.id, '');
+    const found = getAnnotations().find((x) => x.id === note.id);
+    expect(found).toBeDefined();
+    expect(found.comment).toBe('');
+  });
+
+  it('annotation with no comment set is still in getAnnotations', () => {
+    const note = addPageNote();
+    // Don't set comment at all - should still be in list
+    const found = getAnnotations().find((x) => x.id === note.id);
+    expect(found).toBeDefined();
+  });
+});
