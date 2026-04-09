@@ -572,7 +572,8 @@ function updateBadgeCount() {
 export function refresh() {
   if (!sidebarEl) return;
   const list = sidebarEl.querySelector(`[${ATTR}="list"]`);
-  if (!list) return;
+  const tabContainer = sidebarEl.querySelector(`[${ATTR}="tab-container"]`);
+  if (!list || !tabContainer) return;
   list.innerHTML = '';
 
   const anns = getAnnotations();
