@@ -9,7 +9,7 @@
  * @see lib/annotation-panel.js - comment editing
  */
 
-import { show as showPanel } from './annotation-panel.js';
+import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
 import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate, addPageNote } from './annotate.js';
 
 /**
@@ -779,6 +779,7 @@ export function refresh() {
       resolveBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         resolveAnnotation(ann.id);
+        hidePanel();
         refresh();
       });
 
@@ -786,7 +787,7 @@ export function refresh() {
       del.setAttribute(ATTR, 'btn');
       del.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';
       Object.assign(del.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', flexShrink: '0' });
-      del.addEventListener('click', (e) => { e.stopPropagation(); removeAnnotation(ann.id); refresh(); });
+      del.addEventListener('click', (e) => { e.stopPropagation(); removeAnnotation(ann.id); hidePanel(); refresh(); });
 
       entry.append(label, resolveBtn, del);
     }
