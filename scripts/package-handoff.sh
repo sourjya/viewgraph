@@ -70,20 +70,14 @@ Extension + MCP server for the complete annotate-send-fix loop.
    npm install
    ```
 
-3. From your project directory, run init:
+3. From your project directory, init and start:
    ```bash
    node /path/to/viewgraph/scripts/viewgraph-init.js
    ```
-   This creates `.viewgraph/captures/` and writes MCP config for your agent.
-
-4. Start the server:
-   ```bash
-   cd /path/to/viewgraph
-   npm run dev:server
-   ```
+   This creates `.viewgraph/captures/`, writes MCP config, and starts the server.
    The green dot in the extension popup confirms connection.
 
-5. Configure project mapping (optional, for multi-project):
+4. Configure project mapping (optional, for multi-project):
    - Right-click ViewGraph icon -> Options
    - Map URL patterns to capture directories
 

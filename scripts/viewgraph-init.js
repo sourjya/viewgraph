@@ -181,4 +181,15 @@ if (agent?.name === 'Kiro') {
   }
 }
 
-console.log('\nDone. Start the server with: npm run dev:server\n');
+console.log('\nDone. Starting ViewGraph server...\n');
+
+// 7. Auto-start the MCP server
+import { spawn } from 'child_process';
+const server = spawn('node', [SERVER_ENTRY], {
+  stdio: 'inherit',
+  env: { ...process.env, VIEWGRAPH_CAPTURES_DIR: absCapturesDir },
+});
+server.on('error', (err) => {
+  console.error(`Failed to start server: ${err.message}`);
+  process.exit(1);
+});
