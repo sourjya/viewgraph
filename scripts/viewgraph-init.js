@@ -147,4 +147,38 @@ if (!allowed.includes(absCapturesDir)) {
   console.log(`  Already in server allowedDirs`);
 }
 
+// 6. For Kiro: install steering docs and hooks
+if (agent?.name === 'Kiro') {
+  const steeringDir = path.join(CWD, '.kiro', 'steering');
+  const hooksDir = path.join(CWD, '.kiro', 'hooks');
+  const srcSteering = path.join(VIEWGRAPH_ROOT, 'power', 'steering');
+  const srcHooks = path.join(VIEWGRAPH_ROOT, 'power', 'hooks');
+
+  // Copy steering docs if source exists
+  if (existsSync(srcSteering)) {
+    ensureDir(steeringDir);
+    for (const file of ['viewgraph-workflow.md', 'viewgraph-resolution.md']) {
+      const src = path.join(srcSteering, file);
+      const dest = path.join(steeringDir, file);
+      if (existsSync(src) && !existsSync(dest)) {
+        writeFileSync(dest, readFileSync(src, 'utf-8'));
+        console.log(`  Installed steering: ${file}`);
+      }
+    }
+  }
+
+  // Copy hooks if source exists
+  if (existsSync(srcHooks)) {
+    ensureDir(hooksDir);
+    for (const file of ['post-fix-verify.kiro.hook']) {
+      const src = path.join(srcHooks, file);
+      const dest = path.join(hooksDir, file);
+      if (existsSync(src) && !existsSync(dest)) {
+        writeFileSync(dest, readFileSync(src, 'utf-8'));
+        console.log(`  Installed hook: ${file}`);
+      }
+    }
+  }
+}
+
 console.log('\nDone. Start the server with: npm run dev:server\n');

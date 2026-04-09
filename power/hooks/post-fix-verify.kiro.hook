@@ -1,0 +1,19 @@
+---
+description: Request a verification capture after fixing UI-related files
+trigger: after_file_write
+filters:
+  - "**/*.html"
+  - "**/*.css"
+  - "**/*.jsx"
+  - "**/*.tsx"
+  - "**/*.vue"
+  - "**/*.svelte"
+---
+
+After modifying a UI file, consider requesting a verification capture:
+
+1. If the file change was related to a ViewGraph annotation fix, call `request_capture` with:
+   - The URL of the page affected
+   - Guidance: "Verify fix: reload and check {filename}"
+2. This helps the user verify the fix visually before you resolve the annotation
+3. Only request if the change was UI-visible - skip for refactors or logic-only changes
