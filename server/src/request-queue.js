@@ -37,7 +37,7 @@ export function createRequestQueue({ maxSize = 10, ttlMs = 60000 } = {}) {
 
   return {
     /** Create a new pending capture request. */
-    create(url) {
+    create(url, options = {}) {
       // Count non-terminal requests toward capacity
       const active = [...requests.values()].filter(
         (r) => r.status === 'pending' || r.status === 'acknowledged',
@@ -52,6 +52,7 @@ export function createRequestQueue({ maxSize = 10, ttlMs = 60000 } = {}) {
         expiresAt: Date.now() + ttlMs,
         captureFilename: null,
       };
+      if (options.guidance) req.guidance = options.guidance;
       requests.set(req.id, req);
       return req;
     },
