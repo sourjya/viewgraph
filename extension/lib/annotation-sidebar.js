@@ -176,9 +176,9 @@ export function create() {
   // Row 2: Primary CTA - Send to Kiro (full width)
   const sendBtn = document.createElement('button');
   sendBtn.setAttribute(ATTR, 'send');
-  sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Kiro';
+  sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Agent';
   Object.assign(sendBtn.style, { ...btnStyle, background: '#6366f1', width: '100%', padding: '9px 4px', marginBottom: '4px' });
-  sendBtn.title = 'Send to Kiro';
+  sendBtn.title = 'Send annotations to your AI coding agent via MCP';
   sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#5558e6'; });
   sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = '#6366f1'; });
   sendBtn.addEventListener('click', () => {
@@ -188,7 +188,7 @@ export function create() {
     });
     sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Sent!';
     sendBtn.style.background = '#059669';
-    setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Kiro'; sendBtn.style.background = '#6366f1'; }, 2000);
+    setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Agent'; sendBtn.style.background = '#6366f1'; }, 2000);
   });
 
   // Copy Markdown
@@ -251,7 +251,7 @@ export function create() {
   captureBtn.setAttribute(ATTR, 'capture');
   captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Save Page';
   Object.assign(captureBtn.style, { ...btnStyle, background: 'transparent', color: '#9ca3af', flex: '1', border: '1px solid #333' });
-  captureBtn.title = 'Save a DOM snapshot for Kiro to analyze';
+  captureBtn.title = 'Save a DOM snapshot of the current page';
   captureBtn.addEventListener('mouseenter', () => { captureBtn.style.background = 'rgba(255,255,255,0.05)'; });
   captureBtn.addEventListener('mouseleave', () => { captureBtn.style.background = 'transparent'; });
   captureBtn.addEventListener('click', () => {
@@ -455,7 +455,7 @@ export function refresh() {
   // Kiro capture requests - shown at top of timeline
   if (pendingRequests.length > 0) {
     const reqHeader = document.createElement('div');
-    reqHeader.textContent = `Kiro Requests (${pendingRequests.length})`;
+    reqHeader.textContent = `Agent Requests (${pendingRequests.length})`;
     Object.assign(reqHeader.style, {
       padding: '6px 12px', color: '#f59e0b', fontSize: '11px', fontWeight: '600',
       borderBottom: '1px solid #2a2a3a', fontFamily: 'system-ui, sans-serif',

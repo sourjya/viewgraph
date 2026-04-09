@@ -131,7 +131,7 @@ npm run dev:server
 6. Set **severity** and **category** on each annotation
 7. Use the sidebar to filter (All/Open/Resolved), resolve, or delete annotations
 8. Export:
-   - **Send to Kiro** - push annotations with full DOM context to your AI agent
+   - **Send to Agent** - push annotations with full DOM context to your AI agent
    - **Copy MD** - copy a markdown bug report to clipboard
    - **Report** - download a ZIP with markdown + cropped screenshots
 9. **Save Page** captures a DOM snapshot; **Page Note** adds a page-level comment
@@ -159,7 +159,7 @@ Open [`docs/demo/index.html`](./docs/demo/) in Chrome - a styled login page with
 
 1. Open your app in Chrome, click **Annotate** in the ViewGraph popup
 2. Click elements or shift+drag regions, add comments describing what to fix
-3. Click **Send to Kiro** - annotations bundle with the full DOM capture
+3. Click **Send to Agent** - annotations bundle with the full DOM capture
 4. In your AI agent, ask about the annotations - it has full DOM context to implement fixes
 
 ### For testers and reviewers
