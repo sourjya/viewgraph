@@ -775,3 +775,20 @@ export function setCaptureMode(mode) {
   if (!valid.includes(mode)) return;
   captureMode = captureMode === mode ? null : mode;
 }
+
+// ---------------------------------------------------------------------------
+// Marker spotlight - dims all markers except the focused one
+// ---------------------------------------------------------------------------
+
+/** Dim all markers except the one for the given annotation id. Pass null to restore all. */
+export function spotlightMarker(id) {
+  const markers = document.querySelectorAll(`[${ATTR}^="marker-"]`);
+  for (const m of markers) {
+    const markerId = m.getAttribute(ATTR);
+    if (id === null) {
+      m.style.opacity = '';
+    } else {
+      m.style.opacity = markerId === `marker-${id}` ? '1' : '0.15';
+    }
+  }
+}
