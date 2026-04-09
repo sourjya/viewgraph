@@ -10,7 +10,7 @@
  */
 
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES } from './annotate.js';
+import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES } from './annotate.js';
 
 /**
  * Sync resolved state from the server. Polls /annotations/resolved for the
@@ -525,7 +525,6 @@ export function collapse() {
   sidebarEl.style.transform = 'translateX(100%)';
   badgeEl.style.display = 'flex';
   updateBadgeCount();
-  pauseAnnotate();
 }
 
 /** Expand sidebar from strip. Exported for capture mode integration. */
@@ -534,7 +533,7 @@ export function expand() {
   collapsed = false;
   sidebarEl.style.transform = 'translateX(0)';
   badgeEl.style.display = 'none';
-  resumeAnnotate();
+  refresh();
 }
 
 export function isCollapsed() { return collapsed; }
