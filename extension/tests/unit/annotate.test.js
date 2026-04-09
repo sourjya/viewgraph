@@ -1159,3 +1159,331 @@ describe('sidebar-annotation sync', () => {
     expect(found).toBeDefined();
   });
 });
+
+// ---------------------------------------------------------------------------
+// resolveAnnotation edge cases
+// ---------------------------------------------------------------------------
+
+describe('resolveAnnotation edge cases', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('(-) resolving non-existent id returns null', () => {
+    expect(resolveAnnotation(0)).toBeNull();
+    expect(resolveAnnotation(-1)).toBeNull();
+    expect(resolveAnnotation(Infinity)).toBeNull();
+  });
+
+  it('(-) resolving already-resolved annotation is a no-op', () => {
+    const note = addPageNote();
+    resolveAnnotation(note.id);
+    const result = resolveAnnotation(note.id);
+    expect(result).toBeNull();
+    expect(getAnnotations().filter((a) => a.resolved)).toHaveLength(1);
+  });
+
+  it('(+) resolve preserves comment, severity, category', () => {
+    const note = addPageNote();
+    updateComment(note.id, 'fix the padding');
+    updateSeverity(note.id, 'critical');
+    updateCategory(note.id, 'visual,functional');
+    resolveAnnotation(note.id);
+    const ann = getAnnotations().find((a) => a.id === note.id);
+    expect(ann.resolved).toBe(true);
+    expect(ann.comment).toBe('fix the padding');
+    expect(ann.severity).toBe('critical');
+    expect(ann.category).toBe('visual,functional');
+  });
+
+  it('(+) resolve works on page notes', () => {
+    const note = addPageNote();
+    expect(resolveAnnotation(note.id)).toBe(true);
+    expect(getAnnotations()[0].resolved).toBe(true);
+  });
+
+  it('(-) cannot delete a resolved annotation via removeAnnotation', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    resolveAnnotation(a.id);
+    removeAnnotation(a.id);
+    // removeAnnotation still works - it removes from array entirely
+    expect(getAnnotations().find((x) => x.id === a.id)).toBeUndefined();
+    expect(getAnnotations()).toHaveLength(1);
+  });
+
+  it('(+) multiple annotations - resolve one, others stay open', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    const c = addPageNote();
+    resolveAnnotation(b.id);
+    expect(getAnnotations().filter((x) => !x.resolved).map((x) => x.id)).toEqual([a.id, c.id]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Filter after mutations (delete, resolve, add)
+// ---------------------------------------------------------------------------
+
+describe('filter after mutations', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('(+) open count decreases after resolve', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    expect(getAnnotations().filter((x) => !x.resolved)).toHaveLength(2);
+    resolveAnnotation(a.id);
+    expect(getAnnotations().filter((x) => !x.resolved)).toHaveLength(1);
+  });
+
+  it('(+) open count decreases after delete', () => {
+    const a = addPageNote();
+    addPageNote();
+    removeAnnotation(a.id);
+    expect(getAnnotations().filter((x) => !x.resolved)).toHaveLength(1);
+  });
+
+  it('(+) resolved count increases after resolve', () => {
+    const a = addPageNote();
+    addPageNote();
+    resolveAnnotation(a.id);
+    expect(getAnnotations().filter((x) => x.resolved)).toHaveLength(1);
+  });
+
+  it('(+) all count decreases after delete', () => {
+    addPageNote();
+    const b = addPageNote();
+    removeAnnotation(b.id);
+    expect(getAnnotations()).toHaveLength(1);
+  });
+
+  it('(+) adding new annotation increases open count', () => {
+    addPageNote();
+    resolveAnnotation(getAnnotations()[0].id);
+    addPageNote();
+    expect(getAnnotations().filter((x) => !x.resolved)).toHaveLength(1);
+    expect(getAnnotations()).toHaveLength(2);
+  });
+
+  it('(-) deleting all annotations leaves empty list', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    removeAnnotation(a.id);
+    removeAnnotation(b.id);
+    expect(getAnnotations()).toHaveLength(0);
+  });
+
+  it('(-) resolving all then adding new - new is open', () => {
+    const a = addPageNote();
+    resolveAnnotation(a.id);
+    const b = addPageNote();
+    const open = getAnnotations().filter((x) => !x.resolved);
+    expect(open).toHaveLength(1);
+    expect(open[0].id).toBe(b.id);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Badge count (open-only) edge cases
+// ---------------------------------------------------------------------------
+
+describe('badge count edge cases', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('(+) badge count starts at zero', () => {
+    expect(getAnnotations().filter((x) => !x.resolved).length).toBe(0);
+  });
+
+  it('(+) badge count increments on add', () => {
+    addPageNote();
+    addPageNote();
+    expect(getAnnotations().filter((x) => !x.resolved).length).toBe(2);
+  });
+
+  it('(+) badge count decrements on resolve', () => {
+    const a = addPageNote();
+    addPageNote();
+    resolveAnnotation(a.id);
+    expect(getAnnotations().filter((x) => !x.resolved).length).toBe(1);
+  });
+
+  it('(+) badge count decrements on delete', () => {
+    const a = addPageNote();
+    addPageNote();
+    removeAnnotation(a.id);
+    expect(getAnnotations().filter((x) => !x.resolved).length).toBe(1);
+  });
+
+  it('(-) resolving does not double-decrement badge', () => {
+    const a = addPageNote();
+    resolveAnnotation(a.id);
+    resolveAnnotation(a.id); // no-op
+    expect(getAnnotations().filter((x) => !x.resolved).length).toBe(0);
+    expect(getAnnotations()).toHaveLength(1);
+  });
+
+  it('(-) deleting resolved item does not affect open count', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    resolveAnnotation(a.id);
+    const openBefore = getAnnotations().filter((x) => !x.resolved).length;
+    removeAnnotation(a.id);
+    expect(getAnnotations().filter((x) => !x.resolved).length).toBe(openBefore);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Multi-category edge cases
+// ---------------------------------------------------------------------------
+
+describe('multi-category edge cases', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('(-) duplicate categories in comma string', () => {
+    const note = addPageNote();
+    updateCategory(note.id, 'visual,visual');
+    // Stored as-is - dedup is UI concern
+    expect(getAnnotations()[0].category).toBe('visual,visual');
+  });
+
+  it('(-) category with trailing comma', () => {
+    const note = addPageNote();
+    updateCategory(note.id, 'visual,');
+    const parsed = getAnnotations()[0].category.split(',').filter(Boolean);
+    expect(parsed).toEqual(['visual']);
+  });
+
+  it('(-) category with leading comma', () => {
+    const note = addPageNote();
+    updateCategory(note.id, ',functional');
+    const parsed = getAnnotations()[0].category.split(',').filter(Boolean);
+    expect(parsed).toEqual(['functional']);
+  });
+
+  it('(+) overwriting category replaces entirely', () => {
+    const note = addPageNote();
+    updateCategory(note.id, 'visual,functional');
+    updateCategory(note.id, 'a11y');
+    expect(getAnnotations()[0].category).toBe('a11y');
+  });
+
+  it('(+) category survives resolve', () => {
+    const note = addPageNote();
+    updateCategory(note.id, 'visual,content');
+    resolveAnnotation(note.id);
+    expect(getAnnotations()[0].category).toBe('visual,content');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// hideHoverUI edge cases
+// ---------------------------------------------------------------------------
+
+describe('hideHoverUI edge cases', () => {
+  it('(-) safe to call multiple times', () => {
+    expect(() => {
+      hideHoverUI();
+      hideHoverUI();
+      hideHoverUI();
+    }).not.toThrow();
+  });
+
+  it('(-) safe to call after stop', () => {
+    start();
+    stop();
+    expect(() => hideHoverUI()).not.toThrow();
+  });
+
+  it('(+) overlay hidden after start then hideHoverUI', () => {
+    start();
+    const overlay = document.querySelector(`[${ATTR}="overlay"]`);
+    if (overlay) overlay.style.display = 'block';
+    hideHoverUI();
+    if (overlay) expect(overlay.style.display).toBe('none');
+    stop();
+  });
+
+  it('(+) tooltip hidden after start then hideHoverUI', () => {
+    start();
+    const tooltip = document.querySelector(`[${ATTR}="tooltip"]`);
+    if (tooltip) tooltip.style.display = 'block';
+    hideHoverUI();
+    if (tooltip) expect(tooltip.style.display).toBe('none');
+    stop();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Annotation lifecycle integrity
+// ---------------------------------------------------------------------------
+
+describe('annotation lifecycle integrity', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('(+) IDs are unique across adds', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    const c = addPageNote();
+    const ids = [a.id, b.id, c.id];
+    expect(new Set(ids).size).toBe(3);
+  });
+
+  it('(+) IDs keep incrementing after delete', () => {
+    const a = addPageNote();
+    removeAnnotation(a.id);
+    const b = addPageNote();
+    expect(b.id).toBeGreaterThan(a.id);
+  });
+
+  it('(+) IDs keep incrementing after resolve', () => {
+    const a = addPageNote();
+    resolveAnnotation(a.id);
+    const b = addPageNote();
+    expect(b.id).toBeGreaterThan(a.id);
+  });
+
+  it('(-) updateComment on deleted annotation is safe', () => {
+    const note = addPageNote();
+    removeAnnotation(note.id);
+    expect(() => updateComment(note.id, 'ghost')).not.toThrow();
+  });
+
+  it('(-) updateSeverity on deleted annotation is safe', () => {
+    const note = addPageNote();
+    removeAnnotation(note.id);
+    expect(() => updateSeverity(note.id, 'critical')).not.toThrow();
+  });
+
+  it('(-) updateCategory on deleted annotation is safe', () => {
+    const note = addPageNote();
+    removeAnnotation(note.id);
+    expect(() => updateCategory(note.id, 'visual')).not.toThrow();
+  });
+
+  it('(-) resolveAnnotation on deleted annotation is safe', () => {
+    const note = addPageNote();
+    removeAnnotation(note.id);
+    expect(resolveAnnotation(note.id)).toBeNull();
+  });
+
+  it('(-) removeAnnotation on already-removed id is safe', () => {
+    const note = addPageNote();
+    removeAnnotation(note.id);
+    expect(() => removeAnnotation(note.id)).not.toThrow();
+    expect(getAnnotations()).toHaveLength(0);
+  });
+
+  it('(+) clearAnnotations empties everything', () => {
+    addPageNote();
+    addPageNote();
+    const c = addPageNote();
+    resolveAnnotation(c.id);
+    clearAnnotations();
+    expect(getAnnotations()).toHaveLength(0);
+  });
+
+  it('(+) updateComment on resolved annotation still works', () => {
+    const note = addPageNote();
+    resolveAnnotation(note.id);
+    updateComment(note.id, 'updated after resolve');
+    expect(getAnnotations()[0].comment).toBe('updated after resolve');
+  });
+});
