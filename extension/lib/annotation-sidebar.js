@@ -46,6 +46,23 @@ let sidebarEl = null;
 let badgeEl = null;
 let collapsed = false;
 let hasCaptured = false;
+let pendingRequests = [];
+
+/**
+ * Poll the server for pending Kiro capture requests.
+ * Shows them as timeline items so the user can fulfill them.
+ */
+async function pollRequests() {
+  try {
+    const serverUrl = await discoverServer();
+    if (!serverUrl) return;
+    const res = await fetch(`${serverUrl}/requests/pending`, { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) return;
+    const data = await res.json();
+    pendingRequests = data.requests || [];
+    refresh();
+  } catch { /* server offline */ }
+}
 
 /** Create and mount the sidebar. */
 export function create() {
@@ -307,6 +324,7 @@ export function create() {
 
   refresh();
   syncResolved();
+  pollRequests();
 }
 
 function toggleCollapse() {
@@ -353,6 +371,73 @@ export function refresh() {
   // Sort: open items first (by timestamp desc), then resolved
   const open = anns.filter((a) => !a.resolved);
   const resolved = anns.filter((a) => a.resolved);
+
+  // Kiro capture requests - shown at top of timeline
+  if (pendingRequests.length > 0) {
+    const reqHeader = document.createElement('div');
+    reqHeader.textContent = `Kiro Requests (${pendingRequests.length})`;
+    Object.assign(reqHeader.style, {
+      padding: '6px 12px', color: '#f59e0b', fontSize: '11px', fontWeight: '600',
+      borderBottom: '1px solid #2a2a3a', fontFamily: 'system-ui, sans-serif',
+    });
+    list.appendChild(reqHeader);
+
+    for (const req of pendingRequests) {
+      const entry = document.createElement('div');
+      Object.assign(entry.style, {
+        padding: '8px 12px', borderBottom: '1px solid #2a2a3a',
+        display: 'flex', alignItems: 'center', gap: '6px',
+      });
+
+      // Bell icon
+      const bell = document.createElement('span');
+      bell.textContent = '\ud83d\udd14';
+      Object.assign(bell.style, { fontSize: '14px', flexShrink: '0' });
+
+      // Request info
+      const info = document.createElement('span');
+      Object.assign(info.style, { flex: '1', fontSize: '12px', color: '#e0e0e0', overflow: 'hidden' });
+      const urlText = document.createElement('div');
+      urlText.textContent = req.url;
+      Object.assign(urlText.style, { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' });
+      info.appendChild(urlText);
+      if (req.guidance) {
+        const guide = document.createElement('div');
+        guide.textContent = req.guidance;
+        Object.assign(guide.style, { color: '#9ca3af', fontSize: '11px', marginTop: '2px' });
+        info.appendChild(guide);
+      }
+
+      // Capture Now button
+      const capBtn = document.createElement('button');
+      capBtn.textContent = 'Capture';
+      Object.assign(capBtn.style, {
+        padding: '3px 8px', border: 'none', borderRadius: '4px',
+        background: '#f59e0b', color: '#000', fontSize: '11px', fontWeight: '600',
+        cursor: 'pointer', flexShrink: '0', fontFamily: 'system-ui, sans-serif',
+      });
+      capBtn.addEventListener('click', () => {
+        capBtn.textContent = '...';
+        // Acknowledge the request, then trigger capture
+        (async () => {
+          try {
+            const serverUrl = await discoverServer();
+            if (serverUrl) await fetch(`${serverUrl}/requests/${req.id}/ack`, { method: 'POST' });
+          } catch { /* best effort */ }
+          chrome.runtime.sendMessage({ type: 'capture' }, () => {
+            capBtn.textContent = '\u2713';
+            capBtn.style.background = '#4ade80';
+            // Remove from pending after capture
+            pendingRequests = pendingRequests.filter((r) => r.id !== req.id);
+            setTimeout(() => refresh(), 1000);
+          });
+        })();
+      });
+
+      entry.append(bell, info, capBtn);
+      list.appendChild(entry);
+    }
+  }
 
   // Open items count header
   if (open.length > 0) {
@@ -544,4 +629,5 @@ export function destroy() {
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }
   collapsed = false;
   hasCaptured = false;
+  pendingRequests = [];
 }
