@@ -47,7 +47,7 @@ let badgeEl = null;
 let collapsed = false;
 let hasCaptured = false;
 let pendingRequests = [];
-let resolvedAccordionOpen = false;
+let activeFilter = 'open'; // 'all' | 'open' | 'resolved'
 
 /**
  * Poll the server for pending Kiro capture requests.
@@ -510,43 +510,36 @@ export function refresh() {
     }
   }
 
-  // Open items count header
-  if (open.length > 0) {
-    const openHeader = document.createElement('div');
-    openHeader.textContent = `Open (${open.length})`;
-    Object.assign(openHeader.style, {
-      padding: '6px 12px', color: '#a5b4fc', fontSize: '11px', fontWeight: '600',
-      borderBottom: '1px solid #2a2a3a', fontFamily: 'system-ui, sans-serif',
-    });
-    list.appendChild(openHeader);
+  // Filter tabs: All | Open | Resolved
+  const tabBar = document.createElement('div');
+  Object.assign(tabBar.style, {
+    display: 'flex', borderBottom: '1px solid #2a2a3a', flexShrink: '0',
+  });
+  const tabStyle = { flex: '1', padding: '6px 0', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '11px', fontWeight: '600', fontFamily: 'system-ui, sans-serif', textAlign: 'center' };
+  for (const { key, label } of [
+    { key: 'all', label: `All (${anns.length})` },
+    { key: 'open', label: `Open (${open.length})` },
+    { key: 'resolved', label: `Resolved (${resolved.length})` },
+  ]) {
+    const tab = document.createElement('button');
+    tab.textContent = label;
+    const isActive = activeFilter === key;
+    Object.assign(tab.style, { ...tabStyle, color: isActive ? '#a5b4fc' : '#666', borderBottom: isActive ? '2px solid #a5b4fc' : '2px solid transparent' });
+    tab.addEventListener('click', () => { activeFilter = key; refresh(); });
+    tabBar.appendChild(tab);
   }
+  list.appendChild(tabBar);
 
-  for (const ann of open) {
+  // Filtered items
+  const visible = activeFilter === 'all' ? anns : activeFilter === 'open' ? open : resolved;
+  for (const ann of visible) {
     list.appendChild(createEntry(ann));
   }
-
-  // Resolved accordion
-  if (resolved.length > 0) {
-    const accordion = document.createElement('div');
-    const accordionHeader = document.createElement('div');
-    accordionHeader.textContent = `${resolvedAccordionOpen ? '\u25be' : '\u25b8'} Resolved (${resolved.length})`;
-    Object.assign(accordionHeader.style, {
-      padding: '6px 12px', color: '#666', fontSize: '11px', fontWeight: '600',
-      borderTop: '1px solid #2a2a3a', cursor: 'pointer',
-      fontFamily: 'system-ui, sans-serif',
-    });
-    const accordionList = document.createElement('div');
-    accordionList.style.display = resolvedAccordionOpen ? 'block' : 'none';
-    accordionHeader.addEventListener('click', () => {
-      resolvedAccordionOpen = !resolvedAccordionOpen;
-      accordionList.style.display = resolvedAccordionOpen ? 'block' : 'none';
-      accordionHeader.textContent = `${resolvedAccordionOpen ? '\u25be' : '\u25b8'} Resolved (${resolved.length})`;
-    });
-    for (const ann of resolved) {
-      accordionList.appendChild(createEntry(ann));
-    }
-    accordion.append(accordionHeader, accordionList);
-    list.appendChild(accordion);
+  if (visible.length === 0) {
+    const empty = document.createElement('div');
+    empty.textContent = activeFilter === 'resolved' ? 'No resolved items yet' : 'No open items';
+    Object.assign(empty.style, { padding: '16px 12px', color: '#666', fontSize: '12px', textAlign: 'center', fontStyle: 'italic' });
+    list.appendChild(empty);
   }
 
   /** Severity/category chip colors. */
@@ -675,9 +668,7 @@ export function refresh() {
     Object.assign(resolveBtn.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', flexShrink: '0' });
     resolveBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      const wasResolved = ann.resolved;
       toggleResolved(ann.id);
-      if (!wasResolved) resolvedAccordionOpen = true;
       refresh();
     });
 
@@ -710,5 +701,5 @@ export function destroy() {
   collapsed = false;
   hasCaptured = false;
   pendingRequests = [];
-  resolvedAccordionOpen = false;
+  activeFilter = 'open';
 }
