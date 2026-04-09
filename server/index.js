@@ -37,6 +37,8 @@ import { register as registerGetAnnotatedCapture } from '#src/tools/get-annotate
 import { register as registerRequestCapture } from '#src/tools/request-capture.js';
 import { register as registerGetRequestStatus } from '#src/tools/get-request-status.js';
 import { register as registerGetFidelityReport } from '#src/tools/get-fidelity-report.js';
+import { register as registerResolveAnnotation } from '#src/tools/resolve-annotation.js';
+import { register as registerGetUnresolved } from '#src/tools/get-unresolved.js';
 import { createRequestQueue } from '#src/request-queue.js';
 import { createHttpReceiver } from '#src/http-receiver.js';
 
@@ -76,6 +78,8 @@ registerGetAnnotatedCapture(server, indexer, CAPTURES_DIR);
 registerRequestCapture(server, requestQueue);
 registerGetRequestStatus(server, requestQueue);
 registerGetFidelityReport(server, CAPTURES_DIR);
+registerResolveAnnotation(server, indexer, CAPTURES_DIR);
+registerGetUnresolved(server, indexer, CAPTURES_DIR);
 
 // ---------------------------------------------------------------------------
 // File indexing  -  parse metadata from a capture file and add to index
