@@ -47,12 +47,16 @@ export const MARKER_COLORS = [
 // State
 // ---------------------------------------------------------------------------
 
+/** Capture mode constants - element and region are toggle modes, page is one-shot. */
+export const CAPTURE_MODES = { ELEMENT: 'element', REGION: 'region', PAGE: 'page' };
+
 let active = false;
 let frozen = false;
 let currentEl = null;
 let overlayEl = null;
 let tooltipEl = null;
 let actionBarEl = null;
+let captureMode = null;
 
 // Drag selection state
 let dragStart = null;
@@ -719,6 +723,7 @@ export function stop() {
   active = false;
   frozen = false;
   currentEl = null;
+  captureMode = null;
   onAnnotationAdded = null;
   onAnnotationRemoved = null;
 
@@ -736,3 +741,23 @@ export function stop() {
 }
 
 export function isActive() { return active; }
+
+/** Get current capture mode (element, region, or null). */
+export function getCaptureMode() { return captureMode; }
+
+/**
+ * Set capture mode. Element/region are toggles (same mode twice = off).
+ * Page is one-shot: fires addPageNote immediately and resets to null.
+ * Invalid values are ignored. No-op if not active.
+ */
+export function setCaptureMode(mode) {
+  if (!active) return;
+  if (mode === CAPTURE_MODES.PAGE) {
+    addPageNote();
+    captureMode = null;
+    return;
+  }
+  const valid = [CAPTURE_MODES.ELEMENT, CAPTURE_MODES.REGION, null];
+  if (!valid.includes(mode)) return;
+  captureMode = captureMode === mode ? null : mode;
+}

@@ -13,6 +13,7 @@ import {
   getAnnotations, clearAnnotations, addPageNote,
   start, stop, isActive, storageKey, save, load,
   hideHoverUI, ATTR,
+  setCaptureMode, getCaptureMode, CAPTURE_MODES,
 } from '#lib/annotate.js';
 
 let restore;
@@ -1485,5 +1486,82 @@ describe('annotation lifecycle integrity', () => {
     resolveAnnotation(note.id);
     updateComment(note.id, 'updated after resolve');
     expect(getAnnotations()[0].comment).toBe('updated after resolve');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Capture mode state machine
+// ---------------------------------------------------------------------------
+
+describe('CAPTURE_MODES', () => {
+  it('(+) defines element, region, page', () => {
+    expect(CAPTURE_MODES).toEqual({ ELEMENT: 'element', REGION: 'region', PAGE: 'page' });
+  });
+});
+
+describe('capture mode state', () => {
+  afterEach(() => { stop(); });
+
+  it('(+) defaults to null when not started', () => {
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(+) setCaptureMode sets element mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    expect(getCaptureMode()).toBe('element');
+  });
+
+  it('(+) setCaptureMode sets region mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.REGION);
+    expect(getCaptureMode()).toBe('region');
+  });
+
+  it('(+) switching mode replaces previous (mutual exclusion)', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    setCaptureMode(CAPTURE_MODES.REGION);
+    expect(getCaptureMode()).toBe('region');
+  });
+
+  it('(+) setCaptureMode(null) clears mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    setCaptureMode(null);
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(+) same mode twice toggles off', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(-) setCaptureMode with invalid value is ignored', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    setCaptureMode('invalid');
+    expect(getCaptureMode()).toBe('element');
+  });
+
+  it('(-) setCaptureMode before start is safe', () => {
+    expect(() => setCaptureMode(CAPTURE_MODES.ELEMENT)).not.toThrow();
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(+) stop clears capture mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.REGION);
+    stop();
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(+) page mode is one-shot - does not persist as active mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.PAGE);
+    // Page mode fires addPageNote and resets to null
+    expect(getCaptureMode()).toBeNull();
   });
 });
