@@ -1,37 +1,45 @@
-# ADR-007: JSONL Event Log for History and Resolution Tracking
+# ADR-007: Capture JSON as Single Source of Truth (No Separate History Store)
 
-**Status:** Accepted
+**Status:** Accepted (revised)
 **Date:** 2026-04-09
 **Deciders:** sourjya
+**Supersedes:** Original ADR-007 draft (JSONL history store)
 **Relates to:** Unified Review Panel spec (`.kiro/specs/unified-review-panel/`)
 
 ## Context
 
-ViewGraph needs persistent history and bidirectional resolution tracking. When a user annotates a page and sends it to Kiro, Kiro fixes the issues and needs to signal "done" back to the extension. We also need an audit trail of all capture/annotate/resolve events across sessions.
+ViewGraph needs persistent history and bidirectional resolution tracking. When a user annotates a page and sends it to Kiro, Kiro fixes the issues and needs to signal "done" back to the extension. We also need cross-capture queries ("show all unresolved annotations").
 
-This requires:
-1. A store for event history (captures, annotations, resolutions)
-2. A mechanism for Kiro to update annotation state (resolved/unresolved)
-3. Cross-capture queries ("show all unresolved annotations")
-4. Persistence across server restarts
-
-Three options were evaluated: JSONL with in-memory index, SQLite, and capture-JSON-only (no separate store).
+Three options were evaluated: JSONL with in-memory index, SQLite, and capture-JSON-only.
 
 ## Decision
 
-**Use JSONL (JSON Lines) with an in-memory Map index.** Capture JSON files remain the source of truth for current state. The JSONL file is an append-only audit log.
+**Use capture JSON files as the single source of truth.** No separate history store. Resolution state lives in the annotation objects within each capture. The server indexer (which already loads all captures into memory on startup) provides cross-capture queries.
 
 ```
 .viewgraph/
-  captures/           <- source of truth (current state)
-  history.jsonl       <- audit log (event history)
+  captures/           <- all state lives here
+    viewgraph-localhost-2026-04-09-1241.json
+    viewgraph-localhost-2026-04-09-1250.json
 ```
 
-## Alternatives Considered
+If audit trail is needed later, a write-only JSONL log can be added with zero query responsibility.
 
-### Option A: SQLite via better-sqlite3
+## Alternatives Rejected
 
-SQLite provides indexed queries, atomic transactions, concurrent write safety, and relational queries out of the box.
+### Option A: JSONL event log + capture JSON (original proposal)
+
+The original design used JSONL as an append-only event log alongside capture JSON files. Resolution would be recorded in both: the capture JSON (current state) and the JSONL (audit trail).
+
+**Why rejected:**
+
+Two sources of truth is an anti-pattern. If `resolve_annotation` updates the capture JSON but the JSONL append fails (disk full, crash mid-write), they diverge silently. If someone manually edits a capture JSON, the JSONL is stale. Keeping two stores in sync adds complexity with no proportional benefit at our scale.
+
+The audit trail benefit is real but not critical for v1. If needed later, a write-only JSONL log can be added that has zero query responsibility - it only appends, never reads. This eliminates the divergence risk because the JSONL is never consulted for current state.
+
+### Option B: SQLite via better-sqlite3
+
+SQLite provides indexed queries, atomic transactions, and a single-file database.
 
 **Why rejected:**
 
@@ -40,94 +48,66 @@ SQLite provides indexed queries, atomic transactions, concurrent write safety, a
    - ARM-based machines (some Chromebooks, Raspberry Pi)
    - Alpine/musl-based Docker containers
    - CI environments without native build tools
-   ViewGraph targets broad compatibility - it should work anywhere Node.js 18+ runs. A native dependency contradicts this.
+   ViewGraph targets broad compatibility - it should work anywhere Node.js 18+ runs.
 
-2. **Overkill for our scale.** We cap history at 1000 events and captures at 50 per project. At this scale, an in-memory Map provides O(1) lookups and sub-millisecond filtered scans. SQLite's B-tree indexes provide no measurable advantage over iterating 1000 Map entries.
+2. **Still creates two sources of truth.** Even with SQLite, we'd need to keep capture JSON files for MCP tools that read them directly. The DB becomes a second store that must stay in sync with the JSON files - the same divergence problem as JSONL.
 
-3. **Binary format.** SQLite databases are not human-readable. Debugging requires the `sqlite3` CLI or a GUI tool. JSONL can be inspected with `cat`, `grep`, `jq`, or any text editor. For a developer tool, inspectability matters.
+3. **Overkill for our scale.** We cap at 50 captures per project. The indexer already loads all captures into memory. Cross-capture queries are sub-millisecond Map iterations. SQLite's B-tree indexes provide no measurable advantage.
 
-4. **Dependency weight.** `better-sqlite3` adds ~2MB to the install and requires periodic updates for Node.js version compatibility. ViewGraph currently has minimal dependencies (MCP SDK, Zod, WXT). Adding a native addon changes the maintenance profile significantly.
+## Why Capture JSON Only Works
 
-5. **Git is not a concern.** `.viewgraph/` is gitignored, so the "binary files in git" argument against SQLite doesn't apply. However, this also means the "human-readable diffs" argument for JSONL doesn't apply either. The inspectability advantage is about debugging, not version control.
+### Cross-capture queries
 
-### Option B: Capture JSON only (no separate store)
+The server indexer already reads all capture files on startup and holds them in memory. Adding `getUnresolvedAnnotations()` is a filter over the existing in-memory index - the same pattern used by `audit_accessibility` and `find_missing_testids`.
 
-Store everything in the capture JSON files. No history file at all. Resolution state lives in the annotation objects within each capture.
+Performance at 50 captures, ~100 annotations total: < 1ms to scan all annotations and filter by `resolved: false`.
 
-**Why rejected:**
+### Resolution updates
 
-1. **No cross-capture queries.** To find all unresolved annotations, the server must read and parse every capture JSON file. At 50 captures averaging 100KB each, that's 5MB of JSON parsing per query. With JSONL + in-memory Map, it's a sub-millisecond Map iteration.
+`resolve_annotation` MCP tool:
+1. Reads capture JSON from disk
+2. Finds annotation by UUID
+3. Sets `resolved: true`, writes `resolution` object
+4. Writes updated JSON back
 
-2. **No audit trail.** When a capture is deleted (maxCaptures pruning), its history is lost. The JSONL preserves the record that an annotation existed and was resolved, even after the capture file is gone.
+Single file, single write, no sync needed.
 
-3. **No event timeline.** The capture JSON shows current state but not the sequence of events. "When was this annotated? When was it resolved? How long did the fix take?" These questions require event history.
+### Concurrency
 
-## Justification for JSONL + In-Memory Map
+The MCP server is single-threaded Node.js. MCP tools execute sequentially over a single stdio connection. The HTTP receiver and MCP tools can theoretically race on the same file, but this is unrealistic in practice - the user just sent a capture, Kiro hasn't read it yet.
 
-### Concurrency is not a problem
+### Offline extension state
 
-The MCP server is single-threaded Node.js. MCP tools execute sequentially over a single stdio connection. The HTTP receiver processes one request at a time per endpoint. The only theoretical race condition is an HTTP POST (extension sends capture) concurrent with an MCP tool call (Kiro resolves annotation) on the same file. In practice this never happens - the user just sent the capture, Kiro hasn't read it yet.
-
-JSONL appends are atomic at the OS level for writes under the filesystem block size (typically 4KB). Our event lines are ~200 bytes. No file locking needed.
-
-### Performance is adequate
-
-| Operation | JSONL + Map | SQLite |
-|---|---|---|
-| Server startup (load 1000 events) | ~10ms | ~5ms |
-| Lookup by UUID | O(1) Map.get | O(1) indexed |
-| Filter by status (1000 events) | ~1ms iterate | ~1ms indexed |
-| Append event | ~1ms appendFileSync | ~1ms INSERT |
-| Compact (rewrite 1000 lines) | ~50ms (rare) | N/A (auto) |
-
-No measurable difference at our scale. SQLite wins on compaction (automatic VACUUM vs manual rewrite), but compaction happens at most once per 1000 events.
-
-### Portability is critical
-
-ViewGraph is a developer tool that runs alongside any project. It must install cleanly with `npm install` on any platform. Native dependencies are the #1 cause of "it doesn't work on my machine" issues in the Node.js ecosystem. JSONL requires zero native code.
-
-### Event sourcing fits the domain
-
-Our data naturally forms an event stream: capture, annotate, resolve, expire. Each event is immutable. Current state is derived by finding the latest event per UUID. This is event sourcing at its simplest - no framework, no library, just append-only lines.
-
-The JSONL file is the log. The in-memory Map is the materialized view. If the Map is lost (server restart), it's rebuilt from the log in ~10ms.
-
-### Inspectability aids debugging
-
-```bash
-# What happened in the last hour?
-tail -20 .viewgraph/history.jsonl
-
-# What's unresolved?
-grep -v '"event":"resolve"' .viewgraph/history.jsonl | grep '"event":"annotate"'
-
-# How many captures today?
-grep '"event":"capture"' .viewgraph/history.jsonl | grep '2026-04-09' | wc -l
-```
-
-This is valuable for a tool whose users are developers. No special CLI needed.
+The extension stores annotation state in `chrome.storage` for offline use. On reconnect, bidirectional sync uses last-write-wins by timestamp. The capture JSON on the server is authoritative when online.
 
 ## Consequences
 
 ### Positive
-- Zero native dependencies - installs cleanly everywhere
-- Human-readable history - debuggable with standard Unix tools
-- Simple implementation - ~100 lines of code for the store
-- Portable across all Node.js platforms
+- Single source of truth - no divergence risk
+- Zero additional dependencies
+- Zero additional files to manage
+- Leverages existing indexer infrastructure
+- Human-readable (JSON files, inspectable with cat/jq)
+- Simplest possible implementation
 
 ### Negative
-- Manual compaction needed (rewrite file when > 1000 lines)
-- No built-in concurrent write safety (not needed, but no safety net)
-- In-memory Map consumes RAM (~500KB for 1000 events) - negligible
-- If JSONL file is corrupted (partial write on crash), last line may be invalid - mitigated by skipping unparseable lines on load
+- No audit trail (when was this annotated? when resolved? how long did the fix take?)
+- Deleting a capture loses its history permanently
+- No event timeline across captures
+
+### Mitigations
+- Audit trail can be added later as a write-only JSONL log with no query responsibility
+- Capture deletion is controlled (maxCaptures pruning) and logged to stderr
+- Event timeline is a nice-to-have, not a v1 requirement
 
 ### Risks
-- If event volume grows beyond 10,000 (unlikely given 50-capture cap), the in-memory approach may need revisiting. Monitor and reassess if this happens.
-- If we later need complex relational queries (joins across captures and annotations), JSONL won't scale. This would trigger a migration to SQLite. The JSONL format is simple enough that a migration script would be straightforward.
+- If we later need complex audit queries ("average time to resolution", "annotations per week"), capture JSON won't support this. Trigger: add JSONL or SQLite at that point.
+- If capture count grows beyond 50 (config change), in-memory indexing may need optimization. Current cap makes this unlikely.
 
 ## Review Triggers
 
 Revisit this decision if:
-- Event volume exceeds 10,000 per project
-- We need relational queries that can't be served by the in-memory Map
-- A new requirement demands concurrent write safety (e.g., multiple MCP servers per project)
+- Audit trail becomes a hard requirement (compliance, team reporting)
+- Capture count exceeds 200 per project
+- We need temporal queries (time-to-resolution, annotation velocity)
+- Multiple MCP servers need to share state for the same project

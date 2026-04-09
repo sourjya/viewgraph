@@ -5,55 +5,109 @@
 ```
 Extension (Chrome)                    Server (Node.js)                  Kiro (MCP client)
 ┌──────────────────┐                 ┌──────────────────┐              ┌──────────────┐
-│ Popup            │                 │ HTTP Receiver     │              │              │
-│  [Review]        │                 │  POST /captures   │              │ resolve_     │
+│ Icon click →     │                 │ HTTP Receiver     │              │              │
+│ Sidebar opens    │                 │  POST /captures   │              │ resolve_     │
 │                  │                 │  POST /resolve    │◄─────────────│ annotation() │
 │ Sidebar          │                 │  GET /requests    │              │              │
 │  Timeline items  │─── push ───────►│                  │              │ get_review_  │
-│  Request banner  │◄── poll ────────│ History Store     │◄─────────────│ history()    │
-│  Page notes      │                 │  .viewgraph/      │              │              │
-│  Capture button  │                 │  history.db|jsonl │              │              │
+│  Request banner  │◄── poll ────────│ Indexer           │◄─────────────│ history()    │
+│  Page notes      │                 │  (in-memory)      │              │              │
+│  Capture button  │                 │                   │              │              │
+│  Settings        │                 │                   │              │              │
 └──────────────────┘                 └──────────────────┘              └──────────────┘
 ```
 
-## UI Layout
+### Single source of truth: Capture JSON
 
-### Popup (simplified)
+No separate history store. All state lives in the capture JSON files. The server indexer
+loads all captures into memory on startup and provides cross-capture queries. Resolution
+state is stored in the annotation objects within each capture.
+
+If audit trail is needed later, a write-only JSONL log can be added with zero query
+responsibility. See ADR-007 for the full decision rationale.
+
+## UI Design
+
+### Extension Icon Behavior
+
+Clicking the extension icon opens the sidebar directly on the page. No popup.
+
+**Non-injectable pages** show a minimal fallback popup with a clear error:
+
+| URL Pattern | Message |
+|---|---|
+| `chrome://` | "Chrome system pages can't be inspected. Navigate to a web page." |
+| `chrome-extension://` | "Extension pages can't be inspected. Navigate to a web page." |
+| `about:` | "Browser internal pages can't be inspected. Navigate to a web page." |
+| `chrome.google.com/webstore` | "The Chrome Web Store can't be inspected. Navigate to a web page." |
+| `file://` (no file access) | "Enable 'Allow access to file URLs' in extension settings to inspect local files." |
+| `view-source:` | "Source view pages can't be inspected. Navigate to a web page." |
+| `devtools://` | "DevTools pages can't be inspected. Navigate to a web page." |
+| `data:` | "Data URLs can't be inspected. Navigate to a web page." |
+
+Detection: check `tab.url` against these prefixes before attempting injection.
+
+### Sidebar Layout
 
 ```
-┌─ ViewGraph ──────────┐
-│                      │
-│     [📝 Review]      │
-│                      │
-│ ● MCP connected      │
-└──────────────────────┘
+┌─ ViewGraph ──────────────── [×] ┐
+│ ● Connected (9877)    [gear]    │
+│                                  │
+│ ┌ 🔔 Kiro wants /dashboard ───┐ │  <- only when pending
+│ │        [Capture Now]         │ │
+│ └──────────────────────────────┘ │
+│                                  │
+│ Open (3)                         │
+│ 📸 Capturing...  spinner        │  <- auto-capture on open
+│ #1 h1 "fix font" [CRIT] [v][x] │
+│ #2 input "label"  [MAJ] [v][x] │
+│ 📝 "spacing off"  [MAJ] [v][x] │
+│                                  │
+│ > Resolved (10)                  │  <- collapsed accordion
+│                                  │
+│ [Capture] [Note]                 │
+│ [Send] [Copy MD] [Report]       │
+│                                  │
+│ > Settings                       │  <- collapsible
+│   Server: localhost:9877         │
+│   Project mappings...            │
+│   Auth token: ****               │
+└──────────────────────────────────┘
 ```
 
-One button. One status. Capture is no longer a separate popup action.
+### Resolved Items Accordion
 
-### Sidebar (unified timeline)
+Resolved items move out of the main timeline into a collapsed accordion:
 
 ```
-┌─ Review (5 items) ─────────── [×] ┐
-│                                    │
-│ ┌ 🔔 Kiro wants /dashboard ─────┐ │  ← only when pending
-│ │          [Capture Now]         │ │
-│ └────────────────────────────────┘ │
-│                                    │
-│ 📸 Captured 2:41pm       [✓] [×]  │
-│ 📝 "Spacing feels cramped"        │
-│    [MAJOR]                [✓] [×]  │
-│ #1 h1 "fix font size"             │
-│    [CRITICAL]             [✓] [×]  │
-│ #2 input "change label"           │
-│    [MAJOR]                [✓] [×]  │
-│ ✅ #3 resolved by Kiro            │  ← resolved item
-│    "Fixed font to 14px"           │
-│                                    │
-│ [📸 Capture] [📝 Note]            │
-│ [Send] [Copy MD] [Report]         │
-│ ● MCP connected (9877)            │
-└────────────────────────────────────┘
+│ > Resolved (10)                  │  <- click to expand
+```
+
+Expanded:
+
+```
+│ v Resolved (10)                  │
+│ check #3 "Fixed to 14px" - Kiro │
+│ check #4 "Changed type" - Kiro  │
+│ check #5 "Won't fix" - user     │
+│ ...                              │
+```
+
+Rationale: keeps the working area focused on open items. Resolved items are
+accessible but don't clutter the active workflow.
+
+### Capture on Review Start
+
+Sidebar opens immediately with a spinner for the auto-capture:
+
+```
+│ spinner Capturing...             │  <- visible for ~500ms
+```
+
+User can start adding page notes while capture completes. Once done:
+
+```
+│ camera Captured 2:41pm   [v][x] │
 ```
 
 ## Data Model
@@ -69,8 +123,6 @@ One button. One status. Capture is no longer a separate popup action.
   "severity": "critical | major | minor | ",
   "resolved": false,
   "resolution": null,
-  "resolvedBy": null,
-  "resolvedAt": null,
   "timestamp": "2026-04-09T12:41:00Z",
   "region": { "x": 100, "y": 200, "width": 300, "height": 40 },
   "ancestor": "h1.title",
@@ -78,8 +130,27 @@ One button. One status. Capture is no longer a separate popup action.
 }
 ```
 
-New fields: `uuid`, `type`, `resolution`, `resolvedBy`, `resolvedAt`, `timestamp`.
-Existing fields unchanged for backward compatibility.
+### Resolution Object (fixed format)
+
+```json
+{
+  "by": "kiro",
+  "action": "fixed",
+  "summary": "Changed font-size from 42px to 28px",
+  "filesChanged": ["docs/demo/index.html"],
+  "at": "2026-04-09T13:00:00Z"
+}
+```
+
+Fields:
+- `by` - who resolved (string, max 50 chars)
+- `action` - enum: `fixed`, `wontfix`, `duplicate`, `invalid`
+- `summary` - what was done (string, max 500 chars, plain text, no HTML)
+- `filesChanged` - array of file paths modified (max 10 entries, max 200 chars each)
+- `at` - ISO 8601 timestamp
+
+Sanitization: strip HTML tags, enforce max lengths, validate `action` against enum.
+Sidebar renders via `textContent` (XSS-safe). Markdown export escapes backticks and pipes.
 
 ### Capture JSON (extended)
 
@@ -89,106 +160,116 @@ Existing fields unchanged for backward compatibility.
   "metadata": { ... },
   "nodes": [ ... ],
   "annotations": [
-    { "uuid": "...", "type": "element", ... },
+    { "uuid": "...", "type": "element", "resolved": false, ... },
     { "uuid": "...", "type": "page-note", "comment": "overall spacing is off", ... },
-    { "uuid": "...", "type": "capture", "timestamp": "...", ... }
+    { "uuid": "...", "type": "element", "resolved": true, "resolution": { ... }, ... }
   ]
 }
 ```
 
-## History Store - Decision: JSONL
+## Key Design Decisions
 
-### Why not SQLite?
+### D1: Multiple captures of same page are separate items
 
-SQLite was considered for indexed queries and concurrent write safety. However:
+Each capture is a snapshot in time. Even if the URL is the same, the DOM may have changed
+(user fixed issues, different page state, different viewport). The timeline shows history.
 
-1. **No concurrent writes in practice.** The MCP server is single-threaded Node.js. MCP tools execute sequentially (single stdio connection). The HTTP receiver and MCP tools can theoretically race on the same file, but this is unrealistic - the user just sent a capture, Kiro hasn't read it yet. JSONL appends are atomic at the OS level for small writes (< 4KB).
+Use cases:
+- **Iterative fixing:** Capture, annotate, send, Kiro fixes, recapture to verify. Old and new
+  captures are different DOM states - both valuable for comparison.
+- **Different states:** Capture `/login` (empty form) vs `/login` (with validation errors).
+  Same URL, different content.
 
-2. **Cross-capture queries are fast enough with in-memory Map.** Loading 1000 JSONL lines takes ~10ms on startup. Filtering by status iterates Map values in < 1ms. We're not querying millions of rows.
+The `compare_captures` MCP tool supports diffing two captures of the same page.
+Users can delete old captures manually if they want to clean up.
 
-3. **Native dependency risk.** `better-sqlite3` requires native compilation that can fail on ARM, musl, Windows WSL, and CI environments. ViewGraph targets broad compatibility.
+### D2: Offline sync with last-write-wins
 
-4. **Git is not a concern.** `.viewgraph/` is gitignored, so binary vs text format doesn't matter for version control. But human inspectability (`cat history.jsonl | grep resolve`) is valuable for debugging.
+The extension stores annotation state in `chrome.storage`. When the server is available,
+bidirectional sync occurs.
 
-### Architecture
+Conflict resolution: **last-write-wins by timestamp.**
 
 ```
-.viewgraph/
-  captures/           <- active capture JSON files (source of truth)
-  history.jsonl       <- append-only event log (audit trail)
+Sidebar opens -> fetch capture JSON from server
+  -> for each annotation:
+    if server.resolvedAt > local.resolvedAt -> use server state
+    if local.resolvedAt > server.resolvedAt -> push local state to server
+    if neither resolved -> no conflict
 ```
 
-**Source of truth:** Capture JSON files hold current state (resolved/unresolved). The JSONL is an audit log. If they diverge, capture JSON wins.
+Edge case: both sides resolve the same annotation with different notes while offline.
+The later timestamp wins. The losing resolution is logged to console for debugging
+but not preserved. This scenario is near-impossible in practice (requires Kiro and
+user to resolve the exact same annotation during the exact same offline window).
 
-**In-memory index:** On server start, parse history.jsonl into a `Map<uuid, event>`. All reads go through the Map. Writes append to JSONL and update the Map.
+Test cases required:
+- Server resolved, extension not synced yet
+- Extension resolved offline, server catches up on reconnect
+- Both resolved with different notes (timestamp wins)
+- Server unreachable (extension works with local state only)
+- Server comes back after extended offline period
 
-**Compaction:** When JSONL exceeds 1000 lines, compact by keeping only the latest event per UUID, rewrite file. This is rare and takes < 50ms.
+### D3: Page notes are general feedback
 
-### Event format
+Page notes have no element reference by design. They represent holistic feedback:
+"this page loads slowly", "overall layout feels cramped."
 
-```jsonl
-{"ts":"2026-04-09T12:41:00Z","event":"capture","uuid":"abc","url":"localhost:5173/login","filename":"viewgraph-...json"}
-{"ts":"2026-04-09T12:42:00Z","event":"annotate","uuid":"def","captureUuid":"abc","comment":"fix font","severity":"critical"}
-{"ts":"2026-04-09T12:50:00Z","event":"resolve","uuid":"def","by":"kiro","note":"Fixed to 14px"}
-{"ts":"2026-04-09T13:00:00Z","event":"expire","uuid":"abc","reason":"maxCaptures exceeded"}
-```
+Kiro has the full DOM from the capture and can reason about the page holistically.
+If Kiro needs more specificity, it asks the user in chat: "Which area feels cramped?
+Can you annotate the specific element?"
 
-Each line is immutable. Resolution is a new event, not a mutation of the original. To get current state of an annotation, find the latest event for that UUID.
+No auto-request-capture. The conversation in Kiro is the right place to clarify.
+
+### D4: UUID collision handling
+
+`crypto.randomUUID()` v4 collision probability is 1 in 2^122. Server validates
+uniqueness before accepting a resolve request.
+
+If collision detected:
+- Server returns `409 Conflict` with the existing annotation details
+- Extension does NOT auto-reissue (indicates a bug, not a retry scenario)
+- Collision logged to stderr for debugging
+- In practice this will never fire
 
 ## New MCP Tools
 
 ### resolve_annotation
 
 ```
-resolve_annotation(filename, annotation_uuid, resolution_note)
+resolve_annotation(filename, annotation_uuid, action, summary, files_changed?)
 ```
 
 - Reads the capture JSON from disk
-- Finds the annotation by UUID
-- Sets `resolved: true`, `resolution: note`, `resolvedBy: "kiro"`, `resolvedAt: now`
-- Writes the updated JSON back
-- Appends a "resolve" event to history.jsonl
+- Finds the annotation by UUID (returns 404 if not found, 409 if UUID collision)
+- Validates `action` against enum, enforces max lengths
+- Sets `resolved: true`, writes `resolution` object
+- Writes the updated JSON back to disk
 - Returns the updated annotation
 
-### get_review_history
+### get_unresolved
 
 ```
-get_review_history(limit?, status?, capture_uuid?)
+get_unresolved(filename?, limit?)
 ```
 
-- Reads from the in-memory index (loaded from history.jsonl)
-- Filters by status (open/resolved/all) and optionally by capture
-- Returns chronological list of events
+- If filename provided: returns unresolved annotations from that capture
+- If no filename: scans all indexed captures for unresolved annotations
+- Returns chronological list with capture filename, UUID, comment, severity
 - Default limit: 50
 
-## Resolution Flow
+## Security Considerations
 
-```
-1. User annotates element, clicks Send
-   Extension → POST /captures → server writes JSON + appends history
-
-2. Kiro reads annotations
-   Kiro → get_annotations(filename) → sees {uuid: "def", resolved: false}
-
-3. Kiro fixes the code, then resolves
-   Kiro → resolve_annotation(filename, "def", "Fixed font to 14px")
-   Server → updates JSON on disk + appends resolve event to history
-
-4. User reopens sidebar (or sidebar auto-refreshes)
-   Extension → GET /captures/{filename} → reads updated JSON
-   Sidebar shows: ✅ #1 resolved by Kiro - "Fixed font to 14px"
-```
+- `resolve_annotation` validates filename against capturesDir (existing path validation)
+- UUID must exist in the capture file - no creating new annotations via MCP
+- Resolution fields sanitized: max lengths enforced, HTML stripped, action validated against enum
+- `filesChanged` paths are informational only - not used for file operations
+- Extension-to-server sync validates annotation UUIDs exist before accepting updates
 
 ## Backward Compatibility
 
 - Existing captures without `uuid` or `type` fields continue to work
 - All existing MCP tools unchanged - they read the same JSON format
 - `get_annotations` returns the extended fields when present
-- Old captures treated as `type: "element"` with auto-generated UUIDs on read
-
-## Security Considerations
-
-- `resolve_annotation` validates filename against capturesDir (existing path validation)
-- UUID must exist in the capture file - no creating new annotations via MCP
-- History file is local to the project, not exposed via HTTP
-- Resolution note is sanitized (max 500 chars, no HTML)
+- Old captures treated as `type: "element"` with auto-generated UUIDs on first read
+- Format version bumped to 2.2.0 for captures with the new fields
