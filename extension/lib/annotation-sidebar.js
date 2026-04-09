@@ -18,6 +18,7 @@ const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
 let badgeEl = null;
 let collapsed = false;
+let hasCaptured = false;
 
 /** Create and mount the sidebar. */
 export function create() {
@@ -120,7 +121,7 @@ export function create() {
   sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = '#6366f1'; });
   sendBtn.addEventListener('click', () => {
     console.log('[viewgraph] Send clicked, chrome.runtime available:', !!chrome?.runtime?.sendMessage);
-    chrome.runtime.sendMessage({ type: 'send-review' }, (response) => {
+    chrome.runtime.sendMessage({ type: 'send-review', includeCapture: hasCaptured }, (response) => {
       console.log('[viewgraph] Send response:', response, 'lastError:', chrome.runtime.lastError?.message);
     });
     sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Sent!';
@@ -195,6 +196,7 @@ export function create() {
     captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>...';
     chrome.runtime.sendMessage({ type: 'capture' }, (response) => {
       if (response?.ok) {
+        hasCaptured = true;
         captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Done';
         captureBtn.style.background = '#059669';
       } else {
@@ -499,4 +501,5 @@ export function destroy() {
   if (sidebarEl) { sidebarEl.remove(); sidebarEl = null; }
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }
   collapsed = false;
+  hasCaptured = false;
 }

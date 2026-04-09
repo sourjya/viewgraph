@@ -181,15 +181,17 @@ export default defineBackground(() => {
     if (message.type === 'send-review') {
       (async () => {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        console.log('[viewgraph] send-review: tab', tab?.url);
+        console.log('[viewgraph] send-review: tab', tab?.url, 'includeCapture:', message.includeCapture);
         if (!tab?.id) { sendResponse({ ok: false, error: 'No active tab' }); return; }
-        const result = await chrome.tabs.sendMessage(tab.id, { type: 'send-review' });
-        console.log('[viewgraph] send-review: content script result', result?.ok, result?.error);
+
+        // Ask content script for annotations (and optionally a full capture)
+        const msgType = message.includeCapture ? 'send-review' : 'send-annotations-only';
+        const result = await chrome.tabs.sendMessage(tab.id, { type: msgType });
+        console.log('[viewgraph] send-review: content script result', result?.ok);
         if (!result?.ok) { sendResponse({ ok: false, error: result?.error }); return; }
+
         const dir = tab.url ? await lookupCapturesDir(tab.url) : null;
-        console.log('[viewgraph] send-review: capturesDir lookup', dir);
         const pushResult = await pushToServer(result.capture, dir);
-        console.log('[viewgraph] send-review: push result', pushResult);
         sendResponse({ ok: true, pushed: !!pushResult, filename: pushResult?.filename });
       })();
       return true;
