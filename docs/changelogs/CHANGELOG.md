@@ -27,16 +27,27 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `viewgraph init` installs steering docs and hooks for Kiro users
 - ADR-008: Kiro Power packaging decision
 
-### Unified Review Panel (specced, not yet implemented)
-- Full spec: requirements, design, tasks in `.kiro/specs/unified-review-panel/`
-- Extension icon opens sidebar directly (no popup)
-- Unified timeline: captures, annotations, page notes, Kiro requests as timeline items
-- Bidirectional resolution tracking via `resolve_annotation` MCP tool
-- Resolved items accordion (collapsed by default)
-- Capture is always explicit user action (no auto-capture)
-- Kiro requests with guidance parameter for capture instructions
-- Non-injectable page detection with specific error messages
-- ADR-007: Capture JSON as single source of truth (no separate history store)
+### Unified Review Panel - Phase 2: Sidebar Redesign
+- Extension icon click opens sidebar directly (no popup)
+- Non-injectable page detection (chrome://, about:, devtools://, data:, view-source:, Web Store)
+- Fallback popup with specific error messages for blocked pages
+- Unified timeline: open items on top with count header, resolved in collapsed accordion
+- Severity/category chips shown inline in timeline entries
+- Page-note type: Note button in footer, memo icon in timeline, no element reference
+- Capture button in sidebar footer (explicit user action)
+- Collapsible Settings section: server status (green/red dot), options page link
+- Send behavior: annotations-only when no capture, bundled when capture exists
+- captureMode field: 'review' (with capture) or 'annotations-only' (without)
+- 327 tests (158 server + 169 extension)
+
+### Unified Review Panel - Phase 1: Data Model + Server
+- UUID (crypto.randomUUID) on all annotations
+- Severity and category fields with dismissable chip UI
+- `resolve_annotation` MCP tool: action enum (fixed/wontfix/duplicate/invalid), summary, filesChanged
+- `get_unresolved` MCP tool: single capture or cross-capture scan
+- Backward compatibility: old captures normalized with uuid, type, resolved defaults
+- Format version bumped to 2.2.0
+- 10 new server tests for resolution workflow
 
 ### Extension UX Fixes
 - Export buttons show icons in success/loading states (checkmark SVG, not text-only)
