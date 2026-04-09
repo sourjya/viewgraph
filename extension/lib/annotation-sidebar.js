@@ -73,7 +73,7 @@ export function create() {
   sidebarEl.setAttribute(ATTR, 'sidebar');
   Object.assign(sidebarEl.style, {
     position: 'fixed', top: '60px', right: '0', zIndex: '2147483646',
-    width: '300px', maxHeight: 'calc(100vh - 120px)',
+    width: '300px', height: 'calc(100vh - 120px)',
     display: 'flex', flexDirection: 'column',
     background: '#1e1e2e', borderLeft: '1px solid #333', borderRadius: '8px 0 0 8px',
     fontFamily: 'system-ui, sans-serif', fontSize: '14px',
