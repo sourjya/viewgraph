@@ -10,7 +10,7 @@
  */
 
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate, addPageNote, setCaptureMode, getCaptureMode, CAPTURE_MODES } from './annotate.js';
+import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES } from './annotate.js';
 
 /**
  * Sync resolved state from the server. Polls /annotations/resolved for the
@@ -235,10 +235,7 @@ export function create() {
   };
 
   // Row 1: Creation actions [Capture] [Note]
-  const creationRow = document.createElement('div');
-  Object.assign(creationRow.style, { display: 'flex', gap: '4px', marginBottom: '4px' });
-
-  // Row 2: Primary CTA - Send to Kiro (full width)
+  // Row 1: Primary CTA - Send to Agent (full width)
   const sendBtn = document.createElement('button');
   sendBtn.setAttribute(ATTR, 'send');
   sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Agent';
@@ -297,48 +294,7 @@ export function create() {
 
   secondaryRow.append(copyBtn, dlBtn);
 
-  // Creation row buttons
-  const noteBtn = document.createElement('button');
-  noteBtn.setAttribute(ATTR, 'note');
-  noteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Page Note';
-  Object.assign(noteBtn.style, { ...btnStyle, background: 'transparent', color: '#9ca3af', flex: '1', border: '1px solid #333' });
-  noteBtn.title = 'Add a page-level note (no element reference)';
-  noteBtn.addEventListener('mouseenter', () => { noteBtn.style.background = 'rgba(255,255,255,0.05)'; });
-  noteBtn.addEventListener('mouseleave', () => { noteBtn.style.background = 'transparent'; });
-  noteBtn.addEventListener('click', () => {
-    const ann = addPageNote();
-    showPanel(ann, { onChange: () => refresh() });
-    refresh();
-  });
-
-  // Capture button - explicit DOM snapshot
-  const captureBtn = document.createElement('button');
-  captureBtn.setAttribute(ATTR, 'capture');
-  captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Save Page';
-  Object.assign(captureBtn.style, { ...btnStyle, background: 'transparent', color: '#9ca3af', flex: '1', border: '1px solid #333' });
-  captureBtn.title = 'Save a DOM snapshot of the current page';
-  captureBtn.addEventListener('mouseenter', () => { captureBtn.style.background = 'rgba(255,255,255,0.05)'; });
-  captureBtn.addEventListener('mouseleave', () => { captureBtn.style.background = 'transparent'; });
-  captureBtn.addEventListener('click', () => {
-    captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>...';
-    chrome.runtime.sendMessage({ type: 'capture' }, (response) => {
-      if (response?.ok) {
-        hasCaptured = true;
-        captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Done';
-        captureBtn.style.background = '#059669';
-      } else {
-        captureBtn.innerHTML = 'Failed';
-        captureBtn.style.background = '#dc2626';
-      }
-      setTimeout(() => {
-        captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Save Page';
-        captureBtn.style.background = 'transparent';
-      }, 2000);
-    });
-  });
-
-  footer.append(creationRow, sendBtn, secondaryRow);
-  creationRow.append(captureBtn, noteBtn);
+  footer.append(sendBtn, secondaryRow);
 
   // Settings screen - alternate view replacing the list
   const settingsScreen = document.createElement('div');
