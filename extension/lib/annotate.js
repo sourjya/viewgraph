@@ -367,6 +367,13 @@ function onMouseDown(e) {
 }
 
 function onMouseMove(e) {
+  // Hide hover UI when mouse is over ViewGraph's own UI (sidebar, panel, etc.)
+  let node = e.target;
+  while (node && node !== document.documentElement) {
+    if (node.hasAttribute && node.hasAttribute(ATTR)) { hideHoverUI(); return; }
+    node = node.parentElement;
+  }
+
   // Drag selection in progress
   if (dragStart && selectionBox) {
     e.preventDefault();
