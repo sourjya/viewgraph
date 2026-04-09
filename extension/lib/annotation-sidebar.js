@@ -217,7 +217,7 @@ export function refresh() {
   if (anns.length === 0) {
     const hint = document.createElement('div');
     hint.setAttribute(ATTR, 'hint');
-    hint.textContent = 'Shift + drag to select a region';
+    hint.textContent = 'Click an element or shift+drag to annotate';
     Object.assign(hint.style, {
       padding: '16px 12px', color: '#666', fontSize: '13px',
       textAlign: 'center', fontStyle: 'italic',
@@ -226,7 +226,58 @@ export function refresh() {
     return;
   }
 
-  for (const ann of anns) {
+  // Sort: open items first (by timestamp desc), then resolved
+  const open = anns.filter((a) => !a.resolved);
+  const resolved = anns.filter((a) => a.resolved);
+
+  // Open items count header
+  if (open.length > 0) {
+    const openHeader = document.createElement('div');
+    openHeader.textContent = `Open (${open.length})`;
+    Object.assign(openHeader.style, {
+      padding: '6px 12px', color: '#a5b4fc', fontSize: '11px', fontWeight: '600',
+      borderBottom: '1px solid #2a2a3a', fontFamily: 'system-ui, sans-serif',
+    });
+    list.appendChild(openHeader);
+  }
+
+  for (const ann of open) {
+    list.appendChild(createEntry(ann));
+  }
+
+  // Resolved accordion
+  if (resolved.length > 0) {
+    const accordion = document.createElement('div');
+    const accordionHeader = document.createElement('div');
+    accordionHeader.textContent = `\u25b8 Resolved (${resolved.length})`;
+    Object.assign(accordionHeader.style, {
+      padding: '6px 12px', color: '#666', fontSize: '11px', fontWeight: '600',
+      borderTop: '1px solid #2a2a3a', cursor: 'pointer',
+      fontFamily: 'system-ui, sans-serif',
+    });
+    const accordionList = document.createElement('div');
+    accordionList.style.display = 'none';
+    accordionHeader.addEventListener('click', () => {
+      const open = accordionList.style.display === 'none';
+      accordionList.style.display = open ? 'block' : 'none';
+      accordionHeader.textContent = `${open ? '\u25be' : '\u25b8'} Resolved (${resolved.length})`;
+    });
+    for (const ann of resolved) {
+      accordionList.appendChild(createEntry(ann));
+    }
+    accordion.append(accordionHeader, accordionList);
+    list.appendChild(accordion);
+  }
+
+  /** Severity/category chip colors. */
+  const CHIP_COLORS = {
+    critical: '#dc2626', major: '#f59e0b', minor: '#6b7280',
+    visual: '#6366f1', functional: '#0ea5e9', content: '#8b5cf6',
+    a11y: '#10b981', performance: '#f97316',
+  };
+
+  /** Create a single timeline entry for an annotation. */
+  function createEntry(ann) {
     const entry = document.createElement('div');
     entry.setAttribute(ATTR, 'entry');
     Object.assign(entry.style, {
@@ -255,7 +306,7 @@ export function refresh() {
       maxHeight: '20px', transition: 'max-height 0.25s ease, white-space 0s',
     });
 
-    // Number badge + ancestor element badge + comment
+    // Number badge
     const numBadge = document.createElement('span');
     numBadge.textContent = `#${ann.id}`;
     Object.assign(numBadge.style, {
@@ -265,6 +316,31 @@ export function refresh() {
     });
     label.appendChild(numBadge);
 
+    // Severity chip
+    if (ann.severity) {
+      const sev = document.createElement('span');
+      sev.textContent = ann.severity.charAt(0).toUpperCase() + ann.severity.slice(1);
+      Object.assign(sev.style, {
+        background: CHIP_COLORS[ann.severity] || '#555', color: '#fff',
+        fontSize: '9px', fontWeight: '600', padding: '1px 4px', borderRadius: '8px',
+        marginRight: '3px', fontFamily: 'system-ui, sans-serif',
+      });
+      label.appendChild(sev);
+    }
+
+    // Category chip
+    if (ann.category) {
+      const cat = document.createElement('span');
+      cat.textContent = ann.category.charAt(0).toUpperCase() + ann.category.slice(1);
+      Object.assign(cat.style, {
+        background: CHIP_COLORS[ann.category] || '#555', color: '#fff',
+        fontSize: '9px', fontWeight: '600', padding: '1px 4px', borderRadius: '8px',
+        marginRight: '3px', fontFamily: 'system-ui, sans-serif',
+      });
+      label.appendChild(cat);
+    }
+
+    // Ancestor element badge
     if (ann.ancestor) {
       const elBadge = document.createElement('span');
       elBadge.textContent = ann.ancestor;
@@ -275,6 +351,7 @@ export function refresh() {
       });
       label.appendChild(elBadge);
     }
+
     const commentText = document.createElement('span');
     commentText.textContent = ann.comment || '(no comment)';
     if (ann.resolved) Object.assign(commentText.style, { textDecoration: 'line-through' });
@@ -304,7 +381,7 @@ export function refresh() {
     del.addEventListener('click', (e) => { e.stopPropagation(); removeAnnotation(ann.id); refresh(); });
 
     entry.append(label, resolveBtn, del);
-    list.appendChild(entry);
+    return entry;
   }
 
   updateBadgeCount();
