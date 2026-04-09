@@ -414,9 +414,18 @@ function toggleCollapse() {
 
 function updateBadgeCount() {
   if (!badgeEl) return;
-  const count = getAnnotations().length;
-  // Large chat bubble with count centered inside
-  badgeEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg><span style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px"><svg style="position:absolute;top:0;left:0" width="40" height="40" viewBox="0 0 24 24" fill="#6366f1" stroke="#a5b4fc" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span style="position:relative;margin-top:-6px;color:#fff;font-size:14px;font-weight:700;z-index:1">${count}</span></span>`;
+  const count = getAnnotations().filter((a) => !a.resolved).length;
+  // VG logo mark with open-count badge overlay
+  badgeEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>'
+    + '<span style="position:relative;display:inline-block;width:36px;height:36px">'
+    + '<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">'
+    + '<rect x="1" y="1" width="34" height="34" rx="8" fill="#6366f1" stroke="#818cf8" stroke-width="1.5"/>'
+    + '<text x="18" y="24" text-anchor="middle" fill="#fff" font-family="system-ui,sans-serif" font-size="16" font-weight="800">VG</text>'
+    + '</svg>'
+    + (count > 0
+      ? `<span style="position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#dc2626;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;box-shadow:0 1px 3px rgba(0,0,0,0.4)">${count}</span>`
+      : '')
+    + '</span>';
 }
 
 /** Refresh the sidebar list from current annotations. */
