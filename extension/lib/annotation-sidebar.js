@@ -10,7 +10,7 @@
  */
 
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES } from './annotate.js';
+import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, spotlightMarker } from './annotate.js';
 
 /**
  * Sync resolved state from the server. Polls /annotations/resolved for the
@@ -713,6 +713,7 @@ export function refresh() {
     });
     entry.addEventListener('mouseenter', () => {
       entry.style.background = '#22223a';
+      spotlightMarker(ann.id);
       entry._expandTimer = setTimeout(() => {
         label.style.whiteSpace = 'normal';
         label.style.maxHeight = '120px';
@@ -720,6 +721,7 @@ export function refresh() {
     });
     entry.addEventListener('mouseleave', () => {
       entry.style.background = 'transparent';
+      spotlightMarker(null);
       clearTimeout(entry._expandTimer);
       label.style.whiteSpace = 'nowrap';
       label.style.maxHeight = '20px';
