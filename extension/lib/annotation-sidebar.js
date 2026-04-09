@@ -10,7 +10,7 @@
  */
 
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate, addPageNote } from './annotate.js';
+import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate, addPageNote, setCaptureMode, getCaptureMode, CAPTURE_MODES } from './annotate.js';
 
 /**
  * Sync resolved state from the server. Polls /annotations/resolved for the
@@ -161,6 +161,66 @@ export function create() {
   const tabContainer = document.createElement('div');
   tabContainer.setAttribute(ATTR, 'tab-container');
   Object.assign(tabContainer.style, { flexShrink: '0' });
+
+  // Capture mode buttons: Element | Region | Page
+  const modeBar = document.createElement('div');
+  modeBar.setAttribute(ATTR, 'mode-bar');
+  Object.assign(modeBar.style, {
+    display: 'flex', gap: '4px', padding: '6px 8px',
+    borderBottom: '1px solid #2a2a3a', flexShrink: '0',
+  });
+
+  // SVG icons for each mode
+  const MODE_ICONS = {
+    element: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="3"/></svg>',
+    region: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"/></svg>',
+    page: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+  };
+
+  const modeButtons = {};
+  for (const [key, icon] of Object.entries(MODE_ICONS)) {
+    const btn = document.createElement('button');
+    btn.setAttribute(ATTR, `mode-${key}`);
+    btn.innerHTML = `${icon}<span style="font-size:10px;margin-top:2px">${key.charAt(0).toUpperCase() + key.slice(1)}</span>`;
+    Object.assign(btn.style, {
+      flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center',
+      gap: '2px', padding: '6px 4px', border: '1px solid #333', borderRadius: '6px',
+      background: 'transparent', color: '#9ca3af', cursor: 'pointer',
+      fontSize: '11px', fontFamily: 'system-ui, sans-serif', transition: 'all 0.15s',
+    });
+    btn.addEventListener('click', () => {
+      if (key === 'page') {
+        // One-shot: add page note, refresh list
+        setCaptureMode(CAPTURE_MODES.PAGE);
+        refresh();
+        return;
+      }
+      const mode = CAPTURE_MODES[key.toUpperCase()];
+      const wasActive = getCaptureMode() === mode;
+      setCaptureMode(mode);
+      updateModeButtons();
+      if (!wasActive) {
+        // Entering capture mode - collapse sidebar for full page access
+        collapse();
+      } else {
+        // Toggling off - expand sidebar
+        expand();
+      }
+    });
+    modeButtons[key] = btn;
+    modeBar.appendChild(btn);
+  }
+
+  /** Sync mode button active states. */
+  function updateModeButtons() {
+    const current = getCaptureMode();
+    for (const [key, btn] of Object.entries(modeButtons)) {
+      const isActive = current === key;
+      btn.style.background = isActive ? '#6366f1' : 'transparent';
+      btn.style.color = isActive ? '#fff' : '#9ca3af';
+      btn.style.borderColor = isActive ? '#6366f1' : '#333';
+    }
+  }
 
   // Footer container - holds all footer rows
   const footer = document.createElement('div');
@@ -474,7 +534,7 @@ export function create() {
     footer.style.display = '';
   }
 
-  sidebarEl.append(header, tabContainer, list, settingsScreen, footer);
+  sidebarEl.append(header, modeBar, tabContainer, list, settingsScreen, footer);
   document.documentElement.appendChild(sidebarEl);
 
   // Collapsed badge - hidden initially
@@ -490,7 +550,11 @@ export function create() {
     boxShadow: '-2px 0 8px rgba(0,0,0,0.3)',
   });
   badgeEl.title = 'Show annotations';
-  badgeEl.addEventListener('click', () => toggleCollapse());
+  badgeEl.addEventListener('click', () => {
+    expand();
+    setCaptureMode(null);
+    updateModeButtons();
+  });
   document.documentElement.appendChild(badgeEl);
 
   refresh();
