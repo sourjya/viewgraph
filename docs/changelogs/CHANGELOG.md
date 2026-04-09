@@ -27,6 +27,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `viewgraph init` installs steering docs and hooks for Kiro users
 - ADR-008: Kiro Power packaging decision
 
+### Unified Review Panel - Phase 3: Bidirectional Resolution + Kiro Requests
+- `guidance` parameter on `request_capture` MCP tool (optional, max 500 chars)
+- GET /annotations/resolved?url= endpoint for extension sync
+- Extension syncs resolved state from server on sidebar open (last-write-wins)
+- All annotation fields persisted to chrome.storage (uuid, severity, category, timestamp, resolution)
+- Kiro requests as timeline items: bell icon, URL, guidance note, Capture Now button
+- /requests/pending now includes guidance field
+- 7 new server tests (resolved endpoint + guidance)
+
+### Unified Review Panel - Phase 4: Export Updates
+- Markdown export: page notes section, category tags, resolution details
+- Resolution includes action, by, summary, filesChanged
+- sanitize() for backticks and pipes in markdown output
+- 9 new export tests
+- 343 total tests (165 server + 178 extension)
+
 ### Unified Review Panel - Phase 2: Sidebar Redesign
 - Extension icon click opens sidebar directly (no popup)
 - Non-injectable page detection (chrome://, about:, devtools://, data:, view-source:, Web Store)
