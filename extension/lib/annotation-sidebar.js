@@ -183,7 +183,32 @@ export function create() {
     refresh();
   });
 
-  actionRow.append(noteBtn);
+  // Capture button - explicit DOM snapshot
+  const captureBtn = document.createElement('button');
+  captureBtn.setAttribute(ATTR, 'capture');
+  captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Capture';
+  Object.assign(captureBtn.style, { ...btnStyle, background: '#374151', flex: '1' });
+  captureBtn.title = 'Take a DOM snapshot of the current page';
+  captureBtn.addEventListener('mouseenter', () => { captureBtn.style.background = '#4b5563'; });
+  captureBtn.addEventListener('mouseleave', () => { captureBtn.style.background = '#374151'; });
+  captureBtn.addEventListener('click', () => {
+    captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>...';
+    chrome.runtime.sendMessage({ type: 'capture' }, (response) => {
+      if (response?.ok) {
+        captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Done';
+        captureBtn.style.background = '#059669';
+      } else {
+        captureBtn.innerHTML = 'Failed';
+        captureBtn.style.background = '#dc2626';
+      }
+      setTimeout(() => {
+        captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Capture';
+        captureBtn.style.background = '#374151';
+      }, 2000);
+    });
+  });
+
+  actionRow.append(captureBtn, noteBtn);
 
   sidebarEl.append(header, list, actionRow, exportRow);
   document.documentElement.appendChild(sidebarEl);
