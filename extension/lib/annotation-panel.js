@@ -61,47 +61,80 @@ export function show(annotation, callbacks = {}) {
 
   header.append(title, deleteBtn, closeBtn);
 
-  // Severity dropdown
-  const severity = document.createElement('select');
-  severity.setAttribute(ATTR, 'severity');
-  for (const opt of ['--', 'Critical', 'Major', 'Minor']) {
-    const o = document.createElement('option');
-    o.value = opt === '--' ? '' : opt.toLowerCase();
-    o.textContent = opt;
-    if ((annotation.severity || '') === o.value) o.selected = true;
-    severity.appendChild(o);
-  }
-  Object.assign(severity.style, {
-    width: '100%', padding: '4px 6px', marginBottom: '6px',
-    background: '#16161e', border: '1px solid #333', borderRadius: '4px',
-    color: '#e0e0e0', fontSize: '12px', fontFamily: 'system-ui, sans-serif',
-    outline: 'none', cursor: 'pointer',
-  });
-  severity.addEventListener('change', () => {
-    updateSeverity(annotation.id, severity.value);
-    if (onCommentChange) onCommentChange(annotation.id);
-  });
+  /** Chip colors by type. */
+  const CHIP_COLORS = {
+    critical: '#dc2626', major: '#f59e0b', minor: '#6b7280',
+    visual: '#6366f1', functional: '#0ea5e9', content: '#8b5cf6',
+    a11y: '#10b981', performance: '#f97316',
+  };
 
-  // Category dropdown
-  const category = document.createElement('select');
-  category.setAttribute(ATTR, 'category');
-  for (const opt of ['--', 'Visual', 'Functional', 'Content', 'A11y', 'Performance']) {
-    const o = document.createElement('option');
-    o.value = opt === '--' ? '' : opt.toLowerCase();
-    o.textContent = opt;
-    if ((annotation.category || '') === o.value) o.selected = true;
-    category.appendChild(o);
+  /**
+   * Create a chip-or-select widget. Shows a dropdown when empty, a dismissable
+   * chip when a value is selected. Dismissing the chip resets to dropdown.
+   */
+  function createChipSelect(attr, options, currentValue, onChange) {
+    const wrapper = document.createElement('div');
+    wrapper.setAttribute(ATTR, attr);
+    Object.assign(wrapper.style, { display: 'inline-block', marginRight: '4px', marginBottom: '6px', verticalAlign: 'top' });
+
+    function renderChip(val) {
+      wrapper.innerHTML = '';
+      const chip = document.createElement('span');
+      Object.assign(chip.style, {
+        display: 'inline-flex', alignItems: 'center', gap: '4px',
+        padding: '2px 8px', borderRadius: '12px', fontSize: '11px',
+        fontFamily: 'system-ui, sans-serif', color: '#fff', cursor: 'default',
+        background: CHIP_COLORS[val] || '#555',
+      });
+      chip.textContent = options.find((o) => o.value === val)?.label || val;
+      const x = document.createElement('span');
+      Object.assign(x.style, { cursor: 'pointer', marginLeft: '2px', fontSize: '13px', lineHeight: '1' });
+      x.textContent = '\u00d7';
+      x.addEventListener('click', (e) => { e.stopPropagation(); onChange(''); renderSelect(); });
+      chip.appendChild(x);
+      wrapper.appendChild(chip);
+    }
+
+    function renderSelect() {
+      wrapper.innerHTML = '';
+      const sel = document.createElement('select');
+      Object.assign(sel.style, {
+        padding: '2px 6px', background: '#16161e', border: '1px solid #333',
+        borderRadius: '4px', color: '#e0e0e0', fontSize: '11px',
+        fontFamily: 'system-ui, sans-serif', outline: 'none', cursor: 'pointer',
+      });
+      for (const { value, label } of [{ value: '', label: `${attr}...` }, ...options]) {
+        const o = document.createElement('option');
+        o.value = value; o.textContent = label;
+        sel.appendChild(o);
+      }
+      sel.addEventListener('change', () => {
+        if (sel.value) { onChange(sel.value); renderChip(sel.value); }
+      });
+      wrapper.appendChild(sel);
+    }
+
+    if (currentValue) renderChip(currentValue); else renderSelect();
+    return wrapper;
   }
-  Object.assign(category.style, {
-    width: '100%', padding: '4px 6px', marginBottom: '6px',
-    background: '#16161e', border: '1px solid #333', borderRadius: '4px',
-    color: '#e0e0e0', fontSize: '12px', fontFamily: 'system-ui, sans-serif',
-    outline: 'none', cursor: 'pointer',
-  });
-  category.addEventListener('change', () => {
-    updateCategory(annotation.id, category.value);
-    if (onCommentChange) onCommentChange(annotation.id);
-  });
+
+  // Chip row container
+  const chipRow = document.createElement('div');
+  Object.assign(chipRow.style, { display: 'flex', flexWrap: 'wrap', marginBottom: '2px' });
+
+  const severityChip = createChipSelect('severity',
+    [{ value: 'critical', label: 'Critical' }, { value: 'major', label: 'Major' }, { value: 'minor', label: 'Minor' }],
+    annotation.severity || '',
+    (val) => { updateSeverity(annotation.id, val); if (onCommentChange) onCommentChange(annotation.id); },
+  );
+
+  const categoryChip = createChipSelect('category',
+    [{ value: 'visual', label: 'Visual' }, { value: 'functional', label: 'Functional' }, { value: 'content', label: 'Content' }, { value: 'a11y', label: 'A11y' }, { value: 'performance', label: 'Perf' }],
+    annotation.category || '',
+    (val) => { updateCategory(annotation.id, val); if (onCommentChange) onCommentChange(annotation.id); },
+  );
+
+  chipRow.append(severityChip, categoryChip);
 
   // Textarea for comment
   const textarea = document.createElement('textarea');
@@ -121,7 +154,7 @@ export function show(annotation, callbacks = {}) {
   textarea.addEventListener('focus', () => { textarea.style.borderColor = '#6366f1'; });
   textarea.addEventListener('blur', () => { textarea.style.borderColor = '#333'; });
 
-  panelEl.append(header, severity, category, textarea);
+  panelEl.append(header, chipRow, textarea);
 
   // Position near the annotation region, avoiding sidebar and screen edges
   const panelWidth = 240;
