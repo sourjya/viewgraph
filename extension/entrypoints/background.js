@@ -160,6 +160,12 @@ export default defineBackground(() => {
   });
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // Open extension options page from sidebar settings
+    if (message.type === 'open-options') {
+      chrome.runtime.openOptionsPage();
+      return false;
+    }
+
     // Handle subtree capture from inspector - just push to server
     if (message.type === 'inspect-capture') {
       (async () => {

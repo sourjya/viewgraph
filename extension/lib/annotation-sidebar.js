@@ -211,6 +211,53 @@ export function create() {
   actionRow.append(captureBtn, noteBtn);
 
   sidebarEl.append(header, list, actionRow, exportRow);
+
+  // Collapsible Settings section
+  const settingsSection = document.createElement('div');
+  settingsSection.setAttribute(ATTR, 'settings');
+  const settingsHeader = document.createElement('div');
+  settingsHeader.textContent = '\u25b8 Settings';
+  Object.assign(settingsHeader.style, {
+    padding: '6px 12px', color: '#666', fontSize: '11px', fontWeight: '600',
+    borderTop: '1px solid #2a2a3a', cursor: 'pointer',
+    fontFamily: 'system-ui, sans-serif',
+  });
+  const settingsBody = document.createElement('div');
+  settingsBody.style.display = 'none';
+  Object.assign(settingsBody.style, { padding: '8px 12px', fontSize: '11px', color: '#9ca3af' });
+
+  // Server status line (populated async)
+  const serverLine = document.createElement('div');
+  serverLine.textContent = 'Server: checking...';
+  Object.assign(serverLine.style, { marginBottom: '6px' });
+  discoverServer().then((url) => {
+    if (url) {
+      const port = new URL(url).port;
+      serverLine.innerHTML = `<span style="color:#4ade80">\u25cf</span> Connected (localhost:${port})`;
+    } else {
+      serverLine.innerHTML = '<span style="color:#f87171">\u25cf</span> MCP server offline';
+    }
+  });
+
+  // Options link
+  const optionsLink = document.createElement('a');
+  optionsLink.textContent = 'Project mappings & auth \u2192';
+  optionsLink.href = '#';
+  Object.assign(optionsLink.style, { color: '#a5b4fc', textDecoration: 'none', display: 'block', marginTop: '4px' });
+  optionsLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    chrome.runtime.sendMessage({ type: 'open-options' });
+  });
+
+  settingsBody.append(serverLine, optionsLink);
+  settingsHeader.addEventListener('click', () => {
+    const open = settingsBody.style.display === 'none';
+    settingsBody.style.display = open ? 'block' : 'none';
+    settingsHeader.textContent = `${open ? '\u25be' : '\u25b8'} Settings`;
+  });
+  settingsSection.append(settingsHeader, settingsBody);
+
+  sidebarEl.append(header, list, actionRow, exportRow, settingsSection);
   document.documentElement.appendChild(sidebarEl);
 
   // Collapsed badge - hidden initially
