@@ -1565,3 +1565,51 @@ describe('capture mode state', () => {
     expect(getCaptureMode()).toBeNull();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Sidebar auto-collapse on capture mode entry
+// ---------------------------------------------------------------------------
+
+describe('capture mode and sidebar collapse contract', () => {
+  afterEach(() => { stop(); });
+
+  it('(+) entering element mode should signal collapse needed', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    // Mode is active - sidebar should collapse (wiring layer responsibility)
+    expect(getCaptureMode()).toBe('element');
+  });
+
+  it('(+) entering region mode should signal collapse needed', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.REGION);
+    expect(getCaptureMode()).toBe('region');
+  });
+
+  it('(+) toggling mode off should signal expand needed', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    setCaptureMode(CAPTURE_MODES.ELEMENT); // toggle off
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(+) page mode does not leave active mode (no collapse needed)', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.PAGE);
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(+) switching modes keeps active mode (stays collapsed)', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    setCaptureMode(CAPTURE_MODES.REGION);
+    expect(getCaptureMode()).not.toBeNull();
+  });
+
+  it('(-) stop clears mode (sidebar should expand)', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    stop();
+    expect(getCaptureMode()).toBeNull();
+  });
+});

@@ -498,18 +498,29 @@ export function create() {
   pollRequests();
 }
 
+/** Collapse sidebar to strip. Exported for capture mode integration. */
+export function collapse() {
+  if (collapsed || !sidebarEl) return;
+  collapsed = true;
+  sidebarEl.style.transform = 'translateX(100%)';
+  badgeEl.style.display = 'flex';
+  updateBadgeCount();
+  pauseAnnotate();
+}
+
+/** Expand sidebar from strip. Exported for capture mode integration. */
+export function expand() {
+  if (!collapsed || !sidebarEl) return;
+  collapsed = false;
+  sidebarEl.style.transform = 'translateX(0)';
+  badgeEl.style.display = 'none';
+  resumeAnnotate();
+}
+
+export function isCollapsed() { return collapsed; }
+
 function toggleCollapse() {
-  collapsed = !collapsed;
-  if (collapsed) {
-    sidebarEl.style.transform = 'translateX(100%)';
-    badgeEl.style.display = 'flex';
-    updateBadgeCount();
-    pauseAnnotate();
-  } else {
-    sidebarEl.style.transform = 'translateX(0)';
-    badgeEl.style.display = 'none';
-    resumeAnnotate();
-  }
+  if (collapsed) expand(); else collapse();
 }
 
 function updateBadgeCount() {
