@@ -72,7 +72,7 @@ export function show(annotation, callbacks = {}) {
    * Create a chip-or-select widget. Shows a dropdown when empty, a dismissable
    * chip when a value is selected. Dismissing the chip resets to dropdown.
    */
-  function createChipSelect(attr, options, currentValue, onChange) {
+  function createChipSelect(attr, label, options, currentValue, onChange) {
     const wrapper = document.createElement('div');
     wrapper.setAttribute(ATTR, attr);
     Object.assign(wrapper.style, { display: 'inline-block', marginRight: '4px', marginBottom: '6px', verticalAlign: 'top' });
@@ -86,12 +86,13 @@ export function show(annotation, callbacks = {}) {
         fontFamily: 'system-ui, sans-serif', color: '#fff', cursor: 'default',
         background: CHIP_COLORS[val] || '#555',
       });
-      chip.textContent = options.find((o) => o.value === val)?.label || val;
+      const text = document.createElement('span');
+      text.textContent = options.find((o) => o.value === val)?.label || val;
       const x = document.createElement('span');
       Object.assign(x.style, { cursor: 'pointer', marginLeft: '2px', fontSize: '13px', lineHeight: '1' });
       x.textContent = '\u00d7';
       x.addEventListener('click', (e) => { e.stopPropagation(); onChange(''); renderSelect(); });
-      chip.appendChild(x);
+      chip.append(text, x);
       wrapper.appendChild(chip);
     }
 
@@ -103,9 +104,9 @@ export function show(annotation, callbacks = {}) {
         borderRadius: '4px', color: '#e0e0e0', fontSize: '11px',
         fontFamily: 'system-ui, sans-serif', outline: 'none', cursor: 'pointer',
       });
-      for (const { value, label } of [{ value: '', label: `${attr}...` }, ...options]) {
+      for (const { value, label: optLabel } of [{ value: '', label: `${label}...` }, ...options]) {
         const o = document.createElement('option');
-        o.value = value; o.textContent = label;
+        o.value = value; o.textContent = optLabel;
         sel.appendChild(o);
       }
       sel.addEventListener('change', () => {
@@ -122,19 +123,90 @@ export function show(annotation, callbacks = {}) {
   const chipRow = document.createElement('div');
   Object.assign(chipRow.style, { display: 'flex', flexWrap: 'wrap', marginBottom: '2px' });
 
-  const severityChip = createChipSelect('severity',
+  const severityChip = createChipSelect('severity', 'Severity',
     [{ value: 'critical', label: 'Critical' }, { value: 'major', label: 'Major' }, { value: 'minor', label: 'Minor' }],
     annotation.severity || '',
     (val) => { updateSeverity(annotation.id, val); if (onCommentChange) onCommentChange(annotation.id); },
   );
 
-  const categoryChip = createChipSelect('category',
-    [{ value: 'visual', label: 'Visual' }, { value: 'functional', label: 'Functional' }, { value: 'content', label: 'Content' }, { value: 'a11y', label: 'A11y' }, { value: 'performance', label: 'Perf' }],
-    annotation.category || '',
-    (val) => { updateCategory(annotation.id, val); if (onCommentChange) onCommentChange(annotation.id); },
-  );
+  // Multi-select category chips
+  const CAT_OPTIONS = [
+    { value: 'visual', label: 'Visual' }, { value: 'functional', label: 'Functional' },
+    { value: 'content', label: 'Content' }, { value: 'a11y', label: 'A11y' }, { value: 'performance', label: 'Perf' },
+  ];
+  const categoryWrapper = document.createElement('div');
+  categoryWrapper.setAttribute(ATTR, 'category');
+  Object.assign(categoryWrapper.style, { display: 'inline-flex', flexWrap: 'wrap', gap: '3px', verticalAlign: 'top' });
 
-  chipRow.append(severityChip, categoryChip);
+  /** Parse stored category - could be string or array. */
+  function parseCats() {
+    const raw = annotation.category || '';
+    if (Array.isArray(raw)) return raw;
+    return raw ? raw.split(',').map((s) => s.trim()).filter(Boolean) : [];
+  }
+
+  function renderCategoryChips() {
+    categoryWrapper.innerHTML = '';
+    const selected = parseCats();
+
+    // Render chips for selected categories
+    for (const val of selected) {
+      const chip = document.createElement('span');
+      Object.assign(chip.style, {
+        display: 'inline-flex', alignItems: 'center', gap: '3px',
+        padding: '2px 8px', borderRadius: '12px', fontSize: '11px',
+        fontFamily: 'system-ui, sans-serif', color: '#fff', cursor: 'default',
+        background: CHIP_COLORS[val] || '#555',
+      });
+      const text = document.createElement('span');
+      text.textContent = CAT_OPTIONS.find((o) => o.value === val)?.label || val;
+      const x = document.createElement('span');
+      Object.assign(x.style, { cursor: 'pointer', fontSize: '13px', lineHeight: '1' });
+      x.textContent = '\u00d7';
+      x.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const updated = selected.filter((v) => v !== val);
+        annotation.category = updated.join(',');
+        updateCategory(annotation.id, annotation.category);
+        if (onCommentChange) onCommentChange(annotation.id);
+        renderCategoryChips();
+      });
+      chip.append(text, x);
+      categoryWrapper.appendChild(chip);
+    }
+
+    // Show dropdown for remaining options
+    const remaining = CAT_OPTIONS.filter((o) => !selected.includes(o.value));
+    if (remaining.length > 0) {
+      const sel = document.createElement('select');
+      Object.assign(sel.style, {
+        padding: '2px 6px', background: '#16161e', border: '1px solid #333',
+        borderRadius: '4px', color: '#e0e0e0', fontSize: '11px',
+        fontFamily: 'system-ui, sans-serif', outline: 'none', cursor: 'pointer',
+      });
+      const placeholder = document.createElement('option');
+      placeholder.value = ''; placeholder.textContent = 'Category...';
+      sel.appendChild(placeholder);
+      for (const { value, label } of remaining) {
+        const o = document.createElement('option');
+        o.value = value; o.textContent = label;
+        sel.appendChild(o);
+      }
+      sel.addEventListener('change', () => {
+        if (!sel.value) return;
+        const updated = [...selected, sel.value];
+        annotation.category = updated.join(',');
+        updateCategory(annotation.id, annotation.category);
+        if (onCommentChange) onCommentChange(annotation.id);
+        renderCategoryChips();
+      });
+      categoryWrapper.appendChild(sel);
+    }
+  }
+
+  renderCategoryChips();
+
+  chipRow.append(severityChip, categoryWrapper);
 
   // Textarea for comment
   const textarea = document.createElement('textarea');

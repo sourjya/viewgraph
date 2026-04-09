@@ -575,14 +575,17 @@ export function refresh() {
 
     // Category chip
     if (ann.category) {
-      const cat = document.createElement('span');
-      cat.textContent = ann.category.charAt(0).toUpperCase() + ann.category.slice(1);
-      Object.assign(cat.style, {
-        background: CHIP_COLORS[ann.category] || '#555', color: '#fff',
-        fontSize: '9px', fontWeight: '600', padding: '1px 4px', borderRadius: '8px',
-        marginRight: '3px', fontFamily: 'system-ui, sans-serif',
-      });
-      label.appendChild(cat);
+      const cats = ann.category.split(',').map((s) => s.trim()).filter(Boolean);
+      for (const c of cats) {
+        const cat = document.createElement('span');
+        cat.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+        Object.assign(cat.style, {
+          background: CHIP_COLORS[c] || '#555', color: '#fff',
+          fontSize: '9px', fontWeight: '600', padding: '1px 4px', borderRadius: '8px',
+          marginRight: '3px', fontFamily: 'system-ui, sans-serif',
+        });
+        label.appendChild(cat);
+      }
     }
 
     // Ancestor element badge
