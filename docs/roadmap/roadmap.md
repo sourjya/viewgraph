@@ -324,7 +324,37 @@ installable globally.
 
 ---
 
-## Milestone 9: Advanced Tools + Polish (Days 31+)
+## Milestone 8b: Kiro Power Package (Days 31-33)
+
+**Goal:** Package ViewGraph as a Kiro Power for one-click install and dynamic activation.
+
+**ADR:** TBD
+**Spec:** `.kiro/specs/kiro-power/`
+
+A Kiro Power bundles MCP tools + steering docs + hooks into a single installable unit.
+ViewGraph tools activate dynamically when the user mentions UI, annotation, layout,
+accessibility, etc. - zero context overhead when doing non-UI work.
+
+| # | Task | Details |
+|---|---|---|
+| 8b.1 | POWER.md | Entry point with activation keywords, onboarding steps, tool catalog, workflow steering references |
+| 8b.2 | Steering: viewgraph-workflow.md | When to check annotations, how to read captures, when to request captures |
+| 8b.3 | Steering: viewgraph-resolution.md | Resolution format, action enum, summary guidelines, filesChanged conventions |
+| 8b.4 | Hook: post-fix-verify | After HTML/CSS/JSX edits, auto-call `request_capture` with guidance for verification |
+| 8b.5 | Hook: annotation-to-spec | When user says "create spec from annotations", generate requirements.md from open annotations |
+| 8b.6 | MCP config in Power | mcp.json bundled in Power, no manual config needed |
+| 8b.7 | Onboarding flow | POWER.md onboarding: check extension installed, run init if needed, verify connection |
+| 8b.8 | Publish to Kiro Powers | Submit to Kiro Powers ecosystem (or import from GitHub URL) |
+
+**Exit criteria:** User installs ViewGraph Power in Kiro IDE with one click.
+Mentioning "UI issue" activates ViewGraph tools. Steering docs guide Kiro through
+annotation workflow and resolution format. Post-fix hook auto-requests verification captures.
+
+**Effort:** 2-3 days
+
+---
+
+## Milestone 9: Advanced Tools + Polish (Days 34+)
 
 **Goal:** Power features and production hardening.
 
@@ -346,18 +376,22 @@ installable globally.
 
 ---
 
-## Milestone 10: Smart Review + Annotation Intelligence (Future)
+## Milestone 10: Smart Review + Agent Intelligence (Future)
 
-**Goal:** Richer review feedback loop between extension and MCP server.
+**Goal:** Richer review feedback loop between extension and MCP server, plus
+cross-agent compatibility via Powers cross-compatibility.
 
 | # | Task | Details |
 |---|---|---|
 | 10.1 | Element flash on select | Brief highlight pulse on intersected elements after drag-select completes. |
 | 10.2 | Automated resolve detection | MCP tool `check_annotation_status` compares annotation nodeIds against latest capture. Marks resolved/stale. |
 | 10.3 | Resolution push | Server pushes annotation status updates to extension via HTTP. Extension updates sidebar icons. |
-| 10.4 | Inspector-to-review bridge | Option to promote an inspector selection into a review annotation. |
-| 10.5 | Annotation diffing | Compare annotations across captures - track which issues persist across deploys. |
-| 10.6 | Recurring issue detection | Flag elements that appear in multiple annotation sessions. |
+| 10.4 | Annotation diffing | Compare annotations across captures - track which issues persist across deploys. |
+| 10.5 | Recurring issue detection | Flag elements that appear in multiple annotation sessions. |
+| 10.6 | Pattern-based steering generation | Analyze resolved annotations to generate project-specific steering docs (e.g. "80% of issues are a11y - add linting") |
+| 10.7 | Annotation-to-spec pipeline | Generate `.kiro/specs/` from batched annotations with requirements and tasks |
+| 10.8 | Cross-agent Power compatibility | When Kiro Powers support Cursor/Claude Code/Cline, validate ViewGraph Power works across all |
+| 10.9 | Power auto-update | When ViewGraph ships new tools or steering, Power updates propagate to installed users |
 
 **Effort:** TBD
 
