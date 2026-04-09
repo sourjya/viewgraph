@@ -11,6 +11,8 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | M7 | Deployment Automation | [`deployment-automation/`](./deployment-automation/) | Complete |
 | M7b | Unified Annotate Mode | [`unified-annotate-mode/`](./unified-annotate-mode/) | Complete |
 | M7c | Multi-Export Annotations | [`multi-export/`](./multi-export/) | Complete |
+| M8b | Kiro Power Package | [`kiro-power/`](./kiro-power/) | Not Started |
+| - | Unified Review Panel | [`unified-review-panel/`](./unified-review-panel/) | Specced |
 | - | SingleFile Fidelity | [`singlefile-fidelity/`](./singlefile-fidelity/) | Not Started |
 
 ## Architecture Decisions
@@ -23,6 +25,8 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | ADR-004 | [`extension-ui-side-panel`](../../docs/decisions/ADR-004-extension-ui-side-panel.md) | Extension UI architecture |
 | ADR-005 | [`npx-viewgraph-init`](../../docs/decisions/ADR-005-npx-viewgraph-init.md) | CLI init command design |
 | ADR-006 | [`merge-inspect-review`](../../docs/decisions/ADR-006-merge-inspect-review.md) | Unified annotate mode (merged inspect + review) |
+| ADR-007 | [`capture-json-source-of-truth`](../../docs/decisions/ADR-007-jsonl-history-store.md) | Capture JSON as single source of truth (no separate history store) |
+| ADR-008 | [`kiro-power-packaging`](../../docs/decisions/ADR-008-kiro-power-packaging.md) | Package ViewGraph as a Kiro Power for one-click install |
 
 ## Architecture Docs
 

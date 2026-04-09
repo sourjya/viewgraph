@@ -16,6 +16,7 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 |---|---|---|
 | [`server/`](./server/) | MCP server - reads capture files, exposes 15 query/analysis/request tools | M1+M2+M3 Complete |
 | [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, unified annotate, multi-export | M4+M5+M6+M7b+M7c Complete |
+| [`power/`](./power/) | Kiro Power assets - steering docs, hooks, workflow guidance | M8b In Progress |
 
 ## How It Works
 
@@ -221,6 +222,7 @@ npm run test:ext       # extension only (144 tests)
 ```
 server/          MCP server (Node.js, @modelcontextprotocol/sdk)
 extension/       Browser extension (WXT, Manifest V3)
+power/           Kiro Power assets (steering docs, hooks)
 docs/            Documentation, architecture, decisions, changelogs
 .kiro/           Specs, steering docs, hooks
 scripts/         Git and build scripts
@@ -228,7 +230,7 @@ scripts/         Git and build scripts
 
 ## Documentation
 
-- [Roadmap](./docs/roadmap/roadmap.md) - milestone plan (9 milestones)
+- [Roadmap](./docs/roadmap/roadmap.md) - milestone plan (10 milestones)
 - [Security Assessment](./docs/architecture/security-assessment.md) - threat model and mitigations
 - [Spec Index](./.kiro/specs/README.md) - Kiro specs, ADRs, architecture docs
 - [ViewGraph v2 Format Spec](./docs/architecture/viewgraph-v2-format.md) - capture format (v2.1.0)
@@ -236,6 +238,7 @@ scripts/         Git and build scripts
 - [Scans and Recommendations](./docs/architecture/scans-and-recommendations.md) - 22 automated scans
 - [Universal Agent Integration](./docs/decisions/ADR-001-universal-agent-integration.md) - multi-tool architecture
 - [Multi-Project Routing](./docs/decisions/ADR-002-multi-project-capture-routing.md) - capture routing
+- [Kiro Power Packaging](./docs/decisions/ADR-008-kiro-power-packaging.md) - Power packaging decision
 
 ## License
 

@@ -1,21 +1,30 @@
 # ViewGraph Browser Extension
 
-Firefox/Chrome extension for capturing structured DOM snapshots, screenshots, and annotations from any web page.
+Chrome/Firefox extension for capturing structured DOM snapshots, annotating UI issues,
+and sending feedback to AI coding assistants.
 
 Built with [WXT](https://wxt.dev/) for cross-browser Manifest V3 support.
 
-## Status
+## Features
 
-Core capture pipeline complete - DOM traversal, salience scoring, serialization, popup UI, background orchestration, and HTTP push to MCP server.
+- **DOM Capture** - full page DOM traversal with salience scoring, spatial clustering, style extraction
+- **Unified Annotate** - click elements or shift+drag regions to annotate with comments and severity
+- **Multi-Export** - Send to Kiro (MCP push), Copy Markdown (clipboard), Download Report (ZIP with screenshots)
+- **Server Discovery** - auto-discovers MCP server on ports 9876-9879, matches by project
+- **Project Routing** - URL-to-directory mappings route captures to the right project folder
+- **Connection Status** - green dot indicator in popup and sidebar when MCP server is connected
 
-**Spec:** [`.kiro/specs/extension-core/`](../.kiro/specs/extension-core/) - DOM traversal, serialization, popup UI, background orchestration.
+## Specs
 
-See [Extension UX and Intelligence](../docs/ideas/extension-ux-and-intelligence.md) for planned UI patterns (floating toolbar, comment box, highlight overlay) and intelligence features.
+- [Extension Core](../.kiro/specs/extension-core/) - DOM traversal, serialization, popup UI
+- [Unified Annotate Mode](../.kiro/specs/unified-annotate-mode/) - merged inspect + review
+- [Multi-Export](../.kiro/specs/multi-export/) - markdown, ZIP, MCP push
+- [Unified Review Panel](../.kiro/specs/unified-review-panel/) - upcoming sidebar redesign
 
 ## Testing
 
 ```bash
-npm test               # unit tests (38 tests, 3 files)
+npm test               # unit tests (144 tests)
 npm run test:watch     # watch mode
 ```
 
@@ -38,11 +47,19 @@ npm run zip:firefox      # package for distribution
 
 ```
 entrypoints/
-├── background.js        Service worker
-└── popup/               Mode switcher UI
-lib/                     Core modules (DOM traversal, serializer, etc.)
-ui/                      Overlay, panels, sidebar
-options/                 Settings page
-public/                  Static assets
-tests/                   Extension tests
+  background.js          Service worker - capture orchestration, HTTP push, request polling
+  content.js             Content script - DOM traversal, annotation injection
+  popup/                 Extension popup - Capture/Annotate buttons, connection status
+  options/               Settings page - project mappings, auth token
+lib/
+  annotate.js            Unified annotation state machine (click + drag)
+  annotation-panel.js    Floating comment panel with severity selector
+  annotation-sidebar.js  Sidebar with timeline, export buttons, status
+  constants.js           Shared constants, server discovery (port scanning)
+  dom-walker.js          DOM traversal and ViewGraph JSON serialization
+  export-markdown.js     Markdown bug report formatter
+  export-zip.js          ZIP assembly (markdown + cropped screenshots)
+  screenshot-crop.js     Viewport screenshot cropping per annotation
+public/                  Static assets (icons)
+tests/                   Extension tests (144 tests)
 ```

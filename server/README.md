@@ -1,6 +1,6 @@
 # ViewGraph MCP Server
 
-MCP server that reads ViewGraph capture files from disk and exposes 11 query/analysis tools to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
+MCP server that reads ViewGraph capture files from disk and exposes 15 query/analysis/request tools to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
 Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline, Aider.
 
@@ -27,7 +27,7 @@ Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline,
 | `get_annotations` | Human annotations from review-mode captures |
 | `get_annotated_capture` | Capture filtered to annotated nodes + comments |
 
-### Bidirectional (M3 - planned)
+### Bidirectional (M3)
 
 | Tool | Description |
 |---|---|
@@ -41,17 +41,44 @@ Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline,
 npm install
 ```
 
-Set the captures directory (or use default `~/.viewgraph/captures/`):
+### Configuration
+
+Set the captures directory via env var:
 
 ```bash
 export VIEWGRAPH_CAPTURES_DIR=/path/to/captures
 ```
 
-Or create a `.viewgraphrc.json` in your project root:
+Or create a `.viewgraphrc.json` in the ViewGraph project root:
 
 ```json
-{ "capturesDir": "./captures" }
+{
+  "capturesDir": ".viewgraph/captures",
+  "allowedDirs": [
+    "/home/user/project-a/.viewgraph/captures",
+    "/home/user/project-b/.viewgraph/captures"
+  ]
+}
 ```
+
+### Multi-project routing
+
+The server supports routing captures to different project directories via the
+`x-captures-dir` HTTP header. The extension sends this header based on URL-to-project
+mappings configured in extension options.
+
+Security: the `x-captures-dir` value must match an entry in `allowedDirs`. Unrecognized
+directories are rejected with 403. `viewgraph init` auto-registers projects in `allowedDirs`.
+
+### Authentication
+
+- **No `VIEWGRAPH_HTTP_SECRET` env var:** auth disabled (safe - server only listens on 127.0.0.1)
+- **`VIEWGRAPH_HTTP_SECRET` set:** Bearer token auth enforced on all POST endpoints
+
+### Port fallback
+
+The HTTP receiver defaults to port 9876. If in use, it tries 9877, 9878, 9879 before failing.
+The extension auto-discovers the server by probing these ports.
 
 ## Running
 
@@ -60,44 +87,38 @@ node index.js            # standalone
 npm run dev:server       # via workspace (from project root)
 ```
 
-The server uses stdio transport for MCP communication. Register it in your MCP host's config.
+The server uses stdio transport for MCP communication and starts an HTTP receiver
+on localhost for extension communication.
 
 ## Testing
 
 ```bash
-npm test                 # single run (118 tests, 26 files)
+npm test                 # single run (148 tests)
 npm run test:watch       # watch mode
 ```
 
 ## Architecture
 
 ```
-index.js                 Entry point - wires watcher, indexer, tools
+index.js                 Entry point - wires watcher, indexer, tools, HTTP receiver
 src/
-├── config.js            Config resolution (.viewgraphrc.json, env vars)
-├── constants.js         Domain constants
-├── watcher.js           Chokidar file watcher on captures directory
-├── indexer.js           In-memory capture index (filename -> metadata)
-├── parsers/
-│   └── viewgraph-v2.js  ViewGraph v2 JSON parser (plain keys)
-├── analysis/
-│   ├── node-queries.js  Flatten, filter, query nodes from parsed captures
-│   ├── a11y-rules.js    Accessibility audit rules
-│   └── capture-diff.js  Structural diff between two captures
-├── tools/
-│   ├── list-captures.js
-│   ├── get-capture.js
-│   ├── get-latest.js
-│   ├── get-page-summary.js
-│   ├── get-elements-by-role.js
-│   ├── get-interactive.js
-│   ├── find-missing-testids.js
-│   ├── audit-accessibility.js
-│   ├── compare-captures.js
-│   ├── get-annotations.js
-│   └── get-annotated-capture.js
-└── utils/
-    └── validate-path.js  Path traversal prevention
+  config.js              Config resolution (.viewgraphrc.json, env vars, allowedDirs)
+  constants.js           Domain constants
+  watcher.js             Chokidar file watcher on captures directory
+  indexer.js             In-memory capture index (filename -> metadata)
+  http-receiver.js       HTTP server for extension push, request polling, health check
+  request-queue.js       In-memory request queue (pending -> ack -> complete/expire)
+  parsers/
+    viewgraph-v2.js      ViewGraph v2 JSON parser
+  analysis/
+    node-queries.js      Flatten, filter, query nodes from parsed captures
+    a11y-rules.js        Accessibility audit rules
+    capture-diff.js      Structural diff between two captures
+    fidelity.js          Capture vs HTML snapshot fidelity comparison
+  tools/
+    list-captures.js     ... (one file per MCP tool)
+  utils/
+    validate-path.js     Path traversal prevention
 ```
 
 Imports use `#src/` subpath aliases (Node.js native, no build step).

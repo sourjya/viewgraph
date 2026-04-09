@@ -8,6 +8,43 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Multi-Project Capture Routing
+- URL-based project routing: extension sends x-captures-dir header, server writes to override dir
+- Extension options page with project mappings (URL pattern -> captures directory)
+- Server allowedDirs config: x-captures-dir must match allowlist (403 on unauthorized dirs)
+- `viewgraph init` auto-registers project in server allowedDirs
+- `viewgraph init` writes absolute capturesDir path (Kiro IDE cwd fix)
+- Server port fallback: tries 9876-9879 on EADDRINUSE instead of crashing
+- Extension auto-discovers MCP server on ports 9876-9879, matches by capturesDir
+- Server auth disabled when no VIEWGRAPH_HTTP_SECRET set (localhost-only is safe)
+- 11 routing tests, 6 auth tests, 4 config tests
+
+### Kiro Power Assets
+- Created `power/` directory with steering docs and hooks
+- `viewgraph-workflow.md` steering: when/how to use captures, annotations, resolution
+- `viewgraph-resolution.md` steering: resolution format, action enum, summary guidelines
+- `post-fix-verify.kiro.hook`: auto-request verification capture after HTML/CSS edits
+- `viewgraph init` installs steering docs and hooks for Kiro users
+- ADR-008: Kiro Power packaging decision
+
+### Unified Review Panel (specced, not yet implemented)
+- Full spec: requirements, design, tasks in `.kiro/specs/unified-review-panel/`
+- Extension icon opens sidebar directly (no popup)
+- Unified timeline: captures, annotations, page notes, Kiro requests as timeline items
+- Bidirectional resolution tracking via `resolve_annotation` MCP tool
+- Resolved items accordion (collapsed by default)
+- Capture is always explicit user action (no auto-capture)
+- Kiro requests with guidance parameter for capture instructions
+- Non-injectable page detection with specific error messages
+- ADR-007: Capture JSON as single source of truth (no separate history store)
+
+### Extension UX Fixes
+- Export buttons show icons in success/loading states (checkmark SVG, not text-only)
+- Annotation severity selector (Critical/Major/Minor) in comment panel
+- Severity tags in markdown export
+- Placeholder text guides expected behavior ("What should this look like?")
+- 292 total tests (148 server + 144 extension)
+
 ### Milestone 7b: Unified Annotate Mode (ADR-006)
 - Merged inspect and review into single annotate mode - one mode, two gestures
 - Click element to annotate, shift+drag to annotate region - both open comment panel

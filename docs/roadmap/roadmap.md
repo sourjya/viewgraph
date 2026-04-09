@@ -299,6 +299,27 @@ with one script. Manual testing checklist passes on Chrome + Firefox.
 
 ---
 
+## Milestone 7d: Unified Review Panel
+
+**Goal:** Redesign sidebar into unified timeline with page notes, Kiro request tracking,
+bidirectional resolution, and single-button entry point.
+
+**Spec:** [`.kiro/specs/unified-review-panel/`](../../.kiro/specs/unified-review-panel/)
+**ADR:** [`docs/decisions/ADR-007-jsonl-history-store.md`](../decisions/ADR-007-jsonl-history-store.md)
+**Status:** Specced
+
+Key features:
+- Extension icon opens sidebar directly (no popup)
+- Unified timeline: captures, annotations, page notes, Kiro requests
+- Bidirectional resolution tracking (Kiro marks issues as fixed)
+- Resolved items accordion
+- Capture is always explicit (no auto-capture)
+- Non-injectable page detection with specific error messages
+
+See spec for full requirements, design, and task breakdown.
+
+---
+
 ## Milestone 8: Universal Agent Integration (Days 28-30)
 
 **Goal:** Plug-and-play support for all major agentic coding tools.
@@ -328,8 +349,9 @@ installable globally.
 
 **Goal:** Package ViewGraph as a Kiro Power for one-click install and dynamic activation.
 
-**ADR:** TBD
-**Spec:** `.kiro/specs/kiro-power/`
+**ADR:** [`docs/decisions/ADR-008-kiro-power-packaging.md`](../decisions/ADR-008-kiro-power-packaging.md)
+**Spec:** [`.kiro/specs/kiro-power/`](../../.kiro/specs/kiro-power/)
+**Depends on:** [Unified Review Panel](../../.kiro/specs/unified-review-panel/) spec
 
 A Kiro Power bundles MCP tools + steering docs + hooks into a single installable unit.
 ViewGraph tools activate dynamically when the user mentions UI, annotation, layout,
