@@ -10,7 +10,7 @@
  */
 
 import { show as showPanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, toggleResolved, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate, addPageNote } from './annotate.js';
+import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate, addPageNote } from './annotate.js';
 
 /**
  * Sync resolved state from the server. Polls /annotations/resolved for the
@@ -659,7 +659,7 @@ export function refresh() {
     entry.setAttribute(ATTR, 'entry');
     Object.assign(entry.style, {
       padding: '8px 12px', borderBottom: '1px solid #2a2a3a',
-      cursor: 'pointer', display: 'flex', justifyContent: 'space-between',
+      cursor: ann.resolved ? 'default' : 'pointer', display: 'flex', justifyContent: 'space-between',
       alignItems: 'center', transition: 'background 0.1s',
     });
     entry.addEventListener('mouseenter', () => {
@@ -756,34 +756,40 @@ export function refresh() {
       label.appendChild(resLine);
     }
 
-    // Click to scroll and show panel
-    label.addEventListener('click', () => {
-      window.scrollTo({ top: ann.region.y - 100, behavior: 'smooth' });
-      showPanel(ann, { onChange: () => refresh() });
-    });
+    // Click to scroll and show panel (open items only)
+    if (!ann.resolved) {
+      label.addEventListener('click', () => {
+        window.scrollTo({ top: ann.region.y - 100, behavior: 'smooth' });
+        showPanel(ann, { onChange: () => refresh() });
+      });
+    }
 
-    // Resolve toggle
-    const resolveBtn = document.createElement('button');
-    resolveBtn.setAttribute(ATTR, 'btn');
-    resolveBtn.innerHTML = ann.resolved
-      ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
-      : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>';
-    resolveBtn.title = ann.resolved ? 'Mark unresolved' : 'Mark resolved';
-    Object.assign(resolveBtn.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', flexShrink: '0' });
-    resolveBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleResolved(ann.id);
-      refresh();
-    });
+    // Action buttons - resolved items are read-only (just a static checkmark)
+    if (ann.resolved) {
+      const check = document.createElement('span');
+      check.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      Object.assign(check.style, { padding: '2px', flexShrink: '0' });
+      entry.append(label, check);
+    } else {
+      const resolveBtn = document.createElement('button');
+      resolveBtn.setAttribute(ATTR, 'btn');
+      resolveBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>';
+      resolveBtn.title = 'Mark resolved';
+      Object.assign(resolveBtn.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', flexShrink: '0' });
+      resolveBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        resolveAnnotation(ann.id);
+        refresh();
+      });
 
-    // Delete button
-    const del = document.createElement('button');
-    del.setAttribute(ATTR, 'btn');
-    del.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';
-    Object.assign(del.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', flexShrink: '0' });
-    del.addEventListener('click', (e) => { e.stopPropagation(); removeAnnotation(ann.id); refresh(); });
+      const del = document.createElement('button');
+      del.setAttribute(ATTR, 'btn');
+      del.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+      Object.assign(del.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', flexShrink: '0' });
+      del.addEventListener('click', (e) => { e.stopPropagation(); removeAnnotation(ann.id); refresh(); });
 
-    entry.append(label, resolveBtn, del);
+      entry.append(label, resolveBtn, del);
+    }
     return entry;
   }
 

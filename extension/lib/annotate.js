@@ -589,7 +589,7 @@ export async function load() {
   if (!stored || !stored.annotations || stored.annotations.length === 0) return false;
   annotations = stored.annotations;
   nextId = stored.nextId || annotations.length + 1;
-  for (const ann of annotations) createMarker(ann, null);
+  for (const ann of annotations) { if (!ann.resolved) createMarker(ann, null); }
   return true;
 }
 
@@ -614,13 +614,18 @@ export function updateCategory(id, category) {
   if (ann) { ann.category = category; save(); }
 }
 
-export function toggleResolved(id) {
+/** One-way resolve - resolved items cannot be unresolve. Removes on-page marker. */
+export function resolveAnnotation(id) {
   const ann = annotations.find((a) => a.id === id);
-  if (!ann) return null;
-  ann.resolved = !ann.resolved;
+  if (!ann || ann.resolved) return null;
+  ann.resolved = true;
+  removeMarker(id);
   save();
-  return ann.resolved;
+  return true;
 }
+
+/** @deprecated Use resolveAnnotation. Kept for test compat during transition. */
+export function toggleResolved(id) { return resolveAnnotation(id); }
 
 export function removeAnnotation(id) {
   annotations = annotations.filter((a) => a.id !== id);

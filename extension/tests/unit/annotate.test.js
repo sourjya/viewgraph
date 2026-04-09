@@ -9,7 +9,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   selectorSegment, buildBreadcrumb, getRole, buildMetaLine, bestSelector,
   findIntersectingNodes, findCommonAncestor,
-  updateComment, removeAnnotation, toggleResolved, updateCategory, updateSeverity,
+  updateComment, removeAnnotation, toggleResolved, resolveAnnotation, updateCategory, updateSeverity,
   getAnnotations, clearAnnotations, addPageNote,
   start, stop, isActive, storageKey, save, load,
   hideHoverUI, ATTR,
@@ -953,12 +953,12 @@ describe('filter logic - all/open/resolved', () => {
     expect(resolved).toHaveLength(0);
   });
 
-  it('toggling resolved twice returns to open', () => {
+  it('resolving twice stays resolved (one-way)', () => {
     const a = addPageNote();
     toggleResolved(a.id);
     toggleResolved(a.id);
     const open = getAnnotations().filter((x) => !x.resolved);
-    expect(open).toHaveLength(1);
+    expect(open).toHaveLength(0);
   });
 
   it('badge count reflects only open items', () => {
@@ -1043,5 +1043,55 @@ describe('hideHoverUI', () => {
     }
     expect(found).toBe(false);
     el.remove();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// One-way resolveAnnotation
+// ---------------------------------------------------------------------------
+
+describe('resolveAnnotation', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('returns null for non-existent id', () => {
+    expect(resolveAnnotation(999)).toBeNull();
+  });
+
+  it('resolves an open annotation', () => {
+    const note = addPageNote();
+    expect(resolveAnnotation(note.id)).toBe(true);
+    expect(getAnnotations()[0].resolved).toBe(true);
+  });
+
+  it('returns null when already resolved (no-op)', () => {
+    const note = addPageNote();
+    resolveAnnotation(note.id);
+    expect(resolveAnnotation(note.id)).toBeNull();
+  });
+
+  it('cannot unresolve - resolved stays resolved', () => {
+    const note = addPageNote();
+    resolveAnnotation(note.id);
+    // Call again - should not toggle back
+    resolveAnnotation(note.id);
+    expect(getAnnotations()[0].resolved).toBe(true);
+  });
+
+  it('toggleResolved alias calls resolveAnnotation (one-way)', () => {
+    const note = addPageNote();
+    toggleResolved(note.id);
+    expect(getAnnotations()[0].resolved).toBe(true);
+    // Second call should not unresolve
+    toggleResolved(note.id);
+    expect(getAnnotations()[0].resolved).toBe(true);
+  });
+
+  it('resolved items are excluded from open count', () => {
+    addPageNote();
+    const b = addPageNote();
+    addPageNote();
+    resolveAnnotation(b.id);
+    const openCount = getAnnotations().filter((x) => !x.resolved).length;
+    expect(openCount).toBe(2);
   });
 });
