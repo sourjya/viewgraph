@@ -326,11 +326,20 @@ export function create() {
   const captureOpts = document.createElement('div');
   Object.assign(captureOpts.style, { marginTop: '12px', borderTop: '1px solid #333', paddingTop: '10px' });
   const optsLabel = document.createElement('div');
-  optsLabel.textContent = 'Include with capture:';
+  optsLabel.textContent = 'Capture includes:';
   Object.assign(optsLabel.style, { color: '#9ca3af', fontSize: '11px', marginBottom: '6px', fontWeight: '600' });
   captureOpts.appendChild(optsLabel);
 
   const checkStyle = { display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', color: '#c8c8d0', fontSize: '12px', cursor: 'pointer' };
+
+  // JSON capture - always on, cannot be unchecked
+  const jsonRow = document.createElement('label');
+  Object.assign(jsonRow.style, { ...checkStyle, cursor: 'default', opacity: '0.6' });
+  const jsonCheck = document.createElement('input');
+  jsonCheck.type = 'checkbox';
+  jsonCheck.checked = true;
+  jsonCheck.disabled = true;
+  jsonRow.append(jsonCheck, document.createTextNode('ViewGraph JSON'));
 
   const htmlRow = document.createElement('label');
   Object.assign(htmlRow.style, checkStyle);
@@ -344,7 +353,7 @@ export function create() {
   ssCheck.type = 'checkbox';
   ssRow.append(ssCheck, document.createTextNode('Screenshot'));
 
-  captureOpts.append(htmlRow, ssRow);
+  captureOpts.append(jsonRow, htmlRow, ssRow);
   settingsBody.appendChild(captureOpts);
 
   // Load saved settings
