@@ -329,13 +329,16 @@ See spec for full requirements, design, and task breakdown.
 
 | # | Task | Details |
 |---|---|---|
-| 8.1 | Registration CLI | `npx viewgraph init` - auto-detect tool, write MCP config |
-| 8.2 | Tool detection | Detect Kiro, Claude Code, Cursor, Windsurf, Cline by config directory presence |
-| 8.3 | Streamable HTTP transport | `--transport http --port 9091` flag for remote/team scenarios |
-| 8.4 | npm package setup | `package.json` bin entry, publish as `viewgraph-mcp-server` |
-| 8.5 | Setup runbooks | Per-tool setup guides in `docs/runbooks/` (kiro, claude-code, cursor, windsurf) |
-| 8.6 | Health check CLI | `npx viewgraph doctor` - verify server starts, tools register, captures dir accessible |
-| 8.7 | Integration tests | Test stdio + HTTP transports, test init command for each tool |
+| 8.1 | Extensible init architecture | Refactor `viewgraph-init.js` into dispatcher + agent-specific setup modules (`scripts/setup/{base,kiro,cursor,claude-code,generic}.js`). Each module: `detect()`, `setup()`. Shared interface, independent evolution. |
+| 8.2 | Research: Cursor integration | Investigate `.cursorrules`, Cursor MCP config format, any packaging/skills system |
+| 8.3 | Research: Claude Code integration | Investigate Claude Skills, `.claude/mcp.json`, dynamic tool loading |
+| 8.4 | Research: Windsurf/Cline integration | Investigate config formats, MCP support, any steering mechanisms |
+| 8.5 | Tool detection | Detect Kiro, Claude Code, Cursor, Windsurf, Cline by config directory presence |
+| 8.6 | Streamable HTTP transport | `--transport http --port 9091` flag for remote/team scenarios |
+| 8.7 | npm package setup | `package.json` bin entry, publish as `viewgraph-mcp-server` |
+| 8.8 | Setup runbooks | Per-tool setup guides in `docs/runbooks/` (kiro, claude-code, cursor, windsurf) |
+| 8.9 | Health check CLI | `npx viewgraph doctor` - verify server starts, tools register, captures dir accessible |
+| 8.10 | Integration tests | Test stdio + HTTP transports, test init command for each tool |
 
 **Exit criteria:** `npx viewgraph init` works for Kiro, Claude Code, Cursor,
 and Windsurf. Server works over both stdio and HTTP transports. npm package
