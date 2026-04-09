@@ -13,6 +13,7 @@
  */
 
 import { SERVER_BASE_URL as SERVER_URL, discoverServer } from '../lib/constants.js';
+import { isInjectable, getBlockedReason } from '../lib/url-checks.js';
 
 const PROJECT_MAPPINGS_KEY = 'vg-project-mappings';
 
@@ -115,6 +116,49 @@ async function captureScreenshot(tabId) {
 }
 
 export default defineBackground(() => {
+  // ---------------------------------------------------------------------------
+  // Clear default popup on startup so chrome.action.onClicked fires.
+  // WXT auto-sets default_popup from the popup/ entrypoint. We override it
+  // to empty so icon clicks go through our onClicked handler instead.
+  // The popup HTML is still available for dynamic use on non-injectable pages.
+  // ---------------------------------------------------------------------------
+  chrome.action.setPopup({ popup: '' });
+
+  // ---------------------------------------------------------------------------
+  // Extension icon click - open sidebar directly, or fallback popup for
+  // non-injectable pages (chrome://, about:, etc.)
+  // ---------------------------------------------------------------------------
+  chrome.action.onClicked.addListener(async (tab) => {
+    if (!tab?.url || !isInjectable(tab.url)) {
+      // Non-injectable page: show fallback popup with error
+      const reason = getBlockedReason(tab?.url);
+      await chrome.storage.local.set({ 'vg-blocked-reason': reason });
+      await chrome.action.setPopup({ popup: 'popup/index.html' });
+      // Open the popup programmatically by simulating the action
+      // Note: chrome.action.openPopup() requires Chrome 127+
+      try { await chrome.action.openPopup(); } catch { /* older Chrome */ }
+      return;
+    }
+
+    // Injectable page: clear popup so onClicked fires next time, then open sidebar
+    await chrome.action.setPopup({ popup: '' });
+    try {
+      await chrome.tabs.sendMessage(tab.id, { type: 'toggle-annotate' });
+    } catch {
+      // Content script not injected yet - inject and retry
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['content-scripts/content.js'],
+      });
+      await chrome.tabs.sendMessage(tab.id, { type: 'toggle-annotate' });
+    }
+  });
+
+  // Reset popup to empty on tab change so onClicked fires for injectable pages
+  chrome.tabs.onActivated.addListener(async () => {
+    await chrome.action.setPopup({ popup: '' });
+  });
+
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Handle subtree capture from inspector - just push to server
     if (message.type === 'inspect-capture') {

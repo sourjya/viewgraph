@@ -1,9 +1,33 @@
 /**
  * Popup Script - ViewGraph Capture
  *
- * Handles the Capture Page button click. Sends a message to the background
- * script to initiate the capture flow, then displays the result.
+ * Two modes:
+ * 1. Fallback mode: shown on non-injectable pages with a blocked reason message
+ * 2. Normal mode: Capture/Annotate buttons (legacy, kept for compatibility)
  */
+
+// Check if we're in fallback mode (non-injectable page)
+chrome.storage.local.get('vg-blocked-reason', (result) => {
+  const reason = result['vg-blocked-reason'];
+  if (reason) {
+    // Clear the reason so it doesn't persist
+    chrome.storage.local.remove('vg-blocked-reason');
+    // Show blocked message instead of normal UI
+    const container = document.querySelector('.container');
+    container.innerHTML = `
+      <div class="header">
+        <img src="/icon-48.png" width="20" height="20" alt="">
+        <h1>ViewGraph</h1>
+      </div>
+      <div style="padding: 8px 0; font-size: 12px; color: #9ca3af; line-height: 1.5;">
+        ${reason}
+      </div>
+    `;
+    // Reset popup so next click on injectable page goes through onClicked
+    chrome.action.setPopup({ popup: '' });
+    return;
+  }
+});
 
 const captureBtn = document.getElementById('captureBtn');
 const annotateBtn = document.getElementById('annotateBtn');
