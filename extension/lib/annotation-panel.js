@@ -32,7 +32,7 @@ export function show(annotation, callbacks = {}) {
     position: 'absolute', zIndex: '2147483647',
     background: '#1e1e2e', borderRadius: '8px',
     border: `2px solid ${MARKER_COLORS[(annotation.id - 1) % MARKER_COLORS.length]}`,
-    padding: '10px', width: '240px', fontFamily: 'system-ui, sans-serif',
+    padding: '10px', width: '270px', fontFamily: 'system-ui, sans-serif',
     boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
   });
 
@@ -142,7 +142,7 @@ export function show(annotation, callbacks = {}) {
   textarea.value = annotation.comment;
   textarea.placeholder = 'What should this look like?\ne.g. "font should be 14px" or "label should say Email Address"';
   Object.assign(textarea.style, {
-    width: '100%', minHeight: '60px', padding: '6px 8px',
+    width: '100%', minHeight: '90px', padding: '6px 8px',
     background: '#16161e', border: '1px solid #333', borderRadius: '4px',
     color: '#e0e0e0', fontSize: '13px', fontFamily: 'system-ui, sans-serif',
     resize: 'vertical', outline: 'none',
@@ -157,7 +157,7 @@ export function show(annotation, callbacks = {}) {
   panelEl.append(header, chipRow, textarea);
 
   // Position near the annotation region, avoiding sidebar and screen edges
-  const panelWidth = 240;
+  const panelWidth = 270;
   const sidebarWidth = 320;
   const vw = window.innerWidth;
   const rightEdge = annotation.region.x + annotation.region.width + 12 + panelWidth;
