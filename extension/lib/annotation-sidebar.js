@@ -43,6 +43,7 @@ import { discoverServer } from './constants.js';
 
 const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
+let hostEl = null;
 let badgeEl = null;
 let collapsed = false;
 let hasCaptured = false;
@@ -72,12 +73,14 @@ export function create() {
   sidebarEl = document.createElement('div');
   sidebarEl.setAttribute(ATTR, 'sidebar');
   Object.assign(sidebarEl.style, {
+    all: 'initial',
     position: 'fixed', top: '60px', right: '0', zIndex: '2147483646',
     width: '300px', height: 'calc(100vh - 120px)',
-    display: 'flex', flexDirection: 'column',
+    display: 'flex', flexDirection: 'column', overflow: 'hidden',
     background: '#1e1e2e', borderLeft: '1px solid #333', borderRadius: '8px 0 0 8px',
     fontFamily: 'system-ui, sans-serif', fontSize: '14px',
     boxShadow: '-2px 0 12px rgba(0,0,0,0.3)', transition: 'transform 0.2s',
+    boxSizing: 'border-box', color: '#e0e0e0',
   });
 
   // Header row: toggle label + collapse chevron + close button
@@ -491,7 +494,14 @@ export function create() {
   }
 
   sidebarEl.append(header, modeBar, tabContainer, list, settingsScreen, footer);
-  document.documentElement.appendChild(sidebarEl);
+
+  // Shadow DOM isolates sidebar from page CSS (prevents * { margin:0 } etc.)
+  hostEl = document.createElement('div');
+  hostEl.setAttribute(ATTR, 'shadow-host');
+  Object.assign(hostEl.style, { all: 'initial', position: 'fixed', top: '0', right: '0', zIndex: '2147483646' });
+  const shadow = hostEl.attachShadow({ mode: 'open' });
+  shadow.appendChild(sidebarEl);
+  document.documentElement.appendChild(hostEl);
 
   // Collapsed badge - hidden initially
   badgeEl = document.createElement('div');
@@ -845,7 +855,8 @@ export function refresh() {
 
 /** Remove the sidebar from the DOM. */
 export function destroy() {
-  if (sidebarEl) { sidebarEl.remove(); sidebarEl = null; }
+  if (hostEl) { hostEl.remove(); hostEl = null; }
+  if (sidebarEl) { sidebarEl = null; }
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }
   collapsed = false;
   hasCaptured = false;
