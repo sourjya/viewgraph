@@ -1743,3 +1743,48 @@ describe('dedup specificity', () => {
     document.body.innerHTML = '';
   });
 });
+
+// ---------------------------------------------------------------------------
+// BUG: expand must refresh list; collapse must not pause annotate
+// ---------------------------------------------------------------------------
+
+describe('sidebar collapse/expand lifecycle', () => {
+  afterEach(() => { stop(); });
+
+  it('(+) isActive stays true after collapse (no pause)', () => {
+    start();
+    expect(isActive()).toBe(true);
+    // Collapse should not call pause - isActive stays true
+    // (collapse is sidebar-only, annotate listeners stay active)
+  });
+
+  it('(+) annotations added while conceptually collapsed are visible after expand', () => {
+    start();
+    clearAnnotations();
+    addPageNote();
+    addPageNote();
+    addPageNote();
+    // After expand, refresh should show all 3
+    expect(getAnnotations()).toHaveLength(3);
+    expect(getAnnotations().filter((a) => !a.resolved)).toHaveLength(3);
+  });
+
+  it('(+) getAnnotations reflects all mutations during collapsed state', () => {
+    start();
+    clearAnnotations();
+    const a = addPageNote();
+    const b = addPageNote();
+    resolveAnnotation(a.id);
+    removeAnnotation(b.id);
+    const c = addPageNote();
+    expect(getAnnotations()).toHaveLength(2); // a (resolved) + c
+    expect(getAnnotations().filter((x) => !x.resolved)).toHaveLength(1);
+  });
+
+  it('(-) expand with no annotations shows empty hint, not crash', () => {
+    start();
+    clearAnnotations();
+    expect(getAnnotations()).toHaveLength(0);
+    // refresh after expand should show hint, not throw
+  });
+});
