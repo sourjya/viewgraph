@@ -141,25 +141,27 @@ export function create() {
   const list = document.createElement('div');
   list.setAttribute(ATTR, 'list');
 
-  // Export buttons row
-  const exportRow = document.createElement('div');
-  exportRow.setAttribute(ATTR, 'export-row');
-  Object.assign(exportRow.style, {
-    display: 'flex', gap: '4px', margin: '8px', marginTop: '4px',
-  });
+  // Footer container - holds all footer rows
+  const footer = document.createElement('div');
+  footer.setAttribute(ATTR, 'footer');
+  Object.assign(footer.style, { borderTop: '1px solid #2a2a3a', padding: '6px 8px' });
 
   const btnStyle = {
-    flex: '1', padding: '7px 4px', border: 'none', borderRadius: '6px',
+    padding: '7px 4px', border: 'none', borderRadius: '6px',
     color: '#fff', fontSize: '11px', fontWeight: '600', cursor: 'pointer',
     fontFamily: 'system-ui, sans-serif', transition: 'background 0.12s',
-    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
   };
 
-  // Send to Kiro
+  // Row 1: Creation actions [Capture] [Note]
+  const creationRow = document.createElement('div');
+  Object.assign(creationRow.style, { display: 'flex', gap: '4px', marginBottom: '4px' });
+
+  // Row 2: Primary CTA - Send to Kiro (full width)
   const sendBtn = document.createElement('button');
   sendBtn.setAttribute(ATTR, 'send');
-  sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send';
-  Object.assign(sendBtn.style, { ...btnStyle, background: '#6366f1' });
+  sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Kiro';
+  Object.assign(sendBtn.style, { ...btnStyle, background: '#6366f1', width: '100%', padding: '9px 4px', marginBottom: '4px' });
   sendBtn.title = 'Send to Kiro';
   sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#5558e6'; });
   sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = '#6366f1'; });
@@ -170,7 +172,7 @@ export function create() {
     });
     sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Sent!';
     sendBtn.style.background = '#059669';
-    setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send'; sendBtn.style.background = '#6366f1'; }, 2000);
+    setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Kiro'; sendBtn.style.background = '#6366f1'; }, 2000);
   });
 
   // Copy Markdown
@@ -206,15 +208,28 @@ export function create() {
     setTimeout(() => { dlBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Report'; dlBtn.style.background = '#374151'; }, 2000);
   });
 
-  exportRow.append(sendBtn, copyBtn, dlBtn);
+  // Row 3: Secondary exports [Copy MD] [Report] + gear icon
+  const secondaryRow = document.createElement('div');
+  Object.assign(secondaryRow.style, { display: 'flex', gap: '4px', alignItems: 'center' });
+  Object.assign(copyBtn.style, { ...btnStyle, background: '#374151', flex: '1' });
+  Object.assign(dlBtn.style, { ...btnStyle, background: '#374151', flex: '1' });
 
-  // Action row: Note button
-  const actionRow = document.createElement('div');
-  actionRow.setAttribute(ATTR, 'action-row');
-  Object.assign(actionRow.style, {
-    display: 'flex', gap: '4px', margin: '8px 8px 4px',
+  // Gear icon for settings
+  const gearBtn = document.createElement('button');
+  gearBtn.setAttribute(ATTR, 'gear');
+  gearBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>';
+  gearBtn.title = 'Settings';
+  Object.assign(gearBtn.style, {
+    border: 'none', background: 'transparent', cursor: 'pointer',
+    padding: '6px', display: 'flex', alignItems: 'center', flexShrink: '0',
   });
+  gearBtn.addEventListener('mouseenter', () => { gearBtn.style.background = 'rgba(255,255,255,0.05)'; gearBtn.style.borderRadius = '4px'; });
+  gearBtn.addEventListener('mouseleave', () => { gearBtn.style.background = 'transparent'; });
+  gearBtn.addEventListener('click', () => showSettings());
 
+  secondaryRow.append(copyBtn, dlBtn, gearBtn);
+
+  // Creation row buttons
   const noteBtn = document.createElement('button');
   noteBtn.setAttribute(ATTR, 'note');
   noteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Note';
@@ -254,56 +269,72 @@ export function create() {
     });
   });
 
-  actionRow.append(captureBtn, noteBtn);
+  footer.append(creationRow, sendBtn, secondaryRow);
+  creationRow.append(captureBtn, noteBtn);
 
-  sidebarEl.append(header, list, actionRow, exportRow);
+  // Settings screen - alternate view replacing the list
+  const settingsScreen = document.createElement('div');
+  settingsScreen.setAttribute(ATTR, 'settings-screen');
+  Object.assign(settingsScreen.style, { display: 'none', padding: '0' });
 
-  // Collapsible Settings section
-  const settingsSection = document.createElement('div');
-  settingsSection.setAttribute(ATTR, 'settings');
+  // Settings header with back arrow
   const settingsHeader = document.createElement('div');
-  settingsHeader.textContent = '\u25b8 Settings';
   Object.assign(settingsHeader.style, {
-    padding: '6px 12px', color: '#666', fontSize: '11px', fontWeight: '600',
-    borderTop: '1px solid #2a2a3a', cursor: 'pointer',
-    fontFamily: 'system-ui, sans-serif',
+    display: 'flex', alignItems: 'center', gap: '6px',
+    padding: '10px 12px', borderBottom: '1px solid #333',
   });
-  const settingsBody = document.createElement('div');
-  settingsBody.style.display = 'none';
-  Object.assign(settingsBody.style, { padding: '8px 12px', fontSize: '11px', color: '#9ca3af' });
+  const backBtn = document.createElement('button');
+  backBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+  Object.assign(backBtn.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', display: 'flex' });
+  backBtn.addEventListener('click', () => hideSettings());
+  const settingsTitle = document.createElement('span');
+  settingsTitle.textContent = 'Settings';
+  Object.assign(settingsTitle.style, { color: '#a5b4fc', fontSize: '14px', fontWeight: '600' });
+  settingsHeader.append(backBtn, settingsTitle);
 
-  // Server status line (populated async)
+  // Settings body
+  const settingsBody = document.createElement('div');
+  Object.assign(settingsBody.style, { padding: '12px', fontSize: '12px', color: '#9ca3af' });
+
   const serverLine = document.createElement('div');
   serverLine.textContent = 'Server: checking...';
-  Object.assign(serverLine.style, { marginBottom: '6px' });
+  Object.assign(serverLine.style, { marginBottom: '10px' });
   discoverServer().then((url) => {
     if (url) {
       const port = new URL(url).port;
-      serverLine.innerHTML = `<span style="color:#4ade80">\u25cf</span> Connected (localhost:${port})`;
+      serverLine.innerHTML = '<span style="color:#4ade80">\u25cf</span> Connected (localhost:' + port + ')';
     } else {
       serverLine.innerHTML = '<span style="color:#f87171">\u25cf</span> MCP server offline';
     }
   });
 
-  // Options link
   const optionsLink = document.createElement('a');
   optionsLink.textContent = 'Project mappings & auth \u2192';
   optionsLink.href = '#';
-  Object.assign(optionsLink.style, { color: '#a5b4fc', textDecoration: 'none', display: 'block', marginTop: '4px' });
+  Object.assign(optionsLink.style, { color: '#a5b4fc', textDecoration: 'none', display: 'block', fontSize: '12px' });
   optionsLink.addEventListener('click', (e) => {
     e.preventDefault();
     chrome.runtime.sendMessage({ type: 'open-options' });
   });
 
   settingsBody.append(serverLine, optionsLink);
-  settingsHeader.addEventListener('click', () => {
-    const open = settingsBody.style.display === 'none';
-    settingsBody.style.display = open ? 'block' : 'none';
-    settingsHeader.textContent = `${open ? '\u25be' : '\u25b8'} Settings`;
-  });
-  settingsSection.append(settingsHeader, settingsBody);
+  settingsScreen.append(settingsHeader, settingsBody);
 
-  sidebarEl.append(header, list, actionRow, exportRow, settingsSection);
+  /** Show settings screen, hide timeline + footer. */
+  function showSettings() {
+    list.style.display = 'none';
+    footer.style.display = 'none';
+    settingsScreen.style.display = 'block';
+  }
+
+  /** Hide settings screen, restore timeline + footer. */
+  function hideSettings() {
+    settingsScreen.style.display = 'none';
+    list.style.display = '';
+    footer.style.display = '';
+  }
+
+  sidebarEl.append(header, list, settingsScreen, footer);
   document.documentElement.appendChild(sidebarEl);
 
   // Collapsed badge - hidden initially
