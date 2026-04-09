@@ -47,12 +47,16 @@ export const MARKER_COLORS = [
 // State
 // ---------------------------------------------------------------------------
 
+/** Capture mode constants - element and region are toggle modes, page is one-shot. */
+export const CAPTURE_MODES = { ELEMENT: 'element', REGION: 'region', PAGE: 'page' };
+
 let active = false;
 let frozen = false;
 let currentEl = null;
 let overlayEl = null;
 let tooltipEl = null;
 let actionBarEl = null;
+let captureMode = null;
 
 // Drag selection state
 let dragStart = null;
@@ -276,10 +280,13 @@ function freeze() {
     height: Math.round(rect.height),
   };
   const ancestor = selectorSegment(currentEl);
+  const fullSelector = bestSelector(currentEl);
 
-  // Dedup: if this element already has an annotation, reopen its panel
+  // Dedup: reopen existing annotation if same element clicked again.
+  // Uses bestSelector (more specific) to avoid false matches on wide elements.
   const existing = annotations.find((a) =>
-    a.ancestor === ancestor && a.region.x === region.x && a.region.y === region.y
+    a.element && a.element.selector === fullSelector
+    && a.region.x === region.x && a.region.y === region.y
     && a.region.width === region.width && a.region.height === region.height);
   if (existing) {
     frozen = true;
@@ -347,7 +354,9 @@ function fallbackCopy(text) {
 // ---------------------------------------------------------------------------
 
 function onMouseDown(e) {
-  if (e.shiftKey) {
+  // Region drag: shift+drag always works, plain drag in region mode
+  const startDrag = e.shiftKey || captureMode === CAPTURE_MODES.REGION;
+  if (startDrag) {
     e.preventDefault();
     e.stopPropagation();
     if (frozen) unfreeze();
@@ -523,6 +532,15 @@ function createMarker(annotation, selRect) {
     background: color, color: '#fff', fontSize: '11px', fontWeight: '600',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     fontFamily: 'system-ui, sans-serif',
+    pointerEvents: 'auto', cursor: 'pointer',
+  });
+  // Click badge to reopen this annotation's panel directly (avoids dedup mismatch)
+  badge.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    frozen = true;
+    hideHoverUI();
+    if (onAnnotationAdded) onAnnotationAdded(annotation);
   });
   marker.appendChild(badge);
 
@@ -719,6 +737,7 @@ export function stop() {
   active = false;
   frozen = false;
   currentEl = null;
+  captureMode = null;
   onAnnotationAdded = null;
   onAnnotationRemoved = null;
 
@@ -736,3 +755,23 @@ export function stop() {
 }
 
 export function isActive() { return active; }
+
+/** Get current capture mode (element, region, or null). */
+export function getCaptureMode() { return captureMode; }
+
+/**
+ * Set capture mode. Element/region are toggles (same mode twice = off).
+ * Page is one-shot: fires addPageNote immediately and resets to null.
+ * Invalid values are ignored. No-op if not active.
+ */
+export function setCaptureMode(mode) {
+  if (!active) return;
+  if (mode === CAPTURE_MODES.PAGE) {
+    addPageNote();
+    captureMode = null;
+    return;
+  }
+  const valid = [CAPTURE_MODES.ELEMENT, CAPTURE_MODES.REGION, null];
+  if (!valid.includes(mode)) return;
+  captureMode = captureMode === mode ? null : mode;
+}

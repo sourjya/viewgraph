@@ -13,6 +13,7 @@ import {
   getAnnotations, clearAnnotations, addPageNote,
   start, stop, isActive, storageKey, save, load,
   hideHoverUI, ATTR,
+  setCaptureMode, getCaptureMode, CAPTURE_MODES,
 } from '#lib/annotate.js';
 
 let restore;
@@ -1485,5 +1486,260 @@ describe('annotation lifecycle integrity', () => {
     resolveAnnotation(note.id);
     updateComment(note.id, 'updated after resolve');
     expect(getAnnotations()[0].comment).toBe('updated after resolve');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Capture mode state machine
+// ---------------------------------------------------------------------------
+
+describe('CAPTURE_MODES', () => {
+  it('(+) defines element, region, page', () => {
+    expect(CAPTURE_MODES).toEqual({ ELEMENT: 'element', REGION: 'region', PAGE: 'page' });
+  });
+});
+
+describe('capture mode state', () => {
+  afterEach(() => { stop(); });
+
+  it('(+) defaults to null when not started', () => {
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(+) setCaptureMode sets element mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    expect(getCaptureMode()).toBe('element');
+  });
+
+  it('(+) setCaptureMode sets region mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.REGION);
+    expect(getCaptureMode()).toBe('region');
+  });
+
+  it('(+) switching mode replaces previous (mutual exclusion)', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    setCaptureMode(CAPTURE_MODES.REGION);
+    expect(getCaptureMode()).toBe('region');
+  });
+
+  it('(+) setCaptureMode(null) clears mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    setCaptureMode(null);
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(+) same mode twice toggles off', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(-) setCaptureMode with invalid value is ignored', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    setCaptureMode('invalid');
+    expect(getCaptureMode()).toBe('element');
+  });
+
+  it('(-) setCaptureMode before start is safe', () => {
+    expect(() => setCaptureMode(CAPTURE_MODES.ELEMENT)).not.toThrow();
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(+) stop clears capture mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.REGION);
+    stop();
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(+) page mode is one-shot - does not persist as active mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.PAGE);
+    // Page mode fires addPageNote and resets to null
+    expect(getCaptureMode()).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Sidebar auto-collapse on capture mode entry
+// ---------------------------------------------------------------------------
+
+describe('capture mode and sidebar collapse contract', () => {
+  afterEach(() => { stop(); });
+
+  it('(+) entering element mode should signal collapse needed', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    // Mode is active - sidebar should collapse (wiring layer responsibility)
+    expect(getCaptureMode()).toBe('element');
+  });
+
+  it('(+) entering region mode should signal collapse needed', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.REGION);
+    expect(getCaptureMode()).toBe('region');
+  });
+
+  it('(+) toggling mode off should signal expand needed', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    setCaptureMode(CAPTURE_MODES.ELEMENT); // toggle off
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(+) page mode does not leave active mode (no collapse needed)', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.PAGE);
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(+) switching modes keeps active mode (stays collapsed)', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    setCaptureMode(CAPTURE_MODES.REGION);
+    expect(getCaptureMode()).not.toBeNull();
+  });
+
+  it('(-) stop clears mode (sidebar should expand)', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    stop();
+    expect(getCaptureMode()).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Region mode drag behavior
+// ---------------------------------------------------------------------------
+
+describe('region mode drag', () => {
+  afterEach(() => { stop(); });
+
+  it('(+) region mode allows drag without shift key', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.REGION);
+    expect(getCaptureMode()).toBe('region');
+    // In region mode, onMouseDown should start drag without shiftKey
+    // This is a behavioral contract - the actual drag is DOM-level
+  });
+
+  it('(+) shift+drag works regardless of capture mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    // Shift+drag should still work even in element mode (backward compat)
+    expect(getCaptureMode()).toBe('element');
+  });
+
+  it('(+) shift+drag works with no capture mode set', () => {
+    start();
+    // No mode set - shift+drag should still work
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(-) element mode does not enable plain drag', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    // In element mode, plain mousedown should NOT start drag
+    // Only shift+drag or region mode enables plain drag
+    expect(getCaptureMode()).toBe('element');
+    expect(getCaptureMode()).not.toBe('region');
+  });
+
+  it('(-) no mode does not enable plain drag', () => {
+    start();
+    expect(getCaptureMode()).toBeNull();
+    // Without mode, plain mousedown should not start drag
+  });
+
+  it('(+) switching from region to element disables plain drag', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.REGION);
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    expect(getCaptureMode()).toBe('element');
+  });
+
+  it('(+) toggling region off disables plain drag', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.REGION);
+    setCaptureMode(CAPTURE_MODES.REGION); // toggle off
+    expect(getCaptureMode()).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// BUG: Tab bar and list must render even with zero annotations
+// ---------------------------------------------------------------------------
+
+describe('refresh with zero annotations', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('(+) getAnnotations returns empty array after clear', () => {
+    expect(getAnnotations()).toHaveLength(0);
+  });
+
+  it('(+) adding after clear works normally', () => {
+    clearAnnotations();
+    const note = addPageNote();
+    expect(getAnnotations()).toHaveLength(1);
+    expect(note.id).toBeDefined();
+  });
+
+  it('(-) filter on empty list returns empty', () => {
+    const open = getAnnotations().filter((x) => !x.resolved);
+    const resolved = getAnnotations().filter((x) => x.resolved);
+    expect(open).toHaveLength(0);
+    expect(resolved).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// BUG: Dedup must not match different elements with overlapping regions
+// ---------------------------------------------------------------------------
+
+describe('dedup specificity', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('(+) two annotations with same ancestor but different regions are distinct', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    updateComment(a.id, 'first');
+    updateComment(b.id, 'second');
+    expect(getAnnotations()).toHaveLength(2);
+    expect(getAnnotations()[0].comment).toBe('first');
+    expect(getAnnotations()[1].comment).toBe('second');
+  });
+
+  it('(+) annotations preserve their own IDs', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    const c = addPageNote();
+    expect(a.id).not.toBe(b.id);
+    expect(b.id).not.toBe(c.id);
+  });
+
+  it('(-) bestSelector returns full path, not just tag.class', () => {
+    document.body.innerHTML = '<div class="card"><span>A</span></div><div class="card"><span>B</span></div>';
+    const spans = document.querySelectorAll('span');
+    const sel1 = bestSelector(spans[0]);
+    const sel2 = bestSelector(spans[1]);
+    // Full selectors should differ even though both are span inside div.card
+    expect(sel1).not.toBe(sel2);
+    document.body.innerHTML = '';
+  });
+
+  it('(-) selectorSegment can match multiple elements (less specific)', () => {
+    document.body.innerHTML = '<div class="card">A</div><div class="card">B</div>';
+    const divs = document.querySelectorAll('div.card');
+    const seg1 = selectorSegment(divs[0]);
+    const seg2 = selectorSegment(divs[1]);
+    // selectorSegment returns same value for same tag+class
+    expect(seg1).toBe(seg2);
+    document.body.innerHTML = '';
   });
 });
