@@ -113,7 +113,9 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
 
     // GET /requests/pending
     if (method === 'GET' && url === '/requests/pending') {
-      const pending = queue.getPending().map((r) => ({ id: r.id, url: r.url, createdAt: r.createdAt }));
+      const pending = queue.getPending().map((r) => ({
+        id: r.id, url: r.url, createdAt: r.createdAt, ...(r.guidance ? { guidance: r.guidance } : {}),
+      }));
       return json(res, 200, { requests: pending });
     }
 
