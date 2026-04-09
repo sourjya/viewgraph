@@ -318,6 +318,43 @@ export function create() {
   });
 
   settingsBody.append(serverLine, optionsLink);
+
+  // Capture options - checkboxes for HTML snapshot and screenshot
+  const captureOpts = document.createElement('div');
+  Object.assign(captureOpts.style, { marginTop: '12px', borderTop: '1px solid #333', paddingTop: '10px' });
+  const optsLabel = document.createElement('div');
+  optsLabel.textContent = 'Include with capture:';
+  Object.assign(optsLabel.style, { color: '#9ca3af', fontSize: '11px', marginBottom: '6px', fontWeight: '600' });
+  captureOpts.appendChild(optsLabel);
+
+  const checkStyle = { display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', color: '#c8c8d0', fontSize: '12px', cursor: 'pointer' };
+
+  const htmlRow = document.createElement('label');
+  Object.assign(htmlRow.style, checkStyle);
+  const htmlCheck = document.createElement('input');
+  htmlCheck.type = 'checkbox';
+  htmlRow.append(htmlCheck, document.createTextNode('HTML snapshot'));
+
+  const ssRow = document.createElement('label');
+  Object.assign(ssRow.style, checkStyle);
+  const ssCheck = document.createElement('input');
+  ssCheck.type = 'checkbox';
+  ssRow.append(ssCheck, document.createTextNode('Screenshot'));
+
+  captureOpts.append(htmlRow, ssRow);
+  settingsBody.appendChild(captureOpts);
+
+  // Load saved settings
+  chrome.storage.local.get('vg-settings', (result) => {
+    const s = result['vg-settings'] || {};
+    htmlCheck.checked = !!s.html;
+    ssCheck.checked = !!s.screenshot;
+  });
+  function saveSettings() {
+    chrome.storage.local.set({ 'vg-settings': { html: htmlCheck.checked, screenshot: ssCheck.checked } });
+  }
+  htmlCheck.addEventListener('change', saveSettings);
+  ssCheck.addEventListener('change', saveSettings);
   settingsScreen.append(settingsHeader, settingsBody);
 
   /** Show settings screen, hide timeline + footer. */
