@@ -9,8 +9,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
   selectorSegment, buildBreadcrumb, getRole, buildMetaLine, bestSelector,
   findIntersectingNodes, findCommonAncestor,
-  updateComment, removeAnnotation, toggleResolved,
-  getAnnotations, clearAnnotations,
+  updateComment, removeAnnotation, toggleResolved, updateCategory, updateSeverity,
+  getAnnotations, clearAnnotations, addPageNote,
   start, stop, isActive, storageKey, save, load,
 } from '../../lib/annotate.js';
 
@@ -755,5 +755,76 @@ describe('export button success states', () => {
     const el = { innerHTML: '', textContent: '' };
     el.innerHTML = '<svg></svg>Sent!';
     expect(el.innerHTML).toContain('<svg>');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Page notes
+// ---------------------------------------------------------------------------
+
+describe('addPageNote', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('creates a page-note annotation with no element reference', () => {
+    const note = addPageNote();
+    expect(note.type).toBe('page-note');
+    expect(note.region).toEqual({ x: 0, y: 0, width: 0, height: 0 });
+    expect(note.nids).toEqual([]);
+    expect(note.ancestor).toBeNull();
+  });
+
+  it('assigns a UUID to page notes', () => {
+    const note = addPageNote();
+    expect(note.uuid).toBeDefined();
+    expect(note.uuid.length).toBeGreaterThan(10);
+  });
+
+  it('assigns a timestamp to page notes', () => {
+    const note = addPageNote();
+    expect(note.timestamp).toBeDefined();
+    expect(new Date(note.timestamp).getTime()).not.toBeNaN();
+  });
+
+  it('adds page note to annotations list', () => {
+    addPageNote();
+    addPageNote();
+    expect(getAnnotations()).toHaveLength(2);
+    expect(getAnnotations().every((a) => a.type === 'page-note')).toBe(true);
+  });
+
+  it('increments id for each page note', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    expect(b.id).toBe(a.id + 1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Category and severity updates
+// ---------------------------------------------------------------------------
+
+describe('updateCategory', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('updates category on an annotation', () => {
+    const note = addPageNote();
+    updateCategory(note.id, 'visual');
+    expect(getAnnotations()[0].category).toBe('visual');
+  });
+
+  it('does nothing for non-existent id', () => {
+    addPageNote();
+    updateCategory(999, 'a11y');
+    expect(getAnnotations()[0].category).toBe('');
+  });
+});
+
+describe('updateSeverity', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('updates severity on an annotation', () => {
+    const note = addPageNote();
+    updateSeverity(note.id, 'critical');
+    expect(getAnnotations()[0].severity).toBe('critical');
   });
 });
