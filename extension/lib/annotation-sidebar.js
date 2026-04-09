@@ -73,7 +73,8 @@ export function create() {
   sidebarEl.setAttribute(ATTR, 'sidebar');
   Object.assign(sidebarEl.style, {
     position: 'fixed', top: '60px', right: '0', zIndex: '2147483646',
-    width: '300px', maxHeight: 'calc(100vh - 120px)', overflowY: 'auto',
+    width: '300px', maxHeight: 'calc(100vh - 120px)',
+    display: 'flex', flexDirection: 'column',
     background: '#1e1e2e', borderLeft: '1px solid #333', borderRadius: '8px 0 0 8px',
     fontFamily: 'system-ui, sans-serif', fontSize: '14px',
     boxShadow: '-2px 0 12px rgba(0,0,0,0.3)', transition: 'transform 0.2s',
@@ -141,11 +142,12 @@ export function create() {
 
   const list = document.createElement('div');
   list.setAttribute(ATTR, 'list');
+  Object.assign(list.style, { flex: '1', overflowY: 'auto', minHeight: '0' });
 
   // Footer container - holds all footer rows
   const footer = document.createElement('div');
   footer.setAttribute(ATTR, 'footer');
-  Object.assign(footer.style, { borderTop: '1px solid #2a2a3a', padding: '6px 8px' });
+  Object.assign(footer.style, { borderTop: '1px solid #2a2a3a', padding: '6px 8px', flexShrink: '0' });
 
   const btnStyle = {
     padding: '7px 4px', border: 'none', borderRadius: '6px',
