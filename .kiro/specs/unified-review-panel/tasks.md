@@ -24,17 +24,17 @@
 
 ## Phase 3: Bidirectional Resolution + Kiro Requests
 
-- [ ] 3.1 Extension reads resolved state from server on sidebar open
-- [ ] 3.2 Resolved items show checkmark + resolution summary + "resolved by" label
-- [ ] 3.3 Offline state in chrome.storage, last-write-wins sync on reconnect
-- [ ] 3.4 Kiro requests as timeline items (bell icon, URL, guidance note, Capture Now button)
-- [ ] 3.5 Add `guidance` parameter to `request_capture` MCP tool
-- [ ] 3.6 Completed requests transform into capture items; expired requests show dimmed
-- [ ] 3.7 Tests: sync scenarios (server resolved, offline resolve, conflict, reconnect)
+- [x] 3.1 Extension reads resolved state from server on sidebar open
+- [x] 3.2 Resolved items show checkmark + resolution summary + "resolved by" label
+- [x] 3.3 Offline state in chrome.storage, last-write-wins sync on reconnect
+- [x] 3.4 Kiro requests as timeline items (bell icon, URL, guidance note, Capture Now button)
+- [x] 3.5 Add `guidance` parameter to `request_capture` MCP tool
+- [x] 3.6 Completed requests transform into capture items; expired requests show dimmed
+- [x] 3.7 Tests: sync scenarios (server resolved, offline resolve, conflict, reconnect)
 
 ## Phase 4: Export Updates
 
-- [ ] 4.1 Send to Kiro bundles all item types (captures + notes + element annotations)
-- [ ] 4.2 Markdown export includes page notes section and resolution status
-- [ ] 4.3 Resolution note sanitization in markdown (escape backticks, pipes)
-- [ ] 4.4 Tests for export with new item types
+- [x] 4.1 Send to Kiro bundles all item types (captures + notes + element annotations)
+- [x] 4.2 Markdown export includes page notes section and resolution status
+- [x] 4.3 Resolution note sanitization in markdown (escape backticks, pipes)
+- [x] 4.4 Tests for export with new item types

@@ -569,8 +569,8 @@ export function storageKey() {
 export async function save() {
   if (typeof chrome === 'undefined' || !chrome.storage) return;
   const key = storageKey();
-  const data = annotations.map(({ id, type, region, comment, nids, ancestor, resolved }) =>
-    ({ id, type, region, comment, nids, ancestor, ...(resolved ? { resolved } : {}) }));
+  const data = annotations.map(({ id, uuid, type, region, comment, severity, category, nids, ancestor, resolved, resolution, timestamp }) =>
+    ({ id, uuid, type, region, comment, severity, category, nids, ancestor, timestamp, ...(resolved ? { resolved, resolution } : {}) }));
   await chrome.storage.local.set({ [key]: { annotations: data, nextId } });
 }
 

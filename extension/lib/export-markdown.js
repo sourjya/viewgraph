@@ -4,8 +4,17 @@
  * Pure function that formats annotations into a structured markdown
  * bug report. No DOM dependency - can be tested in isolation.
  *
+ * Handles three annotation types: element, region, and page-note.
+ * Resolution details are included for resolved items.
+ *
  * @see .kiro/specs/multi-export/design.md
  */
+
+/** Sanitize text for markdown: escape backticks and pipes. */
+function sanitize(text) {
+  if (!text) return '';
+  return text.replace(/`/g, '\\`').replace(/\|/g, '\\|');
+}
 
 /**
  * Format annotations as a markdown bug report.
@@ -33,22 +42,49 @@ export function formatMarkdown(annotations, metadata, options = {}) {
     return lines.join('\n');
   }
 
-  for (const ann of annotations) {
+  // Separate page notes from element/region annotations
+  const pageNotes = annotations.filter((a) => a.type === 'page-note');
+  const elementAnns = annotations.filter((a) => a.type !== 'page-note');
+
+  // Page notes section
+  if (pageNotes.length > 0) {
+    lines.push('### Page Notes');
+    lines.push('');
+    for (const note of pageNotes) {
+      const prefix = note.resolved ? '[RESOLVED] ' : '';
+      const sevTag = note.severity ? ` [${note.severity.toUpperCase()}]` : '';
+      const catTag = note.category ? ` (${note.category})` : '';
+      lines.push(`- ${prefix}${sanitize(note.comment) || '(no comment)'}${sevTag}${catTag}`);
+      if (note.resolved && note.resolution) {
+        const r = note.resolution;
+        lines.push(`  - _${r.action || 'fixed'} by ${sanitize(r.by || 'unknown')}${r.summary ? ': ' + sanitize(r.summary) : ''}_`);
+      }
+    }
+    lines.push('');
+  }
+
+  for (const ann of elementAnns) {
     const label = ann.ancestor || ann.type || 'element';
     const prefix = ann.resolved ? '[RESOLVED] ' : '';
     const sevTag = ann.severity ? ` [${ann.severity.toUpperCase()}]` : '';
-    lines.push(`### #${ann.id} - ${label}${sevTag}`);
-    lines.push(`${prefix}${ann.comment || '(no comment)'}`);
+    const catTag = ann.category ? ` (${ann.category})` : '';
+    lines.push(`### #${ann.id} - ${label}${sevTag}${catTag}`);
+    lines.push(`${prefix}${sanitize(ann.comment) || '(no comment)'}`);
     if (ann.element) {
       const el = ann.element;
       const tag = el.placeholder ? `<${el.tag} placeholder="${el.placeholder}">` : el.type ? `<${el.tag} type="${el.type}">` : `<${el.tag}>`;
       lines.push(`- **Element:** \`${tag}\``);
       if (el.selector) lines.push(`- **Selector:** \`${el.selector}\``);
-      if (el.text) lines.push(`- **Text:** "${el.text}"`);
+      if (el.text) lines.push(`- **Text:** "${sanitize(el.text)}"`);
       if (el.fontSize) lines.push(`- **Font:** ${el.fontSize} / ${el.fontFamily || ''}`);
     }
     if (ann.region && ann.region.width) {
       lines.push(`- **Size:** ${ann.region.width} x ${ann.region.height}px`);
+    }
+    if (ann.resolved && ann.resolution) {
+      const r = ann.resolution;
+      lines.push(`- **Resolution:** ${r.action || 'fixed'} by ${sanitize(r.by || 'unknown')}${r.summary ? ' - ' + sanitize(r.summary) : ''}`);
+      if (r.filesChanged?.length) lines.push(`- **Files:** ${r.filesChanged.map(sanitize).join(', ')}`);
     }
     if (options.includeScreenshots) {
       lines.push(`![screenshot](screenshots/ann-${ann.id}.png)`);

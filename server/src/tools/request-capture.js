@@ -13,13 +13,16 @@ export function register(server, queue) {
     'request_capture',
     `Request a fresh ${PROJECT_NAME} capture from the browser extension. ` +
     'The extension will capture the specified URL and submit the result. ' +
-    'Use get_request_status to poll for completion.',
+    'Use get_request_status to poll for completion. ' +
+    'Provide guidance to tell the user what to look for when capturing.',
     {
       url: z.string().describe('URL of the page to capture'),
+      guidance: z.string().max(500).optional()
+        .describe('Instructions for the user, e.g. "Verify fix: reload and check the header"'),
     },
-    async ({ url }) => {
+    async ({ url, guidance }) => {
       try {
-        const req = queue.create(url);
+        const req = queue.create(url, { guidance });
         return { content: [{ type: 'text', text: JSON.stringify({ requestId: req.id, status: req.status }) }] };
       } catch (err) {
         return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };

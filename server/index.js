@@ -135,7 +135,7 @@ async function main() {
   }
 
   // Start HTTP receiver for extension communication
-  httpReceiver = createHttpReceiver({ queue: requestQueue, capturesDir: CAPTURES_DIR, allowedDirs: ALLOWED_DIRS, port: HTTP_PORT ?? 9876, secret: httpSecret });
+  httpReceiver = createHttpReceiver({ queue: requestQueue, capturesDir: CAPTURES_DIR, allowedDirs: ALLOWED_DIRS, port: HTTP_PORT ?? 9876, secret: httpSecret, indexer });
   await httpReceiver.start();
 
   watcher = createWatcher(CAPTURES_DIR, {
