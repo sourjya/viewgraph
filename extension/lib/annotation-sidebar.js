@@ -322,51 +322,83 @@ export function create() {
 
   settingsBody.append(serverLine, optionsLink);
 
-  // Capture options - checkboxes for HTML snapshot and screenshot
+  // Capture options - toggle switches
   const captureOpts = document.createElement('div');
   Object.assign(captureOpts.style, { marginTop: '12px', borderTop: '1px solid #333', paddingTop: '10px' });
   const optsLabel = document.createElement('div');
   optsLabel.textContent = 'Capture includes:';
-  Object.assign(optsLabel.style, { color: '#9ca3af', fontSize: '11px', marginBottom: '6px', fontWeight: '600' });
+  Object.assign(optsLabel.style, { color: '#9ca3af', fontSize: '11px', marginBottom: '8px', fontWeight: '600' });
   captureOpts.appendChild(optsLabel);
 
-  const checkStyle = { display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', color: '#c8c8d0', fontSize: '12px', cursor: 'pointer' };
+  /** Build a toggle switch row. Returns { row, input }. */
+  function createToggleRow(labelText, opts = {}) {
+    const row = document.createElement('label');
+    Object.assign(row.style, {
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      marginBottom: '6px', color: '#c8c8d0', fontSize: '12px',
+      cursor: opts.disabled ? 'default' : 'pointer',
+      opacity: opts.disabled ? '0.5' : '1',
+    });
+    const text = document.createElement('span');
+    text.textContent = labelText;
+    // Toggle track
+    const track = document.createElement('span');
+    Object.assign(track.style, {
+      position: 'relative', width: '32px', height: '18px', flexShrink: '0',
+      borderRadius: '9px', transition: 'background 0.2s', display: 'inline-block',
+    });
+    // Hidden checkbox drives state
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    Object.assign(input.style, { position: 'absolute', opacity: '0', width: '0', height: '0' });
+    if (opts.checked) input.checked = true;
+    if (opts.disabled) input.disabled = true;
+    // Toggle knob
+    const knob = document.createElement('span');
+    Object.assign(knob.style, {
+      position: 'absolute', top: '2px', width: '14px', height: '14px',
+      borderRadius: '50%', background: '#fff', transition: 'left 0.2s',
+    });
+    function syncToggle() {
+      track.style.background = input.checked ? '#6366f1' : '#444';
+      knob.style.left = input.checked ? '16px' : '2px';
+    }
+    syncToggle();
+    input.addEventListener('change', syncToggle);
+    track.append(input, knob);
+    row.append(text, track);
+    return { row, input };
+  }
 
-  // JSON capture - always on, cannot be unchecked
-  const jsonRow = document.createElement('label');
-  Object.assign(jsonRow.style, { ...checkStyle, cursor: 'default', opacity: '0.6' });
-  const jsonCheck = document.createElement('input');
-  jsonCheck.type = 'checkbox';
-  jsonCheck.checked = true;
-  jsonCheck.disabled = true;
-  jsonRow.append(jsonCheck, document.createTextNode('ViewGraph JSON'));
+  // ViewGraph JSON - always on
+  const jsonToggle = createToggleRow('ViewGraph JSON', { checked: true, disabled: true });
+  // JSON output - optional
+  const jsonOutToggle = createToggleRow('JSON output');
+  // HTML snapshot - optional
+  const htmlToggle = createToggleRow('HTML snapshot');
+  // Screenshot - optional
+  const ssToggle = createToggleRow('Screenshot');
 
-  const htmlRow = document.createElement('label');
-  Object.assign(htmlRow.style, checkStyle);
-  const htmlCheck = document.createElement('input');
-  htmlCheck.type = 'checkbox';
-  htmlRow.append(htmlCheck, document.createTextNode('HTML snapshot'));
-
-  const ssRow = document.createElement('label');
-  Object.assign(ssRow.style, checkStyle);
-  const ssCheck = document.createElement('input');
-  ssCheck.type = 'checkbox';
-  ssRow.append(ssCheck, document.createTextNode('Screenshot'));
-
-  captureOpts.append(jsonRow, htmlRow, ssRow);
+  captureOpts.append(jsonToggle.row, jsonOutToggle.row, htmlToggle.row, ssToggle.row);
   settingsBody.appendChild(captureOpts);
 
   // Load saved settings
   chrome.storage.local.get('vg-settings', (result) => {
     const s = result['vg-settings'] || {};
-    htmlCheck.checked = !!s.html;
-    ssCheck.checked = !!s.screenshot;
+    jsonOutToggle.input.checked = !!s.jsonOutput;
+    htmlToggle.input.checked = !!s.html;
+    ssToggle.input.checked = !!s.screenshot;
+    // Re-sync visuals after loading
+    jsonOutToggle.input.dispatchEvent(new Event('change'));
+    htmlToggle.input.dispatchEvent(new Event('change'));
+    ssToggle.input.dispatchEvent(new Event('change'));
   });
   function saveSettings() {
-    chrome.storage.local.set({ 'vg-settings': { html: htmlCheck.checked, screenshot: ssCheck.checked } });
+    chrome.storage.local.set({ 'vg-settings': { jsonOutput: jsonOutToggle.input.checked, html: htmlToggle.input.checked, screenshot: ssToggle.input.checked } });
   }
-  htmlCheck.addEventListener('change', saveSettings);
-  ssCheck.addEventListener('change', saveSettings);
+  jsonOutToggle.input.addEventListener('change', saveSettings);
+  htmlToggle.input.addEventListener('change', saveSettings);
+  ssToggle.input.addEventListener('change', saveSettings);
   settingsScreen.append(settingsHeader, settingsBody);
 
   /** Show settings screen, hide timeline + footer. */
