@@ -1,9 +1,19 @@
 {
   "name": "viewgraph",
   "version": "0.1.0",
-  "description": "Browser extension + MCP server for AI-powered UI capture, auditing, and annotation  -  ViewGraph",
-  "private": true,
+  "description": "MCP server for AI-powered UI capture, auditing, and annotation",
   "type": "module",
+  "main": "server/index.js",
+  "bin": {
+    "viewgraph-init": "scripts/viewgraph-init.js"
+  },
+  "files": [
+    "server/index.js",
+    "server/src/",
+    "server/package.json",
+    "scripts/viewgraph-init.js",
+    "power/"
+  ],
   "workspaces": [
     "server",
     "extension"
@@ -20,10 +30,21 @@
   "engines": {
     "node": ">=18.0.0"
   },
+  "keywords": ["mcp", "viewgraph", "ui-review", "accessibility", "dom-capture", "kiro", "claude", "cursor"],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourjya/viewgraph.git"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "chokidar": "^5.0.0",
+    "zod": "^4.3.6"
+  },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.2.0",
-    "globals": "^17.4.0"
+    "globals": "^17.4.0",
+    "vitest": "^4.1.3"
   }
 }
