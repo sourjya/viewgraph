@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { traverseDOM } from '../../lib/traverser.js';
+import { traverseDOM } from '#lib/traverser.js';
 
 /**
  * jsdom returns zero-size bounding boxes, causing isVisible to skip

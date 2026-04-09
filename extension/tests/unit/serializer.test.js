@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { serialize } from '../../lib/serializer.js';
+import { serialize } from '#lib/serializer.js';
 
 /** Helper: scored element record. */
 function el(overrides = {}) {

@@ -13,7 +13,7 @@ import {
   getAnnotations, clearAnnotations, addPageNote,
   start, stop, isActive, storageKey, save, load,
   hideHoverUI, ATTR,
-} from '../../lib/annotate.js';
+} from '#lib/annotate.js';
 
 let restore;
 
@@ -282,7 +282,7 @@ describe('save and load', () => {
 // Panel positioning
 // ---------------------------------------------------------------------------
 
-import { show as showPanel, hide as hidePanel } from '../../lib/annotation-panel.js';
+import { show as showPanel, hide as hidePanel } from '#lib/annotation-panel.js';
 
 describe('annotation panel positioning', () => {
   afterEach(() => hidePanel());
@@ -477,7 +477,7 @@ describe('full-viewport element skip', () => {
 // Panel border color matches marker
 // ---------------------------------------------------------------------------
 
-import { MARKER_COLORS } from '../../lib/annotate.js';
+import { MARKER_COLORS } from '#lib/annotate.js';
 
 describe('panel border color', () => {
   it('annotation id 1 maps to first marker color', () => {

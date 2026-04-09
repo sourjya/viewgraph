@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "description": "Browser extension for capturing DOM structure, screenshots, and annotations for AI-powered UI analysis  -  ViewGraph",
   "type": "module",
+  "imports": {
+    "#lib/*.js": "./lib/*.js",
+    "#lib/*": "./lib/*"
+  },
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt --browser firefox",

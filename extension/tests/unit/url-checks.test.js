@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { isInjectable, getBlockedReason } from '../../lib/url-checks.js';
+import { isInjectable, getBlockedReason } from '#lib/url-checks.js';
 
 describe('isInjectable', () => {
   it('allows regular http URLs', () => {
