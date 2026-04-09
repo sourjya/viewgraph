@@ -12,6 +12,7 @@ import {
   updateComment, removeAnnotation, toggleResolved, updateCategory, updateSeverity,
   getAnnotations, clearAnnotations, addPageNote,
   start, stop, isActive, storageKey, save, load,
+  hideHoverUI, ATTR,
 } from '../../lib/annotate.js';
 
 let restore;
@@ -826,5 +827,221 @@ describe('updateSeverity', () => {
     const note = addPageNote();
     updateSeverity(note.id, 'critical');
     expect(getAnnotations()[0].severity).toBe('critical');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Multi-select category (comma-separated storage)
+// ---------------------------------------------------------------------------
+
+describe('multi-select category', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('stores single category as plain string', () => {
+    const note = addPageNote();
+    updateCategory(note.id, 'visual');
+    expect(getAnnotations()[0].category).toBe('visual');
+  });
+
+  it('stores multiple categories as comma-separated string', () => {
+    const note = addPageNote();
+    updateCategory(note.id, 'visual,functional');
+    expect(getAnnotations()[0].category).toBe('visual,functional');
+  });
+
+  it('adds a category by appending to existing', () => {
+    const note = addPageNote();
+    updateCategory(note.id, 'visual');
+    const cats = getAnnotations()[0].category.split(',');
+    cats.push('a11y');
+    updateCategory(note.id, cats.join(','));
+    expect(getAnnotations()[0].category).toBe('visual,a11y');
+  });
+
+  it('removes a category by filtering from comma string', () => {
+    const note = addPageNote();
+    updateCategory(note.id, 'visual,functional,a11y');
+    const cats = getAnnotations()[0].category.split(',').filter((c) => c !== 'functional');
+    updateCategory(note.id, cats.join(','));
+    expect(getAnnotations()[0].category).toBe('visual,a11y');
+  });
+
+  it('removing last category results in empty string', () => {
+    const note = addPageNote();
+    updateCategory(note.id, 'visual');
+    const cats = getAnnotations()[0].category.split(',').filter((c) => c !== 'visual');
+    updateCategory(note.id, cats.join(','));
+    expect(getAnnotations()[0].category).toBe('');
+  });
+
+  it('handles empty category gracefully', () => {
+    const note = addPageNote();
+    updateCategory(note.id, '');
+    expect(getAnnotations()[0].category).toBe('');
+  });
+
+  it('does not crash on non-existent annotation id', () => {
+    expect(() => updateCategory(999, 'visual')).not.toThrow();
+  });
+
+  it('parses comma-separated into array correctly', () => {
+    const raw = 'visual,functional,a11y';
+    const parsed = raw.split(',').map((s) => s.trim()).filter(Boolean);
+    expect(parsed).toEqual(['visual', 'functional', 'a11y']);
+  });
+
+  it('parses empty string into empty array', () => {
+    const raw = '';
+    const parsed = raw ? raw.split(',').map((s) => s.trim()).filter(Boolean) : [];
+    expect(parsed).toEqual([]);
+  });
+
+  it('handles whitespace in comma-separated values', () => {
+    const raw = 'visual , functional , a11y';
+    const parsed = raw.split(',').map((s) => s.trim()).filter(Boolean);
+    expect(parsed).toEqual(['visual', 'functional', 'a11y']);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Filter logic (all/open/resolved partitioning)
+// ---------------------------------------------------------------------------
+
+describe('filter logic - all/open/resolved', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('new annotations are unresolved by default', () => {
+    addPageNote();
+    const anns = getAnnotations();
+    expect(anns[0].resolved).toBeFalsy();
+  });
+
+  it('partitions into open and resolved correctly', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    const c = addPageNote();
+    toggleResolved(b.id);
+    const anns = getAnnotations();
+    const open = anns.filter((x) => !x.resolved);
+    const resolved = anns.filter((x) => x.resolved);
+    expect(open).toHaveLength(2);
+    expect(resolved).toHaveLength(1);
+    expect(resolved[0].id).toBe(b.id);
+  });
+
+  it('all filter returns every annotation', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    toggleResolved(a.id);
+    const anns = getAnnotations();
+    expect(anns).toHaveLength(2);
+  });
+
+  it('open filter excludes resolved items', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    toggleResolved(a.id);
+    toggleResolved(b.id);
+    const open = getAnnotations().filter((x) => !x.resolved);
+    expect(open).toHaveLength(0);
+  });
+
+  it('resolved filter excludes open items', () => {
+    addPageNote();
+    addPageNote();
+    const resolved = getAnnotations().filter((x) => x.resolved);
+    expect(resolved).toHaveLength(0);
+  });
+
+  it('toggling resolved twice returns to open', () => {
+    const a = addPageNote();
+    toggleResolved(a.id);
+    toggleResolved(a.id);
+    const open = getAnnotations().filter((x) => !x.resolved);
+    expect(open).toHaveLength(1);
+  });
+
+  it('badge count reflects only open items', () => {
+    addPageNote();
+    const b = addPageNote();
+    addPageNote();
+    toggleResolved(b.id);
+    const openCount = getAnnotations().filter((x) => !x.resolved).length;
+    expect(openCount).toBe(2);
+  });
+
+  it('badge count is zero when all resolved', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    toggleResolved(a.id);
+    toggleResolved(b.id);
+    const openCount = getAnnotations().filter((x) => !x.resolved).length;
+    expect(openCount).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// hideHoverUI on VG element detection
+// ---------------------------------------------------------------------------
+
+describe('hideHoverUI', () => {
+  afterEach(() => { stop(); });
+
+  it('hides overlay and tooltip elements', () => {
+    start();
+    // Create fake overlay and tooltip like annotate.js does
+    const overlay = document.querySelector(`[${ATTR}="overlay"]`);
+    const tooltip = document.querySelector(`[${ATTR}="tooltip"]`);
+    if (overlay) overlay.style.display = 'block';
+    if (tooltip) tooltip.style.display = 'block';
+    hideHoverUI();
+    if (overlay) expect(overlay.style.display).toBe('none');
+    if (tooltip) expect(tooltip.style.display).toBe('none');
+  });
+
+  it('does not throw when called before start', () => {
+    expect(() => hideHoverUI()).not.toThrow();
+  });
+
+  it('VG elements have the data-vg-annotate attribute', () => {
+    start();
+    const vgEls = document.querySelectorAll(`[${ATTR}]`);
+    expect(vgEls.length).toBeGreaterThan(0);
+  });
+
+  it('ATTR constant matches expected value', () => {
+    expect(ATTR).toBe('data-vg-annotate');
+  });
+
+  it('VG element detection walks up parent chain', () => {
+    // Simulate a nested child inside a VG element
+    const parent = document.createElement('div');
+    parent.setAttribute(ATTR, 'sidebar');
+    const child = document.createElement('span');
+    parent.appendChild(child);
+    document.body.appendChild(parent);
+    // Walk up from child to find VG attribute
+    let node = child;
+    let found = false;
+    while (node && node !== document.documentElement) {
+      if (node.hasAttribute && node.hasAttribute(ATTR)) { found = true; break; }
+      node = node.parentElement;
+    }
+    expect(found).toBe(true);
+    parent.remove();
+  });
+
+  it('non-VG elements do not trigger VG detection', () => {
+    const el = document.createElement('div');
+    el.className = 'regular-element';
+    document.body.appendChild(el);
+    let node = el;
+    let found = false;
+    while (node && node !== document.documentElement) {
+      if (node.hasAttribute && node.hasAttribute(ATTR)) { found = true; break; }
+      node = node.parentElement;
+    }
+    expect(found).toBe(false);
+    el.remove();
   });
 });

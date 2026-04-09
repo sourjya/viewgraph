@@ -23,7 +23,7 @@ import { serialize } from './serializer.js';
 // ---------------------------------------------------------------------------
 
 /** Attribute used on all annotate-mode DOM elements for cleanup/exclusion. */
-const ATTR = 'data-vg-annotate';
+export const ATTR = 'data-vg-annotate';
 
 /** Overlay colors by nesting depth for hover highlight. */
 const DEPTH_COLORS = [
@@ -251,7 +251,7 @@ function updateTooltip(el, rect) {
   Object.assign(tooltipEl.style, { top: `${tooltipY}px`, left: `${rect.left}px`, display: 'block' });
 }
 
-function hideHoverUI() {
+export function hideHoverUI() {
   if (overlayEl) overlayEl.style.display = 'none';
   if (tooltipEl) tooltipEl.style.display = 'none';
 }
