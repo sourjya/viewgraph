@@ -621,9 +621,9 @@ export function refresh() {
   });
   const tabStyle = { flex: '1', padding: '6px 0', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '11px', fontWeight: '600', fontFamily: 'system-ui, sans-serif', textAlign: 'center' };
   for (const { key, label } of [
-    { key: 'all', label: `All (${anns.length})` },
     { key: 'open', label: `Open (${open.length})` },
     { key: 'resolved', label: `Resolved (${resolved.length})` },
+    { key: 'all', label: `All (${anns.length})` },
   ]) {
     const tab = document.createElement('button');
     tab.textContent = label;
