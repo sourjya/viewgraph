@@ -115,6 +115,30 @@ export default defineContentScript({
         return true;
       }
 
+      // Annotations-only send: no DOM capture, just metadata + annotations
+      if (message.type === 'send-annotations-only') {
+        const capture = {
+          metadata: {
+            format: 'viewgraph-v2', version: '2.2.0',
+            url: location.href, title: document.title,
+            timestamp: new Date().toISOString(),
+            viewport: { width: window.innerWidth, height: window.innerHeight },
+            captureMode: 'annotations-only',
+            stats: { totalNodes: 0 },
+          },
+          nodes: [],
+          annotations: getAnnotations().map((a) => ({
+            id: a.id, uuid: a.uuid, type: a.type, region: a.region,
+            comment: a.comment, severity: a.severity || '', category: a.category || '',
+            nodeIds: a.nids, ancestor: a.ancestor,
+            timestamp: a.timestamp || new Date().toISOString(),
+            resolved: a.resolved || false, resolution: a.resolution || null,
+          })),
+        };
+        sendResponse({ ok: true, capture });
+        return true;
+      }
+
       return false;
     });
   },

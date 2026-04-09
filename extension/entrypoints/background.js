@@ -13,6 +13,7 @@
  */
 
 import { SERVER_BASE_URL as SERVER_URL, discoverServer } from '../lib/constants.js';
+import { isInjectable, getBlockedReason } from '../lib/url-checks.js';
 
 const PROJECT_MAPPINGS_KEY = 'vg-project-mappings';
 
@@ -115,7 +116,56 @@ async function captureScreenshot(tabId) {
 }
 
 export default defineBackground(() => {
+  // ---------------------------------------------------------------------------
+  // Clear default popup on startup so chrome.action.onClicked fires.
+  // WXT auto-sets default_popup from the popup/ entrypoint. We override it
+  // to empty so icon clicks go through our onClicked handler instead.
+  // The popup HTML is still available for dynamic use on non-injectable pages.
+  // ---------------------------------------------------------------------------
+  chrome.action.setPopup({ popup: '' });
+
+  // ---------------------------------------------------------------------------
+  // Extension icon click - open sidebar directly, or fallback popup for
+  // non-injectable pages (chrome://, about:, etc.)
+  // ---------------------------------------------------------------------------
+  chrome.action.onClicked.addListener(async (tab) => {
+    if (!tab?.url || !isInjectable(tab.url)) {
+      // Non-injectable page: show fallback popup with error
+      const reason = getBlockedReason(tab?.url);
+      await chrome.storage.local.set({ 'vg-blocked-reason': reason });
+      await chrome.action.setPopup({ popup: 'popup/index.html' });
+      // Open the popup programmatically by simulating the action
+      // Note: chrome.action.openPopup() requires Chrome 127+
+      try { await chrome.action.openPopup(); } catch { /* older Chrome */ }
+      return;
+    }
+
+    // Injectable page: clear popup so onClicked fires next time, then open sidebar
+    await chrome.action.setPopup({ popup: '' });
+    try {
+      await chrome.tabs.sendMessage(tab.id, { type: 'toggle-annotate' });
+    } catch {
+      // Content script not injected yet - inject and retry
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['content-scripts/content.js'],
+      });
+      await chrome.tabs.sendMessage(tab.id, { type: 'toggle-annotate' });
+    }
+  });
+
+  // Reset popup to empty on tab change so onClicked fires for injectable pages
+  chrome.tabs.onActivated.addListener(async () => {
+    await chrome.action.setPopup({ popup: '' });
+  });
+
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // Open extension options page from sidebar settings
+    if (message.type === 'open-options') {
+      chrome.runtime.openOptionsPage();
+      return false;
+    }
+
     // Handle subtree capture from inspector - just push to server
     if (message.type === 'inspect-capture') {
       (async () => {
@@ -131,15 +181,17 @@ export default defineBackground(() => {
     if (message.type === 'send-review') {
       (async () => {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        console.log('[viewgraph] send-review: tab', tab?.url);
+        console.log('[viewgraph] send-review: tab', tab?.url, 'includeCapture:', message.includeCapture);
         if (!tab?.id) { sendResponse({ ok: false, error: 'No active tab' }); return; }
-        const result = await chrome.tabs.sendMessage(tab.id, { type: 'send-review' });
-        console.log('[viewgraph] send-review: content script result', result?.ok, result?.error);
+
+        // Ask content script for annotations (and optionally a full capture)
+        const msgType = message.includeCapture ? 'send-review' : 'send-annotations-only';
+        const result = await chrome.tabs.sendMessage(tab.id, { type: msgType });
+        console.log('[viewgraph] send-review: content script result', result?.ok);
         if (!result?.ok) { sendResponse({ ok: false, error: result?.error }); return; }
+
         const dir = tab.url ? await lookupCapturesDir(tab.url) : null;
-        console.log('[viewgraph] send-review: capturesDir lookup', dir);
         const pushResult = await pushToServer(result.capture, dir);
-        console.log('[viewgraph] send-review: push result', pushResult);
         sendResponse({ ok: true, pushed: !!pushResult, filename: pushResult?.filename });
       })();
       return true;

@@ -624,6 +624,23 @@ export function removeAnnotation(id) {
 
 export function getAnnotations() { return [...annotations]; }
 
+/**
+ * Add a page-level note with no element reference.
+ * Returns the new annotation for the caller to open a panel on.
+ */
+export function addPageNote() {
+  const id = nextId++;
+  const annotation = {
+    id, uuid: crypto.randomUUID(), type: 'page-note',
+    region: { x: 0, y: 0, width: 0, height: 0 },
+    comment: '', severity: '', category: '', nids: [], ancestor: null,
+    timestamp: new Date().toISOString(),
+  };
+  annotations.push(annotation);
+  save();
+  return annotation;
+}
+
 export function clearAnnotations() {
   annotations = [];
   nextId = 1;

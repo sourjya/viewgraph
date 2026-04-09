@@ -10,7 +10,7 @@
  */
 
 import { show as showPanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, toggleResolved, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate } from './annotate.js';
+import { getAnnotations, removeAnnotation, toggleResolved, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate, addPageNote } from './annotate.js';
 import { formatMarkdown } from './export-markdown.js';
 import { discoverServer } from './constants.js';
 
@@ -18,6 +18,7 @@ const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
 let badgeEl = null;
 let collapsed = false;
+let hasCaptured = false;
 
 /** Create and mount the sidebar. */
 export function create() {
@@ -120,7 +121,7 @@ export function create() {
   sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = '#6366f1'; });
   sendBtn.addEventListener('click', () => {
     console.log('[viewgraph] Send clicked, chrome.runtime available:', !!chrome?.runtime?.sendMessage);
-    chrome.runtime.sendMessage({ type: 'send-review' }, (response) => {
+    chrome.runtime.sendMessage({ type: 'send-review', includeCapture: hasCaptured }, (response) => {
       console.log('[viewgraph] Send response:', response, 'lastError:', chrome.runtime.lastError?.message);
     });
     sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Sent!';
@@ -163,7 +164,102 @@ export function create() {
 
   exportRow.append(sendBtn, copyBtn, dlBtn);
 
-  sidebarEl.append(header, list, exportRow);
+  // Action row: Note button
+  const actionRow = document.createElement('div');
+  actionRow.setAttribute(ATTR, 'action-row');
+  Object.assign(actionRow.style, {
+    display: 'flex', gap: '4px', margin: '8px 8px 4px',
+  });
+
+  const noteBtn = document.createElement('button');
+  noteBtn.setAttribute(ATTR, 'note');
+  noteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Note';
+  Object.assign(noteBtn.style, { ...btnStyle, background: '#374151', flex: '1' });
+  noteBtn.title = 'Add a page-level note (no element reference)';
+  noteBtn.addEventListener('mouseenter', () => { noteBtn.style.background = '#4b5563'; });
+  noteBtn.addEventListener('mouseleave', () => { noteBtn.style.background = '#374151'; });
+  noteBtn.addEventListener('click', () => {
+    const ann = addPageNote();
+    showPanel(ann, { onChange: () => refresh() });
+    refresh();
+  });
+
+  // Capture button - explicit DOM snapshot
+  const captureBtn = document.createElement('button');
+  captureBtn.setAttribute(ATTR, 'capture');
+  captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Capture';
+  Object.assign(captureBtn.style, { ...btnStyle, background: '#374151', flex: '1' });
+  captureBtn.title = 'Take a DOM snapshot of the current page';
+  captureBtn.addEventListener('mouseenter', () => { captureBtn.style.background = '#4b5563'; });
+  captureBtn.addEventListener('mouseleave', () => { captureBtn.style.background = '#374151'; });
+  captureBtn.addEventListener('click', () => {
+    captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>...';
+    chrome.runtime.sendMessage({ type: 'capture' }, (response) => {
+      if (response?.ok) {
+        hasCaptured = true;
+        captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Done';
+        captureBtn.style.background = '#059669';
+      } else {
+        captureBtn.innerHTML = 'Failed';
+        captureBtn.style.background = '#dc2626';
+      }
+      setTimeout(() => {
+        captureBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>Capture';
+        captureBtn.style.background = '#374151';
+      }, 2000);
+    });
+  });
+
+  actionRow.append(captureBtn, noteBtn);
+
+  sidebarEl.append(header, list, actionRow, exportRow);
+
+  // Collapsible Settings section
+  const settingsSection = document.createElement('div');
+  settingsSection.setAttribute(ATTR, 'settings');
+  const settingsHeader = document.createElement('div');
+  settingsHeader.textContent = '\u25b8 Settings';
+  Object.assign(settingsHeader.style, {
+    padding: '6px 12px', color: '#666', fontSize: '11px', fontWeight: '600',
+    borderTop: '1px solid #2a2a3a', cursor: 'pointer',
+    fontFamily: 'system-ui, sans-serif',
+  });
+  const settingsBody = document.createElement('div');
+  settingsBody.style.display = 'none';
+  Object.assign(settingsBody.style, { padding: '8px 12px', fontSize: '11px', color: '#9ca3af' });
+
+  // Server status line (populated async)
+  const serverLine = document.createElement('div');
+  serverLine.textContent = 'Server: checking...';
+  Object.assign(serverLine.style, { marginBottom: '6px' });
+  discoverServer().then((url) => {
+    if (url) {
+      const port = new URL(url).port;
+      serverLine.innerHTML = `<span style="color:#4ade80">\u25cf</span> Connected (localhost:${port})`;
+    } else {
+      serverLine.innerHTML = '<span style="color:#f87171">\u25cf</span> MCP server offline';
+    }
+  });
+
+  // Options link
+  const optionsLink = document.createElement('a');
+  optionsLink.textContent = 'Project mappings & auth \u2192';
+  optionsLink.href = '#';
+  Object.assign(optionsLink.style, { color: '#a5b4fc', textDecoration: 'none', display: 'block', marginTop: '4px' });
+  optionsLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    chrome.runtime.sendMessage({ type: 'open-options' });
+  });
+
+  settingsBody.append(serverLine, optionsLink);
+  settingsHeader.addEventListener('click', () => {
+    const open = settingsBody.style.display === 'none';
+    settingsBody.style.display = open ? 'block' : 'none';
+    settingsHeader.textContent = `${open ? '\u25be' : '\u25b8'} Settings`;
+  });
+  settingsSection.append(settingsHeader, settingsBody);
+
+  sidebarEl.append(header, list, actionRow, exportRow, settingsSection);
   document.documentElement.appendChild(sidebarEl);
 
   // Collapsed badge - hidden initially
@@ -217,7 +313,7 @@ export function refresh() {
   if (anns.length === 0) {
     const hint = document.createElement('div');
     hint.setAttribute(ATTR, 'hint');
-    hint.textContent = 'Shift + drag to select a region';
+    hint.textContent = 'Click an element or shift+drag to annotate';
     Object.assign(hint.style, {
       padding: '16px 12px', color: '#666', fontSize: '13px',
       textAlign: 'center', fontStyle: 'italic',
@@ -226,7 +322,58 @@ export function refresh() {
     return;
   }
 
-  for (const ann of anns) {
+  // Sort: open items first (by timestamp desc), then resolved
+  const open = anns.filter((a) => !a.resolved);
+  const resolved = anns.filter((a) => a.resolved);
+
+  // Open items count header
+  if (open.length > 0) {
+    const openHeader = document.createElement('div');
+    openHeader.textContent = `Open (${open.length})`;
+    Object.assign(openHeader.style, {
+      padding: '6px 12px', color: '#a5b4fc', fontSize: '11px', fontWeight: '600',
+      borderBottom: '1px solid #2a2a3a', fontFamily: 'system-ui, sans-serif',
+    });
+    list.appendChild(openHeader);
+  }
+
+  for (const ann of open) {
+    list.appendChild(createEntry(ann));
+  }
+
+  // Resolved accordion
+  if (resolved.length > 0) {
+    const accordion = document.createElement('div');
+    const accordionHeader = document.createElement('div');
+    accordionHeader.textContent = `\u25b8 Resolved (${resolved.length})`;
+    Object.assign(accordionHeader.style, {
+      padding: '6px 12px', color: '#666', fontSize: '11px', fontWeight: '600',
+      borderTop: '1px solid #2a2a3a', cursor: 'pointer',
+      fontFamily: 'system-ui, sans-serif',
+    });
+    const accordionList = document.createElement('div');
+    accordionList.style.display = 'none';
+    accordionHeader.addEventListener('click', () => {
+      const open = accordionList.style.display === 'none';
+      accordionList.style.display = open ? 'block' : 'none';
+      accordionHeader.textContent = `${open ? '\u25be' : '\u25b8'} Resolved (${resolved.length})`;
+    });
+    for (const ann of resolved) {
+      accordionList.appendChild(createEntry(ann));
+    }
+    accordion.append(accordionHeader, accordionList);
+    list.appendChild(accordion);
+  }
+
+  /** Severity/category chip colors. */
+  const CHIP_COLORS = {
+    critical: '#dc2626', major: '#f59e0b', minor: '#6b7280',
+    visual: '#6366f1', functional: '#0ea5e9', content: '#8b5cf6',
+    a11y: '#10b981', performance: '#f97316',
+  };
+
+  /** Create a single timeline entry for an annotation. */
+  function createEntry(ann) {
     const entry = document.createElement('div');
     entry.setAttribute(ATTR, 'entry');
     Object.assign(entry.style, {
@@ -255,16 +402,46 @@ export function refresh() {
       maxHeight: '20px', transition: 'max-height 0.25s ease, white-space 0s',
     });
 
-    // Number badge + ancestor element badge + comment
+    // Number badge or page-note icon
     const numBadge = document.createElement('span');
-    numBadge.textContent = `#${ann.id}`;
-    Object.assign(numBadge.style, {
-      background: '#6366f1', color: '#fff', fontSize: '10px', fontWeight: '700',
-      padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
-      fontFamily: 'system-ui, sans-serif',
-    });
+    if (ann.type === 'page-note') {
+      numBadge.textContent = '\ud83d\udcdd';
+      Object.assign(numBadge.style, { marginRight: '4px', fontSize: '12px' });
+    } else {
+      numBadge.textContent = `#${ann.id}`;
+      Object.assign(numBadge.style, {
+        background: '#6366f1', color: '#fff', fontSize: '10px', fontWeight: '700',
+        padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
+        fontFamily: 'system-ui, sans-serif',
+      });
+    }
     label.appendChild(numBadge);
 
+    // Severity chip
+    if (ann.severity) {
+      const sev = document.createElement('span');
+      sev.textContent = ann.severity.charAt(0).toUpperCase() + ann.severity.slice(1);
+      Object.assign(sev.style, {
+        background: CHIP_COLORS[ann.severity] || '#555', color: '#fff',
+        fontSize: '9px', fontWeight: '600', padding: '1px 4px', borderRadius: '8px',
+        marginRight: '3px', fontFamily: 'system-ui, sans-serif',
+      });
+      label.appendChild(sev);
+    }
+
+    // Category chip
+    if (ann.category) {
+      const cat = document.createElement('span');
+      cat.textContent = ann.category.charAt(0).toUpperCase() + ann.category.slice(1);
+      Object.assign(cat.style, {
+        background: CHIP_COLORS[ann.category] || '#555', color: '#fff',
+        fontSize: '9px', fontWeight: '600', padding: '1px 4px', borderRadius: '8px',
+        marginRight: '3px', fontFamily: 'system-ui, sans-serif',
+      });
+      label.appendChild(cat);
+    }
+
+    // Ancestor element badge
     if (ann.ancestor) {
       const elBadge = document.createElement('span');
       elBadge.textContent = ann.ancestor;
@@ -275,6 +452,7 @@ export function refresh() {
       });
       label.appendChild(elBadge);
     }
+
     const commentText = document.createElement('span');
     commentText.textContent = ann.comment || '(no comment)';
     if (ann.resolved) Object.assign(commentText.style, { textDecoration: 'line-through' });
@@ -304,7 +482,7 @@ export function refresh() {
     del.addEventListener('click', (e) => { e.stopPropagation(); removeAnnotation(ann.id); refresh(); });
 
     entry.append(label, resolveBtn, del);
-    list.appendChild(entry);
+    return entry;
   }
 
   updateBadgeCount();
@@ -323,4 +501,5 @@ export function destroy() {
   if (sidebarEl) { sidebarEl.remove(); sidebarEl = null; }
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }
   collapsed = false;
+  hasCaptured = false;
 }
