@@ -280,10 +280,13 @@ function freeze() {
     height: Math.round(rect.height),
   };
   const ancestor = selectorSegment(currentEl);
+  const fullSelector = bestSelector(currentEl);
 
-  // Dedup: if this element already has an annotation, reopen its panel
+  // Dedup: reopen existing annotation if same element clicked again.
+  // Uses bestSelector (more specific) to avoid false matches on wide elements.
   const existing = annotations.find((a) =>
-    a.ancestor === ancestor && a.region.x === region.x && a.region.y === region.y
+    a.element && a.element.selector === fullSelector
+    && a.region.x === region.x && a.region.y === region.y
     && a.region.width === region.width && a.region.height === region.height);
   if (existing) {
     frozen = true;
@@ -529,6 +532,15 @@ function createMarker(annotation, selRect) {
     background: color, color: '#fff', fontSize: '11px', fontWeight: '600',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     fontFamily: 'system-ui, sans-serif',
+    pointerEvents: 'auto', cursor: 'pointer',
+  });
+  // Click badge to reopen this annotation's panel directly (avoids dedup mismatch)
+  badge.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    frozen = true;
+    hideHoverUI();
+    if (onAnnotationAdded) onAnnotationAdded(annotation);
   });
   marker.appendChild(badge);
 

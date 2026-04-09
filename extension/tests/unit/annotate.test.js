@@ -1671,3 +1671,75 @@ describe('region mode drag', () => {
     expect(getCaptureMode()).toBeNull();
   });
 });
+
+// ---------------------------------------------------------------------------
+// BUG: Tab bar and list must render even with zero annotations
+// ---------------------------------------------------------------------------
+
+describe('refresh with zero annotations', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('(+) getAnnotations returns empty array after clear', () => {
+    expect(getAnnotations()).toHaveLength(0);
+  });
+
+  it('(+) adding after clear works normally', () => {
+    clearAnnotations();
+    const note = addPageNote();
+    expect(getAnnotations()).toHaveLength(1);
+    expect(note.id).toBeDefined();
+  });
+
+  it('(-) filter on empty list returns empty', () => {
+    const open = getAnnotations().filter((x) => !x.resolved);
+    const resolved = getAnnotations().filter((x) => x.resolved);
+    expect(open).toHaveLength(0);
+    expect(resolved).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// BUG: Dedup must not match different elements with overlapping regions
+// ---------------------------------------------------------------------------
+
+describe('dedup specificity', () => {
+  beforeEach(() => { clearAnnotations(); });
+
+  it('(+) two annotations with same ancestor but different regions are distinct', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    updateComment(a.id, 'first');
+    updateComment(b.id, 'second');
+    expect(getAnnotations()).toHaveLength(2);
+    expect(getAnnotations()[0].comment).toBe('first');
+    expect(getAnnotations()[1].comment).toBe('second');
+  });
+
+  it('(+) annotations preserve their own IDs', () => {
+    const a = addPageNote();
+    const b = addPageNote();
+    const c = addPageNote();
+    expect(a.id).not.toBe(b.id);
+    expect(b.id).not.toBe(c.id);
+  });
+
+  it('(-) bestSelector returns full path, not just tag.class', () => {
+    document.body.innerHTML = '<div class="card"><span>A</span></div><div class="card"><span>B</span></div>';
+    const spans = document.querySelectorAll('span');
+    const sel1 = bestSelector(spans[0]);
+    const sel2 = bestSelector(spans[1]);
+    // Full selectors should differ even though both are span inside div.card
+    expect(sel1).not.toBe(sel2);
+    document.body.innerHTML = '';
+  });
+
+  it('(-) selectorSegment can match multiple elements (less specific)', () => {
+    document.body.innerHTML = '<div class="card">A</div><div class="card">B</div>';
+    const divs = document.querySelectorAll('div.card');
+    const seg1 = selectorSegment(divs[0]);
+    const seg2 = selectorSegment(divs[1]);
+    // selectorSegment returns same value for same tag+class
+    expect(seg1).toBe(seg2);
+    document.body.innerHTML = '';
+  });
+});

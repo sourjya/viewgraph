@@ -576,7 +576,6 @@ export function refresh() {
       textAlign: 'center', fontStyle: 'italic',
     });
     list.appendChild(hint);
-    return;
   }
 
   // Sort: open items first (by timestamp desc), then resolved
