@@ -96,82 +96,44 @@ Existing fields unchanged for backward compatibility.
 }
 ```
 
-## History Store - Decision: JSONL vs SQLite
+## History Store - Decision: JSONL
 
-### Option A: JSONL (append-only log)
+### Why not SQLite?
+
+SQLite was considered for indexed queries and concurrent write safety. However:
+
+1. **No concurrent writes in practice.** The MCP server is single-threaded Node.js. MCP tools execute sequentially (single stdio connection). The HTTP receiver and MCP tools can theoretically race on the same file, but this is unrealistic - the user just sent a capture, Kiro hasn't read it yet. JSONL appends are atomic at the OS level for small writes (< 4KB).
+
+2. **Cross-capture queries are fast enough with in-memory Map.** Loading 1000 JSONL lines takes ~10ms on startup. Filtering by status iterates Map values in < 1ms. We're not querying millions of rows.
+
+3. **Native dependency risk.** `better-sqlite3` requires native compilation that can fail on ARM, musl, Windows WSL, and CI environments. ViewGraph targets broad compatibility.
+
+4. **Git is not a concern.** `.viewgraph/` is gitignored, so binary vs text format doesn't matter for version control. But human inspectability (`cat history.jsonl | grep resolve`) is valuable for debugging.
+
+### Architecture
 
 ```
-.viewgraph/history.jsonl
+.viewgraph/
+  captures/           <- active capture JSON files (source of truth)
+  history.jsonl       <- append-only event log (audit trail)
 ```
+
+**Source of truth:** Capture JSON files hold current state (resolved/unresolved). The JSONL is an audit log. If they diverge, capture JSON wins.
+
+**In-memory index:** On server start, parse history.jsonl into a `Map<uuid, event>`. All reads go through the Map. Writes append to JSONL and update the Map.
+
+**Compaction:** When JSONL exceeds 1000 lines, compact by keeping only the latest event per UUID, rewrite file. This is rare and takes < 50ms.
+
+### Event format
 
 ```jsonl
 {"ts":"2026-04-09T12:41:00Z","event":"capture","uuid":"abc","url":"localhost:5173/login","filename":"viewgraph-...json"}
-{"ts":"2026-04-09T12:42:00Z","event":"annotate","uuid":"def","captureUuid":"abc","comment":"fix font"}
+{"ts":"2026-04-09T12:42:00Z","event":"annotate","uuid":"def","captureUuid":"abc","comment":"fix font","severity":"critical"}
 {"ts":"2026-04-09T12:50:00Z","event":"resolve","uuid":"def","by":"kiro","note":"Fixed to 14px"}
+{"ts":"2026-04-09T13:00:00Z","event":"expire","uuid":"abc","reason":"maxCaptures exceeded"}
 ```
 
-Pros:
-- Zero dependencies, human-readable, grep-able
-- Simple append, no corruption risk
-- Easy to backup (copy file)
-
-Cons:
-- Queries are O(n) full scan
-- Updates require rewriting the file (for resolution tracking)
-- No indexes, no concurrent write safety
-- Rolling/pruning requires rewriting
-
-### Option B: SQLite via better-sqlite3
-
-```
-.viewgraph/history.db
-```
-
-```sql
-CREATE TABLE events (
-  uuid TEXT PRIMARY KEY,
-  capture_uuid TEXT,
-  type TEXT NOT NULL,  -- capture, element, page-note
-  event TEXT NOT NULL,  -- created, resolved, deleted
-  url TEXT,
-  comment TEXT,
-  severity TEXT,
-  resolved INTEGER DEFAULT 0,
-  resolution TEXT,
-  resolved_by TEXT,
-  created_at TEXT NOT NULL,
-  resolved_at TEXT,
-  filename TEXT
-);
-CREATE INDEX idx_capture ON events(capture_uuid);
-CREATE INDEX idx_resolved ON events(resolved);
-```
-
-Pros:
-- Indexed queries (unresolved items, by capture, by date)
-- Concurrent-safe, atomic updates
-- Built-in size management (DELETE oldest)
-- Relational queries across captures
-
-Cons:
-- Adds `better-sqlite3` dependency (~2MB native addon)
-- Binary file, not human-readable
-- Native compilation can fail on some systems
-- Overkill if we only have < 1000 events
-
-### Recommendation: JSONL with in-memory index
-
-Use JSONL for storage (simple, portable, no native deps) but load into a Map on server start for O(1) lookups. The file stays small (< 200KB for 1000 events). Updates append a new event line rather than modifying existing lines - resolution is an event, not a mutation.
-
-```
-capture abc → annotate def (on abc) → resolve def → expire abc
-```
-
-Each line is immutable. To get current state, replay events. This is event sourcing at the simplest level.
-
-Pruning: when file exceeds 1000 lines, compact by keeping only the latest event per UUID, rewrite file.
-
-This avoids the SQLite dependency while giving us fast reads (in-memory Map) and simple writes (append). The tradeoff is a ~10ms startup cost to parse 1000 lines - acceptable.
+Each line is immutable. Resolution is a new event, not a mutation of the original. To get current state of an annotation, find the latest event for that UUID.
 
 ## New MCP Tools
 
