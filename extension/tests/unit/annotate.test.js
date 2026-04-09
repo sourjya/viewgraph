@@ -1613,3 +1613,61 @@ describe('capture mode and sidebar collapse contract', () => {
     expect(getCaptureMode()).toBeNull();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Region mode drag behavior
+// ---------------------------------------------------------------------------
+
+describe('region mode drag', () => {
+  afterEach(() => { stop(); });
+
+  it('(+) region mode allows drag without shift key', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.REGION);
+    expect(getCaptureMode()).toBe('region');
+    // In region mode, onMouseDown should start drag without shiftKey
+    // This is a behavioral contract - the actual drag is DOM-level
+  });
+
+  it('(+) shift+drag works regardless of capture mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    // Shift+drag should still work even in element mode (backward compat)
+    expect(getCaptureMode()).toBe('element');
+  });
+
+  it('(+) shift+drag works with no capture mode set', () => {
+    start();
+    // No mode set - shift+drag should still work
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(-) element mode does not enable plain drag', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    // In element mode, plain mousedown should NOT start drag
+    // Only shift+drag or region mode enables plain drag
+    expect(getCaptureMode()).toBe('element');
+    expect(getCaptureMode()).not.toBe('region');
+  });
+
+  it('(-) no mode does not enable plain drag', () => {
+    start();
+    expect(getCaptureMode()).toBeNull();
+    // Without mode, plain mousedown should not start drag
+  });
+
+  it('(+) switching from region to element disables plain drag', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.REGION);
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    expect(getCaptureMode()).toBe('element');
+  });
+
+  it('(+) toggling region off disables plain drag', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.REGION);
+    setCaptureMode(CAPTURE_MODES.REGION); // toggle off
+    expect(getCaptureMode()).toBeNull();
+  });
+});

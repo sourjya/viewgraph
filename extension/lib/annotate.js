@@ -351,7 +351,9 @@ function fallbackCopy(text) {
 // ---------------------------------------------------------------------------
 
 function onMouseDown(e) {
-  if (e.shiftKey) {
+  // Region drag: shift+drag always works, plain drag in region mode
+  const startDrag = e.shiftKey || captureMode === CAPTURE_MODES.REGION;
+  if (startDrag) {
     e.preventDefault();
     e.stopPropagation();
     if (frozen) unfreeze();
