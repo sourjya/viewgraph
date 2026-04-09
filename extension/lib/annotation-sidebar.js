@@ -47,6 +47,7 @@ let badgeEl = null;
 let collapsed = false;
 let hasCaptured = false;
 let pendingRequests = [];
+let resolvedAccordionOpen = false;
 
 /**
  * Poll the server for pending Kiro capture requests.
@@ -526,18 +527,18 @@ export function refresh() {
   if (resolved.length > 0) {
     const accordion = document.createElement('div');
     const accordionHeader = document.createElement('div');
-    accordionHeader.textContent = `\u25b8 Resolved (${resolved.length})`;
+    accordionHeader.textContent = `${resolvedAccordionOpen ? '\u25be' : '\u25b8'} Resolved (${resolved.length})`;
     Object.assign(accordionHeader.style, {
       padding: '6px 12px', color: '#666', fontSize: '11px', fontWeight: '600',
       borderTop: '1px solid #2a2a3a', cursor: 'pointer',
       fontFamily: 'system-ui, sans-serif',
     });
     const accordionList = document.createElement('div');
-    accordionList.style.display = 'none';
+    accordionList.style.display = resolvedAccordionOpen ? 'block' : 'none';
     accordionHeader.addEventListener('click', () => {
-      const open = accordionList.style.display === 'none';
-      accordionList.style.display = open ? 'block' : 'none';
-      accordionHeader.textContent = `${open ? '\u25be' : '\u25b8'} Resolved (${resolved.length})`;
+      resolvedAccordionOpen = !resolvedAccordionOpen;
+      accordionList.style.display = resolvedAccordionOpen ? 'block' : 'none';
+      accordionHeader.textContent = `${resolvedAccordionOpen ? '\u25be' : '\u25b8'} Resolved (${resolved.length})`;
     });
     for (const ann of resolved) {
       accordionList.appendChild(createEntry(ann));
@@ -670,7 +671,13 @@ export function refresh() {
       : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>';
     resolveBtn.title = ann.resolved ? 'Mark unresolved' : 'Mark resolved';
     Object.assign(resolveBtn.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', flexShrink: '0' });
-    resolveBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleResolved(ann.id); refresh(); });
+    resolveBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const wasResolved = ann.resolved;
+      toggleResolved(ann.id);
+      if (!wasResolved) resolvedAccordionOpen = true;
+      refresh();
+    });
 
     // Delete button
     const del = document.createElement('button');
@@ -701,4 +708,5 @@ export function destroy() {
   collapsed = false;
   hasCaptured = false;
   pendingRequests = [];
+  resolvedAccordionOpen = false;
 }
