@@ -10,7 +10,7 @@
  */
 
 import { show as showPanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, toggleResolved, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate } from './annotate.js';
+import { getAnnotations, removeAnnotation, toggleResolved, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate, addPageNote } from './annotate.js';
 import { formatMarkdown } from './export-markdown.js';
 import { discoverServer } from './constants.js';
 
@@ -163,7 +163,29 @@ export function create() {
 
   exportRow.append(sendBtn, copyBtn, dlBtn);
 
-  sidebarEl.append(header, list, exportRow);
+  // Action row: Note button
+  const actionRow = document.createElement('div');
+  actionRow.setAttribute(ATTR, 'action-row');
+  Object.assign(actionRow.style, {
+    display: 'flex', gap: '4px', margin: '8px 8px 4px',
+  });
+
+  const noteBtn = document.createElement('button');
+  noteBtn.setAttribute(ATTR, 'note');
+  noteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Note';
+  Object.assign(noteBtn.style, { ...btnStyle, background: '#374151', flex: '1' });
+  noteBtn.title = 'Add a page-level note (no element reference)';
+  noteBtn.addEventListener('mouseenter', () => { noteBtn.style.background = '#4b5563'; });
+  noteBtn.addEventListener('mouseleave', () => { noteBtn.style.background = '#374151'; });
+  noteBtn.addEventListener('click', () => {
+    const ann = addPageNote();
+    showPanel(ann, { onChange: () => refresh() });
+    refresh();
+  });
+
+  actionRow.append(noteBtn);
+
+  sidebarEl.append(header, list, actionRow, exportRow);
   document.documentElement.appendChild(sidebarEl);
 
   // Collapsed badge - hidden initially
@@ -306,14 +328,19 @@ export function refresh() {
       maxHeight: '20px', transition: 'max-height 0.25s ease, white-space 0s',
     });
 
-    // Number badge
+    // Number badge or page-note icon
     const numBadge = document.createElement('span');
-    numBadge.textContent = `#${ann.id}`;
-    Object.assign(numBadge.style, {
-      background: '#6366f1', color: '#fff', fontSize: '10px', fontWeight: '700',
-      padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
-      fontFamily: 'system-ui, sans-serif',
-    });
+    if (ann.type === 'page-note') {
+      numBadge.textContent = '\ud83d\udcdd';
+      Object.assign(numBadge.style, { marginRight: '4px', fontSize: '12px' });
+    } else {
+      numBadge.textContent = `#${ann.id}`;
+      Object.assign(numBadge.style, {
+        background: '#6366f1', color: '#fff', fontSize: '10px', fontWeight: '700',
+        padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
+        fontFamily: 'system-ui, sans-serif',
+      });
+    }
     label.appendChild(numBadge);
 
     // Severity chip
