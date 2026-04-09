@@ -11,6 +11,33 @@
 
 import { show as showPanel } from './annotation-panel.js';
 import { getAnnotations, removeAnnotation, toggleResolved, hideMarkers, stop as stopAnnotate, pause as pauseAnnotate, resume as resumeAnnotate, addPageNote } from './annotate.js';
+
+/**
+ * Sync resolved state from the server. Polls /annotations/resolved for the
+ * current page URL and updates local annotations that were resolved by Kiro.
+ */
+async function syncResolved() {
+  try {
+    const serverUrl = await discoverServer();
+    if (!serverUrl) return;
+    const pageUrl = encodeURIComponent(location.href);
+    const res = await fetch(`${serverUrl}/annotations/resolved?url=${pageUrl}`, { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) return;
+    const { resolved } = await res.json();
+    if (!resolved?.length) return;
+    const anns = getAnnotations();
+    let changed = false;
+    for (const { uuid, resolution } of resolved) {
+      const ann = anns.find((a) => a.uuid === uuid && !a.resolved);
+      if (ann) {
+        ann.resolved = true;
+        ann.resolution = resolution;
+        changed = true;
+      }
+    }
+    if (changed) refresh();
+  } catch { /* server offline - no sync */ }
+}
 import { formatMarkdown } from './export-markdown.js';
 import { discoverServer } from './constants.js';
 
@@ -279,6 +306,7 @@ export function create() {
   document.documentElement.appendChild(badgeEl);
 
   refresh();
+  syncResolved();
 }
 
 function toggleCollapse() {
@@ -457,6 +485,20 @@ export function refresh() {
     commentText.textContent = ann.comment || '(no comment)';
     if (ann.resolved) Object.assign(commentText.style, { textDecoration: 'line-through' });
     label.appendChild(commentText);
+
+    // Resolution details for resolved items
+    if (ann.resolved && ann.resolution) {
+      const resLine = document.createElement('div');
+      const by = ann.resolution.by || 'unknown';
+      const action = ann.resolution.action || 'fixed';
+      const summary = ann.resolution.summary || '';
+      resLine.textContent = `\u2713 ${action} by ${by}${summary ? ': ' + summary.slice(0, 60) : ''}`;
+      Object.assign(resLine.style, {
+        color: '#4ade80', fontSize: '10px', marginTop: '2px',
+        fontFamily: 'system-ui, sans-serif',
+      });
+      label.appendChild(resLine);
+    }
 
     // Click to scroll and show panel
     label.addEventListener('click', () => {

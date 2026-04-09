@@ -72,7 +72,7 @@ function json(res, status, data) {
  *   requests must include an `Authorization: Bearer <secret>` header. GET
  *   endpoints (/health, /requests/pending) remain open so monitoring works.
  */
-export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port = 9876, secret = null }) {
+export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port = 9876, secret = null, indexer = null }) {
   let server;
 
   /**
@@ -187,6 +187,31 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       await writeFile(safePath, body);
 
       return json(res, 201, { filename });
+    }
+
+    // GET /annotations/resolved?url=... - resolved annotations for a URL
+    // Extension polls this on sidebar open to sync resolution state from Kiro
+    if (method === 'GET' && url.startsWith('/annotations/resolved')) {
+      const params = new URL(url, 'http://localhost').searchParams;
+      const pageUrl = params.get('url');
+      if (!pageUrl) return json(res, 400, { error: 'Missing url parameter' });
+
+      const resolved = [];
+      for (const entry of indexer.list()) {
+        try {
+          const filePath = validateCapturePath(entry.filename, capturesDir);
+          const { readFile } = await import('fs/promises');
+          const raw = await readFile(filePath, 'utf-8');
+          const capture = JSON.parse(raw);
+          if (!capture.metadata?.url?.includes(pageUrl)) continue;
+          for (const ann of (capture.annotations || [])) {
+            if (ann.resolved && ann.uuid) {
+              resolved.push({ uuid: ann.uuid, resolution: ann.resolution });
+            }
+          }
+        } catch { continue; }
+      }
+      return json(res, 200, { resolved });
     }
 
     json(res, 404, { error: 'Not found' });
