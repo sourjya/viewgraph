@@ -14,12 +14,12 @@
 
 - [ ] 2.1 Remove popup, extension icon click opens sidebar directly
 - [ ] 2.2 Detect non-injectable pages, show fallback popup with specific error messages
-- [ ] 2.3 Auto-capture on sidebar open with spinner feedback
-- [ ] 2.4 Refactor sidebar to unified timeline (chronological, open items on top)
-- [ ] 2.5 Add page-note type: "Note" button in footer, no element reference
-- [ ] 2.6 Move Capture button to sidebar footer
-- [ ] 2.7 Resolved items accordion: collapsed by default, "N resolved" summary
-- [ ] 2.8 Add Settings section (collapsible): server URL, project mappings, auth token
+- [ ] 2.3 Refactor sidebar to unified timeline (chronological, open items on top)
+- [ ] 2.4 Add page-note type: "Note" button in footer, no element reference
+- [ ] 2.5 Move Capture button to sidebar footer (explicit user action, no auto-capture)
+- [ ] 2.6 Resolved items accordion: collapsed by default, "N resolved" summary
+- [ ] 2.7 Add Settings section (collapsible): server URL, project mappings, auth token
+- [ ] 2.8 Send behavior: annotations-only when no capture, bundled when capture exists
 - [ ] 2.9 Tests for sidebar components, non-injectable detection
 
 ## Phase 3: Bidirectional Resolution + Kiro Requests

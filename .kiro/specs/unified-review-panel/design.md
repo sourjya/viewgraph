@@ -58,7 +58,6 @@ Detection: check `tab.url` against these prefixes before attempting injection.
 │ └──────────────────────────────┘ │
 │                                  │
 │ Open (3)                         │
-│ 📸 Capturing...  spinner        │  <- auto-capture on open
 │ #1 h1 "fix font" [CRIT] [v][x] │
 │ #2 input "label"  [MAJ] [v][x] │
 │ 📝 "spacing off"  [MAJ] [v][x] │
@@ -96,18 +95,25 @@ Expanded:
 Rationale: keeps the working area focused on open items. Resolved items are
 accessible but don't clutter the active workflow.
 
-### Capture on Review Start
+### Capture is Always Explicit
 
-Sidebar opens immediately with a spinner for the auto-capture:
+No auto-capture on sidebar open. The sidebar opens instantly with zero delay.
+Capture is a manual user action via the Capture button in the footer.
+
+Send behavior depends on whether a capture exists:
+- **Send (no capture taken):** pushes annotations only (comments, severity, page notes)
+- **Send (capture was taken):** pushes annotations bundled with the DOM snapshot
+
+If Kiro needs DOM context and the user didn't capture, Kiro calls `request_capture`
+and the notification banner appears. The user decides when to capture.
 
 ```
-│ spinner Capturing...             │  <- visible for ~500ms
-```
-
-User can start adding page notes while capture completes. Once done:
-
-```
-│ camera Captured 2:41pm   [v][x] │
+Open sidebar    -> instant, no capture, no delay
+Annotate        -> click elements, add notes, set severity
+Click Capture   -> user explicitly takes a DOM snapshot
+Click Send      -> pushes whatever exists (annotations, and capture if taken)
+Click Copy MD   -> exports annotations as markdown, no capture needed
+Kiro needs DOM  -> calls request_capture, banner appears, user clicks Capture Now
 ```
 
 ## Data Model
