@@ -8,7 +8,7 @@
  * @see lib/review.js - annotation state management
  */
 
-import { updateComment, updateSeverity, removeAnnotation, MARKER_COLORS } from './annotate.js';
+import { updateComment, updateSeverity, updateCategory, removeAnnotation, MARKER_COLORS } from './annotate.js';
 
 const ATTR = 'data-vg-annotate';
 let panelEl = null;
@@ -82,6 +82,27 @@ export function show(annotation, callbacks = {}) {
     if (onCommentChange) onCommentChange(annotation.id);
   });
 
+  // Category dropdown
+  const category = document.createElement('select');
+  category.setAttribute(ATTR, 'category');
+  for (const opt of ['--', 'Visual', 'Functional', 'Content', 'A11y', 'Performance']) {
+    const o = document.createElement('option');
+    o.value = opt === '--' ? '' : opt.toLowerCase();
+    o.textContent = opt;
+    if ((annotation.category || '') === o.value) o.selected = true;
+    category.appendChild(o);
+  }
+  Object.assign(category.style, {
+    width: '100%', padding: '4px 6px', marginBottom: '6px',
+    background: '#16161e', border: '1px solid #333', borderRadius: '4px',
+    color: '#e0e0e0', fontSize: '12px', fontFamily: 'system-ui, sans-serif',
+    outline: 'none', cursor: 'pointer',
+  });
+  category.addEventListener('change', () => {
+    updateCategory(annotation.id, category.value);
+    if (onCommentChange) onCommentChange(annotation.id);
+  });
+
   // Textarea for comment
   const textarea = document.createElement('textarea');
   textarea.setAttribute(ATTR, 'input');
@@ -100,7 +121,7 @@ export function show(annotation, callbacks = {}) {
   textarea.addEventListener('focus', () => { textarea.style.borderColor = '#6366f1'; });
   textarea.addEventListener('blur', () => { textarea.style.borderColor = '#333'; });
 
-  panelEl.append(header, severity, textarea);
+  panelEl.append(header, severity, category, textarea);
 
   // Position near the annotation region, avoiding sidebar and screen edges
   const panelWidth = 240;

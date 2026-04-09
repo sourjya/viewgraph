@@ -106,7 +106,7 @@ export default defineContentScript({
         capture.metadata.captureMode = 'review';
         capture.annotations = getAnnotations().map((a) => ({
           id: a.id, uuid: a.uuid, type: a.type, region: a.region,
-          comment: a.comment, severity: a.severity || '',
+          comment: a.comment, severity: a.severity || '', category: a.category || '',
           nodeIds: a.nids, ancestor: a.ancestor,
           timestamp: a.timestamp || new Date().toISOString(),
           resolved: a.resolved || false, resolution: a.resolution || null,
