@@ -424,31 +424,26 @@ export function create() {
 
   // ViewGraph JSON - always on
   const jsonToggle = createToggleRow('ViewGraph JSON', { checked: true, disabled: true });
-  // JSON output - optional
-  const jsonOutToggle = createToggleRow('JSON output');
   // HTML snapshot - optional
   const htmlToggle = createToggleRow('HTML snapshot');
   // Screenshot - optional
   const ssToggle = createToggleRow('Screenshot');
 
-  captureOpts.append(jsonToggle.row, jsonOutToggle.row, htmlToggle.row, ssToggle.row);
+  captureOpts.append(jsonToggle.row, htmlToggle.row, ssToggle.row);
   settingsBody.appendChild(captureOpts);
 
   // Load saved settings
   chrome.storage.local.get('vg-settings', (result) => {
     const s = result['vg-settings'] || {};
-    jsonOutToggle.input.checked = !!s.jsonOutput;
     htmlToggle.input.checked = !!s.html;
     ssToggle.input.checked = !!s.screenshot;
     // Re-sync visuals after loading
-    jsonOutToggle.input.dispatchEvent(new Event('change'));
     htmlToggle.input.dispatchEvent(new Event('change'));
     ssToggle.input.dispatchEvent(new Event('change'));
   });
   function saveSettings() {
-    chrome.storage.local.set({ 'vg-settings': { jsonOutput: jsonOutToggle.input.checked, html: htmlToggle.input.checked, screenshot: ssToggle.input.checked } });
+    chrome.storage.local.set({ 'vg-settings': { html: htmlToggle.input.checked, screenshot: ssToggle.input.checked } });
   }
-  jsonOutToggle.input.addEventListener('change', saveSettings);
   htmlToggle.input.addEventListener('change', saveSettings);
   ssToggle.input.addEventListener('change', saveSettings);
   settingsScreen.append(settingsHeader, settingsBody);
