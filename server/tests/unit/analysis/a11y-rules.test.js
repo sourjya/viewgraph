@@ -117,4 +117,36 @@ describe('a11y rules', () => {
       expect(issues.find((i) => i.rule === 'insufficient-contrast')).toBeUndefined();
     });
   });
+
+  describe('form-validation-error', () => {
+    it('flags input with aria-invalid="true"', () => {
+      const node = { id: 'inp1', tag: 'input', text: '', actions: ['input'] };
+      const details = { attributes: { 'aria-invalid': 'true', type: 'email' } };
+      const issues = auditNode(node, details);
+      const issue = issues.find((i) => i.rule === 'form-validation-error');
+      expect(issue).toBeDefined();
+      expect(issue.severity).toBe('warning');
+    });
+
+    it('flags required input with empty value', () => {
+      const node = { id: 'inp1', tag: 'input', text: '', actions: ['input'] };
+      const details = { attributes: { required: '', value: '' } };
+      const issues = auditNode(node, details);
+      expect(issues.find((i) => i.rule === 'form-validation-error')).toBeDefined();
+    });
+
+    it('(-) no issue for valid input', () => {
+      const node = { id: 'inp1', tag: 'input', text: '', actions: ['input'] };
+      const details = { attributes: { type: 'text', value: 'hello' } };
+      const issues = auditNode(node, details);
+      expect(issues.find((i) => i.rule === 'form-validation-error')).toBeUndefined();
+    });
+
+    it('(-) skips non-form elements', () => {
+      const node = { id: 'div1', tag: 'div', text: '', actions: [] };
+      const details = { attributes: { 'aria-invalid': 'true' } };
+      const issues = auditNode(node, details);
+      expect(issues.find((i) => i.rule === 'form-validation-error')).toBeUndefined();
+    });
+  });
 });

@@ -10,7 +10,7 @@ import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
-import { flattenNodes, filterInteractive, getNodeDetails } from '#src/analysis/node-queries.js';
+import { flattenNodes, filterInteractive, getNodeDetails, isInViewport } from '#src/analysis/node-queries.js';
 
 export function register(server, _indexer, capturesDir) {
   server.tool(
@@ -31,10 +31,12 @@ export function register(server, _indexer, capturesDir) {
         if (!result.ok) return { content: [{ type: 'text', text: `Error: ${result.error}` }], isError: true };
 
         const nodes = filterInteractive(flattenNodes(result.data));
+        const viewport = result.data.metadata?.viewport;
         const elements = nodes.map((n) => {
           const details = getNodeDetails(result.data, n.id);
           return {
             id: n.id, tag: n.tag, text: n.text, actions: n.actions,
+            inViewport: isInViewport(n.bbox, viewport),
             selector: details?.selector,
             'data-testid': details?.attributes?.['data-testid'] ?? null,
             'aria-label': details?.attributes?.['aria-label'] ?? null,

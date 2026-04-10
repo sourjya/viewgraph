@@ -188,8 +188,8 @@ npm run dev:ext        # start extension dev server (Chrome HMR)
 ## Testing
 
 ```bash
-npm test               # all tests (528 tests)
-npm run test:server    # server only (219 tests)
+npm test               # all tests (538 tests)
+npm run test:server    # server only (229 tests)
 npm run test:ext       # extension only (309 tests)
 ```
 

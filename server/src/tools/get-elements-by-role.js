@@ -10,7 +10,7 @@ import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
-import { flattenNodes, filterByRole, getNodeDetails } from '#src/analysis/node-queries.js';
+import { flattenNodes, filterByRole, getNodeDetails, isInViewport } from '#src/analysis/node-queries.js';
 
 export function register(server, _indexer, capturesDir) {
   server.tool(
@@ -33,9 +33,14 @@ export function register(server, _indexer, capturesDir) {
         if (!result.ok) return { content: [{ type: 'text', text: `Error: ${result.error}` }], isError: true };
 
         const nodes = filterByRole(flattenNodes(result.data), role);
+        const viewport = result.data.metadata?.viewport;
         const elements = nodes.map((n) => {
           const details = getNodeDetails(result.data, n.id);
-          return { id: n.id, tag: n.tag, text: n.text, bbox: n.bbox, selector: details?.selector, attributes: details?.attributes };
+          return {
+            id: n.id, tag: n.tag, text: n.text, bbox: n.bbox,
+            inViewport: isInViewport(n.bbox, viewport),
+            selector: details?.selector, attributes: details?.attributes,
+          };
         });
         return { content: [{ type: 'text', text: JSON.stringify(elements, null, 2) }] };
       } catch (err) {
