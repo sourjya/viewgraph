@@ -1125,7 +1125,7 @@ export function refresh() {
         fontSize: '11px', color: '#9ca3af', flex: '1',
         whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden',
       });
-      topRow.append(label, urlText);
+      topRow.append(label, urlText, btnRow);
       entry.appendChild(topRow);
 
       // Guidance text
@@ -1140,19 +1140,20 @@ export function refresh() {
         entry.appendChild(guide);
       }
 
-      // Button row: Capture + Decline
+      // Button row: Capture + Decline as compact icon buttons
       const btnRow = document.createElement('div');
-      Object.assign(btnRow.style, { display: 'flex', gap: '8px' });
+      Object.assign(btnRow.style, { display: 'flex', gap: '4px', marginLeft: 'auto', flexShrink: '0' });
 
       const capBtn = document.createElement('button');
-      capBtn.textContent = 'Capture';
+      capBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>';
+      capBtn.title = 'Capture now';
       Object.assign(capBtn.style, {
-        flex: '1', padding: '6px', border: 'none', borderRadius: '6px',
-        background: '#f59e0b', color: '#000', fontSize: '12px', fontWeight: '600',
-        cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+        padding: '5px', border: 'none', borderRadius: '6px',
+        background: '#f59e0b', color: '#000', display: 'flex',
+        cursor: 'pointer',
       });
       capBtn.addEventListener('click', () => {
-        capBtn.textContent = '...';
+        capBtn.innerHTML = '\u23f3';
         // Acknowledge the request, then trigger capture
         (async () => {
           try {
@@ -1160,7 +1161,7 @@ export function refresh() {
             if (serverUrl) await fetch(`${serverUrl}/requests/${req.id}/ack`, { method: 'POST', headers: authHeaders() });
           } catch { /* best effort */ }
           chrome.runtime.sendMessage({ type: 'capture' }, () => {
-            capBtn.textContent = '\u2713';
+            capBtn.innerHTML = '\u2713';
             capBtn.style.background = '#4ade80';
             // Remove from pending after capture
             pendingRequests = pendingRequests.filter((r) => r.id !== req.id);
@@ -1171,15 +1172,15 @@ export function refresh() {
 
       // Decline button
       const decBtn = document.createElement('button');
-      decBtn.textContent = 'Decline';
+      decBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
       decBtn.title = 'Decline capture request';
       Object.assign(decBtn.style, {
-        flex: '1', padding: '6px', border: '1px solid #333', borderRadius: '6px',
-        background: 'transparent', color: '#9ca3af', fontSize: '12px',
-        cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+        padding: '5px', border: '1px solid #333', borderRadius: '6px',
+        background: 'transparent', color: '#9ca3af', display: 'flex',
+        cursor: 'pointer',
       });
-      decBtn.addEventListener('mouseenter', () => { decBtn.style.color = '#f87171'; });
-      decBtn.addEventListener('mouseleave', () => { decBtn.style.color = '#666'; });
+      decBtn.addEventListener('mouseenter', () => { decBtn.style.color = '#f87171'; decBtn.style.borderColor = '#f87171'; });
+      decBtn.addEventListener('mouseleave', () => { decBtn.style.color = '#9ca3af'; decBtn.style.borderColor = '#333'; });
       decBtn.addEventListener('click', () => {
         (async () => {
           try {
@@ -1198,7 +1199,6 @@ export function refresh() {
       });
 
       btnRow.append(capBtn, decBtn);
-      entry.appendChild(btnRow);
       list.appendChild(entry);
     }
   }
