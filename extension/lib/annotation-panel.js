@@ -80,14 +80,15 @@ export function show(annotation, callbacks = {}) {
     function renderChip(val) {
       wrapper.innerHTML = '';
       const chip = document.createElement('span');
+      const chipColor = CHIP_COLORS[val] || '#555';
       Object.assign(chip.style, {
         display: 'inline-flex', alignItems: 'center', gap: '4px',
         padding: '2px 8px', borderRadius: '12px', fontSize: '11px',
-        fontFamily: 'system-ui, sans-serif', color: '#fff', cursor: 'default',
-        background: CHIP_COLORS[val] || '#555',
+        fontFamily: 'system-ui, sans-serif', cursor: 'default',
+        background: 'transparent', color: chipColor, border: `1.5px solid ${chipColor}`,
       });
       const text = document.createElement('span');
-      text.textContent = options.find((o) => o.value === val)?.label || val;
+      text.textContent = '\u26a0 ' + (options.find((o) => o.value === val)?.label || val);
       const x = document.createElement('span');
       Object.assign(x.style, { cursor: 'pointer', marginLeft: '2px', fontSize: '13px', lineHeight: '1' });
       x.textContent = '\u00d7';
@@ -120,9 +121,9 @@ export function show(annotation, callbacks = {}) {
     return wrapper;
   }
 
-  // Chip row container
+  // Chip row: severity on left, category chips + dropdown stacked on right
   const chipRow = document.createElement('div');
-  Object.assign(chipRow.style, { display: 'flex', flexWrap: 'wrap', marginBottom: '2px' });
+  Object.assign(chipRow.style, { display: 'flex', gap: '4px', alignItems: 'flex-start', marginBottom: '2px', flexWrap: 'nowrap' });
 
   const severityChip = createChipSelect('severity', 'Severity',
     [{ value: 'critical', label: 'Critical' }, { value: 'major', label: 'Major' }, { value: 'minor', label: 'Minor' }],
@@ -137,7 +138,7 @@ export function show(annotation, callbacks = {}) {
   ];
   const categoryWrapper = document.createElement('div');
   categoryWrapper.setAttribute(ATTR, 'category');
-  Object.assign(categoryWrapper.style, { display: 'inline-flex', flexWrap: 'wrap', gap: '3px', verticalAlign: 'top' });
+  Object.assign(categoryWrapper.style, { display: 'flex', flexWrap: 'wrap', gap: '3px', flex: '1', alignItems: 'center' });
 
   /** Parse stored category - could be string or array. */
   function parseCats() {

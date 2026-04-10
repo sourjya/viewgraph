@@ -680,6 +680,13 @@ export function refresh() {
   tabContainer.innerHTML = '';
   tabContainer.appendChild(tabBar);
 
+  /** Severity/category chip colors for list entries. */
+  const CHIP_COLORS = {
+    critical: '#dc2626', major: '#f59e0b', minor: '#6b7280',
+    visual: '#6366f1', functional: '#0ea5e9', content: '#8b5cf6',
+    a11y: '#10b981', performance: '#f97316',
+  };
+
   // Filtered items
   const visible = activeFilter === 'all' ? anns : activeFilter === 'open' ? open : resolved;
   for (const ann of visible) {
@@ -699,13 +706,6 @@ export function refresh() {
 
   // Auto-scroll to show newest item
   list.scrollTop = list.scrollHeight;
-
-  /** Severity/category chip colors. */
-  const CHIP_COLORS = {
-    critical: '#dc2626', major: '#f59e0b', minor: '#6b7280',
-    visual: '#6366f1', functional: '#0ea5e9', content: '#8b5cf6',
-    a11y: '#10b981', performance: '#f97316',
-  };
 
   /** Create a single timeline entry for an annotation. */
   function createEntry(ann) {
@@ -757,10 +757,12 @@ export function refresh() {
     // Severity chip
     if (ann.severity) {
       const sev = document.createElement('span');
-      sev.textContent = ann.severity.charAt(0).toUpperCase() + ann.severity.slice(1);
+      sev.textContent = '\u26a0 ' + ann.severity.charAt(0).toUpperCase() + ann.severity.slice(1);
+      const sevColor = CHIP_COLORS[ann.severity] || '#555';
       Object.assign(sev.style, {
-        background: CHIP_COLORS[ann.severity] || '#555', color: '#fff',
-        fontSize: '9px', fontWeight: '600', padding: '1px 4px', borderRadius: '8px',
+        background: 'transparent', color: sevColor,
+        border: `1px solid ${sevColor}`,
+        fontSize: '9px', fontWeight: '700', padding: '1px 5px', borderRadius: '8px',
         marginRight: '3px', fontFamily: 'system-ui, sans-serif',
       });
       label.appendChild(sev);
