@@ -469,6 +469,32 @@ names annotated on container elements for React projects.
 
 ---
 
+## Milestone 13: Browser-Computed State Enrichment (Future)
+
+**Goal:** Capture browser-computed state that can't be inferred from DOM + styles
+alone. These are the "code looks right but page is wrong" debuggers.
+
+Source: Kiro IDE analysis session 2026-04-10. Prioritized by debugging leverage.
+
+| # | Task | Priority | Details |
+|---|---|---|---|
+| 13.1 | Z-index stacking context resolution | P0 - highest | Walk the DOM to identify stacking context boundaries (elements with `position` + `z-index`, `opacity < 1`, `transform`, `filter`, etc.). Build resolved stacking order tree. Root cause of "dropdown behind modal" bugs. Can't be inferred from flat computed z-index values because stacking contexts are hierarchical. |
+| 13.2 | Focus management chain | P0 - highest | Capture `document.activeElement`, compute tab order from `tabIndex` values + DOM position + visibility filtering. Identify focus trap boundaries (elements that intercept Tab/Shift+Tab). Debugs "can't tab to submit" and "focus stuck in modal". |
+| 13.3 | isRendered ancestor walk | P0 - highest | Boolean flag per node: walks ancestor chain checking `display: none`, `visibility: hidden`, `opacity: 0`, `content-visibility: hidden`. An element can have `display: block` in computed styles but be invisible because a parent is hidden. Simplest of the three P0s. |
+| 13.4 | Scroll containers | P1 - medium | Identify scrollable elements (`overflow: auto/scroll` with `scrollHeight > clientHeight`), capture `scrollTop`/`scrollLeft` and total scrollable area. Debugs "wrong thing scrolls" in nested scroll containers. |
+| 13.5 | Media query matches | P1 - medium | Run `window.matchMedia()` against standard breakpoints (576, 768, 992, 1200, 1400px) and report which are active. Overlaps with M12.6 but adds actual `@media` rule matching, not just viewport width. |
+| 13.6 | Semantic ARIA landmarks | P1 - medium | Extract resolved landmark tree (banner, navigation, main, complementary, contentinfo). Different from DOM tree - this is what screen readers actually navigate. Most pages have broken landmark structure. |
+| 13.7 | Pending animations | P2 - lower | `element.getAnimations()` results: which property is animating, current progress, playback state. Debugs frozen spinners and incomplete transitions. Overlaps with M12.5. |
+| 13.8 | Intersection observer state | P2 - lower | Which elements are currently intersecting the viewport via `IntersectionObserver`. Debugs lazy-load and infinite scroll failures. Complex - requires injecting an observer before capture. |
+
+**Exit criteria:** Captures include stacking context tree, focus chain, and
+isRendered flag. Agent can diagnose z-index layering, focus trapping, and
+hidden-by-ancestor issues from capture data alone.
+
+**Effort:** ~2-3 weeks (13.1-13.3 are ~2 days each, rest is incremental)
+
+---
+
 ## Timeline Summary
 
 | Week | Milestones | Key Deliverable |
