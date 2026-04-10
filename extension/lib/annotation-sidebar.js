@@ -471,6 +471,7 @@ export function create() {
 
   /** Show settings screen, hide timeline + footer. */
   function showSettings() {
+    tabContainer.style.display = 'none';
     list.style.display = 'none';
     footer.style.display = 'none';
     settingsScreen.style.display = 'block';
@@ -479,6 +480,7 @@ export function create() {
   /** Hide settings screen, restore timeline + footer. */
   function hideSettings() {
     settingsScreen.style.display = 'none';
+    tabContainer.style.display = '';
     list.style.display = '';
     footer.style.display = '';
   }
