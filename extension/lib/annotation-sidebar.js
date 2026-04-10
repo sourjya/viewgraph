@@ -43,6 +43,7 @@ import { discoverServer } from './constants.js';
 import { collectNetworkState } from './network-collector.js';
 import { getConsoleState } from './console-collector.js';
 import { collectBreakpoints } from './breakpoint-collector.js';
+import { checkRendered } from './visibility-collector.js';
 
 const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
@@ -311,7 +312,11 @@ export function create() {
   // Settings screen - alternate view replacing the list
   const settingsScreen = document.createElement('div');
   settingsScreen.setAttribute(ATTR, 'settings-screen');
-  Object.assign(settingsScreen.style, { display: 'none', padding: '0' });
+  Object.assign(settingsScreen.style, {
+    display: 'none', padding: '0',
+    position: 'absolute', top: '0', left: '0', right: '0', bottom: '0',
+    background: '#1e1e2e', zIndex: '10', overflowY: 'auto',
+  });
 
   // Settings header with back arrow
   const settingsHeader = document.createElement('div');
@@ -473,23 +478,219 @@ export function create() {
   ssToggle.input.addEventListener('change', saveSettings);
   settingsScreen.append(settingsHeader, settingsBody);
 
-  /** Show settings screen, hide timeline + footer. */
+  /** Show settings as slide-over overlay. */
   function showSettings() {
-    tabContainer.style.display = 'none';
-    list.style.display = 'none';
-    footer.style.display = 'none';
     settingsScreen.style.display = 'block';
   }
 
-  /** Hide settings screen, restore timeline + footer. */
+  /** Hide settings overlay. */
   function hideSettings() {
     settingsScreen.style.display = 'none';
-    tabContainer.style.display = '';
-    list.style.display = '';
-    footer.style.display = '';
   }
 
   sidebarEl.append(header, modeBar, tabContainer, list, settingsScreen, footer);
+
+  // ---------------------------------------------------------------------------
+  // Two-tab sidebar: Review (annotations) and Inspect (page diagnostics)
+  // ---------------------------------------------------------------------------
+
+  // Primary tab bar: Review | Inspect
+  const primaryTabs = document.createElement('div');
+  primaryTabs.setAttribute(ATTR, 'primary-tabs');
+  Object.assign(primaryTabs.style, {
+    display: 'flex', borderBottom: '1px solid #333', flexShrink: '0',
+  });
+
+  let activeTab = 'review';
+
+  // Review tab content wrapper - holds mode bar, filter tabs, list, footer
+  const reviewContent = document.createElement('div');
+  reviewContent.setAttribute(ATTR, 'review-content');
+  Object.assign(reviewContent.style, {
+    display: 'flex', flexDirection: 'column', flex: '1', minHeight: '0',
+  });
+  reviewContent.append(modeBar, tabContainer, list, footer);
+
+  // Inspect tab content wrapper - page diagnostics
+  const inspectContent = document.createElement('div');
+  inspectContent.setAttribute(ATTR, 'inspect-content');
+  Object.assign(inspectContent.style, {
+    display: 'none', flexDirection: 'column', flex: '1', minHeight: '0',
+    overflowY: 'auto', padding: '8px 12px', gap: '12px',
+    fontSize: '12px', fontFamily: 'system-ui, sans-serif', color: '#c8c8d0',
+  });
+
+  /** Create a collapsible section for the Inspect tab. */
+  function createSection(title, badgeText, badgeColor) {
+    const section = document.createElement('div');
+    const headerRow = document.createElement('div');
+    Object.assign(headerRow.style, {
+      display: 'flex', alignItems: 'center', cursor: 'pointer', gap: '6px',
+    });
+    const arrow = document.createElement('span');
+    arrow.textContent = '\u25b6';
+    Object.assign(arrow.style, { fontSize: '8px', color: '#666', transition: 'transform 0.15s' });
+    const label = document.createElement('span');
+    label.textContent = title;
+    Object.assign(label.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', flex: '1', textTransform: 'uppercase', letterSpacing: '0.5px' });
+    headerRow.append(arrow, label);
+    if (badgeText) {
+      const badge = document.createElement('span');
+      badge.textContent = badgeText;
+      Object.assign(badge.style, {
+        fontSize: '10px', fontWeight: '600', padding: '1px 6px', borderRadius: '8px',
+        background: badgeColor || '#333', color: '#fff',
+      });
+      headerRow.appendChild(badge);
+    }
+    const body = document.createElement('div');
+    Object.assign(body.style, { display: 'none', marginTop: '6px', fontSize: '11px' });
+    headerRow.addEventListener('click', () => {
+      const open = body.style.display !== 'none';
+      body.style.display = open ? 'none' : 'block';
+      arrow.style.transform = open ? '' : 'rotate(90deg)';
+    });
+    section.append(headerRow, body);
+    return { section, body };
+  }
+
+  /** Populate the Inspect tab with live page data. Called on tab switch. */
+  function refreshInspect() {
+    inspectContent.innerHTML = '';
+
+    // Breakpoint indicator (always visible, not collapsible)
+    const bp = collectBreakpoints();
+    const bpRow = document.createElement('div');
+    Object.assign(bpRow.style, { display: 'flex', alignItems: 'center', gap: '8px' });
+    const bpBadge = document.createElement('span');
+    bpBadge.textContent = bp.activeRange;
+    Object.assign(bpBadge.style, {
+      background: '#6366f1', color: '#fff', fontSize: '11px', fontWeight: '700',
+      padding: '2px 8px', borderRadius: '4px',
+    });
+    const bpLabel = document.createElement('span');
+    bpLabel.textContent = `${bp.viewport.width}px`;
+    Object.assign(bpLabel.style, { color: '#666', fontSize: '11px' });
+    bpRow.append(bpBadge, bpLabel);
+    inspectContent.appendChild(bpRow);
+
+    // Network section
+    const net = collectNetworkState();
+    const failedReqs = (net.requests || []).filter((r) => r.failed);
+    const netBadge = failedReqs.length > 0 ? `${failedReqs.length} failed` : null;
+    const { section: netSection, body: netBody } = createSection('Network', netBadge, '#dc2626');
+    if ((net.requests || []).length === 0) {
+      netBody.textContent = 'No requests captured';
+      Object.assign(netBody.style, { color: '#555', fontStyle: 'italic' });
+    } else {
+      for (const req of (net.requests || []).slice(0, 20)) {
+        const row = document.createElement('div');
+        Object.assign(row.style, {
+          display: 'flex', gap: '6px', padding: '2px 0',
+          color: req.failed ? '#f87171' : '#9ca3af',
+        });
+        const method = document.createElement('span');
+        method.textContent = req.method || 'GET';
+        Object.assign(method.style, { fontWeight: '600', flexShrink: '0', width: '30px' });
+        const url = document.createElement('span');
+        url.textContent = req.url?.replace(/^https?:\/\/[^/]+/, '') || req.url;
+        Object.assign(url.style, { flex: '1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
+        const size = document.createElement('span');
+        size.textContent = req.failed ? 'FAIL' : `${((req.transferSize || 0) / 1024).toFixed(1)}K`;
+        Object.assign(size.style, { flexShrink: '0', color: req.failed ? '#f87171' : '#555', fontWeight: req.failed ? '600' : '400' });
+        row.append(method, url, size);
+        netBody.appendChild(row);
+      }
+    }
+    inspectContent.appendChild(netSection);
+
+    // Console section
+    const cs = getConsoleState();
+    const errCount = cs.summary?.errors || 0;
+    const warnCount = cs.summary?.warnings || 0;
+    const conBadgeParts = [];
+    if (errCount) conBadgeParts.push(`${errCount} err`);
+    if (warnCount) conBadgeParts.push(`${warnCount} wrn`);
+    const conBadge = conBadgeParts.length ? conBadgeParts.join(' ') : null;
+    const conColor = errCount > 0 ? '#dc2626' : warnCount > 0 ? '#f59e0b' : '#333';
+    const { section: conSection, body: conBody } = createSection('Console', conBadge, conColor);
+    if (cs.errors.length === 0 && cs.warnings.length === 0) {
+      conBody.textContent = 'No errors or warnings';
+      Object.assign(conBody.style, { color: '#555', fontStyle: 'italic' });
+    } else {
+      for (const err of cs.errors.slice(0, 10)) {
+        const row = document.createElement('div');
+        Object.assign(row.style, { padding: '2px 0', color: '#f87171' });
+        row.textContent = err.message.slice(0, 120);
+        conBody.appendChild(row);
+      }
+      for (const warn of cs.warnings.slice(0, 10)) {
+        const row = document.createElement('div');
+        Object.assign(row.style, { padding: '2px 0', color: '#f59e0b' });
+        row.textContent = warn.message.slice(0, 120);
+        conBody.appendChild(row);
+      }
+    }
+    inspectContent.appendChild(conSection);
+
+    // Visibility warnings - elements hidden by ancestors
+    const hiddenEls = [];
+    for (const el of document.querySelectorAll('*')) {
+      if (el.closest('[data-vg-annotate]')) continue; // skip our own UI
+      const cs2 = window.getComputedStyle(el);
+      if (cs2.display === 'none' || cs2.visibility === 'hidden') continue; // already invisible
+      if (!checkRendered(el) && el.getBoundingClientRect().width > 0) {
+        const tag = el.tagName.toLowerCase();
+        const id = el.id ? `#${el.id}` : el.className ? `.${el.className.split(' ')[0]}` : '';
+        hiddenEls.push(`${tag}${id}`);
+        if (hiddenEls.length >= 10) break;
+      }
+    }
+    if (hiddenEls.length > 0) {
+      const { section: visSection, body: visBody } = createSection('Visibility', `${hiddenEls.length}`, '#f59e0b');
+      for (const desc of hiddenEls) {
+        const row = document.createElement('div');
+        Object.assign(row.style, { padding: '2px 0', color: '#f59e0b' });
+        row.textContent = `! ${desc} - hidden by ancestor`;
+        visBody.appendChild(row);
+      }
+      inspectContent.appendChild(visSection);
+    }
+  }
+
+  /** Switch between Review and Inspect tabs. */
+  function switchTab(tab) {
+    activeTab = tab;
+    reviewContent.style.display = tab === 'review' ? 'flex' : 'none';
+    inspectContent.style.display = tab === 'inspect' ? 'flex' : 'none';
+    if (tab === 'inspect') refreshInspect();
+    for (const btn of primaryTabs.children) {
+      const isActive = btn.dataset.tab === tab;
+      btn.style.color = isActive ? '#a5b4fc' : '#666';
+      btn.style.borderBottom = isActive ? '2px solid #a5b4fc' : '2px solid transparent';
+    }
+  }
+
+  for (const { key, label } of [
+    { key: 'review', label: 'Review' },
+    { key: 'inspect', label: 'Inspect' },
+  ]) {
+    const btn = document.createElement('button');
+    btn.dataset.tab = key;
+    btn.textContent = label;
+    Object.assign(btn.style, {
+      flex: '1', padding: '8px 0', border: 'none', background: 'transparent',
+      cursor: 'pointer', fontSize: '12px', fontWeight: '600',
+      fontFamily: 'system-ui, sans-serif', textAlign: 'center',
+      color: key === 'review' ? '#a5b4fc' : '#666',
+      borderBottom: key === 'review' ? '2px solid #a5b4fc' : '2px solid transparent',
+      transition: 'color 0.15s',
+    });
+    btn.addEventListener('click', () => switchTab(key));
+    primaryTabs.appendChild(btn);
+  }
+
+  sidebarEl.append(header, primaryTabs, reviewContent, inspectContent, settingsScreen);
 
   // Shadow DOM isolates sidebar from page CSS (prevents * { margin:0 } etc.)
   hostEl = document.createElement('div');
