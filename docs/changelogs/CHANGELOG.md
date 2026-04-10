@@ -8,6 +8,41 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Security: Zero-Config Auth
+- Server auto-generates UUID token at startup, writes to `.viewgraph/.token` (mode 0600)
+- Token exposed via `GET /info` endpoint for extension auto-discovery
+- Extension reads token during server discovery, includes `Bearer` header on all POSTs
+- `VIEWGRAPH_HTTP_SECRET` env var overrides auto-generated token
+- Closes gap where any localhost page could POST crafted captures to the server
+
+### Security: Annotation Prompt Injection Defense
+- `get_annotations` and `get_annotated_capture` wrap output with `_notice` field marking comments as user-provided UI feedback
+- Steering doc instructs agent to treat annotation comments as bug reports, not instructions
+- Security assessment updated from ACCEPTED to MITIGATED
+
+### Capture Request Decline Flow
+- `decline(id, reason)` method on request queue, `POST /requests/:id/decline` endpoint
+- `get_request_status` returns `{ status: "declined", reason }` when user declines
+- Extension sidebar shows Decline button (X) next to Capture on request cards
+- Steering doc tells agent to inform user and not auto-retry on decline
+- 3 new server tests for decline lifecycle
+
+### Capture Request Purpose Icons
+- `request_capture` accepts optional `purpose` param: `capture`, `inspect`, `verify`
+- Sidebar shows purpose-specific icon: bell (capture), magnifier (inspect), checkmark (verify)
+
+### Bug Fixes
+- **BUG-005:** Screenshot crops produced garbage when page was scrolled. `cropRegions` now receives actual scroll position from content script, clamps to image bounds. 10 regression tests.
+- **BUG-006:** Collapsed sidebar strip lost all icons (expand, mode buttons) because `updateBadgeCount` replaced `innerHTML`. Rewritten to update a targeted count element without destroying children.
+- **Send to Agent** now always includes full capture (was annotations-only when no prior capture)
+
+### Sidebar UI Polish
+- Collapsed strip: icons doubled to 32px, annotation count shown in chat bubble SVG
+- Header icons: 14px to 18px, padding 6px to 8px, hover backgrounds on all buttons
+- Status dot: margin + ring outline so it doesn't crowd into button hover states
+- Title shortened to "ViewGraph" for more header breathing room
+- Clear All: native `confirm()` replaced with themed card dialog (dark, red border, Cancel/Clear All)
+
 ### Auto-Detect Project Mapping
 - Server `GET /info` endpoint returns `capturesDir` and `projectRoot` (derived from captures path)
 - Extension sidebar fetches `/info` directly (with background proxy fallback for CSP)
