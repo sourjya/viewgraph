@@ -340,67 +340,40 @@ export function create() {
     }
   });
 
-  // Inline project mappings
+  // Auto-detected project mapping (read-only)
   const mappingsSection = document.createElement('div');
   Object.assign(mappingsSection.style, { marginTop: '12px', borderTop: '1px solid #333', paddingTop: '10px' });
   const mapLabel = document.createElement('div');
-  mapLabel.textContent = 'Project Mappings';
-  Object.assign(mapLabel.style, { color: '#9ca3af', fontSize: '11px', marginBottom: '4px', fontWeight: '600' });
-  const mapHint = document.createElement('div');
-  mapHint.textContent = 'URL pattern \u2192 captures directory';
-  Object.assign(mapHint.style, { color: '#555', fontSize: '10px', marginBottom: '8px' });
-  const mapList = document.createElement('div');
+  mapLabel.textContent = 'Project';
+  Object.assign(mapLabel.style, { color: '#9ca3af', fontSize: '11px', marginBottom: '6px', fontWeight: '600' });
 
-  const MAPPINGS_KEY = 'vg-project-mappings';
-  const inputStyle = {
-    width: '100%', padding: '4px 6px', background: '#16161e', border: '1px solid #333',
-    borderRadius: '4px', color: '#e0e0e0', fontSize: '11px',
-    fontFamily: 'SF Mono, Cascadia Code, monospace', outline: 'none', boxSizing: 'border-box',
-  };
+  const autoInfo = document.createElement('div');
+  autoInfo.textContent = 'Detecting...';
+  Object.assign(autoInfo.style, { color: '#555', fontSize: '11px', fontStyle: 'italic' });
 
-  function addMappingRow(pattern, dir) {
-    const row = document.createElement('div');
-    Object.assign(row.style, { display: 'flex', gap: '4px', marginBottom: '4px', alignItems: 'center' });
-    const pInput = document.createElement('input');
-    pInput.placeholder = 'localhost:5173';
-    pInput.value = pattern || '';
-    Object.assign(pInput.style, { ...inputStyle, flex: '1' });
-    const dInput = document.createElement('input');
-    dInput.placeholder = '/path/to/captures';
-    dInput.value = dir || '';
-    Object.assign(dInput.style, { ...inputStyle, flex: '1' });
-    const rm = document.createElement('button');
-    rm.textContent = '\u00d7';
-    Object.assign(rm.style, { border: 'none', background: 'transparent', color: '#666', cursor: 'pointer', fontSize: '14px', padding: '0 2px' });
-    rm.addEventListener('click', () => { row.remove(); saveMappings(); });
-    pInput.addEventListener('change', saveMappings);
-    dInput.addEventListener('change', saveMappings);
-    row.append(pInput, dInput, rm);
-    mapList.appendChild(row);
-  }
-
-  function saveMappings() {
-    const rows = mapList.querySelectorAll('div');
-    const mappings = [];
-    for (const row of rows) {
-      const inputs = row.querySelectorAll('input');
-      if (inputs.length < 2) continue;
-      const p = inputs[0].value.trim();
-      const d = inputs[1].value.trim();
-      if (p && d) mappings.push({ pattern: p, dir: d });
+  // Fetch auto-detected mapping from storage (populated by background.js via /info)
+  chrome.storage.local.get('vg-auto-mapping', (result) => {
+    const data = result['vg-auto-mapping'];
+    if (!data) {
+      autoInfo.textContent = 'No server detected - start the MCP server';
+      return;
     }
-    chrome.storage.sync.set({ [MAPPINGS_KEY]: mappings });
-  }
-
-  const addBtn = document.createElement('button');
-  addBtn.textContent = '+ Add mapping';
-  Object.assign(addBtn.style, {
-    width: '100%', padding: '4px', background: 'transparent', border: '1px dashed #333',
-    borderRadius: '4px', color: '#666', fontSize: '10px', cursor: 'pointer', marginTop: '2px',
+    autoInfo.innerHTML = '';
+    autoInfo.style.fontStyle = 'normal';
+    const valStyle = 'color:#93c5fd;font-family:SF Mono,Cascadia Code,monospace;font-size:10px;word-break:break-all';
+    const lblStyle = 'color:#666;font-size:10px;margin-bottom:1px';
+    autoInfo.innerHTML = `<div style="${lblStyle}">Root</div><div style="${valStyle};margin-bottom:6px">${data.projectRoot}</div><div style="${lblStyle}">Captures</div><div style="${valStyle}">${data.capturesDir}</div>`;
   });
-  addBtn.addEventListener('click', () => addMappingRow('', ''));
 
-  mappingsSection.append(mapLabel, mapHint, mapList, addBtn);
+  const advLink = document.createElement('button');
+  advLink.textContent = 'Advanced settings...';
+  Object.assign(advLink.style, {
+    background: 'transparent', border: 'none', color: '#6366f1', fontSize: '10px',
+    cursor: 'pointer', padding: '0', marginTop: '8px',
+  });
+  advLink.addEventListener('click', () => chrome.runtime.sendMessage({ type: 'open-options' }));
+
+  mappingsSection.append(mapLabel, autoInfo, advLink);
   settingsBody.append(serverLine, mappingsSection);
 
   // Capture options - toggle switches
@@ -482,13 +455,6 @@ export function create() {
     list.style.display = 'none';
     footer.style.display = 'none';
     settingsScreen.style.display = 'block';
-    // Reload mappings each time settings opens
-    mapList.innerHTML = '';
-    chrome.storage.sync.get(MAPPINGS_KEY, (result) => {
-      const mappings = result[MAPPINGS_KEY] || [];
-      if (mappings.length === 0) addMappingRow('', '');
-      else for (const m of mappings) addMappingRow(m.pattern, m.dir);
-    });
   }
 
   /** Hide settings screen, restore timeline + footer. */
