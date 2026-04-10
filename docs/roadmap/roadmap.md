@@ -445,6 +445,30 @@ includes contrast ratios with WCAG pass/fail. Viewport visibility flags on all n
 
 ---
 
+## Milestone 12: Capture Context Enrichment (Future)
+
+**Goal:** Enrich DOM captures with runtime context (network, console, components)
+so AI agents can diagnose root causes, not just symptoms.
+
+Prioritized by agent feedback (Kiro IDE session 2026-04-10): ranked by how often
+these would have caught real bugs without back-and-forth.
+
+| # | Task | Priority | Details |
+|---|---|---|---|
+| 12.1 | Network/API state | P0 - highest | Capture in-flight and completed XHR/fetch calls at snapshot time. Include URL, method, status, timing. Failed requests (4xx/5xx) and pending requests are the most valuable. Uses `performance.getEntriesByType('resource')` + `PerformanceObserver`. Extension-side capture enrichment. |
+| 12.2 | Console errors/warnings | P0 - highest | Capture `console.error` and `console.warn` messages present at snapshot time. Inject early via content script to intercept before page scripts run. Include stack traces when available. Would have caught QueryClientProvider crash instantly. |
+| 12.3 | Component tree mapping | P1 - medium | Annotate DOM nodes with React/Vue/Svelte component names. React: `_reactFiber` on DOM nodes. Vue: `__vue_app__`. Map container divs to component names so agent can jump to source files. Framework-specific, needs detection. |
+| 12.4 | Event listener inventory | P2 - lower | List event listeners per element via `getEventListeners()` (Chrome DevTools protocol only) or by intercepting `addEventListener`. Helps debug "click does nothing" issues. Complex to implement reliably. |
+| 12.5 | CSS animation state | P2 - lower | Detect active CSS animations/transitions via `getAnimations()` API. Flag elements mid-animation. Low priority - rarely the root cause. |
+| 12.6 | Responsive breakpoint context | P1 - medium | Report active CSS media query breakpoints at current viewport. Use `window.matchMedia()` against common breakpoint values. Helps debug responsive layout issues. |
+
+**Exit criteria:** Captures include network requests and console errors. Component
+names annotated on container elements for React projects.
+
+**Effort:** ~2 weeks (12.1 and 12.2 are ~3 days each, rest is incremental)
+
+---
+
 ## Timeline Summary
 
 | Week | Milestones | Key Deliverable |
