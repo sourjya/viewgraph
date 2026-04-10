@@ -37,8 +37,9 @@ export default defineContentScript({
     chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
       if (message.type === 'capture') {
-        // Exit annotate mode before capturing clean DOM
-        if (isAnnotating()) { hideMarkers(); destroySidebar(); stopAnnotate(); }
+        // Exit annotate mode before capturing clean DOM (unless keepSidebar is set)
+        if (isAnnotating() && !message.keepSidebar) { hideMarkers(); destroySidebar(); stopAnnotate(); }
+        if (isAnnotating() && message.keepSidebar) { hideMarkers(); }
         try {
           const viewport = { width: window.innerWidth, height: window.innerHeight };
           const { elements, relations } = traverseDOM();
