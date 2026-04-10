@@ -113,7 +113,7 @@ request to a polling client, and `get_request_status` returns the result.
 **Goal:** Pair HTML snapshots with ViewGraph JSON captures to measure and track capture fidelity.
 
 **Spec:** [`.kiro/specs/singlefile-fidelity/`](../../.kiro/specs/singlefile-fidelity/)
-**Status:** Not Started
+**Status:** Complete
 
 Spans server (snapshot receiver, fidelity comparator, `get_fidelity_report` tool) and extension
 (HTML snapshot capture). Can be implemented incrementally alongside M3 and M4.
@@ -306,7 +306,7 @@ bidirectional resolution, and single-button entry point.
 
 **Spec:** [`.kiro/specs/unified-review-panel/`](../../.kiro/specs/unified-review-panel/)
 **ADR:** [`docs/decisions/ADR-007-jsonl-history-store.md`](../decisions/ADR-007-jsonl-history-store.md)
-**Status:** Specced
+**Status:** Complete
 
 Key features:
 - Extension icon opens sidebar directly (no popup)
