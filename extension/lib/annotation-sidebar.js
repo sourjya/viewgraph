@@ -1209,7 +1209,7 @@ export function refresh() {
         Object.assign(guide.style, {
           color: '#e0e0e0', fontSize: '12px', lineHeight: '1.4',
           marginTop: '6px', padding: '6px 8px',
-          background: '#252536', borderRadius: '6px', borderLeft: '2px solid #f59e0b',
+          background: '#252536', borderRadius: '0', borderLeft: '3px solid #f59e0b',
         });
         entry.appendChild(guide);
       }
