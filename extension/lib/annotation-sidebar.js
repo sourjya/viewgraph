@@ -43,6 +43,55 @@ import { discoverServer } from './constants.js';
 import { collectNetworkState } from './network-collector.js';
 import { getConsoleState } from './console-collector.js';
 import { collectBreakpoints } from './breakpoint-collector.js';
+import { buildA11yLine } from './annotate.js';
+import { checkRendered } from './visibility-collector.js';
+
+/**
+ * Build a detail row for a sidebar entry. Shows a11y info, isRendered
+ * warning, and console errors. Hidden by default, shown on hover expand.
+ * @param {object} ann - Annotation object with region and element data
+ * @returns {HTMLElement|null} Detail row element, or null if no detail
+ */
+function buildDetailRow(ann) {
+  const parts = [];
+
+  // Try to find the live DOM element from the annotation's region center
+  let el = null;
+  if (ann.region?.x != null && ann.region?.y != null && ann.type !== 'page-note') {
+    const cx = ann.region.x + (ann.region.width || 0) / 2;
+    const cy = ann.region.y + (ann.region.height || 0) / 2;
+    el = document.elementFromPoint(cx - window.scrollX, cy - window.scrollY);
+  }
+
+  // A11y info from live element
+  if (el) {
+    const a11y = buildA11yLine(el);
+    if (a11y) parts.push({ text: a11y, color: '#60a5fa' });
+    if (!checkRendered(el)) parts.push({ text: '! Hidden by ancestor', color: '#f59e0b' });
+  }
+
+  // Console errors (page-level, not element-specific)
+  const cs = getConsoleState();
+  if (cs.errors.length > 0) {
+    parts.push({ text: cs.errors[cs.errors.length - 1].message.slice(0, 60), color: '#f87171' });
+  }
+
+  if (parts.length === 0) return null;
+
+  const row = document.createElement('div');
+  row.setAttribute('data-vg-annotate', 'detail');
+  Object.assign(row.style, {
+    display: 'none', flexDirection: 'column', gap: '1px', marginTop: '3px',
+    fontSize: '10px', fontFamily: 'system-ui, sans-serif',
+  });
+  for (const { text, color } of parts) {
+    const line = document.createElement('div');
+    line.textContent = text;
+    Object.assign(line.style, { color, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' });
+    row.appendChild(line);
+  }
+  return row;
+}
 
 const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
@@ -742,6 +791,7 @@ export function refresh() {
       entry._expandTimer = setTimeout(() => {
         line1.style.whiteSpace = 'normal';
         line1.style.maxHeight = '120px';
+        if (detailRow) detailRow.style.display = 'flex';
       }, 600);
     });
     entry.addEventListener('mouseleave', () => {
@@ -750,6 +800,7 @@ export function refresh() {
       clearTimeout(entry._expandTimer);
       line1.style.whiteSpace = 'nowrap';
       line1.style.maxHeight = '20px';
+      if (detailRow) detailRow.style.display = 'none';
     });
 
     const label = document.createElement('span');
@@ -825,6 +876,11 @@ export function refresh() {
 
     line1.appendChild(commentText);
     label.appendChild(line1);
+
+    // Detail row: a11y, isRendered, console - hidden until hover expand
+    // Builds detail from the annotation's stored element and live page state
+    const detailRow = buildDetailRow(ann);
+    if (detailRow) label.appendChild(detailRow);
 
     // Resolution details for resolved items
     if (ann.resolved && ann.resolution) {
