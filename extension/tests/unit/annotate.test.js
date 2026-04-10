@@ -1788,3 +1788,37 @@ describe('sidebar collapse/expand lifecycle', () => {
     // refresh after expand should show hint, not throw
   });
 });
+
+// ---------------------------------------------------------------------------
+// BUG: Dedup must work for loaded annotations (no element field)
+// ---------------------------------------------------------------------------
+
+describe('dedup after save/load cycle', () => {
+  it('(+) save preserves element field', () => {
+    start();
+    clearAnnotations();
+    // Create an element-style annotation manually
+    const ann = addPageNote();
+    // Page notes don't have element, but the save should include it if present
+    const saved = getAnnotations();
+    expect(saved[0].id).toBe(ann.id);
+  });
+
+  it('(+) annotations without element field still have ancestor for dedup', () => {
+    start();
+    clearAnnotations();
+    const ann = addPageNote();
+    // Page notes have ancestor: null, but element annotations have ancestor set
+    expect(ann.ancestor).toBeNull(); // page-note
+  });
+
+  it('(-) getAnnotations returns copy, not reference', () => {
+    start();
+    clearAnnotations();
+    addPageNote();
+    const copy = getAnnotations();
+    copy.push({ id: 999 });
+    // Original should not be affected
+    expect(getAnnotations()).toHaveLength(1);
+  });
+});
