@@ -58,6 +58,21 @@ describe('HTTP receiver', () => {
     expect(typeof res.body.writable).toBe('boolean');
   });
 
+  it('GET /info returns capturesDir and projectRoot', async () => {
+    const res = await req(port, 'GET', '/info');
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('capturesDir');
+    expect(res.body).toHaveProperty('projectRoot');
+    expect(typeof res.body.capturesDir).toBe('string');
+    expect(typeof res.body.projectRoot).toBe('string');
+  });
+
+  it('GET /info derives projectRoot from capturesDir', async () => {
+    const res = await req(port, 'GET', '/info');
+    // capturesDir is an absolute path; projectRoot should be its ancestor
+    expect(res.body.capturesDir).toContain(res.body.projectRoot);
+  });
+
   it('GET /requests/pending returns pending requests', async () => {
     queue.create('http://localhost:5173');
     queue.create('http://localhost:3000');

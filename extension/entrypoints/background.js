@@ -16,18 +16,42 @@ import { SERVER_BASE_URL as SERVER_URL, discoverServer } from '../lib/constants.
 import { isInjectable, getBlockedReason } from '../lib/url-checks.js';
 
 const PROJECT_MAPPINGS_KEY = 'vg-project-mappings';
+const AUTO_MAPPING_KEY = 'vg-auto-mapping';
+const OVERRIDE_KEY = 'vg-override-enabled';
 
 /**
- * Look up the capturesDir for a given page URL from project mappings.
- * Returns null if no mapping matches (server uses its default).
+ * Fetch /info from the connected server and store the auto-detected
+ * project mapping. Called on startup and after successful server discovery.
+ */
+async function fetchServerInfo() {
+  try {
+    const serverUrl = await discoverServer();
+    if (!serverUrl) return;
+    const res = await fetch(`${serverUrl}/info`, { signal: AbortSignal.timeout(2000) });
+    if (!res.ok) return;
+    const info = await res.json();
+    await chrome.storage.local.set({ [AUTO_MAPPING_KEY]: { capturesDir: info.capturesDir, projectRoot: info.projectRoot, serverUrl, detectedAt: Date.now() } });
+  } catch { /* server not responding */ }
+}
+
+/**
+ * Look up the capturesDir for a given page URL.
+ * Priority: manual overrides (if enabled) > auto-detected from server /info.
+ * Returns null if no mapping found (server uses its default).
  */
 async function lookupCapturesDir(pageUrl) {
-  const result = await chrome.storage.sync.get(PROJECT_MAPPINGS_KEY);
-  const mappings = result[PROJECT_MAPPINGS_KEY] || [];
-  for (const { pattern, dir } of mappings) {
-    if (pattern === '*' || pageUrl.includes(pattern)) return dir;
+  // Check if manual overrides are enabled
+  const { [OVERRIDE_KEY]: overrideEnabled } = await chrome.storage.local.get(OVERRIDE_KEY);
+  if (overrideEnabled) {
+    const result = await chrome.storage.sync.get(PROJECT_MAPPINGS_KEY);
+    const mappings = result[PROJECT_MAPPINGS_KEY] || [];
+    for (const { pattern, dir } of mappings) {
+      if (pattern === '*' || pageUrl.includes(pattern)) return dir;
+    }
   }
-  return null;
+  // Fall back to auto-detected mapping
+  const { [AUTO_MAPPING_KEY]: auto } = await chrome.storage.local.get(AUTO_MAPPING_KEY);
+  return auto?.capturesDir || null;
 }
 
 /**
@@ -123,6 +147,9 @@ export default defineBackground(() => {
   // The popup HTML is still available for dynamic use on non-injectable pages.
   // ---------------------------------------------------------------------------
   chrome.action.setPopup({ popup: '' });
+
+  // Auto-detect project mapping from server on startup
+  fetchServerInfo();
 
   // ---------------------------------------------------------------------------
   // Extension icon click - open sidebar directly, or fallback popup for

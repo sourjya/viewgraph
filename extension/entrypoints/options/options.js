@@ -1,15 +1,61 @@
 /**
  * Options Page Script
  *
- * Manages project mappings: URL pattern -> capturesDir.
- * Stored in chrome.storage.sync so they persist across devices.
+ * Shows auto-detected project mapping (read-only) from the server /info
+ * endpoint. Provides manual override toggle for multi-project setups.
+ *
+ * @see entrypoints/background.js - fetchServerInfo stores auto-mapping
+ * @see server/src/http-receiver.js - GET /info endpoint
  */
 
 const STORAGE_KEY = 'vg-project-mappings';
+const AUTO_MAPPING_KEY = 'vg-auto-mapping';
+const OVERRIDE_KEY = 'vg-override-enabled';
 const mappingsEl = document.getElementById('mappings');
 const addBtn = document.getElementById('addBtn');
 const saveBtn = document.getElementById('saveBtn');
 const statusEl = document.getElementById('status');
+const autoMappingEl = document.getElementById('autoMapping');
+const overrideToggle = document.getElementById('overrideToggle');
+const manualSection = document.getElementById('manualSection');
+
+// ---------------------------------------------------------------------------
+// Auto-detected mapping display
+// ---------------------------------------------------------------------------
+
+/** Render the auto-detected mapping from server /info. */
+function renderAutoMapping(data) {
+  if (!data) {
+    autoMappingEl.innerHTML = '<span class="auto-dot disconnected"></span><span class="auto-status">No server connected - start the MCP server to auto-detect</span>';
+    return;
+  }
+  const age = Date.now() - (data.detectedAt || 0);
+  const fresh = age < 120000; // 2 min
+  autoMappingEl.innerHTML = `
+    <div class="auto-row"><span class="auto-dot ${fresh ? 'connected' : 'disconnected'}"></span><span class="auto-label">Server:</span> <span class="auto-value">${data.serverUrl || 'unknown'}</span></div>
+    <div class="auto-row"><span class="auto-label">Project:</span> <span class="auto-value">${data.projectRoot || 'unknown'}</span></div>
+    <div class="auto-row"><span class="auto-label">Captures:</span> <span class="auto-value">${data.capturesDir || 'unknown'}</span></div>
+  `;
+}
+
+// Load auto-mapping on page open
+chrome.storage.local.get(AUTO_MAPPING_KEY, (result) => {
+  renderAutoMapping(result[AUTO_MAPPING_KEY] || null);
+});
+
+// ---------------------------------------------------------------------------
+// Manual override toggle
+// ---------------------------------------------------------------------------
+
+chrome.storage.local.get(OVERRIDE_KEY, (result) => {
+  overrideToggle.checked = !!result[OVERRIDE_KEY];
+  manualSection.style.display = overrideToggle.checked ? 'block' : 'none';
+});
+
+overrideToggle.addEventListener('change', () => {
+  manualSection.style.display = overrideToggle.checked ? 'block' : 'none';
+  chrome.storage.local.set({ [OVERRIDE_KEY]: overrideToggle.checked });
+});
 
 /** Create a mapping row in the UI. */
 function createRow(pattern = '', dir = '') {

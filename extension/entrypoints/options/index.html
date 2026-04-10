@@ -48,20 +48,49 @@
     .save-btn:hover { opacity: 0.9; }
     .status { font-size: 12px; color: #4ade80; margin-left: 12px; display: none; }
     .hint { font-size: 11px; color: #555; margin-bottom: 12px; line-height: 1.5; }
+    .auto-mapping {
+      background: #1a1a2e; border: 1px solid #333; border-radius: 8px;
+      padding: 12px 14px; margin-bottom: 16px; font-size: 12px;
+    }
+    .auto-mapping .auto-label { color: #666; font-size: 11px; margin-bottom: 4px; }
+    .auto-mapping .auto-value {
+      color: #93c5fd; font-family: 'SF Mono', 'Cascadia Code', monospace; font-size: 12px;
+    }
+    .auto-mapping .auto-status { color: #666; font-style: italic; }
+    .auto-mapping .auto-row { margin-bottom: 8px; }
+    .auto-mapping .auto-row:last-child { margin-bottom: 0; }
+    .auto-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; }
+    .auto-dot.connected { background: #4ade80; }
+    .auto-dot.disconnected { background: #666; }
+    .override-toggle {
+      display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8;
+      cursor: pointer; margin-bottom: 12px;
+    }
+    .override-toggle input { accent-color: #6366f1; }
   </style>
 </head>
 <body>
   <h1>ViewGraph Settings</h1>
   <p class="subtitle">Configure project mappings for multi-project capture routing</p>
 
-  <h2>Project Mappings</h2>
-  <p class="hint">
-    Map URL patterns to captures directories. The extension matches the current page URL
-    and tells the MCP server where to write captures. Use <code>*</code> as a catch-all default.
-  </p>
+  <h2>Active Mapping</h2>
+  <div id="autoMapping" class="auto-mapping">
+    <div class="auto-status">Checking server...</div>
+  </div>
 
-  <div id="mappings"></div>
-  <button class="add-btn" id="addBtn">+ Add mapping</button>
+  <h2>Manual Overrides</h2>
+  <p class="hint">
+    Override the auto-detected mapping for specific URL patterns.
+    Only needed for multi-project setups. Use <code>*</code> as a catch-all.
+  </p>
+  <label class="override-toggle">
+    <input type="checkbox" id="overrideToggle"> Enable manual overrides
+  </label>
+
+  <div id="manualSection" style="display:none">
+    <div id="mappings"></div>
+    <button class="add-btn" id="addBtn">+ Add mapping</button>
+  </div>
 
   <button class="save-btn" id="saveBtn">Save</button>
   <span class="status" id="status">Saved!</span>
