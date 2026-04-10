@@ -42,6 +42,20 @@ export function installConsoleInterceptor() {
     warningCount++;
     origWarn.apply(console, args);
   };
+
+  // Catch uncaught errors and unhandled rejections (fires even for
+  // errors that occurred before the interceptor was installed)
+  window.addEventListener('error', (e) => {
+    if (e.message) {
+      captureEntry(errors, [e.message]);
+      errorCount++;
+    }
+  });
+  window.addEventListener('unhandledrejection', (e) => {
+    const msg = e.reason?.message || String(e.reason || 'Unhandled promise rejection');
+    captureEntry(errors, [msg]);
+    errorCount++;
+  });
 }
 
 /** Convert console args to a stored entry. */
