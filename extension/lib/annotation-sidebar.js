@@ -691,7 +691,6 @@ export function create() {
       }
     });
     autoRow.append(autoLabel, autoToggle);
-    inspectContent.appendChild(autoRow);
 
     // Network section - grouped by category
     const net = collectNetworkState();
@@ -827,6 +826,9 @@ export function create() {
 
     // Captures + Baseline section - fetches from server asynchronously
     fetchCapturesSection(inspectContent);
+
+    // Auto-capture toggle at bottom (it's a setting, not a primary action)
+    inspectContent.appendChild(autoRow);
   }
 
   /**
