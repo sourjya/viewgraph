@@ -1052,7 +1052,7 @@ export function refresh() {
         info.appendChild(guide);
       }
 
-      // Capture Now button
+      // Capture button
       const capBtn = document.createElement('button');
       capBtn.textContent = 'Capture';
       Object.assign(capBtn.style, {
@@ -1078,7 +1078,35 @@ export function refresh() {
         })();
       });
 
-      entry.append(bell, info, capBtn);
+      // Decline button
+      const decBtn = document.createElement('button');
+      decBtn.textContent = '\u2715';
+      decBtn.title = 'Decline capture request';
+      Object.assign(decBtn.style, {
+        padding: '3px 6px', border: 'none', borderRadius: '4px',
+        background: 'transparent', color: '#666', fontSize: '11px',
+        cursor: 'pointer', flexShrink: '0', fontFamily: 'system-ui, sans-serif',
+      });
+      decBtn.addEventListener('mouseenter', () => { decBtn.style.color = '#f87171'; });
+      decBtn.addEventListener('mouseleave', () => { decBtn.style.color = '#666'; });
+      decBtn.addEventListener('click', () => {
+        (async () => {
+          try {
+            const serverUrl = await discoverServer();
+            if (serverUrl) {
+              await fetch(`${serverUrl}/requests/${req.id}/decline`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reason: 'User declined from extension' }),
+              });
+            }
+          } catch { /* best effort */ }
+          pendingRequests = pendingRequests.filter((r) => r.id !== req.id);
+          refresh();
+        })();
+      });
+
+      entry.append(bell, info, capBtn, decBtn);
       list.appendChild(entry);
     }
   }

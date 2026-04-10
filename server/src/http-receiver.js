@@ -140,6 +140,17 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       return json(res, 200, { id: acked.id, status: acked.status });
     }
 
+    // POST /requests/:id/decline - user declines a capture request
+    const declineMatch = method === 'POST' && url.match(/^\/requests\/([^/]+)\/decline$/);
+    if (declineMatch) {
+      if (!checkAuth(req, res)) return;
+      const body = await readBody(req);
+      const reason = body ? JSON.parse(body).reason : undefined;
+      const declined = queue.decline(declineMatch[1], reason);
+      if (!declined) return json(res, 404, { error: 'Request not found' });
+      return json(res, 200, { id: declined.id, status: 'declined', reason: declined.declineReason });
+    }
+
     // POST /captures
     if (method === 'POST' && url === '/captures') {
       if (!checkAuth(req, res)) return;
