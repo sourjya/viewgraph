@@ -495,6 +495,49 @@ hidden-by-ancestor issues from capture data alone.
 
 ---
 
+## Milestone 14: Real-Time Capture Pipeline (Future)
+
+**Goal:** Eliminate manual capture steps. The extension watches for changes
+and feeds the agent automatically.
+
+Source: Kiro IDE analysis session 2026-04-10.
+
+| # | Task | Priority | Details |
+|---|---|---|---|
+| 14.1 | Continuous capture on hot-reload | P0 - highest | Extension watches for DOM mutations via `MutationObserver`. On dev server hot-reload (detected via `beforeunload` + `load` or HMR events), auto-captures before/after and sends a diff to the agent. Eliminates the manual capture step entirely. Agent sees "3 elements shifted, 1 new element added, contrast dropped on heading" without anyone clicking anything. |
+| 14.2 | User journey recording | P1 - medium | Record a sequence of captures as the user navigates (login -> dashboard -> settings). Each capture timestamped and linked to previous. Replay as a series of DOM states. Like Playwright trace viewer but for DOM structure. Extension tracks `navigation` and `click` events to auto-capture at each step. |
+| 14.3 | Live annotation collaboration | P1 - medium | User annotates in browser, agent sees it in real-time via WebSocket push (not just after capture). User circles something, types "this is wrong", agent responds with proposed fix, user approves, agent applies, page hot-reloads, user verifies. Requires persistent WebSocket between extension and MCP server. |
+| 14.4 | Intent-based capture | P2 - lower | User says "capture the broken dropdown" and draws a box. Extension captures just that subtree with full detail (all computed styles, not just high-salience) plus surrounding context (parent layout, sibling positions). Smaller payload, more focused data. Builds on existing region selection in annotate mode. |
+
+**Exit criteria:** Hot-reload auto-capture works with Vite/webpack dev servers.
+Agent receives diffs without manual intervention.
+
+**Effort:** ~3-4 weeks (14.1 is ~1 week, 14.2-14.3 are ~1 week each)
+
+---
+
+## Milestone 15: Structural Intelligence (Future)
+
+**Goal:** Cross-capture analysis for regression detection, consistency
+enforcement, and source-to-DOM linking.
+
+Source: Kiro IDE analysis session 2026-04-10.
+
+| # | Task | Priority | Details |
+|---|---|---|---|
+| 15.1 | Bidirectional element linking | P0 - highest | When viewing `PulseCard.tsx` in editor, extension highlights corresponding DOM elements. When user clicks element in browser, MCP tells agent which source file and line rendered it. Start with heuristic: `data-testid` -> grep codebase. Enhance with React DevTools fiber walk for component name -> file mapping. Eliminates "which file renders this div" guessing. |
+| 15.2 | Regression baseline library | P0 - highest | Save a "golden" capture per page. After code changes, auto-compare against baseline. Flag structural regressions: "ContactsPage had 12 interactive elements, now has 11 - Unlink button missing." Visual regression testing without screenshots - purely structural. Server stores baselines in `.viewgraph/baselines/`. New MCP tool: `compare_baseline`. |
+| 15.3 | Cross-page consistency checker | P1 - medium | Capture the same component (e.g. page header) across N pages, flag inconsistencies. "RecipesPage header has 16px padding, ContactsPage has 24px." Uses structural pattern fingerprinting from SUMMARY clusters. Enforces design system consistency without manual review. |
+| 15.4 | State machine visualization | P1 - medium | For pages with complex state (receipt: pending -> extracting -> parsed -> confirmed), capture each state and build a state diagram showing which elements appear/disappear/change at each transition. Verify UI matches backend state machine. Builds on journey recording (14.2). |
+| 15.5 | Performance budget per component | P2 - lower | Capture includes render timing per subtree via `PerformanceObserver` + `element-timing` API. "This card took 200ms, this list took 800ms." Identifies component bottlenecks without profiling tools. Requires `elementtiming` attribute injection. |
+
+**Exit criteria:** Bidirectional linking works for React projects with data-testid.
+Baseline comparison detects missing/added interactive elements.
+
+**Effort:** ~4-6 weeks (15.1-15.2 are ~1.5 weeks each, rest is incremental)
+
+---
+
 ## Timeline Summary
 
 | Week | Milestones | Key Deliverable |
