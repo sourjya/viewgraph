@@ -720,22 +720,29 @@ export function refresh() {
       entry.style.background = '#22223a';
       spotlightMarker(ann.id);
       entry._expandTimer = setTimeout(() => {
-        label.style.whiteSpace = 'normal';
-        label.style.maxHeight = '120px';
+        line1.style.whiteSpace = 'normal';
+        line1.style.maxHeight = '120px';
       }, 600);
     });
     entry.addEventListener('mouseleave', () => {
       entry.style.background = 'transparent';
       spotlightMarker(null);
       clearTimeout(entry._expandTimer);
-      label.style.whiteSpace = 'nowrap';
-      label.style.maxHeight = '20px';
+      line1.style.whiteSpace = 'nowrap';
+      line1.style.maxHeight = '20px';
     });
 
     const label = document.createElement('span');
     Object.assign(label.style, {
       color: ann.resolved ? '#666' : '#c8c8d0', overflow: 'hidden',
-      textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1',
+      flex: '1', display: 'flex', flexDirection: 'column', gap: '2px',
+    });
+
+    // Line 1: number + ancestor + comment
+    const line1 = document.createElement('div');
+    Object.assign(line1.style, {
+      display: 'flex', alignItems: 'center', overflow: 'hidden',
+      whiteSpace: 'nowrap', textOverflow: 'ellipsis',
       maxHeight: '20px', transition: 'max-height 0.25s ease, white-space 0s',
     });
 
@@ -749,39 +756,10 @@ export function refresh() {
       Object.assign(numBadge.style, {
         background: '#6366f1', color: '#fff', fontSize: '10px', fontWeight: '700',
         padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
-        fontFamily: 'system-ui, sans-serif',
+        fontFamily: 'system-ui, sans-serif', flexShrink: '0',
       });
     }
-    label.appendChild(numBadge);
-
-    // Severity chip
-    if (ann.severity) {
-      const sev = document.createElement('span');
-      sev.textContent = '\u26a0 ' + ann.severity.charAt(0).toUpperCase() + ann.severity.slice(1);
-      const sevColor = CHIP_COLORS[ann.severity] || '#555';
-      Object.assign(sev.style, {
-        background: 'transparent', color: sevColor,
-        border: `1px solid ${sevColor}`,
-        fontSize: '9px', fontWeight: '700', padding: '1px 5px', borderRadius: '8px',
-        marginRight: '3px', fontFamily: 'system-ui, sans-serif',
-      });
-      label.appendChild(sev);
-    }
-
-    // Category chip
-    if (ann.category) {
-      const cats = ann.category.split(',').map((s) => s.trim()).filter(Boolean);
-      for (const c of cats) {
-        const cat = document.createElement('span');
-        cat.textContent = c.charAt(0).toUpperCase() + c.slice(1);
-        Object.assign(cat.style, {
-          background: CHIP_COLORS[c] || '#555', color: '#fff',
-          fontSize: '9px', fontWeight: '600', padding: '1px 4px', borderRadius: '8px',
-          marginRight: '3px', fontFamily: 'system-ui, sans-serif',
-        });
-        label.appendChild(cat);
-      }
-    }
+    line1.appendChild(numBadge);
 
     // Ancestor element badge
     if (ann.ancestor) {
@@ -790,15 +768,53 @@ export function refresh() {
       Object.assign(elBadge.style, {
         background: '#2a2a4a', color: '#93c5fd', fontSize: '10px', fontWeight: '500',
         padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
-        fontFamily: 'SF Mono, Cascadia Code, monospace',
+        fontFamily: 'SF Mono, Cascadia Code, monospace', flexShrink: '0',
       });
-      label.appendChild(elBadge);
+      line1.appendChild(elBadge);
     }
 
     const commentText = document.createElement('span');
     commentText.textContent = ann.comment || '(no comment)';
+    Object.assign(commentText.style, { overflow: 'hidden', textOverflow: 'ellipsis' });
     if (ann.resolved) Object.assign(commentText.style, { textDecoration: 'line-through' });
-    label.appendChild(commentText);
+    line1.appendChild(commentText);
+    label.appendChild(line1);
+
+    // Line 2: severity + category chips (only if present)
+    const hasChips = ann.severity || ann.category;
+    if (hasChips) {
+      const line2 = document.createElement('div');
+      Object.assign(line2.style, { display: 'flex', flexWrap: 'wrap', gap: '3px' });
+
+      if (ann.severity) {
+        const sev = document.createElement('span');
+        sev.textContent = '\u26a0 ' + ann.severity.charAt(0).toUpperCase() + ann.severity.slice(1);
+        const sevColor = CHIP_COLORS[ann.severity] || '#555';
+        Object.assign(sev.style, {
+          background: 'transparent', color: sevColor,
+          border: `1px solid ${sevColor}`,
+          fontSize: '9px', fontWeight: '700', padding: '1px 5px', borderRadius: '8px',
+          fontFamily: 'system-ui, sans-serif',
+        });
+        line2.appendChild(sev);
+      }
+
+      if (ann.category) {
+        const cats = ann.category.split(',').map((s) => s.trim()).filter(Boolean);
+        for (const c of cats) {
+          const cat = document.createElement('span');
+          cat.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+          Object.assign(cat.style, {
+            background: CHIP_COLORS[c] || '#555', color: '#fff',
+            fontSize: '9px', fontWeight: '600', padding: '1px 4px', borderRadius: '8px',
+            fontFamily: 'system-ui, sans-serif',
+          });
+          line2.appendChild(cat);
+        }
+      }
+
+      label.appendChild(line2);
+    }
 
     // Resolution details for resolved items
     if (ann.resolved && ann.resolution) {
