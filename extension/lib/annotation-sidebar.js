@@ -836,24 +836,61 @@ export function create() {
   shadow.append(scrollStyle, sidebarEl);
   document.documentElement.appendChild(hostEl);
 
-  // Collapsed badge - hidden initially
+  // Collapsed strip - vertical mode icons, hidden initially
   badgeEl = document.createElement('div');
   badgeEl.setAttribute(ATTR, 'collapse-badge');
   Object.assign(badgeEl.style, {
     position: 'fixed', top: '60px', right: '0', zIndex: '2147483646',
-    padding: '10px 12px', borderRadius: '10px 0 0 10px',
+    display: 'none', flexDirection: 'column', gap: '2px',
+    padding: '6px 5px', borderRadius: '10px 0 0 10px',
     background: '#252536', border: '1px solid #333', borderRight: 'none',
-    color: '#a5b4fc', fontSize: '14px', fontWeight: '600',
-    display: 'none', alignItems: 'center', gap: '6px',
-    cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+    fontFamily: 'system-ui, sans-serif',
     boxShadow: '-2px 0 8px rgba(0,0,0,0.3)',
   });
-  badgeEl.title = 'Show annotations';
-  badgeEl.addEventListener('click', () => {
-    expand();
-    setCaptureMode(null);
-    updateModeButtons();
+
+  // Expand button at top of strip
+  const expandBtn = document.createElement('button');
+  expandBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+  Object.assign(expandBtn.style, {
+    border: 'none', background: 'transparent', color: '#a5b4fc',
+    cursor: 'pointer', padding: '4px', borderRadius: '4px', display: 'flex',
   });
+  expandBtn.title = 'Expand sidebar';
+  expandBtn.addEventListener('click', () => { expand(); setCaptureMode(null); updateModeButtons(); });
+  badgeEl.appendChild(expandBtn);
+
+  // Divider
+  const stripDivider = document.createElement('div');
+  Object.assign(stripDivider.style, { height: '1px', background: '#333', margin: '2px 0' });
+  badgeEl.appendChild(stripDivider);
+
+  // Mode icons in collapsed strip - click triggers mode action directly
+  for (const [key, icon] of Object.entries(MODE_ICONS)) {
+    const btn = document.createElement('button');
+    btn.innerHTML = icon;
+    btn.title = MODE_HINTS[key];
+    Object.assign(btn.style, {
+      border: 'none', background: 'transparent', color: '#9ca3af',
+      cursor: 'pointer', padding: '5px', borderRadius: '4px', display: 'flex',
+    });
+    btn.addEventListener('mouseenter', () => { btn.style.background = '#2a2a4a'; });
+    btn.addEventListener('mouseleave', () => { btn.style.background = 'transparent'; });
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (key === 'page') {
+        const ann = addPageNote();
+        expand();
+        refresh();
+        showPanel(ann, { onChange: () => refresh() });
+        return;
+      }
+      const mode = CAPTURE_MODES[key.toUpperCase()];
+      setCaptureMode(captureMode === mode ? null : mode);
+      updateModeButtons();
+    });
+    badgeEl.appendChild(btn);
+  }
+
   document.documentElement.appendChild(badgeEl);
 
   refresh();
