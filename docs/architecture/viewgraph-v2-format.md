@@ -1,8 +1,8 @@
 # ViewGraph v2 Format Specification
 
-**Version:** 2.1.0
+**Version:** 2.2.0
 
-**Date:** 2026-04-08
+**Date:** 2026-04-10
 
 **Status:** Draft
 
@@ -95,7 +95,8 @@ producers MUST emit in this order for LLM attention optimization.
 | 6 | `annotations` | No | Human annotations from review mode |
 | 7 | `accessibility` | No | Computed accessibility tree snapshot |
 | 8 | `coverage` | No | Omission manifest - what was dropped and why |
-| 9 | `console` | No | Captured console errors/warnings |
+| 9 | `network` | No | Network request state at capture time |
+| 10 | `console` | No | Captured console errors/warnings |
 
 ### 2.2 Why plain keys (not `====SECTION====` markers)
 
@@ -128,7 +129,7 @@ Required. Provides capture context.
 {
   "metadata": {
     "format": "viewgraph-v2",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "profile": "readable",
     "timestamp": "2026-04-08T06:08:15.214Z",
     "url": "http://localhost:8040/projects",
@@ -174,7 +175,7 @@ Required. Provides capture context.
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `format` | string | Yes | Always `"viewgraph-v2"` |
-| `version` | string | Yes | Semver. Current: `"2.1.0"` |
+| `version` | string | Yes | Semver. Current: `"2.2.0"` |
 | `profile` | string | Yes | `"readable"` or `"compact"` |
 | `timestamp` | string | Yes | ISO 8601 UTC |
 | `url` | string | Yes | Page URL at capture time |
@@ -673,51 +674,147 @@ children.
 
 ---
 
-## 11. CONSOLE Section
+## 11. NETWORK Section
 
-Optional. Captured browser console messages during the capture window.
-Helps agents correlate UI state with runtime errors.
+Optional. Network request state captured from the Performance API at
+snapshot time. Helps agents diagnose failed API calls, slow requests,
+and missing resources without seeing the page.
+
+Added in v2.2.0 (M12.1).
 
 ```json
 {
-  "console": [
-    { "level": "error", "text": "Failed to fetch /api/jobs", "timestamp": "2026-04-08T07:10:01Z" },
-    { "level": "warn", "text": "Deprecated prop 'size' on Button", "timestamp": "2026-04-08T07:10:00Z" }
-  ]
+  "network": {
+    "requests": [
+      {
+        "url": "https://api.example.com/v1/pulse",
+        "initiatorType": "fetch",
+        "duration": 234,
+        "transferSize": 1520,
+        "startTime": 1200,
+        "failed": false
+      },
+      {
+        "url": "https://api.example.com/v1/auth",
+        "initiatorType": "fetch",
+        "duration": 150,
+        "transferSize": 0,
+        "startTime": 800,
+        "failed": true
+      }
+    ],
+    "summary": {
+      "total": 12,
+      "failed": 1,
+      "byType": { "fetch": 5, "script": 3, "css": 2, "img": 2 }
+    }
+  }
 }
 ```
 
+### 11.1 Request fields
+
 | Field | Type | Description |
 |---|---|---|
-| `level` | string | `"error"`, `"warn"`, `"info"` |
-| `text` | string | Console message text (truncated to 500 chars) |
-| `timestamp` | string | ISO 8601 UTC |
+| `url` | string | Request URL (truncated to 200 chars for privacy) |
+| `initiatorType` | string | Performance API initiator: `fetch`, `xmlhttprequest`, `script`, `css`, `img`, etc. |
+| `duration` | number | Request duration in ms (rounded) |
+| `transferSize` | number | Bytes transferred over the network |
+| `startTime` | number | Start time relative to navigation (ms, rounded) |
+| `failed` | boolean | Heuristic: `true` when `transferSize === 0 && duration > 0` |
 
-Only `error` and `warn` levels are captured by default. The extension
-hooks `console.error` and `console.warn` during the capture window.
+### 11.2 Summary fields
 
----
-
-## 13. Standard Format Exports
-
-ViewGraph v2 is the canonical format. Standard format exports are available
-as optional MCP tools and optional extension output.
-
-| Export | MCP Tool | Format |
+| Field | Type | Description |
 |---|---|---|
-| CDP DOMSnapshot | `export_cdp_snapshot` | Columnar arrays + string table |
-| Accessibility Tree | `export_ax_tree` | Role/name/state tree |
-| W3C Web Annotation | `export_annotations_w3c` | JSON-LD with selectors |
+| `total` | number | Total resource entries (may exceed `requests` array if capped) |
+| `failed` | number | Count of failed requests |
+| `byType` | object | Count per `initiatorType` |
+
+### 11.3 Limits
+
+- Requests array capped at 100 entries (most recent first by `startTime`)
+- URLs truncated to 200 characters
+- Request/response bodies are never captured
+
+### 11.4 Data source
+
+Uses `performance.getEntriesByType('resource')` which is available in all
+modern browsers without special permissions. Does not expose HTTP status
+codes directly - the `failed` flag is a heuristic based on transfer size.
 
 ---
 
-## 12. Size Budget and Progressive Degradation
+## 12. CONSOLE Section
 
-### 12.1 Target size
+Optional. Captured browser console errors and warnings. Helps agents
+correlate UI state with runtime errors (e.g., missing providers,
+failed imports, uncaught exceptions).
+
+Added in v2.2.0 (M12.2).
+
+```json
+{
+  "console": {
+    "errors": [
+      {
+        "message": "No QueryClient set, use QueryClientProvider to set one",
+        "stack": "at App.tsx:12\n    at renderWithHooks ...",
+        "timestamp": "2026-04-10T15:30:00.123Z"
+      }
+    ],
+    "warnings": [
+      {
+        "message": "Deprecated prop 'size' on Button component",
+        "stack": null,
+        "timestamp": "2026-04-10T15:30:01.456Z"
+      }
+    ],
+    "summary": {
+      "errors": 1,
+      "warnings": 1
+    }
+  }
+}
+```
+
+### 12.1 Entry fields
+
+| Field | Type | Description |
+|---|---|---|
+| `message` | string | Console message text (truncated to 500 chars) |
+| `stack` | string\|null | Stack trace when the argument is an Error object |
+| `timestamp` | string | ISO 8601 UTC when the message was logged |
+
+### 12.2 Summary fields
+
+| Field | Type | Description |
+|---|---|---|
+| `errors` | number | Total `console.error` calls (may exceed array if capped) |
+| `warnings` | number | Total `console.warn` calls (may exceed array if capped) |
+
+### 12.3 Limits
+
+- 50 entries per level (errors, warnings)
+- Messages truncated to 500 characters
+- Only `error` and `warn` levels captured (not `log`, `info`, `debug`)
+
+### 12.4 Collection method
+
+The extension installs interceptors on `console.error` and `console.warn`
+early in the content script lifecycle. Original console behavior is
+preserved (interceptors call through to the originals). The interceptor
+captures Error objects with their stack traces when available.
+
+---
+
+## 13. Size Budget and Progressive Degradation
+
+### 13.1 Target size
 
 Default target: **400KB** (~100K tokens). Configurable via extension settings.
 
-### 12.2 Degradation strategy
+### 13.2 Degradation strategy
 
 When a capture exceeds the target size, the producer degrades progressively:
 
@@ -732,16 +829,16 @@ At each step, the `coverage` section is updated to reflect what was retained.
 
 ---
 
-## 13. Versioning and Compatibility
+## 14. Versioning and Compatibility
 
-### 13.1 Version field
+### 14.1 Version field
 
 `metadata.version` uses semver (MAJOR.MINOR.PATCH):
 - **MAJOR:** Breaking changes to section structure or required fields
 - **MINOR:** New optional sections or fields
 - **PATCH:** Bug fixes, clarifications
 
-### 13.2 Compatibility rules
+### 14.2 Compatibility rules
 
 - Parsers MUST check `metadata.format === "viewgraph-v2"`
 - Parsers SHOULD check `metadata.version` for feature support
@@ -751,7 +848,20 @@ At each step, the `coverage` section is updated to reflect what was retained.
 
 ---
 
-## 14. File Naming Convention
+## 15. Standard Format Exports
+
+ViewGraph v2 is the canonical format. Standard format exports are available
+as optional MCP tools and optional extension output.
+
+| Export | MCP Tool | Format |
+|---|---|---|
+| CDP DOMSnapshot | `export_cdp_snapshot` | Columnar arrays + string table |
+| Accessibility Tree | `export_ax_tree` | Role/name/state tree |
+| W3C Web Annotation | `export_annotations_w3c` | JSON-LD with selectors |
+
+---
+
+## 16. File Naming Convention
 
 ```
 viewgraph-{hostname}-{YYYYMMDD}-{HHmmss}.viewgraph.json
@@ -762,7 +872,7 @@ Screenshot PNG uses the same basename as the JSON file.
 
 ---
 
-## 15. References
+## 17. References
 
 This specification was informed by the research documented in
 [viewgraph-format-research.md](./viewgraph-format-research.md). Key sources:
