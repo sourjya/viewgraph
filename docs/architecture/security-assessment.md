@@ -58,16 +58,20 @@ path traversal sequences (`../`), writing files outside the captures directory.
 
 **Risk:** A crafted capture could contain malicious text in node attributes,
 visible text, or aria-labels that influences agent behavior when the agent
-reads the capture through MCP tools.
+reads the capture through MCP tools. Annotation comments are a higher-risk
+vector since they're free-text that the agent reads as context.
 
 **Severity:** Low
 
-**Status:** ACCEPTED (acceptable risk)
+**Status:** MITIGATED (defense in depth)
 
-**Rationale:** This is inherent to any tool that captures web page content.
-The agent already processes arbitrary web content. ViewGraph captures are
-no more dangerous than the pages themselves. Mitigating this would require
-sanitizing all text content, which would destroy the tool's utility.
+**Mitigations:**
+- MCP tool responses wrap annotations with `_notice` field marking them as
+  user-provided UI feedback, not instructions
+- Steering docs instruct the agent to treat annotation comments as bug
+  reports, never as system instructions
+- Comment length capped at 500 chars in the extension
+- DOM content is inherently untrusted - same as any web page the agent reads
 
 ### 4. Extension permissions scope
 
