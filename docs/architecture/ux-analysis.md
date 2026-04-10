@@ -81,74 +81,82 @@ accessibility info (role, name, states).
 
 ### 2.1 Developer with AI Agent (primary persona)
 
-**Current journey:**
-1. Open app in Chrome
-2. Click ViewGraph icon -> popup opens
-3. Click "Annotate" -> popup closes, sidebar opens, overlay activates
-4. Click elements or shift+drag regions
-5. Type comments in annotation panel
-6. Set severity/category
-7. Click "Send to Agent" in sidebar footer
-8. Switch to IDE/CLI, ask agent about annotations
-9. Agent fixes issues, marks resolved
-10. Sidebar shows resolved status (after sync)
+**Annotating a bug (Review tab):**
+1. Click ViewGraph icon -> annotate mode activates directly (no popup)
+2. Sidebar opens on **Review** tab, overlay highlights elements on hover
+3. Click element, type comment in annotation panel, set severity
+4. Wonders "is there a network error causing this?" -> clicks **Inspect** tab
+5. Sees failed GET /api/users, copies that context back to annotation
+6. Back to **Review** -> clicks "Send to Agent"
+7. Agent receives annotations + full DOM + network/console enrichment
 
-**Pain points:**
-- Step 2-3: Two clicks to start annotating (icon + Annotate button).
-  The popup is a speed bump. Most developers will always want Annotate.
-- Step 7-8: Context switch from browser to IDE. No feedback that the
-  agent received the annotations or is working on them.
-- Step 9-10: Resolution sync requires polling. No real-time feedback.
-- No way to see what enrichment data (network errors, console errors)
-  will be sent with the capture. Developer can't verify "did it capture
-  the 404 I'm seeing?"
+Key: the tab switch at step 4 is a natural mental shift from "describing
+what's wrong" to "understanding what's happening." Both tabs are one click
+away throughout the session.
 
-**With M12-M15 features, new needs:**
-- See network request failures inline (M12.1)
-- See console errors inline (M12.2)
-- See which breakpoint is active (M12.6)
-- See isRendered status on hover (M13.3)
-- Continuous capture on hot-reload (M14.1) - no manual capture step
-- Bidirectional element linking (M15.1) - click element, see source file
-- Regression baseline comparison (M15.2) - see what changed
+**Verifying a fix (Inspect tab):**
+1. Agent says "fixed, request a capture to verify"
+2. Click icon -> sidebar opens, clicks **Inspect** tab
+3. Sees latest capture in history, clicks "Compare with previous"
+4. Sees diff: "button restored, padding fixed, 1 new testid" - done
+
+Entire journey stays in Inspect. Review tab never touched. The developer
+is purely in "understanding" mode - no annotations needed.
+
+**Debugging a hidden element (Inspect tab + tooltip):**
+1. Hover over element, tooltip shows `! Hidden: ancestor opacity: 0`
+2. Click **Inspect** -> sees isRendered warning, console error, breakpoint "md"
+3. Realizes it's a responsive issue, fixes directly without annotating
+
+Inspect tab serves as a lightweight DevTools alternative. The enhanced
+tooltip gives the first signal; Inspect tab provides the full picture.
+
+**With future features (M14-M15):**
+- Continuous capture (M14.1): toggle in Inspect tab, auto-diffs appear in history
+- Journey recording (M14.2): record button in mode bar, results in Inspect
+- Source linking (M15.1): file:line in tooltip, click to copy
+- Baseline comparison (M15.2): set baseline in Inspect, auto-compare on capture
 
 ### 2.2 Tester / QA (secondary persona)
 
-**Current journey:**
-1. Open app in Chrome
-2. Click ViewGraph icon -> Annotate
-3. Annotate issues with comments, severity, category
-4. Click "Copy MD" -> paste into Jira/Linear/GitHub
-5. OR click "Report" -> download ZIP with markdown + screenshots
+**Filing a bug report (Review tab only):**
+1. Click icon -> annotate mode activates
+2. **Review** tab: click 3 elements, add comments, set severity/category
+3. Click "Copy MD" -> paste into Jira (includes environment section with
+   network failures and console errors from enrichment data)
+4. OR click "Report" -> download ZIP with markdown + screenshots + network.json
 
-**Pain points:**
-- Same popup speed bump as developer
-- No way to attach network/console context to bug reports
-- Copy MD doesn't include screenshots (only Report ZIP does)
-- No way to compare current state against a known-good baseline
+Entire journey stays in Review. Tester never needs Inspect tab. The
+enrichment data flows into exports automatically - no extra steps.
 
-**With new features, new needs:**
-- Include network failures in bug reports (M12.1)
-- Include console errors in bug reports (M12.2)
-- Record a user journey across pages (M14.2)
-- Compare against baseline to prove regression (M15.2)
+**Proving a regression (Review + Inspect):**
+1. Click icon -> **Inspect** tab
+2. Sees capture history, compares current against baseline
+3. Diff shows "Unlink button missing, 1 testid removed"
+4. Switches to **Review**, annotates the regression with diff context
+5. "Copy MD" -> paste into ticket with structural proof
+
+The Inspect tab provides evidence; Review tab packages it for the ticket.
 
 ### 2.3 Reviewer / Design QA (tertiary persona)
 
-**Current journey:**
-1. Open app, enter annotate mode
-2. Check visual consistency across pages
-3. Annotate deviations from design spec
-4. Export as markdown or send to developer
+**Checking visual consistency (Review tab):**
+1. Click icon -> annotate mode
+2. **Review** tab: annotate deviations from design spec
+3. Set category to "visual" on each annotation
+4. "Send to Agent" or "Copy MD" depending on workflow
 
-**Pain points:**
-- No cross-page comparison tool
-- No way to check component consistency (same header on 10 pages)
-- No design token validation (is this really the right shade of blue?)
+**Checking responsive behavior (Inspect tab):**
+1. Resize viewport to different breakpoints
+2. **Inspect** tab shows active breakpoint changing (e.g. "lg" -> "md")
+3. Annotate any layout issues that appear at specific breakpoints
+4. Enrichment data in export proves which breakpoint triggered the issue
 
-**With new features, new needs:**
-- Cross-page consistency checker (M15.3)
-- State machine visualization (M15.4)
+**With future features:**
+- Cross-page consistency (M15.3): capture same component across pages,
+  Inspect tab flags padding/color/font drift
+- State machine visualization (M15.4): capture each UI state, Inspect
+  tab shows transition diagram
 
 ---
 
@@ -245,51 +253,16 @@ diffs) are both answers to the same question: "what is the page doing?" They're
 reference data the user consults, not tasks the user acts on. Merging them
 avoids a tab that's too thin to justify and reduces cognitive load.
 
-### 4.2 Journey Validation Against Two-Tab Model
+### 4.2 Journey Validation
 
-Each persona's journey was walked against this model to verify it holds:
+All user journeys in Section 2 were designed against this two-tab model.
+Key observations:
 
-**Developer annotating a bug:**
-1. Click icon -> annotate mode (direct toggle, no popup)
-2. Sidebar opens on **Review** (default) - annotate elements, set severity
-3. Wonders "is there a network error causing this?" -> clicks **Inspect**
-4. Sees failed request, copies context back to annotation comment
-5. Back to **Review** -> "Send to Agent"
-
-The tab switch at step 3 is natural: "let me check what's going on" is a
-distinct mental shift from "let me describe what's wrong."
-
-**Developer verifying a fix:**
-1. Agent says "fixed, capture to verify"
-2. Click icon -> sidebar opens, clicks **Inspect**
-3. Sees latest capture, clicks "Compare with previous"
-4. Sees diff: "button restored, padding fixed" - done
-
-Entire journey stays in Inspect. Review tab never touched.
-
-**Tester filing a bug report:**
-1. Click icon -> annotate mode
-2. **Review**: annotate 3 issues, set severity/category
-3. "Copy MD" -> paste into Jira - done
-
-Entire journey stays in Review. Inspect tab never touched.
-
-**Developer debugging a hidden element:**
-1. Hover over element, tooltip shows `! Hidden: ancestor opacity: 0`
-2. Click **Inspect** -> sees isRendered warning, console error, breakpoint "md"
-3. Realizes it's a responsive issue, fixes directly without annotating
-
-Inspect tab serves as lightweight DevTools alternative.
-
-**Agent requests a capture:**
-Agent requests appear at the top of **Review** tab. They're actionable tasks
-for the user (like annotations are actionable tasks for the agent). The
-request card has a "Capture" button - that's an action, not reference data.
-
-**Journey recording (M14.2, future):**
-Record button lives in the mode bar (it's a capture mode). Journey results
-appear in **Inspect** under History. Recording controls are actions; results
-are reference data.
+- Every journey stays cleanly in one tab or has a single natural switch point
+- Review tab is the default for annotation-first workflows (developer, tester)
+- Inspect tab is the default for verification-first workflows (fix checking, debugging)
+- Agent requests are actionable tasks and belong in Review, not Inspect
+- Future features (M14-M15) slot cleanly into Inspect without disrupting Review
 
 ### 4.3 Priority 1: Quick-Start (eliminate popup speed bump)
 
