@@ -22,13 +22,17 @@ export const SERVER_BASE_URL = `http://127.0.0.1:${DEFAULT_HTTP_PORT}`;
  */
 let _cachedUrl = null;
 let _cachedToken = null;
+let _cachedAgent = null;
 let _cacheExpiry = 0;
 
 /** Reset the server discovery cache. Used in tests. */
-export function resetServerCache() { _cachedUrl = null; _cachedToken = null; _cacheExpiry = 0; }
+export function resetServerCache() { _cachedUrl = null; _cachedToken = null; _cachedAgent = null; _cacheExpiry = 0; }
 
 /** Get the cached auth token. Available after discoverServer resolves. */
 export function getServerToken() { return _cachedToken; }
+
+/** Get the detected agent name (e.g. "Kiro", "Claude Code"). Defaults to "Agent". */
+export function getAgentName() { return _cachedAgent || 'Agent'; }
 
 export async function discoverServer(targetDir = null) {
   if (_cachedUrl && Date.now() < _cacheExpiry) return _cachedUrl;
@@ -63,8 +67,9 @@ async function fetchToken(serverUrl) {
     if (res.ok) {
       const data = await res.json();
       _cachedToken = data.token || null;
+      _cachedAgent = data.agent || null;
     }
-  } catch { _cachedToken = null; }
+  } catch { _cachedToken = null; _cachedAgent = null; }
 }
 
 /**

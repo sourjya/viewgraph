@@ -120,13 +120,18 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       const projectRoot = absCaptures.endsWith('.viewgraph/captures')
         ? dirname(dirname(absCaptures))
         : dirname(absCaptures);
-      return json(res, 200, { capturesDir: absCaptures, projectRoot, token: secret || undefined });
+      // Read agent name written by viewgraph-init
+      let agent;
+      try { const { readFileSync } = await import('fs'); agent = readFileSync(resolve(projectRoot, '.viewgraph', '.agent'), 'utf-8').trim(); } catch { /* not set */ }
+      return json(res, 200, { capturesDir: absCaptures, projectRoot, token: secret || undefined, agent });
     }
 
     // GET /requests/pending
     if (method === 'GET' && url === '/requests/pending') {
       const pending = queue.getPending().map((r) => ({
-        id: r.id, url: r.url, createdAt: r.createdAt, ...(r.guidance ? { guidance: r.guidance } : {}),
+        id: r.id, url: r.url, createdAt: r.createdAt,
+        ...(r.guidance ? { guidance: r.guidance } : {}),
+        ...(r.purpose ? { purpose: r.purpose } : {}),
       }));
       return json(res, 200, { requests: pending });
     }

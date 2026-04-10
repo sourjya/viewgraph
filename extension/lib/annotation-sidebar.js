@@ -40,7 +40,7 @@ async function syncResolved() {
   } catch { /* server offline - no sync */ }
 }
 import { formatMarkdown } from './export-markdown.js';
-import { discoverServer, authHeaders } from './constants.js';
+import { discoverServer, authHeaders, getAgentName } from './constants.js';
 import { collectNetworkState } from './network-collector.js';
 import { getConsoleState } from './console-collector.js';
 import { collectBreakpoints } from './breakpoint-collector.js';
@@ -1098,7 +1098,7 @@ export function refresh() {
   // Kiro capture requests - shown at top of timeline
   if (pendingRequests.length > 0) {
     const reqHeader = document.createElement('div');
-    reqHeader.textContent = `Agent Requests (${pendingRequests.length})`;
+    reqHeader.textContent = `${getAgentName()} Requests (${pendingRequests.length})`;
     Object.assign(reqHeader.style, {
       padding: '6px 12px', color: '#f59e0b', fontSize: '11px', fontWeight: '600',
       borderBottom: '1px solid #2a2a3a', fontFamily: 'system-ui, sans-serif',

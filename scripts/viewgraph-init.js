@@ -123,6 +123,8 @@ if (agent) {
   console.log('\n  No AI agent detected - writing generic config\n');
   writeMcpConfig(path.join(CWD, '.viewgraph', 'mcp.json'));
 }
+// Persist detected agent name for server /info endpoint
+writeFileSync(path.join(CWD, '.viewgraph', '.agent'), agent ? agent.name : 'Agent');
 
 // 4. Add .viewgraph to .gitignore if not already there
 const gitignorePath = path.join(CWD, '.gitignore');
