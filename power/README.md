@@ -19,6 +19,7 @@ These enhance the AI agent's ability to work with ViewGraph captures.
 | `vg-context.sh` | agentSpawn | Injects capture count and latest filename on agent start |
 | `vg-post-fix.sh` | postToolUse (fs_write) | Reminds agent to verify after editing UI files |
 | `vg-fix-annotations.sh` | postToolUse (get_annotations) | Guides agent through annotation resolution workflow |
+| `vg-check-testids.sh` | postToolUse (find_missing_testids) | Guides agent to add suggested testids to source code |
 
 ### Prompts (`.kiro/prompts/`)
 
@@ -54,6 +55,11 @@ To activate the hooks, add them to your Kiro agent config (`.kiro/agents/your-ag
         "matcher": "@viewgraph/get_annotations",
         "command": ".kiro/hooks/vg-fix-annotations.sh",
         "description": "ViewGraph: guide annotation resolution"
+      },
+      {
+        "matcher": "@viewgraph/find_missing_testids",
+        "command": ".kiro/hooks/vg-check-testids.sh",
+        "description": "ViewGraph: guide testid addition"
       }
     ]
   }

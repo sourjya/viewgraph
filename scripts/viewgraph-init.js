@@ -177,7 +177,7 @@ if (agent?.name === 'Kiro') {
   // Copy hooks if source exists
   if (existsSync(srcHooks)) {
     ensureDir(hooksDir);
-    for (const file of ['vg-context.sh', 'vg-post-fix.sh', 'vg-fix-annotations.sh']) {
+    for (const file of ['vg-context.sh', 'vg-post-fix.sh', 'vg-fix-annotations.sh', 'vg-check-testids.sh']) {
       const src = path.join(srcHooks, file);
       const dest = path.join(hooksDir, file);
       if (existsSync(src) && !existsSync(dest)) {
