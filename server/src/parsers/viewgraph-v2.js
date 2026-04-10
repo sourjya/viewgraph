@@ -93,6 +93,7 @@ export function parseCapture(jsonString) {
       annotations: normalizeAnnotations(raw.annotations),
       network: raw.network ?? null,
       console: raw.console ?? null,
+      breakpoints: raw.breakpoints ?? null,
     },
   };
 }
@@ -132,6 +133,7 @@ export function parseSummary(jsonString) {
       clusters: summary?.clusters ?? [],
       networkSummary: raw.network?.summary ?? null,
       consoleSummary: raw.console?.summary ?? null,
+      breakpoints: raw.breakpoints ?? null,
     },
   };
 }

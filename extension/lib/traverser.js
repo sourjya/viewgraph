@@ -8,6 +8,8 @@
  * Runs in the content script context (has access to document, window).
  */
 
+import { checkRendered } from './visibility-collector.js';
+
 /** Tags that are inherently interactive. */
 const INTERACTIVE_TAGS = new Set(['a', 'button', 'input', 'select', 'textarea', 'details', 'summary']);
 
@@ -182,6 +184,7 @@ export function traverseDOM(root = document.body) {
       bbox,
       isInteractive: INTERACTIVE_TAGS.has(tag) || el.getAttribute('role') === 'button' || el.onclick != null,
       isSemantic: SEMANTIC_TAGS.has(tag),
+      isRendered: checkRendered(el),
       styles: extractStyles(computed),
       attributes: {},
     };

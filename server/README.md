@@ -105,7 +105,7 @@ on localhost for extension communication.
 ## Testing
 
 ```bash
-npm test                 # single run (234 tests)
+npm test                 # single run (235 tests)
 npm run test:watch       # watch mode
 ```
 
