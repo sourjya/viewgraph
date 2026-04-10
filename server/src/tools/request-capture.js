@@ -19,10 +19,12 @@ export function register(server, queue) {
       url: z.string().describe('URL of the page to capture'),
       guidance: z.string().max(500).optional()
         .describe('Instructions for the user, e.g. "Verify fix: reload and check the header"'),
+      purpose: z.enum(['capture', 'inspect', 'verify']).optional()
+        .describe('Intent: capture (default), inspect (audit/testids), verify (check a fix)'),
     },
-    async ({ url, guidance }) => {
+    async ({ url, guidance, purpose }) => {
       try {
-        const req = queue.create(url, { guidance });
+        const req = queue.create(url, { guidance, purpose });
         return { content: [{ type: 'text', text: JSON.stringify({ requestId: req.id, status: req.status }) }] };
       } catch (err) {
         return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };

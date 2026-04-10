@@ -53,6 +53,7 @@ export function createRequestQueue({ maxSize = 10, ttlMs = 60000 } = {}) {
         captureFilename: null,
       };
       if (options.guidance) req.guidance = options.guidance;
+      if (options.purpose) req.purpose = options.purpose;
       requests.set(req.id, req);
       return req;
     },

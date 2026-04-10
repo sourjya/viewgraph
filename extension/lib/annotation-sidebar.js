@@ -1040,9 +1040,10 @@ export function refresh() {
         display: 'flex', alignItems: 'center', gap: '6px',
       });
 
-      // Bell icon
+      // Purpose-specific icon
+      const PURPOSE_ICONS = { inspect: '\ud83d\udd0d', verify: '\u2705', capture: '\ud83d\udd14' };
       const bell = document.createElement('span');
-      bell.textContent = '\ud83d\udd14';
+      bell.textContent = PURPOSE_ICONS[req.purpose] || '\ud83d\udd14';
       Object.assign(bell.style, { fontSize: '14px', flexShrink: '0' });
 
       // Request info
