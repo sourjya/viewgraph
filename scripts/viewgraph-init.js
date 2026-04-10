@@ -183,13 +183,12 @@ if (agent?.name === 'Kiro') {
 
 console.log('\nDone. Starting ViewGraph server...\n');
 
-// 7. Auto-start the MCP server
+// 7. Auto-start the MCP server (detached so init exits cleanly)
 import { spawn } from 'child_process';
 const server = spawn('node', [SERVER_ENTRY], {
-  stdio: 'inherit',
+  stdio: 'ignore',
+  detached: true,
   env: { ...process.env, VIEWGRAPH_CAPTURES_DIR: absCapturesDir },
 });
-server.on('error', (err) => {
-  console.error(`Failed to start server: ${err.message}`);
-  process.exit(1);
-});
+server.unref();
+console.log(`Server started (PID ${server.pid}). Extension popup should show green dot.`);
