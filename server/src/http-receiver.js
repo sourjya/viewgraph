@@ -265,7 +265,13 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       if (!capResult.ok) return json(res, 500, { error: 'Failed to parse capture' });
       const { diffCaptures } = await import('#src/analysis/capture-diff.js');
       const diff = diffCaptures(baseline, capResult.data);
-      return json(res, 200, { hasBaseline: true, diff: { added: diff.added.length, removed: diff.removed.length, moved: diff.moved.length, testidChanges: diff.testidChanges.length } });
+      const pick = (arr) => arr.slice(0, 10).map((n) => ({ tag: n.tag, text: (n.text || '').slice(0, 40), selector: n.selector }));
+      return json(res, 200, { hasBaseline: true, diff: {
+        added: diff.added.length, removed: diff.removed.length,
+        moved: diff.moved.length, testidChanges: diff.testidChanges.length,
+        addedElements: pick(diff.added), removedElements: pick(diff.removed),
+        movedElements: diff.moved.slice(0, 10), testidDetails: diff.testidChanges.slice(0, 10),
+      } });
     }
 
     // POST /baselines - promote a capture to baseline

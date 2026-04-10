@@ -777,15 +777,37 @@ export function create() {
       if (total === 0) return;
 
       const { section: diffSection, body: diffBody } = createSection('Diff vs Baseline', `${total}`, total > 0 ? '#dc2626' : '#333');
-      const lines = [];
-      if (diff.added) lines.push({ text: `+${diff.added} elements added`, color: '#4ade80' });
-      if (diff.removed) lines.push({ text: `-${diff.removed} elements removed`, color: '#f87171' });
-      if (diff.moved) lines.push({ text: `~${diff.moved} layout shifts`, color: '#f59e0b' });
-      if (diff.testidChanges) lines.push({ text: `${diff.testidChanges} testid changes`, color: '#60a5fa' });
-      for (const { text, color } of lines) {
+      // Each diff category: summary line + expandable element list
+      const categories = [
+        { count: diff.added, label: 'elements added', color: '#4ade80', prefix: '+', items: diff.addedElements },
+        { count: diff.removed, label: 'elements removed', color: '#f87171', prefix: '-', items: diff.removedElements },
+        { count: diff.moved, label: 'layout shifts', color: '#f59e0b', prefix: '~', items: diff.movedElements },
+        { count: diff.testidChanges, label: 'testid changes', color: '#60a5fa', prefix: '', items: diff.testidDetails },
+      ];
+      for (const cat of categories) {
+        if (!cat.count) continue;
         const row = document.createElement('div');
-        row.textContent = text;
-        Object.assign(row.style, { padding: '2px 0', color, fontWeight: '600' });
+        Object.assign(row.style, { padding: '2px 0', color: cat.color, cursor: cat.items?.length ? 'pointer' : 'default' });
+        const summary = document.createElement('span');
+        summary.textContent = `${cat.prefix}${cat.count} ${cat.label}`;
+        Object.assign(summary.style, { fontWeight: '600' });
+        row.appendChild(summary);
+
+        // Expandable detail list
+        if (cat.items?.length) {
+          const detail = document.createElement('div');
+          Object.assign(detail.style, { display: 'none', paddingLeft: '12px', marginTop: '2px' });
+          for (const el of cat.items) {
+            const line = document.createElement('div');
+            line.textContent = el.tag ? `${el.tag}${el.text ? ' - ' + el.text : ''}` : JSON.stringify(el);
+            Object.assign(line.style, { color: '#9ca3af', fontSize: '10px', padding: '1px 0' });
+            detail.appendChild(line);
+          }
+          row.appendChild(detail);
+          row.addEventListener('click', () => {
+            detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
+          });
+        }
         diffBody.appendChild(row);
       }
       container.appendChild(diffSection);
