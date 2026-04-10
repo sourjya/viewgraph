@@ -193,6 +193,19 @@ export default defineBackground(() => {
       return false;
     }
 
+    // Proxy /info fetch for content scripts (bypasses page CSP)
+    if (message.type === 'fetch-info') {
+      (async () => {
+        try {
+          const res = await fetch(`${message.serverUrl}/info`, { signal: AbortSignal.timeout(2000) });
+          if (!res.ok) { sendResponse({ ok: false }); return; }
+          const data = await res.json();
+          sendResponse({ ok: true, ...data });
+        } catch { sendResponse({ ok: false }); }
+      })();
+      return true; // async sendResponse
+    }
+
     // Handle subtree capture from inspector - just push to server
     if (message.type === 'inspect-capture') {
       (async () => {

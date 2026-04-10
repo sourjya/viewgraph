@@ -343,7 +343,7 @@ export function create() {
   autoInfo.textContent = 'Detecting...';
   Object.assign(autoInfo.style, { color: '#555', fontSize: '11px', fontStyle: 'italic' });
 
-  // Fetch server status and /info directly - no dependency on background storage
+  // Fetch server status and /info via background script (avoids page CSP restrictions)
   discoverServer().then(async (url) => {
     if (!url) {
       serverLine.innerHTML = '<span style="color:#f87171">\u25cf</span> MCP server offline';
@@ -352,18 +352,18 @@ export function create() {
     }
     const port = new URL(url).port;
     serverLine.innerHTML = '<span style="color:#4ade80">\u25cf</span> Connected (localhost:' + port + ')';
-    try {
-      const res = await fetch(`${url}/info`, { signal: AbortSignal.timeout(2000) });
-      if (!res.ok) throw new Error('not ok');
-      const data = await res.json();
+    // Fetch /info through background to bypass page CSP
+    chrome.runtime.sendMessage({ type: 'fetch-info', serverUrl: url }, (response) => {
+      if (!response || !response.ok) {
+        autoInfo.textContent = 'Could not load project info';
+        return;
+      }
       autoInfo.innerHTML = '';
       autoInfo.style.fontStyle = 'normal';
       const valStyle = 'color:#93c5fd;font-family:SF Mono,Cascadia Code,monospace;font-size:10px;word-break:break-all';
       const lblStyle = 'color:#666;font-size:10px;margin-bottom:1px';
-      autoInfo.innerHTML = `<div style="${lblStyle}">Root</div><div style="${valStyle};margin-bottom:6px">${data.projectRoot}</div><div style="${lblStyle}">Captures</div><div style="${valStyle}">${data.capturesDir}</div>`;
-    } catch {
-      autoInfo.textContent = 'Connected but /info unavailable';
-    }
+      autoInfo.innerHTML = `<div style="${lblStyle}">Root</div><div style="${valStyle};margin-bottom:6px">${response.projectRoot}</div><div style="${lblStyle}">Captures</div><div style="${valStyle}">${response.capturesDir}</div>`;
+    });
   });
 
   const advLink = document.createElement('button');
@@ -691,7 +691,7 @@ export function refresh() {
       alignItems: 'center', transition: 'background 0.1s',
     });
     entry.addEventListener('mouseenter', () => {
-      entry.style.background = '#22223a';
+      entry.style.background = '#2a2a4a';
       spotlightMarker(ann.id);
       entry._expandTimer = setTimeout(() => {
         line1.style.whiteSpace = 'normal';
