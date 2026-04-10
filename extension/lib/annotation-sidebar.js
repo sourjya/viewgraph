@@ -343,7 +343,7 @@ export function create() {
   autoInfo.textContent = 'Detecting...';
   Object.assign(autoInfo.style, { color: '#555', fontSize: '11px', fontStyle: 'italic' });
 
-  // Fetch server status and /info via background script (avoids page CSP restrictions)
+  // Fetch server status and /info - try direct fetch first, fall back to background
   discoverServer().then(async (url) => {
     if (!url) {
       serverLine.innerHTML = '<span style="color:#f87171">\u25cf</span> MCP server offline';
@@ -352,19 +352,37 @@ export function create() {
     }
     const port = new URL(url).port;
     serverLine.innerHTML = '<span style="color:#4ade80">\u25cf</span> Connected (localhost:' + port + ')';
-    // Fetch /info through background to bypass page CSP
-    chrome.runtime.sendMessage({ type: 'fetch-info', serverUrl: url }, (response) => {
-      if (!response || !response.ok) {
-        autoInfo.textContent = 'Could not load project info';
+    // Try direct fetch (works if /health worked from this context)
+    try {
+      const res = await fetch(`${url}/info`, { signal: AbortSignal.timeout(2000) });
+      if (res.ok) {
+        const data = await res.json();
+        renderProjectInfo(data);
         return;
       }
-      autoInfo.innerHTML = '';
-      autoInfo.style.fontStyle = 'normal';
-      const valStyle = 'color:#93c5fd;font-family:SF Mono,Cascadia Code,monospace;font-size:10px;word-break:break-all';
-      const lblStyle = 'color:#666;font-size:10px;margin-bottom:1px';
-      autoInfo.innerHTML = `<div style="${lblStyle}">Root</div><div style="${valStyle};margin-bottom:6px">${response.projectRoot}</div><div style="${lblStyle}">Captures</div><div style="${valStyle}">${response.capturesDir}</div>`;
-    });
+    } catch { /* direct fetch failed, try background */ }
+    // Fall back to background script proxy
+    try {
+      chrome.runtime.sendMessage({ type: 'fetch-info', serverUrl: url }, (response) => {
+        if (chrome.runtime.lastError || !response || !response.ok) {
+          autoInfo.textContent = 'Could not load project info';
+          return;
+        }
+        renderProjectInfo(response);
+      });
+    } catch {
+      autoInfo.textContent = 'Could not load project info';
+    }
   });
+
+  /** Render project root and captures dir into the autoInfo element. */
+  function renderProjectInfo(data) {
+    autoInfo.innerHTML = '';
+    autoInfo.style.fontStyle = 'normal';
+    const valStyle = 'color:#93c5fd;font-family:SF Mono,Cascadia Code,monospace;font-size:10px;word-break:break-all';
+    const lblStyle = 'color:#666;font-size:10px;margin-bottom:1px';
+    autoInfo.innerHTML = `<div style="${lblStyle}">Root</div><div style="${valStyle};margin-bottom:6px">${data.projectRoot}</div><div style="${lblStyle}">Captures</div><div style="${valStyle}">${data.capturesDir}</div>`;
+  }
 
   const advLink = document.createElement('button');
   advLink.textContent = 'Advanced settings...';
