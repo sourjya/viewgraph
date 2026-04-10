@@ -10,7 +10,7 @@
  */
 
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, spotlightMarker } from './annotate.js';
+import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, spotlightMarker } from './annotate.js';
 
 /**
  * Sync resolved state from the server. Polls /annotations/resolved for the
@@ -198,9 +198,9 @@ export function create() {
     });
     btn.addEventListener('click', () => {
       if (key === 'page') {
-        // One-shot: add page note, refresh list
-        setCaptureMode(CAPTURE_MODES.PAGE);
+        const ann = addPageNote();
         refresh();
+        showPanel(ann, { onChange: () => refresh() });
         return;
       }
       const mode = CAPTURE_MODES[key.toUpperCase()];
