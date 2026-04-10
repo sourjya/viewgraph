@@ -156,26 +156,6 @@ export function create() {
   // Insert gear before close button
   header.insertBefore(gearBtn, closeBtn);
 
-  // Trash icon - clear all annotations with confirmation
-  const trashBtn = document.createElement('button');
-  trashBtn.setAttribute(ATTR, 'trash');
-  trashBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';
-  trashBtn.title = 'Clear all annotations';
-  Object.assign(trashBtn.style, {
-    border: 'none', background: 'transparent', cursor: 'pointer',
-    padding: '6px', display: 'flex', alignItems: 'center',
-  });
-  trashBtn.addEventListener('click', () => {
-    const count = getAnnotations().length;
-    if (!count) return;
-    if (confirm(`Clear all ${count} annotations? This cannot be undone.`)) {
-      clearAnnotations();
-      save();
-      refresh();
-    }
-  });
-  header.insertBefore(trashBtn, closeBtn);
-
   const list = document.createElement('div');
   list.setAttribute(ATTR, 'list');
   Object.assign(list.style, { flex: '1', overflowY: 'auto', minHeight: '0' });
@@ -693,6 +673,28 @@ export function refresh() {
   }
   tabContainer.innerHTML = '';
   tabContainer.appendChild(tabBar);
+
+  // Trash icon at end of tab row - clear all annotations
+  const trashBtn = document.createElement('button');
+  trashBtn.setAttribute(ATTR, 'trash');
+  trashBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';
+  trashBtn.title = 'Clear all annotations';
+  Object.assign(trashBtn.style, {
+    border: 'none', background: 'transparent', cursor: 'pointer',
+    padding: '6px 8px', display: 'flex', alignItems: 'center', flexShrink: '0',
+  });
+  trashBtn.addEventListener('mouseenter', () => { trashBtn.querySelector('svg').setAttribute('stroke', '#f87171'); });
+  trashBtn.addEventListener('mouseleave', () => { trashBtn.querySelector('svg').setAttribute('stroke', '#666'); });
+  trashBtn.addEventListener('click', () => {
+    const count = getAnnotations().length;
+    if (!count) return;
+    if (confirm(`Clear all ${count} annotations? This cannot be undone.`)) {
+      clearAnnotations();
+      save();
+      refresh();
+    }
+  });
+  tabBar.appendChild(trashBtn);
 
   /** Severity/category chip colors for list entries. */
   const CHIP_COLORS = {
