@@ -217,9 +217,9 @@ npm run dev:ext        # start extension dev server (Chrome HMR)
 ## Testing
 
 ```bash
-npm test               # all tests (560 tests)
-npm run test:server    # server only (234 tests)
-npm run test:ext       # extension only (326 tests)
+npm test               # all tests (572 tests)
+npm run test:server    # server only (235 tests)
+npm run test:ext       # extension only (337 tests)
 ```
 
 ## MCP Tools

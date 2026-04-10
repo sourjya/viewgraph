@@ -174,5 +174,16 @@ describe('parseSummary - network/console counts', () => {
     expect(result.ok).toBe(true);
     expect(result.data.networkSummary).toBeNull();
     expect(result.data.consoleSummary).toBeNull();
+    expect(result.data.breakpoints).toBeNull();
+  });
+
+  it('includes breakpoints when present', () => {
+    const raw = {
+      metadata: { url: 'http://test', title: 'Test', viewport: { width: 800, height: 600 }, stats: {} },
+      breakpoints: { viewport: { width: 768 }, breakpoints: [{ name: 'md', px: 768, minWidth: true }], activeRange: 'md' },
+    };
+    const result = parseSummary(JSON.stringify(raw));
+    expect(result.ok).toBe(true);
+    expect(result.data.breakpoints.activeRange).toBe('md');
   });
 });

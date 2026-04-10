@@ -16,6 +16,7 @@ import { serialize } from '../lib/serializer.js';
 import { captureSnapshot } from '../lib/html-snapshot.js';
 import { collectNetworkState } from '../lib/network-collector.js';
 import { installConsoleInterceptor, getConsoleState } from '../lib/console-collector.js';
+import { collectBreakpoints } from '../lib/breakpoint-collector.js';
 import {
   start as startAnnotate, stop as stopAnnotate, isActive as isAnnotating,
   getAnnotations, load as loadAnnotations, hideMarkers,
@@ -42,7 +43,7 @@ export default defineContentScript({
           const viewport = { width: window.innerWidth, height: window.innerHeight };
           const { elements, relations } = traverseDOM();
           const scored = scoreAll(elements, viewport);
-          const enrichment = { network: collectNetworkState(), console: getConsoleState() };
+          const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints() };
           const capture = serialize(scored, relations, enrichment);
           const snapshot = message.includeSnapshot ? captureSnapshot() : null;
           sendResponse({ ok: true, capture, snapshot });
@@ -108,7 +109,7 @@ export default defineContentScript({
         const viewport = { width: window.innerWidth, height: window.innerHeight };
         const { elements, relations } = traverseDOM();
         const scored = scoreAll(elements, viewport);
-        const enrichment = { network: collectNetworkState(), console: getConsoleState() };
+        const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints() };
         const capture = serialize(scored, relations, enrichment);
         capture.metadata.captureMode = 'review';
         capture.annotations = getAnnotations().map((a) => ({

@@ -26,7 +26,7 @@ Built with [WXT](https://wxt.dev/) for cross-browser Manifest V3 support.
 ## Testing
 
 ```bash
-npm test               # unit tests (326 tests)
+npm test               # unit tests (337 tests)
 npm run test:watch     # watch mode
 ```
 

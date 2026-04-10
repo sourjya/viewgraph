@@ -105,6 +105,7 @@ function buildNodes(elements) {
       parent: el.parentNid,
       children: el.childNids,
       actions: el.isInteractive ? ['clickable'] : undefined,
+      isRendered: el.isRendered,
       cluster: null,
     };
   }
@@ -186,9 +187,10 @@ export function serialize(elements, relations, enrichment = {}) {
     details: buildDetails(elements),
   };
 
-  // Optional enrichment sections (M12.1, M12.2)
+  // Optional enrichment sections (M12.1, M12.2, M12.6)
   if (enrichment.network) capture.network = enrichment.network;
   if (enrichment.console) capture.console = enrichment.console;
+  if (enrichment.breakpoints) capture.breakpoints = enrichment.breakpoints;
 
   // Update capture size estimate
   const jsonStr = JSON.stringify(capture);

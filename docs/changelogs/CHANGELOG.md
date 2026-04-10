@@ -77,6 +77,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - 7 extension tests + 3 serializer tests + 3 parser tests
 
 ### Console Error Capture (M12.2)
+
+### Responsive Breakpoint Context (M12.6)
+- `collectBreakpoints()` reports active CSS media query breakpoints at current viewport
+- Standard breakpoints (xs through 2xl) with min-width/max-width match status
+- `activeRange` field identifies the current breakpoint name
+- Added as `breakpoints` section in capture JSON; surfaced in `get_page_summary`
+- 4 extension tests + 1 parser test
+
+### isRendered Ancestor Walk (M13.3)
+- `checkRendered(el)` walks ancestor chain checking opacity:0, clip-path:inset(100%), off-screen positioning
+- `isRendered` boolean flag added to every node in capture output
+- Catches elements that pass individual visibility checks but are hidden by ancestors
+- 7 extension tests
 - `installConsoleInterceptor()` wraps console.error/warn early in content script
 - Captures message, stack trace, timestamp; preserves original console behavior
 - Truncates messages to 500 chars, caps at 50 per level

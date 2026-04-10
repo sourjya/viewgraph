@@ -460,7 +460,7 @@ these would have caught real bugs without back-and-forth.
 | 12.3 | Component tree mapping | P1 - medium | Annotate DOM nodes with React/Vue/Svelte component names. React: `_reactFiber` on DOM nodes. Vue: `__vue_app__`. Map container divs to component names so agent can jump to source files. Framework-specific, needs detection. |
 | 12.4 | Event listener inventory | P2 - lower | List event listeners per element via `getEventListeners()` (Chrome DevTools protocol only) or by intercepting `addEventListener`. Helps debug "click does nothing" issues. Complex to implement reliably. |
 | 12.5 | CSS animation state | P2 - lower | Detect active CSS animations/transitions via `getAnimations()` API. Flag elements mid-animation. Low priority - rarely the root cause. |
-| 12.6 | Responsive breakpoint context | P1 - medium | Report active CSS media query breakpoints at current viewport. Use `window.matchMedia()` against common breakpoint values. Helps debug responsive layout issues. |
+| 12.6 | Responsive breakpoint context | P1 - medium | DONE. `collectBreakpoints()` reports active min-width/max-width for standard breakpoints (xs-2xl). Includes `activeRange` name. 5 tests. |
 
 **Exit criteria:** Captures include network requests and console errors. Component
 names annotated on container elements for React projects.
@@ -480,7 +480,7 @@ Source: Kiro IDE analysis session 2026-04-10. Prioritized by debugging leverage.
 |---|---|---|---|
 | 13.1 | Z-index stacking context resolution | P0 - highest | Walk the DOM to identify stacking context boundaries (elements with `position` + `z-index`, `opacity < 1`, `transform`, `filter`, etc.). Build resolved stacking order tree. Root cause of "dropdown behind modal" bugs. Can't be inferred from flat computed z-index values because stacking contexts are hierarchical. |
 | 13.2 | Focus management chain | P0 - highest | Capture `document.activeElement`, compute tab order from `tabIndex` values + DOM position + visibility filtering. Identify focus trap boundaries (elements that intercept Tab/Shift+Tab). Debugs "can't tab to submit" and "focus stuck in modal". |
-| 13.3 | isRendered ancestor walk | P0 - highest | Boolean flag per node: walks ancestor chain checking `display: none`, `visibility: hidden`, `opacity: 0`, `content-visibility: hidden`. An element can have `display: block` in computed styles but be invisible because a parent is hidden. Simplest of the three P0s. |
+| 13.3 | isRendered ancestor walk | P0 - highest | DONE. `checkRendered(el)` walks ancestors for opacity:0, clip-path, off-screen. `isRendered` flag on every node. 7 tests. |
 | 13.4 | Scroll containers | P1 - medium | Identify scrollable elements (`overflow: auto/scroll` with `scrollHeight > clientHeight`), capture `scrollTop`/`scrollLeft` and total scrollable area. Debugs "wrong thing scrolls" in nested scroll containers. |
 | 13.5 | Media query matches | P1 - medium | Run `window.matchMedia()` against standard breakpoints (576, 768, 992, 1200, 1400px) and report which are active. Overlaps with M12.6 but adds actual `@media` rule matching, not just viewport width. |
 | 13.6 | Semantic ARIA landmarks | P1 - medium | Extract resolved landmark tree (banner, navigation, main, complementary, contentinfo). Different from DOM tree - this is what screen readers actually navigate. Most pages have broken landmark structure. |
