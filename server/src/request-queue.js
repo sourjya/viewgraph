@@ -24,7 +24,7 @@ function normalizeUrl(url) {
  * Create a request queue with configurable max size and TTL.
  * @param {{ maxSize?: number, ttlMs?: number }} options
  */
-export function createRequestQueue({ maxSize = 10, ttlMs = 60000 } = {}) {
+export function createRequestQueue({ maxSize = 10, ttlMs = 300000 } = {}) {
   const requests = new Map();
 
   /** Check and apply expiry to a request. */

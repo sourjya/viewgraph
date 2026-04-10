@@ -11,6 +11,7 @@
 
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
 import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker } from './annotate.js';
+import { KEYS, get as storageGet, set as storageSet } from './storage.js';
 
 /**
  * Sync resolved state from the server. Polls /annotations/resolved for the
@@ -59,7 +60,9 @@ let bellBtn = null;
 
 /**
  * Poll the server for pending Kiro capture requests.
- * Shows them as timeline items so the user can fulfill them.
+ * Merges server state with locally cached requests so they survive
+ * page navigation. Cached requests are pruned when the server confirms
+ * they're completed, declined, or expired.
  */
 async function pollRequests() {
   try {
@@ -68,11 +71,25 @@ async function pollRequests() {
     const res = await fetch(`${serverUrl}/requests/pending`, { signal: AbortSignal.timeout(3000) });
     if (!res.ok) return;
     const data = await res.json();
+    const serverReqs = data.requests || [];
+    // Cache any new requests locally
+    if (serverReqs.length > 0) {
+      await storageSet(KEYS.pendingRequests, serverReqs);
+    } else {
+      // Server has none - clear cache
+      await storageSet(KEYS.pendingRequests, []);
+    }
     const prev = pendingRequests.length;
-    pendingRequests = data.requests || [];
-    // Only refresh if count changed to avoid flicker
+    pendingRequests = serverReqs;
     if (pendingRequests.length !== prev) refresh();
-  } catch { /* server offline */ }
+  } catch {
+    // Server offline - fall back to cached requests
+    const cached = await storageGet(KEYS.pendingRequests);
+    if (cached && cached.length > 0 && pendingRequests.length === 0) {
+      pendingRequests = cached;
+      refresh();
+    }
+  }
 }
 
 /** Start polling for requests every 5s. */
