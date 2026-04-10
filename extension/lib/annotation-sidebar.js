@@ -1113,34 +1113,7 @@ export function refresh() {
       });
 
       // Top row: purpose label + URL
-      const PURPOSE_LABELS = { inspect: '\ud83d\udd0d Inspect', verify: '\u2705 Verify', capture: '\ud83d\udd14 Capture' };
-      const topRow = document.createElement('div');
-      Object.assign(topRow.style, { display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' });
-      const label = document.createElement('span');
-      label.textContent = PURPOSE_LABELS[req.purpose] || '\ud83d\udd14 Capture';
-      Object.assign(label.style, { fontSize: '11px', fontWeight: '600', color: '#f59e0b' });
-      const urlText = document.createElement('span');
-      urlText.textContent = req.url;
-      Object.assign(urlText.style, {
-        fontSize: '11px', color: '#9ca3af', flex: '1',
-        whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden',
-      });
-      topRow.append(label, urlText, btnRow);
-      entry.appendChild(topRow);
-
-      // Guidance text
-      if (req.guidance) {
-        const guide = document.createElement('div');
-        guide.textContent = req.guidance;
-        Object.assign(guide.style, {
-          color: '#e0e0e0', fontSize: '12px', lineHeight: '1.4',
-          marginBottom: '8px', padding: '6px 8px',
-          background: '#252536', borderRadius: '6px', borderLeft: '2px solid #f59e0b',
-        });
-        entry.appendChild(guide);
-      }
-
-      // Button row: Capture + Decline as compact icon buttons
+      // Build buttons first (needed in topRow)
       const btnRow = document.createElement('div');
       Object.assign(btnRow.style, { display: 'flex', gap: '4px', marginLeft: 'auto', flexShrink: '0' });
 
@@ -1149,12 +1122,10 @@ export function refresh() {
       capBtn.title = 'Capture now';
       Object.assign(capBtn.style, {
         padding: '5px', border: 'none', borderRadius: '6px',
-        background: '#f59e0b', color: '#000', display: 'flex',
-        cursor: 'pointer',
+        background: '#f59e0b', color: '#000', display: 'flex', cursor: 'pointer',
       });
       capBtn.addEventListener('click', () => {
         capBtn.innerHTML = '\u23f3';
-        // Acknowledge the request, then trigger capture
         (async () => {
           try {
             const serverUrl = await discoverServer();
@@ -1163,21 +1134,18 @@ export function refresh() {
           chrome.runtime.sendMessage({ type: 'capture' }, () => {
             capBtn.innerHTML = '\u2713';
             capBtn.style.background = '#4ade80';
-            // Remove from pending after capture
             pendingRequests = pendingRequests.filter((r) => r.id !== req.id);
             setTimeout(() => refresh(), 1000);
           });
         })();
       });
 
-      // Decline button
       const decBtn = document.createElement('button');
       decBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
       decBtn.title = 'Decline capture request';
       Object.assign(decBtn.style, {
         padding: '5px', border: '1px solid #333', borderRadius: '6px',
-        background: 'transparent', color: '#9ca3af', display: 'flex',
-        cursor: 'pointer',
+        background: 'transparent', color: '#9ca3af', display: 'flex', cursor: 'pointer',
       });
       decBtn.addEventListener('mouseenter', () => { decBtn.style.color = '#f87171'; decBtn.style.borderColor = '#f87171'; });
       decBtn.addEventListener('mouseleave', () => { decBtn.style.color = '#9ca3af'; decBtn.style.borderColor = '#333'; });
@@ -1197,8 +1165,36 @@ export function refresh() {
           refresh();
         })();
       });
-
       btnRow.append(capBtn, decBtn);
+
+      // Top row: purpose label + URL + buttons
+      const PURPOSE_LABELS = { inspect: '\ud83d\udd0d Inspect', verify: '\u2705 Verify', capture: '\ud83d\udd14 Capture' };
+      const topRow = document.createElement('div');
+      Object.assign(topRow.style, { display: 'flex', alignItems: 'center', gap: '6px' });
+      const label = document.createElement('span');
+      label.textContent = PURPOSE_LABELS[req.purpose] || '\ud83d\udd14 Capture';
+      Object.assign(label.style, { fontSize: '11px', fontWeight: '600', color: '#f59e0b' });
+      const urlText = document.createElement('span');
+      urlText.textContent = req.url;
+      Object.assign(urlText.style, {
+        fontSize: '11px', color: '#9ca3af', flex: '1',
+        whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden',
+      });
+      topRow.append(label, urlText, btnRow);
+      entry.appendChild(topRow);
+
+      // Guidance text
+      if (req.guidance) {
+        const guide = document.createElement('div');
+        guide.textContent = req.guidance;
+        Object.assign(guide.style, {
+          color: '#e0e0e0', fontSize: '12px', lineHeight: '1.4',
+          marginTop: '6px', padding: '6px 8px',
+          background: '#252536', borderRadius: '6px', borderLeft: '2px solid #f59e0b',
+        });
+        entry.appendChild(guide);
+      }
+
       list.appendChild(entry);
     }
   }
