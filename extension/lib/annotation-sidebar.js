@@ -1108,37 +1108,48 @@ export function refresh() {
     for (const req of pendingRequests) {
       const entry = document.createElement('div');
       Object.assign(entry.style, {
-        padding: '8px 12px', borderBottom: '1px solid #2a2a3a',
-        display: 'flex', alignItems: 'center', gap: '6px',
+        padding: '10px 12px', borderBottom: '1px solid #2a2a3a',
+        fontFamily: 'system-ui, sans-serif',
       });
 
-      // Purpose-specific icon
-      const PURPOSE_ICONS = { inspect: '\ud83d\udd0d', verify: '\u2705', capture: '\ud83d\udd14' };
-      const bell = document.createElement('span');
-      bell.textContent = PURPOSE_ICONS[req.purpose] || '\ud83d\udd14';
-      Object.assign(bell.style, { fontSize: '14px', flexShrink: '0' });
-
-      // Request info
-      const info = document.createElement('span');
-      Object.assign(info.style, { flex: '1', fontSize: '12px', color: '#e0e0e0', overflow: 'hidden' });
-      const urlText = document.createElement('div');
+      // Top row: purpose label + URL
+      const PURPOSE_LABELS = { inspect: '\ud83d\udd0d Inspect', verify: '\u2705 Verify', capture: '\ud83d\udd14 Capture' };
+      const topRow = document.createElement('div');
+      Object.assign(topRow.style, { display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' });
+      const label = document.createElement('span');
+      label.textContent = PURPOSE_LABELS[req.purpose] || '\ud83d\udd14 Capture';
+      Object.assign(label.style, { fontSize: '11px', fontWeight: '600', color: '#f59e0b' });
+      const urlText = document.createElement('span');
       urlText.textContent = req.url;
-      Object.assign(urlText.style, { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' });
-      info.appendChild(urlText);
+      Object.assign(urlText.style, {
+        fontSize: '11px', color: '#9ca3af', flex: '1',
+        whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden',
+      });
+      topRow.append(label, urlText);
+      entry.appendChild(topRow);
+
+      // Guidance text
       if (req.guidance) {
         const guide = document.createElement('div');
         guide.textContent = req.guidance;
-        Object.assign(guide.style, { color: '#9ca3af', fontSize: '11px', marginTop: '2px' });
-        info.appendChild(guide);
+        Object.assign(guide.style, {
+          color: '#e0e0e0', fontSize: '12px', lineHeight: '1.4',
+          marginBottom: '8px', padding: '6px 8px',
+          background: '#252536', borderRadius: '6px', borderLeft: '2px solid #f59e0b',
+        });
+        entry.appendChild(guide);
       }
 
-      // Capture button
+      // Button row: Capture + Decline
+      const btnRow = document.createElement('div');
+      Object.assign(btnRow.style, { display: 'flex', gap: '8px' });
+
       const capBtn = document.createElement('button');
       capBtn.textContent = 'Capture';
       Object.assign(capBtn.style, {
-        padding: '3px 8px', border: 'none', borderRadius: '4px',
-        background: '#f59e0b', color: '#000', fontSize: '11px', fontWeight: '600',
-        cursor: 'pointer', flexShrink: '0', fontFamily: 'system-ui, sans-serif',
+        flex: '1', padding: '6px', border: 'none', borderRadius: '6px',
+        background: '#f59e0b', color: '#000', fontSize: '12px', fontWeight: '600',
+        cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
       });
       capBtn.addEventListener('click', () => {
         capBtn.textContent = '...';
@@ -1160,12 +1171,12 @@ export function refresh() {
 
       // Decline button
       const decBtn = document.createElement('button');
-      decBtn.textContent = '\u2715';
+      decBtn.textContent = 'Decline';
       decBtn.title = 'Decline capture request';
       Object.assign(decBtn.style, {
-        padding: '3px 6px', border: 'none', borderRadius: '4px',
-        background: 'transparent', color: '#666', fontSize: '11px',
-        cursor: 'pointer', flexShrink: '0', fontFamily: 'system-ui, sans-serif',
+        flex: '1', padding: '6px', border: '1px solid #333', borderRadius: '6px',
+        background: 'transparent', color: '#9ca3af', fontSize: '12px',
+        cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
       });
       decBtn.addEventListener('mouseenter', () => { decBtn.style.color = '#f87171'; });
       decBtn.addEventListener('mouseleave', () => { decBtn.style.color = '#666'; });
@@ -1186,7 +1197,8 @@ export function refresh() {
         })();
       });
 
-      entry.append(bell, info, capBtn, decBtn);
+      btnRow.append(capBtn, decBtn);
+      entry.appendChild(btnRow);
       list.appendChild(entry);
     }
   }
