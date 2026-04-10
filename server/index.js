@@ -31,6 +31,7 @@ import { register as registerGetElementsByRole } from '#src/tools/get-elements-b
 import { register as registerGetInteractive } from '#src/tools/get-interactive.js';
 import { register as registerFindMissingTestids } from '#src/tools/find-missing-testids.js';
 import { register as registerAuditAccessibility } from '#src/tools/audit-accessibility.js';
+import { register as registerAuditLayout } from '#src/tools/audit-layout.js';
 import { register as registerCompareCaptures } from '#src/tools/compare-captures.js';
 import { register as registerGetAnnotations } from '#src/tools/get-annotations.js';
 import { register as registerGetAnnotatedCapture } from '#src/tools/get-annotated-capture.js';
@@ -72,6 +73,7 @@ registerGetElementsByRole(server, indexer, CAPTURES_DIR);
 registerGetInteractive(server, indexer, CAPTURES_DIR);
 registerFindMissingTestids(server, indexer, CAPTURES_DIR);
 registerAuditAccessibility(server, indexer, CAPTURES_DIR);
+registerAuditLayout(server, indexer, CAPTURES_DIR);
 registerCompareCaptures(server, indexer, CAPTURES_DIR);
 registerGetAnnotations(server, indexer, CAPTURES_DIR);
 registerGetAnnotatedCapture(server, indexer, CAPTURES_DIR);
