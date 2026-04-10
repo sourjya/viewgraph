@@ -9,6 +9,8 @@
  * axe-core audit but catch the most common issues an agent can act on.
  */
 
+import { checkContrast } from '#src/analysis/contrast.js';
+
 /** All registered audit rules. Each has: name, severity, check function. */
 export const RULES = [
   {
@@ -42,6 +44,25 @@ export const RULES = [
       return !hasAriaLabel && !hasAriaLabelledBy;
     },
   },
+  {
+    rule: 'insufficient-contrast',
+    // Severity is dynamic - set in auditNode based on AA vs AAA failure
+    severity: 'error',
+    description: 'Text has insufficient color contrast',
+    check: (node, details) => {
+      // Only check elements with visible text and computed styles
+      if (!node.text?.trim()) return false;
+      const styles = details?.computedStyles;
+      if (!styles?.color || !styles?.backgroundColor) return false;
+      const result = checkContrast(styles.color, styles.backgroundColor, styles.fontSize);
+      if (!result) return false;
+      // Pass both AA and AAA - no issue
+      if (result.aa && result.aaa) return false;
+      // Store result for auditNode to read severity and build description
+      node._contrastResult = result;
+      return true;
+    },
+  },
 ];
 
 /**
@@ -54,13 +75,18 @@ export function auditNode(node, details) {
   const issues = [];
   for (const rule of RULES) {
     if (rule.check(node, details || { attributes: {} })) {
-      issues.push({
-        rule: rule.rule,
-        severity: rule.severity,
-        description: rule.description,
-        elementId: node.id,
-        tag: node.tag,
-      });
+      // Contrast rule has dynamic severity based on AA vs AAA failure
+      let severity = rule.severity;
+      let description = rule.description;
+      if (rule.rule === 'insufficient-contrast' && node._contrastResult) {
+        const r = node._contrastResult;
+        severity = r.aa ? 'warning' : 'error';
+        const ratioStr = r.ratio.toFixed(1);
+        const threshold = r.aa ? 'AAA' : 'AA';
+        description = `Contrast ratio ${ratioStr}:1 fails WCAG ${threshold}`;
+        delete node._contrastResult;
+      }
+      issues.push({ rule: rule.rule, severity, description, elementId: node.id, tag: node.tag });
     }
   }
   return issues;
