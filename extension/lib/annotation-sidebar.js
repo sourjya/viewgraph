@@ -860,27 +860,42 @@ export function create() {
     if (captures.length === 0) return;
 
     const { section: capSection, body: capBody } = createSection('Captures', `${captures.length}`, '#6366f1');
-    for (const cap of captures.slice(0, 10)) {
+    for (let i = 0; i < Math.min(captures.length, 10); i++) {
+      const cap = captures[i];
+      const prev = captures[i + 1]; // next in list = previous in time (sorted newest first)
       const row = document.createElement('div');
       Object.assign(row.style, { display: 'flex', alignItems: 'center', gap: '6px', padding: '3px 0' });
 
       // Timestamp
       const ts = document.createElement('span');
       const d = cap.timestamp ? new Date(cap.timestamp) : null;
-      ts.textContent = d ? `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}` : cap.filename.slice(0, 20);
+      ts.textContent = d ? `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}` : cap.filename.slice(0, 20);
       Object.assign(ts.style, { color: '#9ca3af', fontSize: '11px', flexShrink: '0' });
 
-      // Node count
+      // Node count with diff vs previous
       const nc = document.createElement('span');
-      nc.textContent = `${cap.nodeCount || '?'} nodes`;
-      Object.assign(nc.style, { color: '#666', fontSize: '10px', flex: '1' });
+      const count = cap.nodeCount || 0;
+      if (prev && prev.nodeCount) {
+        const delta = count - prev.nodeCount;
+        if (delta === 0) {
+          nc.textContent = `${count} nodes`;
+          Object.assign(nc.style, { color: '#555', fontSize: '10px', flex: '1' });
+        } else {
+          const sign = delta > 0 ? '+' : '';
+          nc.textContent = `${count} nodes (${sign}${delta})`;
+          Object.assign(nc.style, { color: delta > 0 ? '#4ade80' : '#f87171', fontSize: '10px', flex: '1' });
+        }
+      } else {
+        nc.textContent = `${count} nodes`;
+        Object.assign(nc.style, { color: '#666', fontSize: '10px', flex: '1' });
+      }
 
       row.append(ts, nc);
 
-      // Baseline star button
+      // Baseline indicator
       const starBtn = document.createElement('button');
       const isBaseline = baselines.some((b) => b.url && pageUrl.includes(b.url.replace(/^https?:\/\//, '')));
-      starBtn.textContent = isBaseline ? '\u2605' : '\u2606';
+      starBtn.textContent = isBaseline ? '\u2605 Baseline' : '\u2606';
       starBtn.title = isBaseline ? 'Current baseline' : 'Set as baseline';
       Object.assign(starBtn.style, {
         border: 'none', background: 'transparent', cursor: 'pointer',
