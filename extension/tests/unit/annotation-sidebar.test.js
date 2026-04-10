@@ -11,7 +11,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   start, stop, addPageNote, getAnnotations, clearAnnotations,
-  updateComment, resolveAnnotation, removeAnnotation, ATTR,
+  updateComment, resolveAnnotation, removeAnnotation, updateSeverity, updateCategory, ATTR,
 } from '#lib/annotate.js';
 import { create, destroy, refresh, expand, collapse, isCollapsed } from '#lib/annotation-sidebar.js';
 
@@ -287,5 +287,42 @@ describe('sidebar renders all annotations', () => {
     expect(tabContainer.textContent).toContain('Open (1)');
     expect(tabContainer.textContent).toContain('Resolved (2)');
     expect(tabContainer.textContent).toContain('All (3)');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Regression: annotations with severity/category must render (CHIP_COLORS TDZ)
+// ---------------------------------------------------------------------------
+
+describe('sidebar renders annotations with severity and category', () => {
+  it('(+) annotation with severity renders entry', () => {
+    start();
+    const n = addPageNote();
+    updateSeverity(n.id, 'critical');
+    create();
+    expect(getEntries().length).toBe(1);
+    const list = getList();
+    expect(list.textContent).toContain('Critical');
+  });
+
+  it('(+) annotation with category renders entry', () => {
+    start();
+    const n = addPageNote();
+    updateCategory(n.id, 'visual');
+    create();
+    expect(getEntries().length).toBe(1);
+    const list = getList();
+    expect(list.textContent).toContain('Visual');
+  });
+
+  it('(+) 9 annotations with mixed severity/category all render', () => {
+    start();
+    for (let i = 0; i < 9; i++) {
+      const n = addPageNote();
+      if (i % 3 === 0) updateSeverity(n.id, 'critical');
+      if (i % 2 === 0) updateCategory(n.id, 'visual');
+    }
+    create();
+    expect(getEntries().length).toBe(9);
   });
 });
