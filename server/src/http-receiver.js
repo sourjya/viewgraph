@@ -131,6 +131,14 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       return json(res, 200, { requests: pending });
     }
 
+    // POST /requests/create - create a capture request (used by agents via HTTP)
+    if (method === 'POST' && url === '/requests/create') {
+      if (!checkAuth(req, res)) return;
+      const body = await readBody(req);
+      const created = queue.create(body.url, { guidance: body.guidance, purpose: body.purpose });
+      return json(res, 201, { requestId: created.id, status: created.status });
+    }
+
     // POST /requests/:id/ack
     const ackMatch = method === 'POST' && url.match(/^\/requests\/([^/]+)\/ack$/);
     if (ackMatch) {
