@@ -73,6 +73,31 @@ describe('HTTP receiver', () => {
     expect(res.body.capturesDir).toContain(res.body.projectRoot);
   });
 
+  it('GET /info returns absolute capturesDir path', async () => {
+    const res = await req(port, 'GET', '/info');
+    expect(path.isAbsolute(res.body.capturesDir)).toBe(true);
+    expect(path.isAbsolute(res.body.projectRoot)).toBe(true);
+  });
+
+  it('(-) GET /info with .viewgraph/captures path derives correct projectRoot', async () => {
+    // Create a receiver with a .viewgraph/captures path to test the walk-up logic
+    const projectDir = path.join(os.tmpdir(), `vg-proj-${Date.now()}`);
+    const vgCaptures = path.join(projectDir, '.viewgraph', 'captures');
+    mkdirSync(vgCaptures, { recursive: true });
+    const q2 = createRequestQueue({ maxSize: 10, ttlMs: 60000 });
+    const r2 = createHttpReceiver({ queue: q2, capturesDir: vgCaptures, port: 0 });
+    const p2 = await r2.start();
+    try {
+      const res = await req(p2, 'GET', '/info');
+      expect(res.status).toBe(200);
+      expect(res.body.capturesDir).toBe(vgCaptures);
+      expect(res.body.projectRoot).toBe(projectDir);
+    } finally {
+      await r2.stop();
+      rmSync(projectDir, { recursive: true, force: true });
+    }
+  });
+
   it('GET /requests/pending returns pending requests', async () => {
     queue.create('http://localhost:5173');
     queue.create('http://localhost:3000');

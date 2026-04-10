@@ -331,14 +331,6 @@ export function create() {
   const serverLine = document.createElement('div');
   serverLine.textContent = 'Server: checking...';
   Object.assign(serverLine.style, { marginBottom: '10px' });
-  discoverServer().then((url) => {
-    if (url) {
-      const port = new URL(url).port;
-      serverLine.innerHTML = '<span style="color:#4ade80">\u25cf</span> Connected (localhost:' + port + ')';
-    } else {
-      serverLine.innerHTML = '<span style="color:#f87171">\u25cf</span> MCP server offline';
-    }
-  });
 
   // Auto-detected project mapping (read-only)
   const mappingsSection = document.createElement('div');
@@ -351,18 +343,27 @@ export function create() {
   autoInfo.textContent = 'Detecting...';
   Object.assign(autoInfo.style, { color: '#555', fontSize: '11px', fontStyle: 'italic' });
 
-  // Fetch auto-detected mapping from storage (populated by background.js via /info)
-  chrome.storage.local.get('vg-auto-mapping', (result) => {
-    const data = result['vg-auto-mapping'];
-    if (!data) {
+  // Fetch server status and /info directly - no dependency on background storage
+  discoverServer().then(async (url) => {
+    if (!url) {
+      serverLine.innerHTML = '<span style="color:#f87171">\u25cf</span> MCP server offline';
       autoInfo.textContent = 'No server detected - start the MCP server';
       return;
     }
-    autoInfo.innerHTML = '';
-    autoInfo.style.fontStyle = 'normal';
-    const valStyle = 'color:#93c5fd;font-family:SF Mono,Cascadia Code,monospace;font-size:10px;word-break:break-all';
-    const lblStyle = 'color:#666;font-size:10px;margin-bottom:1px';
-    autoInfo.innerHTML = `<div style="${lblStyle}">Root</div><div style="${valStyle};margin-bottom:6px">${data.projectRoot}</div><div style="${lblStyle}">Captures</div><div style="${valStyle}">${data.capturesDir}</div>`;
+    const port = new URL(url).port;
+    serverLine.innerHTML = '<span style="color:#4ade80">\u25cf</span> Connected (localhost:' + port + ')';
+    try {
+      const res = await fetch(`${url}/info`, { signal: AbortSignal.timeout(2000) });
+      if (!res.ok) throw new Error('not ok');
+      const data = await res.json();
+      autoInfo.innerHTML = '';
+      autoInfo.style.fontStyle = 'normal';
+      const valStyle = 'color:#93c5fd;font-family:SF Mono,Cascadia Code,monospace;font-size:10px;word-break:break-all';
+      const lblStyle = 'color:#666;font-size:10px;margin-bottom:1px';
+      autoInfo.innerHTML = `<div style="${lblStyle}">Root</div><div style="${valStyle};margin-bottom:6px">${data.projectRoot}</div><div style="${lblStyle}">Captures</div><div style="${valStyle}">${data.capturesDir}</div>`;
+    } catch {
+      autoInfo.textContent = 'Connected but /info unavailable';
+    }
   });
 
   const advLink = document.createElement('button');

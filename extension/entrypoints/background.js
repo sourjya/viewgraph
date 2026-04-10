@@ -189,7 +189,7 @@ export default defineBackground(() => {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Open extension options page from sidebar settings
     if (message.type === 'open-options') {
-      chrome.runtime.openOptionsPage();
+      chrome.tabs.create({ url: chrome.runtime.getURL('options.html') });
       return false;
     }
 
