@@ -29,7 +29,10 @@ export function collectNetworkState() {
   const mapped = entries.map((e) => {
     const type = e.initiatorType || 'other';
     byType[type] = (byType[type] || 0) + 1;
-    const isFailed = e.transferSize === 0 && e.duration > 0;
+    // A request failed if nothing was transferred AND nothing was decoded.
+    // transferSize: 0 alone is not failure - cached or dev-server resources
+    // report 0 transfer but still have decodedBodySize > 0.
+    const isFailed = e.transferSize === 0 && e.decodedBodySize === 0 && e.duration > 0;
     if (isFailed) failed++;
     return {
       url: e.name.length > MAX_URL_LENGTH ? e.name.slice(0, MAX_URL_LENGTH) : e.name,
