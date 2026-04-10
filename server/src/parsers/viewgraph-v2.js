@@ -91,6 +91,8 @@ export function parseCapture(jsonString) {
       relations: raw.relations ?? null,
       details: raw.details ?? null,
       annotations: normalizeAnnotations(raw.annotations),
+      network: raw.network ?? null,
+      console: raw.console ?? null,
     },
   };
 }
@@ -128,6 +130,8 @@ export function parseSummary(jsonString) {
       },
       clusterCount: meta.stats?.clusters ?? 0,
       clusters: summary?.clusters ?? [],
+      networkSummary: raw.network?.summary ?? null,
+      consoleSummary: raw.console?.summary ?? null,
     },
   };
 }

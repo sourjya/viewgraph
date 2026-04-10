@@ -14,6 +14,8 @@ import { traverseDOM } from '../lib/traverser.js';
 import { scoreAll } from '../lib/salience.js';
 import { serialize } from '../lib/serializer.js';
 import { captureSnapshot } from '../lib/html-snapshot.js';
+import { collectNetworkState } from '../lib/network-collector.js';
+import { installConsoleInterceptor, getConsoleState } from '../lib/console-collector.js';
 import {
   start as startAnnotate, stop as stopAnnotate, isActive as isAnnotating,
   getAnnotations, load as loadAnnotations, hideMarkers,
@@ -28,6 +30,9 @@ export default defineContentScript({
   runAt: 'document_idle',
 
   main() {
+    // Install console interceptor early to catch errors from page scripts
+    installConsoleInterceptor();
+
     chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
       if (message.type === 'capture') {
@@ -37,7 +42,8 @@ export default defineContentScript({
           const viewport = { width: window.innerWidth, height: window.innerHeight };
           const { elements, relations } = traverseDOM();
           const scored = scoreAll(elements, viewport);
-          const capture = serialize(scored, relations);
+          const enrichment = { network: collectNetworkState(), console: getConsoleState() };
+          const capture = serialize(scored, relations, enrichment);
           const snapshot = message.includeSnapshot ? captureSnapshot() : null;
           sendResponse({ ok: true, capture, snapshot });
         } catch (err) {
@@ -102,7 +108,8 @@ export default defineContentScript({
         const viewport = { width: window.innerWidth, height: window.innerHeight };
         const { elements, relations } = traverseDOM();
         const scored = scoreAll(elements, viewport);
-        const capture = serialize(scored, relations);
+        const enrichment = { network: collectNetworkState(), console: getConsoleState() };
+        const capture = serialize(scored, relations, enrichment);
         capture.metadata.captureMode = 'review';
         capture.annotations = getAnnotations().map((a) => ({
           id: a.id, uuid: a.uuid, type: a.type, region: a.region,
