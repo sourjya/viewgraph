@@ -904,7 +904,7 @@ export function create() {
 
   // Expand button at top of strip
   const expandBtn = document.createElement('button');
-  expandBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+  expandBtn.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
   Object.assign(expandBtn.style, {
     border: 'none', background: 'transparent', color: '#a5b4fc',
     cursor: 'pointer', padding: '4px', borderRadius: '4px', display: 'flex',
@@ -918,14 +918,14 @@ export function create() {
   Object.assign(stripDivider.style, { height: '1px', background: '#333', margin: '2px 0' });
   badgeEl.appendChild(stripDivider);
 
-  // Mode icons in collapsed strip - click triggers mode action directly
+  // Mode icons in collapsed strip - doubled size for easy tap targets
   for (const [key, icon] of Object.entries(MODE_ICONS)) {
     const btn = document.createElement('button');
-    btn.innerHTML = icon;
+    btn.innerHTML = icon.replace(/width="16" height="16"/, 'width="32" height="32"');
     btn.title = MODE_HINTS[key];
     Object.assign(btn.style, {
       border: 'none', background: 'transparent', color: '#9ca3af',
-      cursor: 'pointer', padding: '5px', borderRadius: '4px', display: 'flex',
+      cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex',
     });
     btn.addEventListener('mouseenter', () => { btn.style.background = '#2a2a4a'; });
     btn.addEventListener('mouseleave', () => { btn.style.background = 'transparent'; });
@@ -979,21 +979,22 @@ function toggleCollapse() {
 function updateBadgeCount() {
   if (!badgeEl) return;
   const count = getAnnotations().filter((a) => !a.resolved).length;
-  // Update or create a small count indicator at the bottom of the strip
+  // Update or create a chat bubble count indicator at the bottom of the strip
   let countEl = badgeEl.querySelector('[data-vg-badge-count]');
   if (count > 0) {
     if (!countEl) {
-      countEl = document.createElement('span');
+      countEl = document.createElement('div');
       countEl.setAttribute('data-vg-badge-count', '');
       Object.assign(countEl.style, {
-        minWidth: '16px', height: '16px', padding: '0 4px', borderRadius: '8px',
-        background: '#dc2626', color: '#fff', fontSize: '10px', fontWeight: '700',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontFamily: 'system-ui, sans-serif', alignSelf: 'center', marginTop: '2px',
+        alignSelf: 'center', marginTop: '2px', position: 'relative',
+        width: '32px', height: '32px',
       });
       badgeEl.appendChild(countEl);
     }
-    countEl.textContent = count;
+    countEl.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">'
+      + '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill="#6366f1" stroke="#818cf8" stroke-width="1.2"/>'
+      + `<text x="12" y="14" text-anchor="middle" fill="#fff" font-family="system-ui,sans-serif" font-size="10" font-weight="700">${count}</text>`
+      + '</svg>';
   } else if (countEl) {
     countEl.remove();
   }
