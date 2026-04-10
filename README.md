@@ -212,6 +212,10 @@ When you run `viewgraph-init.js` in a Kiro project, ViewGraph installs hooks, pr
 
 Installed to `.kiro/steering/` - these guide the agent on when to use captures, how to resolve annotations, and the expected resolution format.
 
+### Other agents
+
+ViewGraph works with any MCP-compatible agent today via the standard MCP protocol. Dedicated Power packages (steering docs, hooks, prompt shortcuts) for Claude Code, Cursor, Windsurf, and Cline are coming soon.
+
 ## Development
 
 ```bash
