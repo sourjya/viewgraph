@@ -78,6 +78,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Console Error Capture (M12.2)
 
+### Continuous Capture (M14.1)
+- MutationObserver watcher: 2s debounce, filters VG UI elements, pauses when tab backgrounded
+- Vite HMR detection: listens for `vite:afterUpdate` custom event with 1s debounce
+- Rate limited to 1 auto-capture per 5 seconds, disabled on pages > 2000 elements
+- Auto-capture toggle in Inspect tab (ON/OFF button between viewport and network)
+- 7 new watcher tests (debounce, rate limit, VG filtering, HMR, start/stop)
+
+### Phase C - Expandable Diff Detail
+- /baselines/compare endpoint returns element details (tag, text, selector) capped at 10 per category
+- Inspect tab diff rows are clickable - expand to show specific added/removed/moved elements
+
 ### Regression Baselines (M15.2)
 - Baseline storage module: save/load/list golden captures in `.viewgraph/baselines/` keyed by normalized URL
 - `set_baseline` MCP tool: promote a capture to baseline for its URL
