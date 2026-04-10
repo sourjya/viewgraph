@@ -175,32 +175,19 @@ breakpoints, and isRendered status - but none of this is visible in the
 UI. The user can't verify what's being captured or use it to inform their
 annotations.
 
-**Recommendation:** Add an enrichment panel to the sidebar with three
-collapsible sections:
-- **Network:** Failed requests (red), slow requests (yellow), count badge
-- **Console:** Error count (red badge), warning count (yellow badge),
-  expandable list
-- **Breakpoints:** Current active range name + viewport width
+**Recommendation:** Surface enrichment data in a dedicated Inspect tab
+(see Section 4.1). Users can reference network/console data when writing
+annotations. Bug reports become more precise.
 
-This panel should be a tab alongside the annotation list, not a replacement.
-
-**Impact:** Users can reference network/console data when writing annotations.
-Bug reports become more precise ("the 404 on /api/users causes this empty state").
+**Impact:** Users can verify "did it capture the 404?" before sending.
 
 ### 3.3 No Element-Level Context in Overlay
 
 **Problem:** The hover tooltip shows breadcrumb + selector + dimensions but
-not: accessibility info, isRendered status, network requests initiated by
-this element, console errors from this component.
+not: accessibility info, isRendered status, console errors from this component.
 
-**Recommendation:** Expand the tooltip to show:
-- Line 1: breadcrumb (existing)
-- Line 2: selector (existing)
-- Line 3: role + accessible name + states (new)
-- Line 4: isRendered status if false (new, warning color)
-- Line 5: related console errors if any (new, red)
-
-Keep it compact - only show lines 3-5 when relevant (non-empty).
+**Recommendation:** Expand the tooltip to show a11y info, isRendered warnings,
+and related console errors (see Section 4.5).
 
 **Impact:** Developer gets immediate context without opening DevTools.
 
@@ -208,141 +195,148 @@ Keep it compact - only show lines 3-5 when relevant (non-empty).
 
 **Problem:** The sidebar serves too many roles: annotation list, settings,
 agent request queue, capture controls. The settings screen replaces the
-annotation list entirely. The mode bar takes permanent vertical space.
+annotation list entirely.
 
-**Recommendation:** Restructure sidebar into tabs:
-- **Notes** (default): annotation list + filter tabs (current behavior)
-- **Diagnostics**: network/console/breakpoints enrichment data
-- **History**: capture history, baseline comparisons, journey recordings
-
-Move settings to a slide-over panel that overlays rather than replaces.
-Move mode bar into the overlay itself (floating toolbar near cursor).
+**Recommendation:** Split into two tabs: Review (human feedback) and
+Inspect (page state). Settings become a slide-over overlay (see Section 4.4).
 
 **Impact:** Each tab has a focused purpose. Settings don't hide annotations.
 
 ### 3.5 No Capture History or Comparison
 
 **Problem:** The extension captures pages but doesn't show capture history.
-Users can't see what was captured, when, or compare before/after. The
-server has `compare_captures` but there's no UI for it.
+The server has `compare_captures` but there's no UI for it.
 
-**Recommendation:** Add a History tab to the sidebar showing:
-- List of captures for current page (timestamped)
-- "Set as baseline" action per capture
-- "Compare with previous" action showing structural diff
-- Badge showing regression count vs baseline
+**Recommendation:** Add capture history to the Inspect tab with baseline
+management and structural diff (see Section 4.4).
 
-**Impact:** Enables the regression baseline workflow (M15.2) from the
-extension UI, not just via MCP tools.
+**Impact:** Enables regression baseline workflow from the extension UI.
 
-### 3.6 No Journey Recording UI
-
-**Problem:** M14.2 proposes user journey recording but there's no UI to
-start/stop recording, view the journey, or replay it.
-
-**Recommendation:** Add a record button to the mode bar (or floating
-toolbar). When recording:
-- Red dot indicator in sidebar header
-- Each navigation auto-captures and adds a timestamped entry
-- Stop button ends recording and shows the journey as a linked sequence
-- Export journey as a series of captures
-
-**Impact:** Enables the journey recording workflow without CLI.
-
-### 3.7 No Bidirectional Linking UI
-
-**Problem:** M15.1 proposes clicking an element to see its source file,
-but there's no UI for displaying this information.
-
-**Recommendation:** When an element is frozen (clicked), show a "Source"
-line in the tooltip or annotation panel:
-- `PulseCard.tsx:42` (if React component detected)
-- `[data-testid="pulse-card"]` -> grep result
-- Click to copy the file:line reference
-
-**Impact:** Eliminates the "which file renders this?" guessing game.
-
-### 3.8 Continuous Capture Needs a Status Indicator
-
-**Problem:** M14.1 proposes auto-capture on hot-reload, but the user needs
-to know it's active and see the results.
-
-**Recommendation:** When continuous capture is enabled:
-- Pulsing green dot in sidebar header (distinct from connection dot)
-- Toast notification on each auto-capture: "Auto-captured: 3 elements
-  shifted, 1 added"
-- Auto-diff appears in the History tab
-
-**Impact:** User trusts the system is working without manual verification.
-
-### 3.9 Export Doesn't Include Enrichment Data
+### 3.6 Export Doesn't Include Enrichment Data
 
 **Problem:** "Copy MD" and "Report" export annotations but not network
-errors, console errors, or breakpoint context. Bug reports miss crucial
-debugging context.
+errors, console errors, or breakpoint context.
 
-**Recommendation:** Include enrichment summary in exports:
-- Markdown: add "## Environment" section with breakpoint, viewport,
-  failed requests, console errors
-- ZIP report: include network.json and console.json alongside markdown
+**Recommendation:** Include enrichment summary in exports (see Section 4.6).
 
-**Impact:** Bug reports are self-contained. Developers don't need to
-reproduce to see the network/console state.
+**Impact:** Bug reports are self-contained with full debugging context.
 
 ---
 
-## 4. Redesign Recommendations
+## 4. Redesign: Two-Tab Sidebar Model
 
-### 4.1 Priority 1: Quick-Start (eliminate popup speed bump)
+### 4.1 Core Principle: Two Mental Modes
 
-- Toolbar icon click -> direct toggle annotate mode
+Every user interaction with ViewGraph falls into one of two modes:
+
+- **"I'm telling the agent what's wrong"** - annotating, commenting, exporting
+- **"I'm understanding what's happening"** - checking network, console, history, diffs
+
+These map to two sidebar tabs:
+
+| Tab | Purpose | Contains |
+|---|---|---|
+| **Review** | Human-authored feedback | Annotations, filters, severity/category, agent requests, Send/Copy/Report |
+| **Inspect** | Machine-observed page state | Network, console, breakpoints, isRendered, capture history, diffs, baselines |
+
+**Why two tabs, not three:** An earlier draft split this into Notes/Diagnostics/
+History. But "diagnostics" (network errors, console) and "history" (captures,
+diffs) are both answers to the same question: "what is the page doing?" They're
+reference data the user consults, not tasks the user acts on. Merging them
+avoids a tab that's too thin to justify and reduces cognitive load.
+
+### 4.2 Journey Validation Against Two-Tab Model
+
+Each persona's journey was walked against this model to verify it holds:
+
+**Developer annotating a bug:**
+1. Click icon -> annotate mode (direct toggle, no popup)
+2. Sidebar opens on **Review** (default) - annotate elements, set severity
+3. Wonders "is there a network error causing this?" -> clicks **Inspect**
+4. Sees failed request, copies context back to annotation comment
+5. Back to **Review** -> "Send to Agent"
+
+The tab switch at step 3 is natural: "let me check what's going on" is a
+distinct mental shift from "let me describe what's wrong."
+
+**Developer verifying a fix:**
+1. Agent says "fixed, capture to verify"
+2. Click icon -> sidebar opens, clicks **Inspect**
+3. Sees latest capture, clicks "Compare with previous"
+4. Sees diff: "button restored, padding fixed" - done
+
+Entire journey stays in Inspect. Review tab never touched.
+
+**Tester filing a bug report:**
+1. Click icon -> annotate mode
+2. **Review**: annotate 3 issues, set severity/category
+3. "Copy MD" -> paste into Jira - done
+
+Entire journey stays in Review. Inspect tab never touched.
+
+**Developer debugging a hidden element:**
+1. Hover over element, tooltip shows `! Hidden: ancestor opacity: 0`
+2. Click **Inspect** -> sees isRendered warning, console error, breakpoint "md"
+3. Realizes it's a responsive issue, fixes directly without annotating
+
+Inspect tab serves as lightweight DevTools alternative.
+
+**Agent requests a capture:**
+Agent requests appear at the top of **Review** tab. They're actionable tasks
+for the user (like annotations are actionable tasks for the agent). The
+request card has a "Capture" button - that's an action, not reference data.
+
+**Journey recording (M14.2, future):**
+Record button lives in the mode bar (it's a capture mode). Journey results
+appear in **Inspect** under History. Recording controls are actions; results
+are reference data.
+
+### 4.3 Priority 1: Quick-Start (eliminate popup speed bump)
+
+- Toolbar icon click -> direct toggle annotate mode (like React DevTools)
 - Right-click icon -> context menu with Capture, Settings, Options
-- Remove popup.html entirely (or keep as fallback for non-injectable pages)
+- Remove popup.html (keep as fallback for non-injectable pages only)
 
-### 4.2 Priority 2: Sidebar Tab Restructure
+### 4.4 Priority 2: Two-Tab Sidebar Layout
 
-Replace single-purpose sidebar with three tabs:
-
-```
-[Notes] [Diagnostics] [History]
-```
-
-**Notes tab** (current default):
-- Mode bar (Element | Region | Page)
-- Filter tabs (Open | Resolved | All)
-- Annotation list
+**Review tab** (default when entering annotate mode):
+- Mode bar: Element | Region | Page
+- Agent request cards (if any pending)
+- Filter tabs: Open (N) | Resolved (N) | All (N)
+- Annotation list with severity/category chips
 - Footer: Send to Agent | Copy MD | Report
 
-**Diagnostics tab** (new):
-- Breakpoint indicator: "md (768px)" with active range highlight
-- Network section: failed count badge, expandable request list
-- Console section: error/warning count badges, expandable message list
-- isRendered warnings: elements that are hidden by ancestors
+**Inspect tab:**
+- Breakpoint indicator: active range + viewport width
+- Network section: collapsible, failed requests highlighted, count badge
+- Console section: collapsible, errors/warnings with stack traces
+- Visibility warnings: elements hidden by ancestors
+- Capture history: timestamped list for current page
+- Baseline indicator + "Compare" action
+- Diff summary (when comparing)
+- Journey entries (when M14.2 ships)
 
-**History tab** (new):
-- Capture list for current page (timestamped)
-- Baseline indicator (star icon on baseline capture)
-- Diff summary between captures
-- Journey recording controls (when M14.2 ships)
+Settings remain as a slide-over panel (gear icon) that overlays either tab
+without replacing content.
 
-### 4.3 Priority 3: Enhanced Overlay Tooltip
+### 4.5 Priority 3: Enhanced Overlay Tooltip
 
-Expand hover tooltip from 2 lines to up to 5:
+Expand hover tooltip from 2 lines to up to 5 (conditional):
 
 ```
-body > main > div.card > button          (breadcrumb)
-button[data-testid="submit"]             (selector)
-role: button | name: "Submit Form"       (a11y - new)
-! Not rendered (ancestor opacity: 0)     (isRendered - new, conditional)
-! console.error: Missing provider        (console - new, conditional)
+body > main > div.card > button          (breadcrumb - always)
+button[data-testid="submit"]             (selector - always)
+role: button | name: "Submit Form"       (a11y - new, always for interactive)
+! Not rendered (ancestor opacity: 0)     (isRendered - new, only when false)
+! console.error: Missing provider        (console - new, only when matched)
 ```
 
 Lines 3-5 only appear when relevant. Color-coded: a11y in blue,
 isRendered warning in orange, console error in red.
 
-### 4.4 Priority 4: Enrichment in Exports
+### 4.6 Priority 4: Enrichment in Exports
 
-Add to markdown export:
+Markdown export adds an Environment section:
 ```markdown
 ## Environment
 - Viewport: 1440x900 (xl breakpoint)
@@ -351,33 +345,29 @@ Add to markdown export:
   - Error: "No QueryClient set, use QueryClientProvider"
 ```
 
-Add to ZIP report: `network.json`, `console.json` alongside `report.md`.
+ZIP report includes `network.json` and `console.json` alongside `report.md`.
 
-### 4.5 Priority 5: Source Linking (when M15.1 ships)
+### 4.7 Priority 5: Source Linking (when M15.1 ships)
 
 In freeze tooltip, add source line:
 ```
 Source: PulseCard.tsx:42  [copy]
 ```
 
-In annotation panel, add source context:
-```
-Element: button[data-testid="submit"]
-Source:  LoginForm.tsx:87
-```
+In annotation panel, add source context below the element badge.
 
-### 4.6 Priority 6: Continuous Capture UI (when M14.1 ships)
+### 4.8 Priority 6: Continuous Capture UI (when M14.1 ships)
 
-- Toggle in sidebar settings: "Auto-capture on reload"
-- Pulsing indicator in header when active
-- Toast notifications for auto-captures
-- Auto-diffs appear in History tab
+- Toggle in Inspect tab: "Auto-capture on reload"
+- Pulsing green indicator in sidebar header when active
+- Toast notification on each auto-capture with diff summary
+- Auto-diffs appear in Inspect tab history section
 
-### 4.7 Priority 7: Journey Recording UI (when M14.2 ships)
+### 4.9 Priority 7: Journey Recording UI (when M14.2 ships)
 
 - Record button in mode bar (red circle icon)
 - Recording indicator in header (red dot + duration)
-- Journey entries in History tab (linked sequence)
+- Journey entries in Inspect tab history section
 - Stop + export controls
 
 ---
@@ -390,15 +380,15 @@ Source:  LoginForm.tsx:87
 2. Enhanced tooltip with a11y info
 3. Enrichment data in exports (network/console in markdown + ZIP)
 
-### Phase B: Sidebar restructure (M12 features visible)
+### Phase B: Two-tab sidebar (M12 features visible)
 
-4. Three-tab sidebar (Notes | Diagnostics | History)
-5. Diagnostics tab with network/console/breakpoint panels
-6. isRendered warnings in tooltip and diagnostics
+4. Review + Inspect tab layout
+5. Inspect tab: network/console/breakpoint/visibility panels
+6. Settings as slide-over overlay
 
 ### Phase C: History and comparison (M15.2 prerequisite)
 
-7. History tab with capture list
+7. Capture history list in Inspect tab
 8. Baseline management (set/compare)
 9. Structural diff visualization
 
@@ -406,7 +396,7 @@ Source:  LoginForm.tsx:87
 
 10. Continuous capture toggle + status indicator
 11. Journey recording controls
-12. Auto-diff in History tab
+12. Auto-diff in Inspect tab
 
 ### Phase E: Source linking (M15.1)
 
@@ -417,45 +407,40 @@ Source:  LoginForm.tsx:87
 
 ## 6. Wireframe Sketches
 
-### 6.1 Redesigned Sidebar (Phase B)
+### 6.1 Review Tab (default)
 
 ```
 +------------------------------------------+
-| VG: Review Notes  [*] [gear] [trash] [x] |
+| VG  [*]        [Review] [Inspect]  [x]  |
 +------------------------------------------+
-| [Notes]  [Diagnostics]  [History]        |
-+------------------------------------------+
-|                                          |  <- tab content area
-| (Notes tab shown by default)             |
-|                                          |
 | [Element] [Region] [Page]               |
-|                                          |
++------------------------------------------+
+| Agent Request: capture localhost:3000    |
+| "Check login form after fix"  [Capture] |
++------------------------------------------+
 | Open (3) | Resolved (1) | All (4)       |
-| ---------------------------------------- |
++------------------------------------------+
 | #1 button.submit  Fix padding            |
 |    ! Critical  Visual                    |
 | #2 div.card  Wrong background color      |
 |    ! Major  Visual                       |
 | #3 input.email  Add aria-label           |
 |    ! Minor  A11y                         |
-|                                          |
 +------------------------------------------+
 | [====== Send to Agent ======]            |
 | [Copy MD]  [Report]                      |
 +------------------------------------------+
 ```
 
-### 6.2 Diagnostics Tab
+### 6.2 Inspect Tab
 
 ```
 +------------------------------------------+
-| VG: Review Notes  [*] [gear] [trash] [x] |
-+------------------------------------------+
-| [Notes]  [Diagnostics]  [History]        |
+| VG  [*]        [Review] [Inspect]  [x]  |
 +------------------------------------------+
 |                                          |
 | BREAKPOINT                               |
-| [md] 768px  (min-width: 768px active)   |
+| [md] 768px                               |
 |                                          |
 | NETWORK                          [1 err] |
 | v GET /api/users        0B   FAILED     |
@@ -473,18 +458,6 @@ Source:  LoginForm.tsx:87
 | ! div#overlay - ancestor opacity: 0     |
 | ! span.sr-only - off-screen positioned  |
 |                                          |
-+------------------------------------------+
-```
-
-### 6.3 History Tab (Phase C)
-
-```
-+------------------------------------------+
-| VG: Review Notes  [*] [gear] [trash] [x] |
-+------------------------------------------+
-| [Notes]  [Diagnostics]  [History]        |
-+------------------------------------------+
-|                                          |
 | CAPTURES                                 |
 | * 16:30:15  375 nodes  [baseline]       |
 |   16:28:42  372 nodes  [compare]        |
@@ -496,16 +469,12 @@ Source:  LoginForm.tsx:87
 | ~2 layout shifts                         |
 | 1 testid removed: btn-unlink            |
 |                                          |
-| JOURNEY (recording...)          [stop]   |
-| 1. /login        16:20:01               |
-| 2. /dashboard    16:20:15               |
-| 3. /settings     16:20:32               |
-|                                          |
 +------------------------------------------+
 ```
 
-### 6.4 Enhanced Tooltip
+### 6.3 Enhanced Tooltip
 
+Normal element:
 ```
 +------------------------------------------------+
 | body > main > div.card > button                |
@@ -515,7 +484,7 @@ Source:  LoginForm.tsx:87
 +------------------------------------------------+
 ```
 
-With warnings (conditional lines):
+Element with warnings (conditional lines):
 ```
 +------------------------------------------------+
 | body > div.modal > div.overlay                 |
@@ -524,4 +493,28 @@ With warnings (conditional lines):
 | ! Hidden: ancestor has opacity: 0              |
 | ! Error: Cannot read property 'map' of null    |
 +------------------------------------------------+
+```
+
+### 6.4 Settings Slide-Over
+
+Overlays current tab content (doesn't replace it):
+```
++------------------------------------------+
+| < Settings                               |
++------------------------------------------+
+| SERVER                                   |
+| * Connected (localhost:3100)             |
+| Project: /home/user/myapp               |
+| Captures: .viewgraph/captures           |
+|                                          |
+| CAPTURE INCLUDES                         |
+| ViewGraph JSON          [====]           |
+| HTML snapshot           [    ]           |
+| Screenshot              [    ]           |
+|                                          |
+| AUTO-CAPTURE                             |
+| Capture on reload       [    ]           |
+|                                          |
+| [Advanced settings...]                   |
++------------------------------------------+
 ```
