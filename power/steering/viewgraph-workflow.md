@@ -15,9 +15,11 @@ description: ViewGraph annotation workflow - when and how to use UI captures
 ## When you need to see the current UI
 
 1. Call `request_capture` with the URL and a guidance note explaining what you need
-2. The user will see the request in their sidebar and capture when ready
+2. The user will see the request in their sidebar and can accept or decline
 3. Call `get_request_status` to poll for completion
-4. Once captured, use `get_page_summary` or `get_capture` to inspect the DOM
+4. If status is `completed`, use `get_page_summary` or `get_capture` to inspect the DOM
+5. If status is `declined`, tell the user: "The capture request was declined in the browser. Please accept it in the ViewGraph sidebar, or let me know if you'd like a different approach."
+6. Do not retry a declined request automatically - wait for the user to decide
 
 ## When checking your work
 
