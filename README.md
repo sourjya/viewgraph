@@ -16,7 +16,7 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 |---|---|---|
 | [`server/`](./server/) | MCP server - reads capture files, exposes 15 query/analysis/request tools | M1+M2+M3 Complete |
 | [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, unified annotate, multi-export | M4+M5+M6+M7b+M7c Complete |
-| [`power/`](./power/) | Kiro Power assets - steering docs, hooks, workflow guidance | M8b In Progress |
+| [`power/`](./power/) | Kiro Power assets - steering docs, hooks, workflow guidance | M8b Complete |
 
 ## How It Works
 
@@ -113,7 +113,7 @@ From your project root (not the ViewGraph directory):
 node /path/to/viewgraph/scripts/viewgraph-init.js
 ```
 
-This auto-detects your AI agent, writes MCP config, creates `.viewgraph/captures/`, and starts the server. The extension popup shows a green dot when connected.
+This auto-detects your AI agent, writes MCP config, creates `.viewgraph/captures/`, installs Power assets (Kiro steering docs + hooks), kills any stale server, and starts a fresh detached server. The extension sidebar shows a green dot when connected and auto-detects the project mapping via the server's `/info` endpoint.
 
 For subsequent sessions, start the server directly:
 
@@ -134,7 +134,7 @@ npm run dev:server
    - **Send to Agent** - push annotations with full DOM context to your AI agent
    - **Copy MD** - copy a markdown bug report to clipboard
    - **Report** - download a ZIP with markdown + cropped screenshots
-9. **Save Page** captures a DOM snapshot; **Page Note** adds a page-level comment
+9. **Save Page** captures a DOM snapshot; **Page Note** adds a page-level comment (labeled P1, P2, etc. - separate from element numbering)
 
 Captures are saved to `.viewgraph/captures/` and pushed to the MCP server automatically.
 
@@ -188,9 +188,9 @@ npm run dev:ext        # start extension dev server (Chrome HMR)
 ## Testing
 
 ```bash
-npm test               # all tests (276 tests)
-npm run test:server    # server only (132 tests)
-npm run test:ext       # extension only (144 tests)
+npm test               # all tests (478 tests)
+npm run test:server    # server only (169 tests)
+npm run test:ext       # extension only (309 tests)
 ```
 
 ## MCP Tools
