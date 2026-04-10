@@ -67,6 +67,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `form-validation-error` rule in audit_accessibility
 - Detects `aria-invalid="true"` and required fields with empty value
 - 4 new tests (2 positive, 2 negative)
+
+### Network State Capture (M12.1)
+- `collectNetworkState()` reads Performance API at capture time
+- Captures URL, initiatorType, duration, transferSize, startTime, failed flag
+- Sorts by startTime descending, caps at 100 entries, truncates URLs to 200 chars
+- Added as `network` section in capture JSON (backward compatible)
+- Server parser extracts network section; parseSummary includes networkSummary
+- 7 extension tests + 3 serializer tests + 3 parser tests
+
+### Console Error Capture (M12.2)
+- `installConsoleInterceptor()` wraps console.error/warn early in content script
+- Captures message, stack trace, timestamp; preserves original console behavior
+- Truncates messages to 500 chars, caps at 50 per level
+- Added as `console` section in capture JSON (backward compatible)
+- Server parser extracts console section; parseSummary includes consoleSummary
+- 7 extension tests + 2 parser tests
+
+### Test Coverage
+- 560 total tests (234 server + 326 extension)
 ### Multi-Project Capture Routing
 - URL-based project routing: extension sends x-captures-dir header, server writes to override dir
 - Extension options page with project mappings (URL pattern -> captures directory)

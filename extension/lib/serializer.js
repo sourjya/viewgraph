@@ -173,9 +173,10 @@ function buildRelations(relations) {
  * Serialize scored elements into a complete ViewGraph v2.1 capture.
  * @param {Array} elements - Scored elements from salience.scoreAll()
  * @param {Array} relations - Relations from traverser
+ * @param {object} [enrichment] - Optional enrichment data (network, console)
  * @returns {object} Complete ViewGraph v2.1 JSON object
  */
-export function serialize(elements, relations) {
+export function serialize(elements, relations, enrichment = {}) {
   const metadata = buildMetadata(elements);
   const capture = {
     metadata,
@@ -184,6 +185,10 @@ export function serialize(elements, relations) {
     relations: buildRelations(relations),
     details: buildDetails(elements),
   };
+
+  // Optional enrichment sections (M12.1, M12.2)
+  if (enrichment.network) capture.network = enrichment.network;
+  if (enrichment.console) capture.console = enrichment.console;
 
   // Update capture size estimate
   const jsonStr = JSON.stringify(capture);

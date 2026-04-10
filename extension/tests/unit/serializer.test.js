@@ -99,4 +99,22 @@ describe('serialize', () => {
     const capture = serialize([el()], []);
     expect(capture.metadata.stats.captureSizeBytes).toBeGreaterThan(0);
   });
+
+  it('includes network section when provided', () => {
+    const network = { requests: [{ url: '/api', initiatorType: 'fetch' }], summary: { total: 1, failed: 0, byType: { fetch: 1 } } };
+    const capture = serialize([el()], [], { network });
+    expect(capture.network).toBe(network);
+  });
+
+  it('includes console section when provided', () => {
+    const console = { errors: [{ message: 'fail', timestamp: '2026-01-01' }], warnings: [], summary: { errors: 1, warnings: 0 } };
+    const capture = serialize([el()], [], { console });
+    expect(capture.console).toBe(console);
+  });
+
+  it('omits network/console when not provided', () => {
+    const capture = serialize([el()], []);
+    expect(capture.network).toBeUndefined();
+    expect(capture.console).toBeUndefined();
+  });
 });

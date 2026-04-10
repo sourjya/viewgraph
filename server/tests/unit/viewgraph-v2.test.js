@@ -124,3 +124,55 @@ describe('parseSummary', () => {
     expect(result.ok).toBe(false);
   });
 });
+
+describe('parseCapture - network/console sections', () => {
+  it('extracts network section when present', () => {
+    const raw = {
+      metadata: { url: 'http://test', title: 'Test', viewport: { width: 800, height: 600 } },
+      network: { requests: [{ url: '/api', initiatorType: 'fetch' }], summary: { total: 1, failed: 0, byType: {} } },
+    };
+    const result = parseCapture(JSON.stringify(raw));
+    expect(result.ok).toBe(true);
+    expect(result.data.network.requests).toHaveLength(1);
+  });
+
+  it('extracts console section when present', () => {
+    const raw = {
+      metadata: { url: 'http://test', title: 'Test', viewport: { width: 800, height: 600 } },
+      console: { errors: [{ message: 'fail' }], warnings: [], summary: { errors: 1, warnings: 0 } },
+    };
+    const result = parseCapture(JSON.stringify(raw));
+    expect(result.ok).toBe(true);
+    expect(result.data.console.errors).toHaveLength(1);
+  });
+
+  it('returns null for missing network/console (backward compat)', () => {
+    const raw = { metadata: { url: 'http://test', title: 'Test', viewport: { width: 800, height: 600 } } };
+    const result = parseCapture(JSON.stringify(raw));
+    expect(result.ok).toBe(true);
+    expect(result.data.network).toBeNull();
+    expect(result.data.console).toBeNull();
+  });
+});
+
+describe('parseSummary - network/console counts', () => {
+  it('includes networkSummary and consoleSummary when present', () => {
+    const raw = {
+      metadata: { url: 'http://test', title: 'Test', viewport: { width: 800, height: 600 }, stats: {} },
+      network: { summary: { total: 5, failed: 1, byType: {} } },
+      console: { summary: { errors: 2, warnings: 1 } },
+    };
+    const result = parseSummary(JSON.stringify(raw));
+    expect(result.ok).toBe(true);
+    expect(result.data.networkSummary.total).toBe(5);
+    expect(result.data.consoleSummary.errors).toBe(2);
+  });
+
+  it('returns null summaries when sections missing', () => {
+    const raw = { metadata: { url: 'http://test', title: 'Test', viewport: { width: 800, height: 600 }, stats: {} } };
+    const result = parseSummary(JSON.stringify(raw));
+    expect(result.ok).toBe(true);
+    expect(result.data.networkSummary).toBeNull();
+    expect(result.data.consoleSummary).toBeNull();
+  });
+});

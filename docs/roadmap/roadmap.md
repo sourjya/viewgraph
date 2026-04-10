@@ -455,8 +455,8 @@ these would have caught real bugs without back-and-forth.
 
 | # | Task | Priority | Details |
 |---|---|---|---|
-| 12.1 | Network/API state | P0 - highest | Capture in-flight and completed XHR/fetch calls at snapshot time. Include URL, method, status, timing. Failed requests (4xx/5xx) and pending requests are the most valuable. Uses `performance.getEntriesByType('resource')` + `PerformanceObserver`. Extension-side capture enrichment. |
-| 12.2 | Console errors/warnings | P0 - highest | Capture `console.error` and `console.warn` messages present at snapshot time. Inject early via content script to intercept before page scripts run. Include stack traces when available. Would have caught QueryClientProvider crash instantly. |
+| 12.1 | Network/API state | P0 - highest | DONE. `collectNetworkState()` reads Performance API. Captures URL, type, duration, transferSize, failed flag. Sorted, capped at 100, URLs truncated. 13 tests. |
+| 12.2 | Console errors/warnings | P0 - highest | DONE. `installConsoleInterceptor()` wraps console.error/warn. Captures message, stack, timestamp. Preserves originals. Capped at 50, truncated to 500 chars. 9 tests. |
 | 12.3 | Component tree mapping | P1 - medium | Annotate DOM nodes with React/Vue/Svelte component names. React: `_reactFiber` on DOM nodes. Vue: `__vue_app__`. Map container divs to component names so agent can jump to source files. Framework-specific, needs detection. |
 | 12.4 | Event listener inventory | P2 - lower | List event listeners per element via `getEventListeners()` (Chrome DevTools protocol only) or by intercepting `addEventListener`. Helps debug "click does nothing" issues. Complex to implement reliably. |
 | 12.5 | CSS animation state | P2 - lower | Detect active CSS animations/transitions via `getAnimations()` API. Flag elements mid-animation. Low priority - rarely the root cause. |
