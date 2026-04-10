@@ -90,4 +90,28 @@ describe('request-queue', () => {
     expect(found).toBeDefined();
     expect(found.id).toBe(req.id);
   });
+
+  it('decline transitions to declined with reason', () => {
+    const req = queue.create('http://localhost:5173/jobs');
+    const declined = queue.decline(req.id, 'Not ready yet');
+    expect(declined.status).toBe('declined');
+    expect(declined.declineReason).toBe('Not ready yet');
+    expect(queue.get(req.id).status).toBe('declined');
+  });
+
+  it('decline without reason still sets status', () => {
+    const req = queue.create('http://localhost:5173/jobs');
+    const declined = queue.decline(req.id);
+    expect(declined.status).toBe('declined');
+    expect(declined.declineReason).toBeUndefined();
+  });
+
+  it('declined requests are not in getPending', () => {
+    const req = queue.create('http://localhost:5173/a');
+    queue.create('http://localhost:5173/b');
+    queue.decline(req.id);
+    const pending = queue.getPending();
+    expect(pending).toHaveLength(1);
+    expect(pending[0].url).toBe('http://localhost:5173/b');
+  });
 });

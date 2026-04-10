@@ -82,6 +82,20 @@ export function createRequestQueue({ maxSize = 10, ttlMs = 60000 } = {}) {
       return req;
     },
 
+    /**
+     * Mark a request as declined by the user.
+     * The agent can poll get_request_status and see the decline + reason.
+     * @param {string} id - Request ID
+     * @param {string} [reason] - Optional reason from the user
+     */
+    decline(id, reason) {
+      const req = requests.get(id);
+      if (!req) return null;
+      req.status = 'declined';
+      if (reason) req.declineReason = reason;
+      return req;
+    },
+
     /** Get all pending (non-expired) requests. */
     getPending() {
       return [...requests.values()]
