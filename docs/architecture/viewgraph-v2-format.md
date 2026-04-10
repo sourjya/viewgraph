@@ -97,6 +97,7 @@ producers MUST emit in this order for LLM attention optimization.
 | 8 | `coverage` | No | Omission manifest - what was dropped and why |
 | 9 | `network` | No | Network request state at capture time |
 | 10 | `console` | No | Captured console errors/warnings |
+| 11 | `breakpoints` | No | Active CSS media query breakpoints |
 
 ### 2.2 Why plain keys (not `====SECTION====` markers)
 
@@ -355,6 +356,7 @@ Alias generation priority:
 | `parent` | number\|null | Yes | Parent nid, null for root |
 | `children` | number[] | Yes | Child nids (ordered) |
 | `actions` | string[] | No | `"clickable"`, `"fillable"`, `"hoverable"` |
+| `isRendered` | boolean | No | Whether element is actually visible (ancestor chain check for opacity:0, clip-path, off-screen) |
 | `ax` | object | No | Inline accessibility data (see 5.3) |
 | `frame` | object | No | Frame boundary info (see 5.4) |
 | `shadowRoot` | string | No | `"open"` or `"closed"` if shadow host |
@@ -808,13 +810,57 @@ captures Error objects with their stack traces when available.
 
 ---
 
-## 13. Size Budget and Progressive Degradation
+## 13. BREAKPOINTS Section
 
-### 13.1 Target size
+Optional. Active CSS media query breakpoints at capture time. Helps agents
+debug responsive layout issues by knowing exactly which breakpoints are
+active, not just the viewport width.
+
+Added in v2.2.0 (M12.6).
+
+```json
+{
+  "breakpoints": {
+    "viewport": { "width": 768 },
+    "breakpoints": [
+      { "name": "xs", "px": 0, "minWidth": true, "maxWidth": false },
+      { "name": "sm", "px": 576, "minWidth": true, "maxWidth": false },
+      { "name": "md", "px": 768, "minWidth": true, "maxWidth": true },
+      { "name": "lg", "px": 992, "minWidth": false, "maxWidth": true },
+      { "name": "xl", "px": 1200, "minWidth": false, "maxWidth": true },
+      { "name": "2xl", "px": 1400, "minWidth": false, "maxWidth": true }
+    ],
+    "activeRange": "md"
+  }
+}
+```
+
+### 13.1 Fields
+
+| Field | Type | Description |
+|---|---|---|
+| `viewport.width` | number | `window.innerWidth` at capture time |
+| `breakpoints` | array | Standard breakpoints with match status |
+| `breakpoints[].name` | string | Breakpoint name (xs, sm, md, lg, xl, 2xl) |
+| `breakpoints[].px` | number | Breakpoint threshold in CSS pixels |
+| `breakpoints[].minWidth` | boolean | `window.matchMedia('(min-width: Npx)')` result |
+| `breakpoints[].maxWidth` | boolean | `window.matchMedia('(max-width: Npx)')` result |
+| `activeRange` | string | Highest min-width breakpoint that matches |
+
+### 13.2 Breakpoint values
+
+Uses Bootstrap/Tailwind conventions: xs(0), sm(576), md(768), lg(992),
+xl(1200), 2xl(1400).
+
+---
+
+## 14. Size Budget and Progressive Degradation
+
+### 14.1 Target size
 
 Default target: **400KB** (~100K tokens). Configurable via extension settings.
 
-### 13.2 Degradation strategy
+### 14.2 Degradation strategy
 
 When a capture exceeds the target size, the producer degrades progressively:
 
@@ -829,16 +875,16 @@ At each step, the `coverage` section is updated to reflect what was retained.
 
 ---
 
-## 14. Versioning and Compatibility
+## 15. Versioning and Compatibility
 
-### 14.1 Version field
+### 15.1 Version field
 
 `metadata.version` uses semver (MAJOR.MINOR.PATCH):
 - **MAJOR:** Breaking changes to section structure or required fields
 - **MINOR:** New optional sections or fields
 - **PATCH:** Bug fixes, clarifications
 
-### 14.2 Compatibility rules
+### 15.2 Compatibility rules
 
 - Parsers MUST check `metadata.format === "viewgraph-v2"`
 - Parsers SHOULD check `metadata.version` for feature support
@@ -848,7 +894,7 @@ At each step, the `coverage` section is updated to reflect what was retained.
 
 ---
 
-## 15. Standard Format Exports
+## 16. Standard Format Exports
 
 ViewGraph v2 is the canonical format. Standard format exports are available
 as optional MCP tools and optional extension output.
@@ -861,7 +907,7 @@ as optional MCP tools and optional extension output.
 
 ---
 
-## 16. File Naming Convention
+## 17. File Naming Convention
 
 ```
 viewgraph-{hostname}-{YYYYMMDD}-{HHmmss}.viewgraph.json
@@ -872,7 +918,7 @@ Screenshot PNG uses the same basename as the JSON file.
 
 ---
 
-## 17. References
+## 18. References
 
 This specification was informed by the research documented in
 [viewgraph-format-research.md](./viewgraph-format-research.md). Key sources:
