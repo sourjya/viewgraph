@@ -1,493 +1,318 @@
-# ViewGraph Extension UX Analysis
+# ViewGraph Extension UX Design
 
 **Date:** 2026-04-10
-**Status:** Analysis complete, recommendations pending implementation
-**Scope:** Extension UI across all surfaces (popup, sidebar, overlay, options)
+**Status:** Phase A and B shipped. Phase C-E planned for future milestones.
 
 ---
 
-## 1. Current UI Surface Inventory
-
-### 1.1 Popup (220px wide)
-
-Entry point. Two buttons: Capture, Annotate. Settings toggles for output
-format (JSON always-on, HTML snapshot, Screenshot). MCP connection status
-dot with server URL tooltip. Gear icon toggles settings panel.
-
-**Strengths:** Minimal, fast to scan, clear primary actions.
-**Weaknesses:** No indication of what's been captured. No way to see
-annotations without entering annotate mode. Dead-end after capture
-(just shows "Captured N elements" then nothing).
-
-### 1.2 Sidebar (300px fixed right)
-
-Main workspace during annotation. Components top-to-bottom:
-- Header: "ViewGraph: Review Notes" label, connection dot, gear, trash, close
-- Mode bar: Element | Region | Page (three toggle buttons with icons)
-- Filter tabs: Open (N) | Resolved (N) | All (N)
-- Annotation list: scrollable, each entry shows #number, ancestor element
-  badge, comment preview, severity/category chips, resolve/delete buttons
-- Agent request cards: bell icon, URL, guidance text, "Capture" button
-- Settings screen: replaces list when gear clicked (server info, project
-  mapping, capture toggles)
-- Footer: "Send to Agent" primary CTA, "Copy MD" and "Report" secondary
-
-**Strengths:** Good information density. Filter tabs work well. Severity/
-category chips are scannable. Collapse-to-badge behavior preserves screen
-space during element selection.
-**Weaknesses:** 300px is tight for long comments. Settings screen replaces
-the list entirely (can't see annotations while checking settings). Mode bar
-takes vertical space even when not switching modes. No search/sort. No
-indication of capture enrichment data (network, console, breakpoints).
-
-### 1.3 Annotation Panel (270px floating)
-
-Appears near selected element. Shows: #number, delete/close buttons,
-severity chip-select, multi-category chips, textarea for comment.
-
-**Strengths:** Positioned near the element being annotated. Chip-select
-pattern is compact. Multi-category selection works well.
-**Weaknesses:** No preview of what the agent will see (DOM context, styles).
-No way to see network errors or console errors related to the element.
-Panel can overlap with sidebar on narrow viewports.
-
-### 1.4 Options Page (full tab)
-
-Project mapping configuration. Shows auto-detected server info (project
-root, captures dir). Manual override toggle for multi-project setups.
-URL pattern to captures directory mapping rows.
-
-**Strengths:** Clean separation of advanced config from main UI.
-**Weaknesses:** Rarely visited. Most users never need manual overrides.
-Could be folded into sidebar settings.
-
-### 1.5 Overlay (page-level)
-
-Hover: blue highlight box + tooltip showing breadcrumb, CSS selector,
-meta line (tag, role, testid, dimensions). Click: freezes selection,
-shows copy-selector button. Scroll wheel: navigates DOM tree up/down.
-Shift+drag: region selection with rubber-band box.
-
-**Strengths:** Scroll-wheel DOM navigation is powerful and unique.
-Breadcrumb tooltip gives immediate context. Freeze-on-click prevents
-accidental deselection.
-**Weaknesses:** No indication of element's isRendered status. No
-network/console context. No breakpoint indicator. Tooltip doesn't show
-accessibility info (role, name, states).
-
----
-
-## 2. User Journeys
-
-### 2.1 Developer with AI Agent (primary persona)
-
-**Annotating a bug (Review tab):**
-1. Click ViewGraph icon -> annotate mode activates directly (no popup)
-2. Sidebar opens on **Review** tab, overlay highlights elements on hover
-3. Click element, type comment in annotation panel, set severity
-4. Wonders "is there a network error causing this?" -> clicks **Inspect** tab
-5. Sees failed GET /api/users, copies that context back to annotation
-6. Back to **Review** -> clicks "Send to Agent"
-7. Agent receives annotations + full DOM + network/console enrichment
-
-Key: the tab switch at step 4 is a natural mental shift from "describing
-what's wrong" to "understanding what's happening." Both tabs are one click
-away throughout the session.
-
-**Verifying a fix (Inspect tab):**
-1. Agent says "fixed, request a capture to verify"
-2. Click icon -> sidebar opens, clicks **Inspect** tab
-3. Sees latest capture in history, clicks "Compare with previous"
-4. Sees diff: "button restored, padding fixed, 1 new testid" - done
-
-Entire journey stays in Inspect. Review tab never touched. The developer
-is purely in "understanding" mode - no annotations needed.
-
-**Debugging a hidden element (Inspect tab + tooltip):**
-1. Hover over element, tooltip shows `! Hidden: ancestor opacity: 0`
-2. Click **Inspect** -> sees isRendered warning, console error, breakpoint "md"
-3. Realizes it's a responsive issue, fixes directly without annotating
-
-Inspect tab serves as a lightweight DevTools alternative. The enhanced
-tooltip gives the first signal; Inspect tab provides the full picture.
-
-**With future features (M14-M15):**
-- Continuous capture (M14.1): toggle in Inspect tab, auto-diffs appear in history
-- Journey recording (M14.2): record button in mode bar, results in Inspect
-- Source linking (M15.1): file:line in tooltip, click to copy
-- Baseline comparison (M15.2): set baseline in Inspect, auto-compare on capture
-
-### 2.2 Tester / QA (secondary persona)
-
-**Filing a bug report (Review tab only):**
-1. Click icon -> annotate mode activates
-2. **Review** tab: click 3 elements, add comments, set severity/category
-3. Click "Copy MD" -> paste into Jira (includes environment section with
-   network failures and console errors from enrichment data)
-4. OR click "Report" -> download ZIP with markdown + screenshots + network.json
-
-Entire journey stays in Review. Tester never needs Inspect tab. The
-enrichment data flows into exports automatically - no extra steps.
-
-**Proving a regression (Review + Inspect):**
-1. Click icon -> **Inspect** tab
-2. Sees capture history, compares current against baseline
-3. Diff shows "Unlink button missing, 1 testid removed"
-4. Switches to **Review**, annotates the regression with diff context
-5. "Copy MD" -> paste into ticket with structural proof
-
-The Inspect tab provides evidence; Review tab packages it for the ticket.
-
-### 2.3 Reviewer / Design QA (tertiary persona)
-
-**Checking visual consistency (Review tab):**
-1. Click icon -> annotate mode
-2. **Review** tab: annotate deviations from design spec
-3. Set category to "visual" on each annotation
-4. "Send to Agent" or "Copy MD" depending on workflow
-
-**Checking responsive behavior (Inspect tab):**
-1. Resize viewport to different breakpoints
-2. **Inspect** tab shows active breakpoint changing (e.g. "lg" -> "md")
-3. Annotate any layout issues that appear at specific breakpoints
-4. Enrichment data in export proves which breakpoint triggered the issue
-
-**With future features:**
-- Cross-page consistency (M15.3): capture same component across pages,
-  Inspect tab flags padding/color/font drift
-- State machine visualization (M15.4): capture each UI state, Inspect
-  tab shows transition diagram
-
----
-
-## 3. UX Gaps and Friction Points
-
-### 3.1 The Popup Speed Bump
-
-**Problem:** Every session starts with: click icon -> see popup -> click
-Annotate. The popup's Capture button is rarely used standalone (agents
-request captures via MCP). The popup exists mainly as a gateway to
-annotate mode.
-
-**Recommendation:** Make the toolbar icon a direct toggle for annotate
-mode (like React DevTools). First click enters annotate mode, second
-click exits. Move the popup to a long-press or right-click context menu
-for the rare "capture without annotating" case.
-
-**Impact:** Saves one click on every session. Reduces time-to-first-annotation.
-
-### 3.2 Enrichment Data is Invisible
-
-**Problem:** The extension now captures network requests, console errors,
-breakpoints, and isRendered status - but none of this is visible in the
-UI. The user can't verify what's being captured or use it to inform their
-annotations.
-
-**Recommendation:** Surface enrichment data in a dedicated Inspect tab
-(see Section 4.1). Users can reference network/console data when writing
-annotations. Bug reports become more precise.
-
-**Impact:** Users can verify "did it capture the 404?" before sending.
-
-### 3.3 No Element-Level Context in Overlay
-
-**Problem:** The hover tooltip shows breadcrumb + selector + dimensions but
-not: accessibility info, isRendered status, console errors from this component.
-
-**Recommendation:** Expand the tooltip to show a11y info, isRendered warnings,
-and related console errors (see Section 4.5).
-
-**Impact:** Developer gets immediate context without opening DevTools.
-
-### 3.4 Sidebar is Overloaded
-
-**Problem:** The sidebar serves too many roles: annotation list, settings,
-agent request queue, capture controls. The settings screen replaces the
-annotation list entirely.
-
-**Recommendation:** Split into two tabs: Review (human feedback) and
-Inspect (page state). Settings become a slide-over overlay (see Section 4.4).
-
-**Impact:** Each tab has a focused purpose. Settings don't hide annotations.
-
-### 3.5 No Capture History or Comparison
-
-**Problem:** The extension captures pages but doesn't show capture history.
-The server has `compare_captures` but there's no UI for it.
-
-**Recommendation:** Add capture history to the Inspect tab with baseline
-management and structural diff (see Section 4.4).
-
-**Impact:** Enables regression baseline workflow from the extension UI.
-
-### 3.6 Export Doesn't Include Enrichment Data
-
-**Problem:** "Copy MD" and "Report" export annotations but not network
-errors, console errors, or breakpoint context.
-
-**Recommendation:** Include enrichment summary in exports (see Section 4.6).
-
-**Impact:** Bug reports are self-contained with full debugging context.
-
----
-
-## 4. Redesign: Two-Tab Sidebar Model
-
-### 4.1 Core Principle: Two Mental Modes
+## 1. Design Principle: Two Mental Modes
 
 Every user interaction with ViewGraph falls into one of two modes:
 
 - **"I'm telling the agent what's wrong"** - annotating, commenting, exporting
-- **"I'm understanding what's happening"** - checking network, console, history, diffs
+- **"I'm understanding what's happening"** - checking network, console, history
 
-These map to two sidebar tabs:
+These map to two sidebar tabs: **Review** and **Inspect**.
 
-| Tab | Purpose | Contains |
-|---|---|---|
-| **Review** | Human-authored feedback | Annotations, filters, severity/category, agent requests, Send/Copy/Report |
-| **Inspect** | Machine-observed page state | Network, console, breakpoints, isRendered, capture history, diffs, baselines |
-
-**Why two tabs, not three:** An earlier draft split this into Notes/Diagnostics/
-History. But "diagnostics" (network errors, console) and "history" (captures,
-diffs) are both answers to the same question: "what is the page doing?" They're
-reference data the user consults, not tasks the user acts on. Merging them
-avoids a tab that's too thin to justify and reduces cognitive load.
-
-### 4.2 Journey Validation
-
-All user journeys in Section 2 were designed against this two-tab model.
-Key observations:
-
-- Every journey stays cleanly in one tab or has a single natural switch point
-- Review tab is the default for annotation-first workflows (developer, tester)
-- Inspect tab is the default for verification-first workflows (fix checking, debugging)
-- Agent requests are actionable tasks and belong in Review, not Inspect
-- Future features (M14-M15) slot cleanly into Inspect without disrupting Review
-
-### 4.3 Priority 1: Quick-Start (eliminate popup speed bump)
-
-- Toolbar icon click -> direct toggle annotate mode (like React DevTools)
-- Right-click icon -> context menu with Capture, Settings, Options
-- Remove popup.html (keep as fallback for non-injectable pages only)
-
-### 4.4 Priority 2: Two-Tab Sidebar Layout
-
-**Review tab** (default when entering annotate mode):
-- Mode bar: Element | Region | Page
-- Agent request cards (if any pending)
-- Filter tabs: Open (N) | Resolved (N) | All (N)
-- Annotation list with severity/category chips
-- Footer: Send to Agent | Copy MD | Report
-
-**Inspect tab:**
-- Breakpoint indicator: active range + viewport width
-- Network section: collapsible, failed requests highlighted, count badge
-- Console section: collapsible, errors/warnings with stack traces
-- Visibility warnings: elements hidden by ancestors
-- Capture history: timestamped list for current page
-- Baseline indicator + "Compare" action
-- Diff summary (when comparing)
-- Journey entries (when M14.2 ships)
-
-Settings remain as a slide-over panel (gear icon) that overlays either tab
-without replacing content.
-
-### 4.5 Priority 3: Enhanced Overlay Tooltip
-
-Expand hover tooltip from 2 lines to up to 5 (conditional):
-
-```
-body > main > div.card > button          (breadcrumb - always)
-button[data-testid="submit"]             (selector - always)
-role: button | name: "Submit Form"       (a11y - new, always for interactive)
-! Not rendered (ancestor opacity: 0)     (isRendered - new, only when false)
-! console.error: Missing provider        (console - new, only when matched)
-```
-
-Lines 3-5 only appear when relevant. Color-coded: a11y in blue,
-isRendered warning in orange, console error in red.
-
-### 4.6 Priority 4: Enrichment in Exports
-
-Markdown export adds an Environment section:
-```markdown
-## Environment
-- Viewport: 1440x900 (xl breakpoint)
-- Failed requests: GET /api/users (0 bytes)
-- Console errors: 1 error, 2 warnings
-  - Error: "No QueryClient set, use QueryClientProvider"
-```
-
-ZIP report includes `network.json` and `console.json` alongside `report.md`.
-
-### 4.7 Priority 5: Source Linking (when M15.1 ships)
-
-In freeze tooltip, add source line:
-```
-Source: PulseCard.tsx:42  [copy]
-```
-
-In annotation panel, add source context below the element badge.
-
-### 4.8 Priority 6: Continuous Capture UI (when M14.1 ships)
-
-- Toggle in Inspect tab: "Auto-capture on reload"
-- Pulsing green indicator in sidebar header when active
-- Toast notification on each auto-capture with diff summary
-- Auto-diffs appear in Inspect tab history section
-
-### 4.9 Priority 7: Journey Recording UI (when M14.2 ships)
-
-- Record button in mode bar (red circle icon)
-- Recording indicator in header (red dot + duration)
-- Journey entries in Inspect tab history section
-- Stop + export controls
+An earlier draft split this into three tabs (Notes / Diagnostics / History).
+But diagnostics and history are both answers to the same question: "what is
+the page doing?" They're reference data the user consults, not tasks the
+user acts on. Two tabs reduces cognitive load and avoids a tab too thin to
+justify.
 
 ---
 
-## 5. Implementation Phases
+## 2. UI Surfaces (Current)
 
-### Phase A: Quick wins (no new features needed)
+### 2.1 Toolbar Icon
 
-1. Direct-toggle annotate mode from toolbar icon
-2. Enhanced tooltip with a11y info
-3. Enrichment data in exports (network/console in markdown + ZIP)
+Single-click toggles annotate mode directly (like React DevTools). No popup
+intermediary on injectable pages. The popup only appears as a fallback on
+non-injectable pages (chrome://, about:, extensions).
 
-### Phase B: Two-tab sidebar (M12 features visible)
+### 2.2 Overlay
 
-4. Review + Inspect tab layout
-5. Inspect tab: network/console/breakpoint/visibility panels
-6. Settings as slide-over overlay
+Hover highlights elements with a blue box and a fixed 2-line tooltip:
 
-### Phase C: History and comparison (M15.2 prerequisite)
+```
+body > main > form > input.form-control
+testid: email-input | role: textbox (implicit) | 330x38
+```
 
-7. Capture history list in Inspect tab
-8. Baseline management (set/compare)
-9. Structural diff visualization
+The tooltip is always exactly 2 lines. This was a deliberate decision -
+an earlier version showed 3-5 conditional lines (a11y info, isRendered
+warnings, console errors) but the variable height was disorienting. Users
+had to re-parse the layout on every hover. The detail now lives in the
+sidebar instead (see Section 2.3).
 
-### Phase D: Real-time features (M14.1, M14.2)
+Other overlay interactions:
+- Click: freezes selection, shows copy-selector button
+- Scroll wheel: navigates up/down the DOM tree
+- Shift+drag: region selection with rubber-band box
 
-10. Continuous capture toggle + status indicator
-11. Journey recording controls
-12. Auto-diff in Inspect tab
+### 2.3 Sidebar (300px, fixed right)
 
-### Phase E: Source linking (M15.1)
+Two-tab layout with shared header:
 
-13. Source file display in tooltip and annotation panel
-14. Click-to-copy source reference
+```
++------------------------------------------+
+| VG  [*]  [gear]  [>]  [x]              |
++------------------------------------------+
+| [Review]  [Inspect]                      |
++------------------------------------------+
+| (tab content)                            |
++------------------------------------------+
+```
+
+Header contains: connection status dot, gear (settings overlay), collapse
+chevron, close button.
+
+#### Review Tab (default)
+
+For annotating and exporting. Contains:
+
+- **Mode bar:** Element | Region | Page (three toggle buttons)
+- **Agent request cards:** pending capture requests from the AI agent,
+  each with a "Capture" button. These are actionable tasks for the user,
+  which is why they live in Review (not Inspect).
+- **Filter tabs:** Open (N) | Resolved (N) | All (N) | trash icon
+- **Annotation list:** one clean line per entry:
+  - Number badge (color encodes severity: red = critical, yellow = major,
+    gray = minor, purple = no severity)
+  - Ancestor element badge (monospace, blue)
+  - Comment text (truncates, expands on 600ms hover)
+  - Resolve and delete buttons on the right
+- **Footer:** "Send to Agent" primary CTA, "Copy MD" and "Report" secondary
+
+Design decision on sidebar entries: an earlier version showed severity as
+outlined chips and categories as filled chips on a second row below each
+comment. This created a wall of colorful badges that was noisy and hard to
+scan. The current design encodes severity in the badge color (one visual
+signal, zero extra space) and moves category to the annotation panel
+(visible when you click to edit). The sidebar list is for scanning; the
+panel is for editing.
+
+#### Inspect Tab
+
+For understanding page state. Contains:
+
+- **Breakpoint indicator:** always visible, shows active range name and
+  viewport width (e.g. `[md] 768px`)
+- **Network section:** collapsible with arrow toggle. Badge shows failed
+  count in red. Expanded view lists requests with method, path, size.
+  Failed requests highlighted in red.
+- **Console section:** collapsible. Badge shows error/warning counts.
+  Expanded view lists error messages in red, warnings in yellow.
+- **Visibility section:** collapsible, only appears when issues exist.
+  Lists elements hidden by ancestor (opacity: 0, clip-path). These are
+  elements that pass their own visibility check but are invisible because
+  a parent hides them.
+
+All sections refresh from live page data each time the user switches to
+the Inspect tab. This means the data is always current - no stale state.
+
+Future additions to Inspect (not yet built):
+- Capture history with timestamps (Phase C, depends on M15.2)
+- Baseline management and structural diff (Phase C)
+- Journey recording entries (Phase D, depends on M14.2)
+- Continuous capture status indicator (Phase D, depends on M14.1)
+
+### 2.4 Annotation Panel (270px floating)
+
+Appears near the selected element when clicked. Contains:
+- Number badge with annotation color
+- Delete and close buttons
+- Severity chip-select (Critical / Major / Minor)
+- Multi-category chips (Visual / Functional / Content / A11y / Perf)
+- Textarea for comment
+
+This is where severity and category are set and edited. The sidebar list
+only shows the result (badge color for severity); the panel is the editor.
+
+### 2.5 Settings Overlay
+
+Gear icon opens a slide-over panel that covers the sidebar content with
+a solid background. Back arrow dismisses it. Contains:
+- Server connection status and project mapping (read-only)
+- Capture format toggles (JSON always-on, HTML snapshot, screenshot)
+- Link to advanced settings (options page)
+
+Design decision: settings used to replace the sidebar content entirely,
+hiding annotations. Now it overlays, so the user knows their work is
+still there underneath.
+
+### 2.6 Options Page
+
+Full-tab page for multi-project configuration. Shows auto-detected server
+info and manual override toggle for URL-to-captures-dir mapping. Most
+users never visit this page.
 
 ---
 
-## 6. Wireframe Sketches
+## 3. User Journeys
 
-### 6.1 Review Tab (default)
+### 3.1 Developer Annotating a Bug
 
-```
-+------------------------------------------+
-| VG  [*]        [Review] [Inspect]  [x]  |
-+------------------------------------------+
-| [Element] [Region] [Page]               |
-+------------------------------------------+
-| Agent Request: capture localhost:3000    |
-| "Check login form after fix"  [Capture] |
-+------------------------------------------+
-| Open (3) | Resolved (1) | All (4)       |
-+------------------------------------------+
-| #1 button.submit  Fix padding            |
-|    ! Critical  Visual                    |
-| #2 div.card  Wrong background color      |
-|    ! Major  Visual                       |
-| #3 input.email  Add aria-label           |
-|    ! Minor  A11y                         |
-+------------------------------------------+
-| [====== Send to Agent ======]            |
-| [Copy MD]  [Report]                      |
-+------------------------------------------+
-```
+1. Click ViewGraph icon - annotate mode activates directly
+2. Sidebar opens on **Review** tab, overlay highlights elements on hover
+3. Click element, type comment in annotation panel, set severity
+4. Wonders "is there a network error causing this?" - clicks **Inspect**
+5. Sees failed GET /api/users in network section
+6. Back to **Review** - adds "404 on /api/users" to annotation comment
+7. Clicks "Send to Agent"
+8. Agent receives annotations + full DOM + network/console/breakpoint data
 
-### 6.2 Inspect Tab
+The tab switch at step 4 is a natural mental shift. Both tabs are one
+click away throughout the session.
 
-```
-+------------------------------------------+
-| VG  [*]        [Review] [Inspect]  [x]  |
-+------------------------------------------+
-|                                          |
-| BREAKPOINT                               |
-| [md] 768px                               |
-|                                          |
-| NETWORK                          [1 err] |
-| v GET /api/users        0B   FAILED     |
-|   GET /api/config     1.2KB  234ms      |
-|   GET /styles.css     8.4KB   45ms      |
-|                                          |
-| CONSOLE                    [1 err 2 wrn] |
-| v Error: No QueryClient set, use        |
-|   QueryClientProvider to set one         |
-|   at App.tsx:12                          |
-| > Warn: Deprecated prop 'size'          |
-| > Warn: Missing key prop                |
-|                                          |
-| VISIBILITY                       [2 wrn] |
-| ! div#overlay - ancestor opacity: 0     |
-| ! span.sr-only - off-screen positioned  |
-|                                          |
-| CAPTURES                                 |
-| * 16:30:15  375 nodes  [baseline]       |
-|   16:28:42  372 nodes  [compare]        |
-|   16:25:01  370 nodes                    |
-|                                          |
-| DIFF vs BASELINE                         |
-| +3 elements added                        |
-| -0 elements removed                      |
-| ~2 layout shifts                         |
-| 1 testid removed: btn-unlink            |
-|                                          |
-+------------------------------------------+
-```
+### 3.2 Developer Verifying a Fix
 
-### 6.3 Enhanced Tooltip
+1. Agent says "fixed, request a capture to verify"
+2. Click icon - sidebar opens, clicks **Inspect** tab
+3. Sees network section clear of errors, console clean
+4. Done - no annotations needed
 
-Normal element:
-```
-+------------------------------------------------+
-| body > main > div.card > button                |
-| button[data-testid="submit-form"]              |
-| role: button | name: "Submit Form" | focusable |
-| Source: LoginForm.tsx:87                        |
-+------------------------------------------------+
-```
+Entire journey stays in Inspect. Review tab never touched.
 
-Element with warnings (conditional lines):
-```
-+------------------------------------------------+
-| body > div.modal > div.overlay                 |
-| div.overlay                                    |
-| role: dialog | name: "Settings"                |
-| ! Hidden: ancestor has opacity: 0              |
-| ! Error: Cannot read property 'map' of null    |
-+------------------------------------------------+
-```
+### 3.3 Tester Filing a Bug Report
 
-### 6.4 Settings Slide-Over
+1. Click icon - annotate mode activates
+2. **Review** tab: click 3 elements, add comments, set severity
+3. Click "Copy MD" - paste into Jira
 
-Overlays current tab content (doesn't replace it):
-```
-+------------------------------------------+
-| < Settings                               |
-+------------------------------------------+
-| SERVER                                   |
-| * Connected (localhost:3100)             |
-| Project: /home/user/myapp               |
-| Captures: .viewgraph/captures           |
-|                                          |
-| CAPTURE INCLUDES                         |
-| ViewGraph JSON          [====]           |
-| HTML snapshot           [    ]           |
-| Screenshot              [    ]           |
-|                                          |
-| AUTO-CAPTURE                             |
-| Capture on reload       [    ]           |
-|                                          |
-| [Advanced settings...]                   |
-+------------------------------------------+
-```
+The markdown export automatically includes an Environment section with
+breakpoint, failed requests, and console errors. The tester gets rich
+context without touching the Inspect tab.
+
+### 3.4 Developer Debugging a Hidden Element
+
+1. Hover over element - tooltip shows breadcrumb and selector
+2. Click **Inspect** tab - sees visibility warning for that element
+3. Sees breakpoint is "md (768px)" - realizes it's a responsive issue
+4. Fixes directly without annotating
+
+Inspect tab serves as a lightweight DevTools alternative.
+
+### 3.5 Reviewer Checking Responsive Behavior
+
+1. Resize viewport to different breakpoints
+2. **Inspect** tab shows active breakpoint changing (e.g. "lg" to "md")
+3. Annotate any layout issues that appear at specific breakpoints
+4. Enrichment data in export proves which breakpoint triggered the issue
+
+---
+
+## 4. Export Formats
+
+### 4.1 Copy Markdown
+
+Copies a structured bug report to clipboard. Includes:
+- Page metadata (URL, date, viewport, browser)
+- Environment section (breakpoint, failed requests, console errors)
+- Each annotation with element details, severity, category
+
+### 4.2 Download Report (ZIP)
+
+Downloads a ZIP archive containing:
+- `report.md` - same markdown as Copy MD, plus screenshot references
+- `screenshots/` - cropped screenshots per annotation
+- `network.json` - full network request data
+- `console.json` - full console error/warning data
+
+### 4.3 Send to Agent
+
+Pushes annotations bundled with the full DOM capture to the MCP server.
+The capture includes all enrichment data (network, console, breakpoints,
+isRendered flags). The agent receives everything needed to implement fixes.
+
+---
+
+## 5. Design Decisions Log
+
+### 5.1 Fixed 2-line tooltip (not variable height)
+
+An earlier version showed 3-5 lines in the hover tooltip: breadcrumb,
+meta, a11y info, isRendered warning, console error. Lines 3-5 were
+conditional - they only appeared when relevant.
+
+Problem: the tooltip changed height depending on what you hovered over.
+Users had to re-parse the layout each time. It felt broken even when
+working correctly.
+
+Resolution: tooltip is always exactly 2 lines. Detail (a11y, isRendered,
+console) moved to the Inspect tab where the user explicitly asks for it.
+
+### 5.2 Severity as badge color (not chips)
+
+An earlier version showed severity as outlined chips ("Critical", "Major")
+and categories as filled chips ("Visual", "Functional") on a second row
+below each annotation comment in the sidebar.
+
+Problem: with multiple annotations, this created a wall of colorful badges.
+The sidebar was noisy and hard to scan.
+
+Resolution: severity encodes as the number badge color (red/yellow/gray/
+purple). Category is only visible in the annotation panel when editing.
+Each sidebar entry is exactly one line.
+
+### 5.3 Two tabs (not three)
+
+An earlier draft proposed three tabs: Notes, Diagnostics, History.
+
+Problem: diagnostics and history are both "what is the page doing?" -
+reference data, not user tasks. Three tabs meant one would always feel
+too thin.
+
+Resolution: two tabs. Review (user tasks) and Inspect (page state).
+History will be added to Inspect when M15.2 ships.
+
+### 5.4 Trash button in filter row (not header)
+
+The trash (clear all annotations) button was originally in the sidebar
+header alongside gear and close.
+
+Problem: it's a bulk action on the annotation list, not a global sidebar
+control. Placing it in the header gave it equal visual weight with
+navigation controls.
+
+Resolution: moved to the end of the filter tab row (Open | Resolved |
+All | trash), next to the entries it acts on. Red hover color signals
+the destructive action.
+
+### 5.5 Settings as overlay (not screen replacement)
+
+Settings originally replaced the sidebar content entirely - clicking gear
+hid all annotations and showed the settings form.
+
+Problem: users lost context. They couldn't see their annotations while
+checking server status or toggling capture options.
+
+Resolution: settings is an absolute-positioned overlay on top of the
+sidebar. Back arrow dismisses it. The user knows their work is underneath.
+
+---
+
+## 6. Future Phases
+
+### Phase C: History and Comparison (depends on M15.2)
+
+Add to Inspect tab:
+- Capture history list with timestamps
+- "Set as baseline" action per capture
+- Structural diff visualization (elements added/removed/shifted)
+- Regression count badge vs baseline
+
+### Phase D: Real-Time Features (depends on M14.1, M14.2)
+
+Add to Inspect tab and mode bar:
+- Continuous capture toggle with pulsing status indicator
+- Toast notifications on auto-capture with diff summary
+- Journey recording controls (record/stop in mode bar)
+- Journey entries in Inspect tab
+
+### Phase E: Source Linking (depends on M15.1)
+
+Add to tooltip and annotation panel:
+- Source file:line display (e.g. `LoginForm.tsx:87`)
+- Click to copy source reference
+- Heuristic: data-testid to grep, React fiber to component file
