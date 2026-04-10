@@ -1153,11 +1153,60 @@ export function refresh() {
   trashBtn.addEventListener('click', () => {
     const count = getAnnotations().length;
     if (!count) return;
-    if (confirm(`Clear all ${count} annotations? This cannot be undone.`)) {
+    // Themed confirmation card overlaid on the sidebar
+    const overlay = document.createElement('div');
+    overlay.setAttribute(ATTR, 'confirm-overlay');
+    Object.assign(overlay.style, {
+      position: 'absolute', inset: '0', background: 'rgba(0,0,0,0.5)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      zIndex: '10', borderRadius: '8px 0 0 8px',
+    });
+    const card = document.createElement('div');
+    Object.assign(card.style, {
+      background: '#1e1e2e', border: '1px solid #dc2626', borderRadius: '10px',
+      padding: '16px', width: '220px', textAlign: 'center',
+      fontFamily: 'system-ui, sans-serif', boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+    });
+    // Trash icon
+    const icon = document.createElement('div');
+    icon.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';
+    Object.assign(icon.style, { marginBottom: '8px' });
+    // Message
+    const msg = document.createElement('div');
+    msg.textContent = `Clear ${count} annotation${count > 1 ? 's' : ''}?`;
+    Object.assign(msg.style, { color: '#e0e0e0', fontSize: '13px', fontWeight: '600', marginBottom: '4px' });
+    const sub = document.createElement('div');
+    sub.textContent = 'This cannot be undone.';
+    Object.assign(sub.style, { color: '#666', fontSize: '11px', marginBottom: '14px' });
+    // Buttons
+    const btnRow = document.createElement('div');
+    Object.assign(btnRow.style, { display: 'flex', gap: '8px', justifyContent: 'center' });
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    Object.assign(cancelBtn.style, {
+      flex: '1', padding: '6px', border: '1px solid #333', borderRadius: '6px',
+      background: 'transparent', color: '#9ca3af', fontSize: '12px',
+      cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+    });
+    const confirmBtn = document.createElement('button');
+    confirmBtn.textContent = 'Clear All';
+    Object.assign(confirmBtn.style, {
+      flex: '1', padding: '6px', border: 'none', borderRadius: '6px',
+      background: '#dc2626', color: '#fff', fontSize: '12px', fontWeight: '600',
+      cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+    });
+    cancelBtn.addEventListener('click', () => overlay.remove());
+    confirmBtn.addEventListener('click', () => {
+      overlay.remove();
       clearAnnotations();
       save();
       refresh();
-    }
+    });
+    btnRow.append(cancelBtn, confirmBtn);
+    card.append(icon, msg, sub, btnRow);
+    overlay.appendChild(card);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+    sidebarEl.appendChild(overlay);
   });
   tabBar.appendChild(trashBtn);
 
