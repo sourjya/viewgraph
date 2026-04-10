@@ -5,6 +5,33 @@ These enhance the AI agent's ability to work with ViewGraph captures.
 
 ## What Gets Installed
 
+### For Kiro IDE
+
+Three hooks appear in the **Agent Hooks** section of the Kiro sidebar:
+
+| Hook | Trigger | What it does |
+|---|---|---|
+| **Capture and Audit Page** | Manual (click in sidebar) | Captures the current page, runs a11y audit, checks for missing testids and aria-labels. Summarizes all issues by severity. |
+| **Fix ViewGraph Annotations** | Manual (click in sidebar) | Pulls unresolved annotations, maps them to source files, implements fixes in sequence, marks each resolved. |
+| **Check TestID Coverage** | Auto on UI file edit | When you edit `.html`, `.jsx`, `.tsx`, `.vue`, `.svelte`, or `.css` files, checks if interactive elements in recent captures are missing `data-testid`. |
+
+The annotation hook is the most powerful workflow: annotate issues in the browser, click the hook in the sidebar, and Kiro fixes them all in sequence.
+
+### For Kiro CLI
+
+Type `@vg` then Tab to see all prompt shortcuts:
+
+| Shortcut | Workflow |
+|---|---|
+| `@vg-audit` | Full audit: a11y + layout + testids |
+| `@vg-review` | Fix all annotations from latest capture |
+| `@vg-capture <url>` | Request fresh capture, summarize result |
+| `@vg-diff` | Compare two most recent captures |
+| `@vg-testids` | Find and add missing data-testid attributes |
+| `@vg-a11y` | Deep a11y audit with automatic source fixes |
+
+### Assets Installed
+
 ### Steering Docs (`.kiro/steering/`)
 
 | File | Purpose |

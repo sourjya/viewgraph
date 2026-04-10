@@ -178,6 +178,35 @@ No MCP server needed. No AI agent needed. The extension works standalone for any
 
 A tester annotates and exports to markdown. A developer annotates and sends to Kiro. Both use the same tool, same workflow, same annotation format. The only difference is where the notes go.
 
+## Kiro Power: Hooks and Prompts
+
+When you run `viewgraph-init.js` in a Kiro project, ViewGraph installs hooks, prompts, and steering docs that automate common workflows. These work in both Kiro IDE and Kiro CLI.
+
+### Hooks
+
+| Hook | Trigger | What it does |
+|---|---|---|
+| **Capture and Audit Page** | Manual (IDE sidebar) or `@vg-audit` (CLI) | Captures the current page, runs a11y audit, checks for missing testids and aria-labels. Summarizes all issues by severity. |
+| **Fix ViewGraph Annotations** | Manual (IDE sidebar) or `@vg-review` (CLI) | Pulls unresolved annotations, maps them to source files, implements fixes in sequence, marks each resolved. |
+| **Check TestID Coverage** | Auto on UI file edit | When you edit `.html`, `.jsx`, `.tsx`, `.vue`, `.svelte`, or `.css` files, checks if interactive elements in recent captures are missing `data-testid`. |
+
+**In Kiro IDE:** Trigger manual hooks from the **Agent Hooks** section in the sidebar. The annotation hook is the most powerful - annotate issues in the browser, click the hook, and Kiro fixes them all in sequence.
+
+**In Kiro CLI:** Use the `@vg-` prompt shortcuts (type `@vg` then Tab to see all):
+
+| Shortcut | Workflow |
+|---|---|
+| `@vg-audit` | Full audit: a11y + layout + testids |
+| `@vg-review` | Fix all annotations from latest capture |
+| `@vg-capture <url>` | Request fresh capture, summarize result |
+| `@vg-diff` | Compare two most recent captures |
+| `@vg-testids` | Find and add missing data-testid attributes |
+| `@vg-a11y` | Deep a11y audit with automatic source fixes |
+
+### Steering docs
+
+Installed to `.kiro/steering/` - these guide the agent on when to use captures, how to resolve annotations, and the expected resolution format.
+
 ## Development
 
 ```bash
