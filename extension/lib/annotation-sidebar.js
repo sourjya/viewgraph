@@ -104,17 +104,43 @@ export function create() {
   });
   toggle.addEventListener('click', () => toggleCollapse());
 
-  // Connection status dot in header
+  // Connection status dot in header + tracked state for Send button
+  let mcpConnected = false;
   const statusDot = document.createElement('span');
   statusDot.setAttribute(ATTR, 'status-dot');
   Object.assign(statusDot.style, {
     width: '8px', height: '8px', borderRadius: '50%',
     background: '#666', flexShrink: '0', transition: 'background 0.3s',
   });
+
+  // Status banner - shown between primary tabs and content when disconnected
+  const statusBanner = document.createElement('div');
+  statusBanner.setAttribute(ATTR, 'status-banner');
+  Object.assign(statusBanner.style, {
+    display: 'none', padding: '6px 12px', fontSize: '11px',
+    fontFamily: 'system-ui, sans-serif', color: '#f59e0b',
+    background: '#2a2a1a', borderBottom: '1px solid #333',
+    flexShrink: '0',
+  });
+
   discoverServer()
     .then((url) => {
-      if (url) { statusDot.style.background = '#4ade80'; statusDot.title = `MCP server: ${url}`; }
-      else { statusDot.style.background = '#f87171'; statusDot.title = 'MCP server offline'; }
+      if (url) {
+        mcpConnected = true;
+        statusDot.style.background = '#4ade80';
+        statusDot.title = `MCP server: ${url}`;
+        statusBanner.style.display = 'none';
+      } else {
+        mcpConnected = false;
+        statusDot.style.background = '#f87171';
+        statusDot.title = 'MCP server offline';
+        statusBanner.textContent = 'No project connected. Copy MD and Report available.';
+        statusBanner.style.display = 'block';
+        sendBtn.disabled = true;
+        sendBtn.style.opacity = '0.4';
+        sendBtn.style.cursor = 'not-allowed';
+        sendBtn.title = 'MCP server not connected';
+      }
     });
 
   // Collapse chevron
@@ -798,7 +824,7 @@ export function create() {
     primaryTabs.appendChild(btn);
   }
 
-  sidebarEl.append(header, primaryTabs, reviewContent, inspectContent, settingsScreen);
+  sidebarEl.append(header, primaryTabs, statusBanner, reviewContent, inspectContent, settingsScreen);
 
   // Shadow DOM isolates sidebar from page CSS (prevents * { margin:0 } etc.)
   hostEl = document.createElement('div');
