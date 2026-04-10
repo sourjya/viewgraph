@@ -505,7 +505,9 @@ export function create() {
   hostEl.setAttribute(ATTR, 'shadow-host');
   Object.assign(hostEl.style, { all: 'initial', position: 'fixed', top: '0', right: '0', zIndex: '2147483646' });
   const shadow = hostEl.attachShadow({ mode: 'open' });
-  shadow.appendChild(sidebarEl);
+  const scrollStyle = document.createElement('style');
+  scrollStyle.textContent = `:host{scrollbar-color:#333 transparent}*::-webkit-scrollbar{width:6px}*::-webkit-scrollbar-track{background:transparent}*::-webkit-scrollbar-thumb{background:#444;border-radius:3px}*::-webkit-scrollbar-thumb:hover{background:#555}`;
+  shadow.append(scrollStyle, sidebarEl);
   document.documentElement.appendChild(hostEl);
 
   // Collapsed badge - hidden initially
