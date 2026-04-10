@@ -22,6 +22,9 @@ export const SERVER_BASE_URL = `http://127.0.0.1:${DEFAULT_HTTP_PORT}`;
  */
 let _cachedUrl = null;
 let _cacheExpiry = 0;
+
+/** Reset the server discovery cache. Used in tests. */
+export function resetServerCache() { _cachedUrl = null; _cacheExpiry = 0; }
 export async function discoverServer(targetDir = null) {
   if (_cachedUrl && Date.now() < _cacheExpiry) return _cachedUrl;
   let fallback = null;

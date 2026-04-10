@@ -14,6 +14,7 @@ import {
   updateComment, resolveAnnotation, removeAnnotation, updateSeverity, updateCategory, ATTR,
 } from '#lib/annotate.js';
 import { create, destroy, refresh, expand, collapse, isCollapsed } from '#lib/annotation-sidebar.js';
+import { resetServerCache } from '#lib/constants.js';
 
 // ---------------------------------------------------------------------------
 // Chrome API mocks
@@ -330,5 +331,58 @@ describe('sidebar renders annotations with severity and category', () => {
     const allTab = [...tabs.querySelectorAll('button')].find((b) => b.textContent.includes('All'));
     if (allTab) allTab.click();
     expect(getEntries().length).toBe(9);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// MCP connection state: banner and Send button
+// ---------------------------------------------------------------------------
+
+describe('sidebar MCP disconnected state', () => {
+  // Force discoverServer to return null by making all fetches fail instantly
+  let origFetch;
+  beforeEach(() => {
+    origFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn(() => Promise.reject(new Error('no server')));
+    resetServerCache();
+  });
+  afterEach(() => { globalThis.fetch = origFetch; });
+
+  it('(+) shows status banner when MCP server is offline', async () => {
+    start();
+    create();
+    await vi.waitFor(() => {
+      const banner = shadowQuery(`[${ATTR}="status-banner"]`);
+      expect(banner?.style.display).toBe('block');
+    });
+    const banner = shadowQuery(`[${ATTR}="status-banner"]`);
+    expect(banner.textContent).toContain('No project connected');
+  });
+
+  it('(+) disables Send button when MCP server is offline', async () => {
+    start();
+    create();
+    await vi.waitFor(() => {
+      const btn = shadowQuery(`[${ATTR}="send"]`);
+      expect(btn?.title).toBe('MCP server not connected');
+    });
+    const sendBtn = shadowQuery(`[${ATTR}="send"]`);
+    expect(sendBtn.disabled).toBe(true);
+    expect(sendBtn.style.opacity).toBe('0.4');
+  });
+
+  it('(+) Copy MD and Report buttons stay enabled when MCP is offline', async () => {
+    start();
+    create();
+    await vi.waitFor(() => {
+      expect(shadowQuery(`[${ATTR}="send"]`)?.disabled).toBe(true);
+    });
+    const copyBtn = shadowQuery(`[${ATTR}="copy-md"]`);
+    const dlBtn = shadowQuery(`[${ATTR}="download"]`);
+    expect(copyBtn).toBeTruthy();
+    expect(dlBtn).toBeTruthy();
+    // Neither has the MCP-specific disabled title
+    expect(copyBtn.title).not.toContain('not connected');
+    expect(dlBtn.title).not.toContain('not connected');
   });
 });
