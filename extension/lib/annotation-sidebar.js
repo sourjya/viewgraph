@@ -181,10 +181,15 @@ export function create() {
   };
 
   const modeButtons = {};
+  const MODE_HINTS = {
+    element: 'Click to select',
+    region: 'Shift+drag area',
+    page: 'Add a page note',
+  };
   for (const [key, icon] of Object.entries(MODE_ICONS)) {
     const btn = document.createElement('button');
     btn.setAttribute(ATTR, `mode-${key}`);
-    btn.innerHTML = `${icon}<span style="font-size:10px;margin-top:2px">${key.charAt(0).toUpperCase() + key.slice(1)}</span>`;
+    btn.innerHTML = `${icon}<span style="font-size:10px;margin-top:2px">${key.charAt(0).toUpperCase() + key.slice(1)}</span><span style="font-size:8px;color:#666;margin-top:1px">${MODE_HINTS[key]}</span>`;
     Object.assign(btn.style, {
       flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center',
       gap: '2px', padding: '6px 4px', border: '1px solid #333', borderRadius: '6px',
