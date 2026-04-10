@@ -87,7 +87,8 @@ export default defineContentScript({
             const anns = getAnnotations();
             const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString() };
             const screenshots = message.screenshot ? await cropRegions(message.screenshot, anns) : [];
-            const blob = await buildReportZip(anns, meta, screenshots);
+            const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints() };
+            const blob = await buildReportZip(anns, meta, screenshots, enrichment);
             // Trigger download via object URL
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');

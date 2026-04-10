@@ -20,7 +20,7 @@ function sanitize(text) {
  * Format annotations as a markdown bug report.
  * @param {Array} annotations - Annotation objects with optional element details
  * @param {{ title: string, url: string, timestamp: string, viewport?: object, browser?: string }} metadata
- * @param {{ includeScreenshots?: boolean }} options
+ * @param {{ includeScreenshots?: boolean, enrichment?: object }} options
  * @returns {string} Markdown string
  */
 export function formatMarkdown(annotations, metadata, options = {}) {
@@ -36,6 +36,35 @@ export function formatMarkdown(annotations, metadata, options = {}) {
   if (metadata.viewport) lines.push(`**Viewport:** ${metadata.viewport.width} x ${metadata.viewport.height}`);
   if (metadata.browser) lines.push(`**Browser:** ${metadata.browser}`);
   lines.push('');
+
+  // Environment section with enrichment data (network, console, breakpoints)
+  if (options.enrichment) {
+    const env = options.enrichment;
+    const envLines = [];
+    if (env.breakpoints?.activeRange) {
+      envLines.push(`- **Breakpoint:** ${env.breakpoints.activeRange} (${env.breakpoints.viewport?.width || '?'}px)`);
+    }
+    if (env.network?.summary?.failed > 0) {
+      envLines.push(`- **Failed requests:** ${env.network.summary.failed}`);
+      for (const req of (env.network.requests || []).filter((r) => r.failed).slice(0, 5)) {
+        envLines.push(`  - \`${req.url.slice(0, 100)}\` (${req.transferSize} bytes)`);
+      }
+    }
+    if (env.console?.summary && (env.console.summary.errors > 0 || env.console.summary.warnings > 0)) {
+      const parts = [];
+      if (env.console.summary.errors) parts.push(`${env.console.summary.errors} error(s)`);
+      if (env.console.summary.warnings) parts.push(`${env.console.summary.warnings} warning(s)`);
+      envLines.push(`- **Console:** ${parts.join(', ')}`);
+      for (const err of (env.console.errors || []).slice(0, 3)) {
+        envLines.push(`  - Error: "${sanitize(err.message.slice(0, 120))}"`);
+      }
+    }
+    if (envLines.length > 0) {
+      lines.push('### Environment');
+      lines.push(...envLines);
+      lines.push('');
+    }
+  }
 
   if (annotations.length === 0) {
     lines.push('_No annotations._');

@@ -40,6 +40,9 @@ async function syncResolved() {
 }
 import { formatMarkdown } from './export-markdown.js';
 import { discoverServer } from './constants.js';
+import { collectNetworkState } from './network-collector.js';
+import { getConsoleState } from './console-collector.js';
+import { collectBreakpoints } from './breakpoint-collector.js';
 
 const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
@@ -271,7 +274,8 @@ export function create() {
   copyBtn.addEventListener('mouseleave', () => { copyBtn.style.background = 'transparent'; });
   copyBtn.addEventListener('click', () => {
     const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString(), viewport: { width: window.innerWidth, height: window.innerHeight }, browser: navigator.userAgent.match(/Chrome\/[\d.]+|Firefox\/[\d.]+/)?.[0] || 'Unknown' };
-    const md = formatMarkdown(getAnnotations(), meta);
+    const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints() };
+    const md = formatMarkdown(getAnnotations(), meta, { enrichment });
     navigator.clipboard.writeText(md).then(() => {
       copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
       copyBtn.style.background = '#059669';

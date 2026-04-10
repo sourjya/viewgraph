@@ -17,6 +17,8 @@
 import { traverseDOM } from './traverser.js';
 import { scoreAll } from './salience.js';
 import { serialize } from './serializer.js';
+import { checkRendered } from './visibility-collector.js';
+import { getConsoleState } from './console-collector.js';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -142,6 +144,34 @@ export function buildMetaLine(el) {
   return parts.join('  |  ');
 }
 
+/**
+ * Build an accessibility info line for the tooltip.
+ * Shows role, computed accessible name, and relevant states.
+ * Returns null if no meaningful a11y info is available.
+ */
+export function buildA11yLine(el) {
+  const { role } = getRole(el);
+  if (!role) return null;
+  const parts = [`role: ${role}`];
+  // Computed accessible name: aria-label > aria-labelledby > alt > title > text content
+  const name = el.getAttribute('aria-label')
+    || el.getAttribute('alt')
+    || el.getAttribute('title')
+    || (el.labels?.[0]?.textContent?.trim())
+    || (el.textContent?.trim().slice(0, 40));
+  if (name) parts.push(`name: "${name}"`);
+  // States
+  const states = [];
+  if (el.tabIndex >= 0) states.push('focusable');
+  if (el.disabled) states.push('disabled');
+  if (el.required) states.push('required');
+  if (el.getAttribute('aria-expanded')) states.push(el.getAttribute('aria-expanded') === 'true' ? 'expanded' : 'collapsed');
+  if (el.getAttribute('aria-checked') === 'true') states.push('checked');
+  if (el.getAttribute('aria-selected') === 'true') states.push('selected');
+  if (states.length) parts.push(states.join(', '));
+  return parts.join('  |  ');
+}
+
 export function bestSelector(el) {
   const testid = el.getAttribute('data-testid');
   if (testid) return `[data-testid="${testid}"]`;
@@ -252,7 +282,62 @@ function updateTooltip(el, rect) {
   line2.append(icon2, text2);
 
   tooltipEl.append(line1, line2);
-  const tooltipY = rect.top > 50 ? rect.top - 46 : rect.bottom + 6;
+
+  // Line 3: a11y info (role, name, states) - only when meaningful
+  const a11yText = buildA11yLine(el);
+  if (a11yText) {
+    const line3 = document.createElement('div');
+    Object.assign(line3.style, { display: 'flex', alignItems: 'center', gap: '5px' });
+    const icon3 = document.createElement('span');
+    icon3.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 6v6M8 22l4-10 4 10M6 12h12"/></svg>';
+    Object.assign(icon3.style, { flexShrink: '0', display: 'flex' });
+    const text3 = document.createElement('span');
+    text3.textContent = a11yText;
+    Object.assign(text3.style, { color: '#60a5fa', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '10px' });
+    line3.append(icon3, text3);
+    tooltipEl.appendChild(line3);
+  }
+
+  // Line 4: isRendered warning - only when element is hidden by ancestor
+  let hasRenderedWarning = false;
+  if (!checkRendered(el)) {
+    hasRenderedWarning = true;
+    const line4 = document.createElement('div');
+    Object.assign(line4.style, { display: 'flex', alignItems: 'center', gap: '5px' });
+    const icon4 = document.createElement('span');
+    icon4.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+    Object.assign(icon4.style, { flexShrink: '0', display: 'flex' });
+    const text4 = document.createElement('span');
+    text4.textContent = '! Hidden: ancestor has opacity: 0 or clip-path';
+    Object.assign(text4.style, { color: '#f59e0b', fontSize: '10px', fontWeight: '600' });
+    line4.append(icon4, text4);
+    tooltipEl.appendChild(line4);
+  }
+
+  // Line 5: most recent console error - only when errors exist
+  const consoleState = getConsoleState();
+  let hasConsoleError = false;
+  if (consoleState.errors.length > 0) {
+    hasConsoleError = true;
+    const latest = consoleState.errors[consoleState.errors.length - 1];
+    const line5 = document.createElement('div');
+    Object.assign(line5.style, { display: 'flex', alignItems: 'center', gap: '5px' });
+    const icon5 = document.createElement('span');
+    icon5.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+    Object.assign(icon5.style, { flexShrink: '0', display: 'flex' });
+    const text5 = document.createElement('span');
+    text5.textContent = latest.message.slice(0, 80);
+    Object.assign(text5.style, { color: '#f87171', fontSize: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' });
+    line5.append(icon5, text5);
+    tooltipEl.appendChild(line5);
+  }
+
+  // Dynamic tooltip height based on visible lines
+  let tooltipHeight = 46;
+  if (a11yText) tooltipHeight += 16;
+  if (hasRenderedWarning) tooltipHeight += 16;
+  if (hasConsoleError) tooltipHeight += 16;
+  const tooltipY = rect.top > tooltipHeight + 4 ? rect.top - tooltipHeight : rect.bottom + 6;
   Object.assign(tooltipEl.style, { top: `${tooltipY}px`, left: `${rect.left}px`, display: 'block' });
 }
 
