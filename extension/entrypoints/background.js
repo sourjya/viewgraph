@@ -12,7 +12,7 @@
  * for anything that must survive termination.
  */
 
-import { SERVER_BASE_URL as SERVER_URL, discoverServer } from '../lib/constants.js';
+import { SERVER_BASE_URL as SERVER_URL, discoverServer, authHeaders } from '../lib/constants.js';
 import { isInjectable, getBlockedReason } from '../lib/url-checks.js';
 
 const PROJECT_MAPPINGS_KEY = 'vg-project-mappings';
@@ -59,22 +59,7 @@ async function lookupCapturesDir(pageUrl) {
  * The user configures this in the extension options page after starting
  * the MCP server (which logs the token to stderr).
  */
-async function getSecret() {
-  try {
-    const { httpSecret } = await chrome.storage.local.get('httpSecret');
-    return httpSecret || null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Build auth headers. Includes Bearer token when a secret is configured.
- */
-async function authHeaders() {
-  const secret = await getSecret();
-  return secret ? { authorization: `Bearer ${secret}` } : {};
-}
+// Auth headers provided by constants.js via getServerToken() after discoverServer()
 
 /**
  * Push a capture to the MCP server. Fails silently if server is not running.
@@ -86,7 +71,7 @@ async function pushToServer(capture, capturesDir = null) {
   try {
     const serverUrl = await discoverServer(capturesDir) || SERVER_URL;
     console.log('[viewgraph] pushToServer: url', serverUrl, 'capturesDir', capturesDir);
-    const auth = await authHeaders();
+    const auth = authHeaders();
     const headers = { 'content-type': 'application/json', ...auth };
     if (capturesDir) headers['x-captures-dir'] = capturesDir;
     const res = await fetch(`${serverUrl}/captures`, {
@@ -114,7 +99,7 @@ async function pushToServer(capture, capturesDir = null) {
  */
 async function pushSnapshot(html, filenameStem) {
   try {
-    const auth = await authHeaders();
+    const auth = authHeaders();
     await fetch(`${SERVER_URL}/snapshots`, {
       method: 'POST',
       headers: { 'content-type': 'text/html', 'x-capture-filename': filenameStem, ...auth },

@@ -120,7 +120,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       const projectRoot = absCaptures.endsWith('.viewgraph/captures')
         ? dirname(dirname(absCaptures))
         : dirname(absCaptures);
-      return json(res, 200, { capturesDir: absCaptures, projectRoot });
+      return json(res, 200, { capturesDir: absCaptures, projectRoot, token: secret || undefined });
     }
 
     // GET /requests/pending
