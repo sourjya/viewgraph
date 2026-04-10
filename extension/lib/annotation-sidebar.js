@@ -10,7 +10,7 @@
  */
 
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, spotlightMarker } from './annotate.js';
+import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker } from './annotate.js';
 
 /**
  * Sync resolved state from the server. Polls /annotations/resolved for the
@@ -155,6 +155,26 @@ export function create() {
   gearBtn.addEventListener('click', () => showSettings());
   // Insert gear before close button
   header.insertBefore(gearBtn, closeBtn);
+
+  // Trash icon - clear all annotations with confirmation
+  const trashBtn = document.createElement('button');
+  trashBtn.setAttribute(ATTR, 'trash');
+  trashBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';
+  trashBtn.title = 'Clear all annotations';
+  Object.assign(trashBtn.style, {
+    border: 'none', background: 'transparent', cursor: 'pointer',
+    padding: '6px', display: 'flex', alignItems: 'center',
+  });
+  trashBtn.addEventListener('click', () => {
+    const count = getAnnotations().length;
+    if (!count) return;
+    if (confirm(`Clear all ${count} annotations? This cannot be undone.`)) {
+      clearAnnotations();
+      save();
+      refresh();
+    }
+  });
+  header.insertBefore(trashBtn, closeBtn);
 
   const list = document.createElement('div');
   list.setAttribute(ATTR, 'list');
