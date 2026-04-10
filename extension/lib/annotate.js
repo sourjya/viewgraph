@@ -65,6 +65,7 @@ let selectionBox = null;
 // Annotation state
 let annotations = [];
 let nextId = 1;
+let nextPageNoteId = 1;
 
 /** Callbacks set by the wiring layer to connect panel/sidebar. */
 let onAnnotationAdded = null;
@@ -600,7 +601,7 @@ export async function save() {
   const key = storageKey();
   const data = annotations.map(({ id, uuid, type, region, comment, severity, category, nids, ancestor, element, resolved, resolution, timestamp }) =>
     ({ id, uuid, type, region, comment, severity, category, nids, ancestor, element, timestamp, ...(resolved ? { resolved, resolution } : {}) }));
-  await chrome.storage.local.set({ [key]: { annotations: data, nextId } });
+  await chrome.storage.local.set({ [key]: { annotations: data, nextId, nextPageNoteId } });
 }
 
 export async function load() {
@@ -611,6 +612,7 @@ export async function load() {
   if (!stored || !stored.annotations || stored.annotations.length === 0) return false;
   annotations = stored.annotations;
   nextId = stored.nextId || annotations.length + 1;
+  nextPageNoteId = stored.nextPageNoteId || annotations.filter((a) => a.type === 'page-note').length + 1;
   for (const ann of annotations) { if (!ann.resolved) createMarker(ann, null); }
   return true;
 }
@@ -663,9 +665,9 @@ export function getAnnotations() { return [...annotations]; }
  * Returns the new annotation for the caller to open a panel on.
  */
 export function addPageNote() {
-  const id = nextId++;
+  const pn = nextPageNoteId++;
   const annotation = {
-    id, uuid: crypto.randomUUID(), type: 'page-note',
+    id: `P${pn}`, uuid: crypto.randomUUID(), type: 'page-note',
     region: { x: 0, y: 0, width: 0, height: 0 },
     comment: '', severity: '', category: '', nids: [], ancestor: null,
     timestamp: new Date().toISOString(),
@@ -678,6 +680,7 @@ export function addPageNote() {
 export function clearAnnotations() {
   annotations = [];
   nextId = 1;
+  nextPageNoteId = 1;
   document.querySelectorAll(`[${ATTR}]`).forEach((el) => el.remove());
 }
 

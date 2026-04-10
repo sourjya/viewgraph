@@ -797,7 +797,8 @@ describe('addPageNote', () => {
   it('increments id for each page note', () => {
     const a = addPageNote();
     const b = addPageNote();
-    expect(b.id).toBe(a.id + 1);
+    expect(a.id).toBe('P1');
+    expect(b.id).toBe('P2');
   });
 });
 
@@ -1109,7 +1110,6 @@ describe('sidebar-annotation sync', () => {
     addPageNote();
     for (const ann of getAnnotations()) {
       expect(ann.id).toBeDefined();
-      expect(typeof ann.id).toBe('number');
     }
   });
 
@@ -1431,14 +1431,14 @@ describe('annotation lifecycle integrity', () => {
     const a = addPageNote();
     removeAnnotation(a.id);
     const b = addPageNote();
-    expect(b.id).toBeGreaterThan(a.id);
+    expect(b.id).toBe('P2');
   });
 
   it('(+) IDs keep incrementing after resolve', () => {
     const a = addPageNote();
     resolveAnnotation(a.id);
     const b = addPageNote();
-    expect(b.id).toBeGreaterThan(a.id);
+    expect(b.id).toBe('P2');
   });
 
   it('(-) updateComment on deleted annotation is safe', () => {

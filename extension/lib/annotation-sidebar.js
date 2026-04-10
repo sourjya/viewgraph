@@ -754,8 +754,13 @@ export function refresh() {
     // Number badge or page-note icon
     const numBadge = document.createElement('span');
     if (ann.type === 'page-note') {
-      numBadge.textContent = '\ud83d\udcdd';
-      Object.assign(numBadge.style, { marginRight: '4px', fontSize: '12px' });
+      numBadge.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${ann.id}`;
+      Object.assign(numBadge.style, {
+        background: '#0ea5e9', color: '#fff', fontSize: '10px', fontWeight: '700',
+        padding: '1px 5px', borderRadius: '3px', marginRight: '4px',
+        fontFamily: 'system-ui, sans-serif', flexShrink: '0',
+        display: 'inline-flex', alignItems: 'center', gap: '1px',
+      });
     } else {
       numBadge.textContent = `#${ann.id}`;
       Object.assign(numBadge.style, {
