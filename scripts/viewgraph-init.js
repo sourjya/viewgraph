@@ -14,7 +14,7 @@
  * @see .kiro/specs/multi-export/requirements.md
  */
 
-import { existsSync, mkdirSync, writeFileSync, readFileSync, appendFileSync, accessSync, constants as fsConstants } from 'fs';
+import { existsSync, mkdirSync, writeFileSync, readFileSync, appendFileSync, accessSync, chmodSync, readdirSync, constants as fsConstants } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -177,12 +177,28 @@ if (agent?.name === 'Kiro') {
   // Copy hooks if source exists
   if (existsSync(srcHooks)) {
     ensureDir(hooksDir);
-    for (const file of ['post-fix-verify.kiro.hook']) {
+    for (const file of ['vg-context.sh', 'vg-post-fix.sh', 'vg-fix-annotations.sh']) {
       const src = path.join(srcHooks, file);
       const dest = path.join(hooksDir, file);
       if (existsSync(src) && !existsSync(dest)) {
         writeFileSync(dest, readFileSync(src, 'utf-8'));
+        chmodSync(dest, 0o755);
         console.log(`  Installed hook: ${file}`);
+      }
+    }
+  }
+
+  // Copy prompts if source exists
+  const srcPrompts = path.join(VIEWGRAPH_ROOT, '.kiro', 'prompts');
+  const promptsDir = path.join(CWD, '.kiro', 'prompts');
+  if (existsSync(srcPrompts)) {
+    ensureDir(promptsDir);
+    for (const file of readdirSync(srcPrompts).filter((f) => f.startsWith('vg-'))) {
+      const src = path.join(srcPrompts, file);
+      const dest = path.join(promptsDir, file);
+      if (!existsSync(dest)) {
+        writeFileSync(dest, readFileSync(src, 'utf-8'));
+        console.log(`  Installed prompt: ${file}`);
       }
     }
   }
