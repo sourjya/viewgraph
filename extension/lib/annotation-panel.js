@@ -29,11 +29,11 @@ export function show(annotation, callbacks = {}) {
   panelEl = document.createElement('div');
   panelEl.setAttribute(ATTR, 'panel');
   Object.assign(panelEl.style, {
-    position: 'absolute', zIndex: '2147483647',
+    all: 'initial', position: 'absolute', zIndex: '2147483647',
     background: '#1e1e2e', borderRadius: '8px',
     border: `2px solid ${MARKER_COLORS[(annotation.id - 1) % MARKER_COLORS.length]}`,
     padding: '10px', width: '270px', fontFamily: 'system-ui, sans-serif',
-    boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.4)', boxSizing: 'border-box',
   });
 
   // Header: annotation number + close button + delete button
@@ -101,8 +101,9 @@ export function show(annotation, callbacks = {}) {
       const sel = document.createElement('select');
       Object.assign(sel.style, {
         padding: '2px 6px', background: '#16161e', border: '1px solid #333',
-        borderRadius: '4px', color: '#e0e0e0', fontSize: '11px',
+        borderRadius: '4px', color: '#e0e0e0', fontSize: '11px', height: '24px',
         fontFamily: 'system-ui, sans-serif', outline: 'none', cursor: 'pointer',
+        boxSizing: 'border-box',
       });
       for (const { value, label: optLabel } of [{ value: '', label: `${label}...` }, ...options]) {
         const o = document.createElement('option');
@@ -181,8 +182,9 @@ export function show(annotation, callbacks = {}) {
       const sel = document.createElement('select');
       Object.assign(sel.style, {
         padding: '2px 6px', background: '#16161e', border: '1px solid #333',
-        borderRadius: '4px', color: '#e0e0e0', fontSize: '11px',
+        borderRadius: '4px', color: '#e0e0e0', fontSize: '11px', height: '24px',
         fontFamily: 'system-ui, sans-serif', outline: 'none', cursor: 'pointer',
+        boxSizing: 'border-box',
       });
       const placeholder = document.createElement('option');
       placeholder.value = ''; placeholder.textContent = 'Category...';
