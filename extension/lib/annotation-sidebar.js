@@ -44,6 +44,7 @@ import { collectNetworkState } from './network-collector.js';
 import { getConsoleState } from './console-collector.js';
 import { collectBreakpoints } from './breakpoint-collector.js';
 import { checkRendered } from './visibility-collector.js';
+import { startWatcher, stopWatcher, isWatcherEnabled } from './continuous-capture.js';
 
 const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
@@ -602,6 +603,38 @@ export function create() {
     Object.assign(bpLabel.style, { color: '#666', fontSize: '11px' });
     bpRow.append(bpTitle, bpBadge, bpLabel);
     inspectContent.appendChild(bpRow);
+
+    // Auto-capture toggle
+    const autoRow = document.createElement('div');
+    Object.assign(autoRow.style, { display: 'flex', alignItems: 'center', gap: '8px' });
+    const autoLabel = document.createElement('span');
+    autoLabel.textContent = 'AUTO-CAPTURE';
+    Object.assign(autoLabel.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', flex: '1' });
+    const autoToggle = document.createElement('button');
+    const watcherOn = isWatcherEnabled();
+    autoToggle.textContent = watcherOn ? 'ON' : 'OFF';
+    Object.assign(autoToggle.style, {
+      border: 'none', borderRadius: '10px', padding: '2px 10px', fontSize: '10px',
+      fontWeight: '700', cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+      background: watcherOn ? '#166534' : '#333', color: watcherOn ? '#4ade80' : '#666',
+    });
+    autoToggle.addEventListener('click', () => {
+      if (isWatcherEnabled()) {
+        stopWatcher();
+        autoToggle.textContent = 'OFF';
+        autoToggle.style.background = '#333';
+        autoToggle.style.color = '#666';
+      } else {
+        startWatcher(() => {
+          chrome.runtime.sendMessage({ type: 'capture-page' });
+        });
+        autoToggle.textContent = 'ON';
+        autoToggle.style.background = '#166534';
+        autoToggle.style.color = '#4ade80';
+      }
+    });
+    autoRow.append(autoLabel, autoToggle);
+    inspectContent.appendChild(autoRow);
 
     // Network section
     const net = collectNetworkState();
