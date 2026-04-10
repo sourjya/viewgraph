@@ -283,11 +283,15 @@ function freeze() {
   const fullSelector = bestSelector(currentEl);
 
   // Dedup: reopen existing annotation if same element clicked again.
-  // Uses bestSelector (more specific) to avoid false matches on wide elements.
+  // Primary: match by full selector (available for in-session annotations).
+  // Fallback: match by ancestor + exact region (works for loaded annotations too).
   const existing = annotations.find((a) =>
-    a.element && a.element.selector === fullSelector
-    && a.region.x === region.x && a.region.y === region.y
-    && a.region.width === region.width && a.region.height === region.height);
+    (a.element && a.element.selector === fullSelector
+      && a.region.x === region.x && a.region.y === region.y
+      && a.region.width === region.width && a.region.height === region.height)
+    || (a.ancestor === ancestor
+      && a.region.x === region.x && a.region.y === region.y
+      && a.region.width === region.width && a.region.height === region.height));
   if (existing) {
     frozen = true;
     hideHoverUI();
@@ -594,8 +598,8 @@ export function storageKey() {
 export async function save() {
   if (typeof chrome === 'undefined' || !chrome.storage) return;
   const key = storageKey();
-  const data = annotations.map(({ id, uuid, type, region, comment, severity, category, nids, ancestor, resolved, resolution, timestamp }) =>
-    ({ id, uuid, type, region, comment, severity, category, nids, ancestor, timestamp, ...(resolved ? { resolved, resolution } : {}) }));
+  const data = annotations.map(({ id, uuid, type, region, comment, severity, category, nids, ancestor, element, resolved, resolution, timestamp }) =>
+    ({ id, uuid, type, region, comment, severity, category, nids, ancestor, element, timestamp, ...(resolved ? { resolved, resolution } : {}) }));
   await chrome.storage.local.set({ [key]: { annotations: data, nextId } });
 }
 

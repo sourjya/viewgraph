@@ -683,7 +683,12 @@ export function refresh() {
   // Filtered items
   const visible = activeFilter === 'all' ? anns : activeFilter === 'open' ? open : resolved;
   for (const ann of visible) {
-    list.appendChild(createEntry(ann));
+    try {
+      list.appendChild(createEntry(ann));
+    } catch (e) {
+      // Defensive: don't let one bad annotation kill the entire list
+      console.error(`[ViewGraph] Failed to render annotation #${ann.id}:`, e);
+    }
   }
   if (visible.length === 0) {
     const empty = document.createElement('div');

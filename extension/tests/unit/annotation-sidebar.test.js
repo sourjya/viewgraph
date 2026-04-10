@@ -245,3 +245,47 @@ describe('sidebar expand/collapse', () => {
     expect(getEntries().length).toBe(3);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Regression: all annotations must render, not just first N
+// ---------------------------------------------------------------------------
+
+describe('sidebar renders all annotations', () => {
+  it('(+) 10 open annotations produce 10 list entries', () => {
+    start();
+    for (let i = 0; i < 10; i++) addPageNote();
+    expect(getAnnotations()).toHaveLength(10);
+    create();
+    expect(getEntries().length).toBe(10);
+  });
+
+  it('(+) annotations with comments all render with text', () => {
+    start();
+    for (let i = 0; i < 5; i++) {
+      const n = addPageNote();
+      updateComment(n.id, `note ${i}`);
+    }
+    create();
+    expect(getEntries().length).toBe(5);
+    const list = getList();
+    expect(list.textContent).toContain('note 0');
+    expect(list.textContent).toContain('note 4');
+  });
+
+  it('(+) mix of open and resolved all render under All tab', () => {
+    start();
+    const a = addPageNote();
+    const b = addPageNote();
+    const c = addPageNote();
+    resolveAnnotation(a.id);
+    resolveAnnotation(b.id);
+    create();
+    // Default filter is 'open' - only c is open
+    expect(getEntries().length).toBe(1);
+    // Verify tab counts
+    const tabContainer = getTabContainer();
+    expect(tabContainer.textContent).toContain('Open (1)');
+    expect(tabContainer.textContent).toContain('Resolved (2)');
+    expect(tabContainer.textContent).toContain('All (3)');
+  });
+});
