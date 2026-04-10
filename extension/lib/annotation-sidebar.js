@@ -93,14 +93,15 @@ export function create() {
   header.setAttribute(ATTR, 'header');
   Object.assign(header.style, {
     display: 'flex', alignItems: 'center', borderBottom: '1px solid #333',
+    padding: '2px 0',
   });
 
   const toggle = document.createElement('button');
   toggle.setAttribute(ATTR, 'toggle');
-  toggle.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>ViewGraph: Review Notes';
+  toggle.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>ViewGraph';
   Object.assign(toggle.style, {
     flex: '1', padding: '10px', border: 'none',
-    background: 'transparent', color: '#a5b4fc', fontSize: '14px', fontWeight: '600',
+    background: 'transparent', color: '#a5b4fc', fontSize: '13px', fontWeight: '600',
     cursor: 'pointer', textAlign: 'left',
   });
   toggle.addEventListener('click', () => toggleCollapse());
@@ -147,21 +148,23 @@ export function create() {
   // Collapse chevron
   const collapseBtn = document.createElement('button');
   collapseBtn.setAttribute(ATTR, 'btn');
-  collapseBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+  collapseBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
   collapseBtn.title = 'Collapse panel';
   Object.assign(collapseBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
-    padding: '6px', display: 'flex', alignItems: 'center',
+    padding: '8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
   });
+  collapseBtn.addEventListener('mouseenter', () => { collapseBtn.style.background = 'rgba(255,255,255,0.06)'; });
+  collapseBtn.addEventListener('mouseleave', () => { collapseBtn.style.background = 'transparent'; });
   collapseBtn.addEventListener('click', () => toggleCollapse());
 
   // Close button
   const closeBtn = document.createElement('button');
   closeBtn.setAttribute(ATTR, 'close');
-  closeBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+  closeBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
   Object.assign(closeBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
-    padding: '6px', display: 'flex', alignItems: 'center',
+    padding: '8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
   });
   closeBtn.title = 'Close review mode';
   closeBtn.addEventListener('mouseenter', () => { closeBtn.style.background = 'rgba(255,255,255,0.05)'; });
@@ -177,12 +180,14 @@ export function create() {
   // Gear icon in header - opens settings screen
   const gearBtn = document.createElement('button');
   gearBtn.setAttribute(ATTR, 'gear');
-  gearBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>';
+  gearBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>';
   gearBtn.title = 'Settings';
   Object.assign(gearBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
-    padding: '6px', display: 'flex', alignItems: 'center',
+    padding: '8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
   });
+  gearBtn.addEventListener('mouseenter', () => { gearBtn.style.background = 'rgba(255,255,255,0.06)'; });
+  gearBtn.addEventListener('mouseleave', () => { gearBtn.style.background = 'transparent'; });
   gearBtn.addEventListener('click', () => showSettings());
   // Insert gear before close button
   header.insertBefore(gearBtn, closeBtn);
