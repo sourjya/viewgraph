@@ -295,24 +295,26 @@ describe('sidebar renders all annotations', () => {
 // ---------------------------------------------------------------------------
 
 describe('sidebar renders annotations with severity and category', () => {
-  it('(+) annotation with severity renders entry', () => {
+  it('(+) annotation with severity renders colored dot', () => {
     start();
     const n = addPageNote();
     updateSeverity(n.id, 'critical');
     create();
     expect(getEntries().length).toBe(1);
+    // Severity is now a colored dot with title attribute, not text
     const list = getList();
-    expect(list.textContent).toContain('Critical');
+    const dot = list.querySelector('span[title="critical"]');
+    expect(dot).toBeTruthy();
   });
 
-  it('(+) annotation with category renders entry', () => {
+  it('(+) annotation with category renders inline text', () => {
     start();
     const n = addPageNote();
     updateCategory(n.id, 'visual');
     create();
     expect(getEntries().length).toBe(1);
     const list = getList();
-    expect(list.textContent).toContain('Visual');
+    expect(list.textContent).toContain('visual');
   });
 
   it('(+) 9 annotations with mixed severity/category all render', () => {
@@ -323,6 +325,10 @@ describe('sidebar renders annotations with severity and category', () => {
       if (i % 2 === 0) updateCategory(n.id, 'visual');
     }
     create();
+    // Click "All" tab to see all entries (default filter is "open")
+    const tabs = getTabContainer();
+    const allTab = [...tabs.querySelectorAll('button')].find((b) => b.textContent.includes('All'));
+    if (allTab) allTab.click();
     expect(getEntries().length).toBe(9);
   });
 });

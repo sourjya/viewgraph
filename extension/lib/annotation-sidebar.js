@@ -802,44 +802,29 @@ export function refresh() {
     commentText.textContent = ann.comment || '(no comment)';
     Object.assign(commentText.style, { overflow: 'hidden', textOverflow: 'ellipsis' });
     if (ann.resolved) Object.assign(commentText.style, { textDecoration: 'line-through' });
+
+    // Severity as a colored dot before the comment text
+    if (ann.severity) {
+      const sevDot = document.createElement('span');
+      const sevColor = CHIP_COLORS[ann.severity] || '#555';
+      Object.assign(sevDot.style, {
+        width: '6px', height: '6px', borderRadius: '50%', flexShrink: '0',
+        background: sevColor, display: 'inline-block', marginRight: '4px',
+      });
+      sevDot.title = ann.severity;
+      line1.appendChild(sevDot);
+    }
+
+    // Category as subtle suffix after comment
+    if (ann.category) {
+      const catText = document.createElement('span');
+      catText.textContent = ' ' + ann.category.split(',').map((s) => s.trim()).filter(Boolean).join(', ');
+      Object.assign(catText.style, { color: '#555', fontSize: '10px', flexShrink: '0' });
+      commentText.appendChild(catText);
+    }
+
     line1.appendChild(commentText);
     label.appendChild(line1);
-
-    // Line 2: severity + category chips (only if present)
-    const hasChips = ann.severity || ann.category;
-    if (hasChips) {
-      const line2 = document.createElement('div');
-      Object.assign(line2.style, { display: 'flex', flexWrap: 'wrap', gap: '3px' });
-
-      if (ann.severity) {
-        const sev = document.createElement('span');
-        sev.textContent = '\u26a0 ' + ann.severity.charAt(0).toUpperCase() + ann.severity.slice(1);
-        const sevColor = CHIP_COLORS[ann.severity] || '#555';
-        Object.assign(sev.style, {
-          background: 'transparent', color: sevColor,
-          border: `1px solid ${sevColor}`,
-          fontSize: '9px', fontWeight: '700', padding: '1px 5px', borderRadius: '8px',
-          fontFamily: 'system-ui, sans-serif',
-        });
-        line2.appendChild(sev);
-      }
-
-      if (ann.category) {
-        const cats = ann.category.split(',').map((s) => s.trim()).filter(Boolean);
-        for (const c of cats) {
-          const cat = document.createElement('span');
-          cat.textContent = c.charAt(0).toUpperCase() + c.slice(1);
-          Object.assign(cat.style, {
-            background: CHIP_COLORS[c] || '#555', color: '#fff',
-            fontSize: '9px', fontWeight: '600', padding: '1px 4px', borderRadius: '8px',
-            fontFamily: 'system-ui, sans-serif',
-          });
-          line2.appendChild(cat);
-        }
-      }
-
-      label.appendChild(line2);
-    }
 
     // Resolution details for resolved items
     if (ann.resolved && ann.resolution) {
