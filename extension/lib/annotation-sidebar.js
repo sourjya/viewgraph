@@ -979,17 +979,24 @@ function toggleCollapse() {
 function updateBadgeCount() {
   if (!badgeEl) return;
   const count = getAnnotations().filter((a) => !a.resolved).length;
-  // VG logo mark with open-count badge overlay
-  badgeEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>'
-    + '<span style="position:relative;display:inline-block;width:36px;height:36px">'
-    + '<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">'
-    + '<rect x="1" y="1" width="34" height="34" rx="8" fill="#6366f1" stroke="#818cf8" stroke-width="1.5"/>'
-    + '<text x="18" y="24" text-anchor="middle" fill="#fff" font-family="system-ui,sans-serif" font-size="16" font-weight="800">VG</text>'
-    + '</svg>'
-    + (count > 0
-      ? `<span style="position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#dc2626;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;box-shadow:0 1px 3px rgba(0,0,0,0.4)">${count}</span>`
-      : '')
-    + '</span>';
+  // Update or create a small count indicator at the bottom of the strip
+  let countEl = badgeEl.querySelector('[data-vg-badge-count]');
+  if (count > 0) {
+    if (!countEl) {
+      countEl = document.createElement('span');
+      countEl.setAttribute('data-vg-badge-count', '');
+      Object.assign(countEl.style, {
+        minWidth: '16px', height: '16px', padding: '0 4px', borderRadius: '8px',
+        background: '#dc2626', color: '#fff', fontSize: '10px', fontWeight: '700',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: 'system-ui, sans-serif', alignSelf: 'center', marginTop: '2px',
+      });
+      badgeEl.appendChild(countEl);
+    }
+    countEl.textContent = count;
+  } else if (countEl) {
+    countEl.remove();
+  }
 }
 
 /** Refresh the sidebar list from current annotations. */
