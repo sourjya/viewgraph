@@ -13,9 +13,13 @@ Built with [WXT](https://wxt.dev/) for cross-browser Manifest V3 support.
 - **Two-Tab Sidebar** - Review tab for annotations/export, Inspect tab for page diagnostics
 - **Inspect Tab** - live viewport breakpoint, network requests (failed highlighted), console errors/warnings, visibility warnings
 - **Page Notes** - page-level comments labeled P1, P2, etc. with separate numbering
-- **Multi-Export** - Send to Agent (MCP push), Copy Markdown (with environment data), Download Report (ZIP with screenshots + network.json + console.json)
+- **Multi-Export** - Send to Agent (MCP push with full capture), Copy Markdown (with environment data), Download Report (ZIP with screenshots + network.json + console.json)
+- **Agent Request Cards** - when the agent calls `request_capture`, a card appears in the sidebar with purpose icon (capture/inspect/verify), Accept and Decline buttons
+- **Collapsed Strip** - sidebar collapses to a slim strip with 32px mode icons and chat bubble annotation count
+- **Confirmation Dialog** - themed card dialog for destructive actions (Clear All) instead of native browser confirm
 - **Enrichment Data** - network state, console errors, breakpoints, isRendered flags captured and included in exports
 - **Auto-Detect Project** - fetches `/info` from MCP server to auto-detect project root and captures directory
+- **Zero-Config Auth** - reads auth token from server `/info` endpoint, includes Bearer header on all POSTs automatically
 - **Server Discovery** - auto-discovers MCP server on ports 9876-9879, matches by project
 - **Connection Status** - green dot indicator in sidebar header when MCP server is connected
 
@@ -25,9 +29,11 @@ Built with [WXT](https://wxt.dev/) for cross-browser Manifest V3 support.
 |---|---|
 | Toolbar icon | Single-click toggles annotate mode. Popup fallback on non-injectable pages. |
 | Overlay | Hover highlight with 2-line tooltip (breadcrumb + meta). Click to freeze. Scroll wheel for DOM navigation. |
-| Sidebar - Review tab | Annotation list, filter tabs, mode bar, Send/Copy/Report export buttons |
+| Sidebar - Review tab | Annotation list, filter tabs, mode bar, agent request cards, Send/Copy/Report export buttons |
 | Sidebar - Inspect tab | Viewport breakpoint, network requests, console errors, visibility warnings |
+| Sidebar - Collapsed strip | 32px mode icons (element/region/page), expand chevron, chat bubble count |
 | Annotation panel | Floating editor near selected element: severity, category chips, comment textarea |
+| Confirmation dialog | Themed card overlay for Clear All (dark card, red border, Cancel/Clear All) |
 | Settings overlay | Server status, project mapping, capture format toggles |
 | Options page | Advanced multi-project URL-to-directory mapping |
 
@@ -42,7 +48,7 @@ See [UX Design](../docs/architecture/ux-analysis.md) for design decisions and us
 ## Testing
 
 ```bash
-npm test               # unit tests (345 tests)
+npm test               # unit tests (365 tests)
 npm run test:watch     # watch mode
 ```
 
@@ -80,12 +86,12 @@ lib/
   constants.js           Shared constants, server discovery (port scanning)
   export-markdown.js     Markdown bug report formatter (with environment section)
   export-zip.js          ZIP assembly (markdown + screenshots + network.json + console.json)
-  screenshot-crop.js     Viewport screenshot cropping per annotation
+  screenshot-crop.js     Viewport screenshot cropping per annotation (scroll-aware, bounds-clamped)
   traverser.js           DOM traversal and node extraction
   serializer.js          ViewGraph v2.1 JSON serialization
   salience.js            Element salience scoring (interactivity, testid, aria, viewport)
   html-snapshot.js       HTML snapshot serializer for fidelity measurement
   url-checks.js          Injectable page detection (chrome://, about:, etc.)
 public/                  Static assets (icons)
-tests/                   Extension tests (339 tests)
+tests/                   Extension tests (365 tests)
 ```

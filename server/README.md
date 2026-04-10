@@ -1,6 +1,6 @@
 # ViewGraph MCP Server
 
-MCP server that reads ViewGraph capture files from disk and exposes 16 query/analysis/request tools to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
+MCP server that reads ViewGraph capture files from disk and exposes 19 query/analysis/request tools to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
 Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline, Aider.
 
@@ -32,9 +32,17 @@ Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline,
 
 | Tool | Description |
 |---|---|
-| `request_capture` | Request a capture from the browser extension via HTTP bridge |
-| `get_request_status` | Poll for capture request completion |
+| `request_capture` | Request a capture from the browser extension (optional purpose: capture/inspect/verify) |
+| `get_request_status` | Poll for capture request completion (pending/acknowledged/completed/declined/expired) |
 | `get_fidelity_report` | Compare capture against HTML snapshot for fidelity metrics |
+
+### Baseline (M15.2)
+
+| Tool | Description |
+|---|---|
+| `set_baseline` | Promote a capture to golden baseline for its URL |
+| `compare_baseline` | Diff latest capture vs baseline - detect structural regressions |
+| `list_baselines` | List all stored baselines with metadata |
 
 ## Setup
 
@@ -73,8 +81,11 @@ directories are rejected with 403. `viewgraph init` auto-registers projects in `
 
 ### Authentication
 
-- **No `VIEWGRAPH_HTTP_SECRET` env var:** auth disabled (safe - server only listens on 127.0.0.1)
-- **`VIEWGRAPH_HTTP_SECRET` set:** Bearer token auth enforced on all POST endpoints
+Zero-config by default. The server auto-generates a random UUID token at startup and writes it to `.viewgraph/.token` (mode 0600). The extension reads the token from the `/info` endpoint and includes it as a `Bearer` header on all POST requests.
+
+- **Default:** auto-generated token, no manual setup needed
+- **Override:** set `VIEWGRAPH_HTTP_SECRET` env var to use a fixed token (useful for CI or shared environments)
+- **Scope:** all POST endpoints require auth; GET endpoints (/health, /info, /requests/pending) remain open
 
 ### Port fallback
 
@@ -98,14 +109,17 @@ on localhost for extension communication.
 | `GET /health` | Server status, captures dir, writability |
 | `GET /info` | Project info for auto-detection (capturesDir, projectRoot) |
 | `GET /requests/pending` | Pending capture requests for extension polling |
+| `POST /requests/:id/ack` | Acknowledge a capture request |
+| `POST /requests/:id/decline` | Decline a capture request (optional reason in body) |
 | `POST /captures` | Receive capture JSON from extension |
 | `POST /snapshots` | Receive HTML snapshots from extension |
+| `POST /baselines` | Promote a capture to golden baseline |
 | `GET /annotations/resolved` | Resolved annotations for extension sync |
 
 ## Testing
 
 ```bash
-npm test                 # single run (235 tests)
+npm test                 # single run (251 tests)
 npm run test:watch       # watch mode
 ```
 
@@ -119,7 +133,7 @@ src/
   watcher.js             Chokidar file watcher on captures directory
   indexer.js             In-memory capture index (filename -> metadata)
   http-receiver.js       HTTP server for extension push, request polling, health check, /info
-  request-queue.js       In-memory request queue (pending -> ack -> complete/expire)
+  request-queue.js       In-memory request queue (pending -> ack -> complete/decline/expire)
   parsers/
     viewgraph-v2.js      ViewGraph v2 JSON parser
   analysis/

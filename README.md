@@ -14,8 +14,8 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 
 | Component | Description | Status |
 |---|---|---|
-| [`server/`](./server/) | MCP server - reads capture files, exposes 16 query/analysis/request tools | M1+M2+M3 Complete |
-| [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, unified annotate, multi-export | M4+M5+M6+M7b+M7c Complete |
+| [`server/`](./server/) | MCP server - reads capture files, exposes 19 query/analysis/request tools | M1+M2+M3+M15.2 Complete |
+| [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, unified annotate, multi-export, enrichment | M4+M5+M6+M7b+M7c+M11+M12 Complete |
 | [`power/`](./power/) | Kiro Power assets - steering docs, hooks, workflow guidance | M8b Complete |
 
 ## How It Works
@@ -113,7 +113,9 @@ From your project root (not the ViewGraph directory):
 node /path/to/viewgraph/scripts/viewgraph-init.js
 ```
 
-This auto-detects your AI agent, writes MCP config, creates `.viewgraph/captures/`, installs Power assets (Kiro steering docs + hooks), kills any stale server, and starts a fresh detached server. The extension sidebar shows a green dot when connected and auto-detects the project mapping via the server's `/info` endpoint.
+This auto-detects your AI agent, writes MCP config, creates `.viewgraph/captures/`, installs Power assets (Kiro steering docs + hooks), kills any stale server, and starts a fresh detached server. The server auto-generates an auth token (written to `.viewgraph/.token`) - the extension picks it up automatically via the `/info` endpoint. No manual config needed.
+
+The extension sidebar shows a green dot when connected and auto-detects the project mapping via the server's `/info` endpoint.
 
 For subsequent sessions, start the server directly:
 
@@ -220,9 +222,9 @@ npm run dev:ext        # start extension dev server (Chrome HMR)
 ## Testing
 
 ```bash
-npm test               # all tests (593 tests)
-npm run test:server    # server only (248 tests)
-npm run test:ext       # extension only (345 tests)
+npm test               # all tests (616 tests)
+npm run test:server    # server only (251 tests)
+npm run test:ext       # extension only (365 tests)
 ```
 
 ## MCP Tools
@@ -253,8 +255,8 @@ npm run test:ext       # extension only (345 tests)
 
 | Tool | Description |
 |---|---|
-| `request_capture` | Request a capture from the browser extension |
-| `get_request_status` | Poll for capture request completion |
+| `request_capture` | Request a capture from the browser extension (with optional purpose: capture/inspect/verify) |
+| `get_request_status` | Poll for capture request completion (pending/acknowledged/completed/declined/expired) |
 | `get_fidelity_report` | Compare capture against HTML snapshot for fidelity metrics |
 
 ### Baseline Tools (M15.2)
