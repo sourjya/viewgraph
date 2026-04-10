@@ -8,6 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import path from 'path';
+import { isInViewport } from '#src/analysis/node-queries.js';
 import { flattenNodes, filterByRole, filterInteractive, getNodeDetails } from '#src/analysis/node-queries.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 
@@ -92,5 +93,31 @@ describe('getNodeDetails', () => {
   it('returns null for node without details', () => {
     const details = getNodeDetails(parsed, 'div002');
     expect(details).toBeNull();
+  });
+});
+
+describe('isInViewport', () => {
+  const vp = { width: 1440, height: 900 };
+
+  it('returns true for element fully inside viewport', () => {
+    expect(isInViewport({ x: 10, y: 10, w: 100, h: 50 }, vp)).toBe(true);
+  });
+
+  it('returns true for element partially visible (>50% area)', () => {
+    // 200x100 element starting at x=1300, 140px visible = 70%
+    expect(isInViewport({ x: 1300, y: 0, w: 200, h: 100 }, vp)).toBe(true);
+  });
+
+  it('returns false for element fully below fold', () => {
+    expect(isInViewport({ x: 0, y: 1000, w: 100, h: 50 }, vp)).toBe(false);
+  });
+
+  it('returns false for element fully off-screen right', () => {
+    expect(isInViewport({ x: 1500, y: 0, w: 100, h: 50 }, vp)).toBe(false);
+  });
+
+  it('returns false for element with no bbox', () => {
+    expect(isInViewport(null, vp)).toBe(false);
+    expect(isInViewport(undefined, vp)).toBe(false);
   });
 });

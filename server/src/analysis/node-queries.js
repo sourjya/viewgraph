@@ -70,6 +70,21 @@ export function filterInteractive(nodes) {
 }
 
 /**
+ * Check if an element's bbox is at least partially visible in the viewport.
+ * Returns true if >50% of the element's area intersects the viewport.
+ * @param {{ x: number, y: number, w: number, h: number }} bbox
+ * @param {{ width: number, height: number }} viewport
+ */
+export function isInViewport(bbox, viewport) {
+  if (!bbox || !viewport) return false;
+  const ix = Math.max(0, Math.min(bbox.x + bbox.w, viewport.width) - Math.max(bbox.x, 0));
+  const iy = Math.max(0, Math.min(bbox.y + bbox.h, viewport.height) - Math.max(bbox.y, 0));
+  const visibleArea = ix * iy;
+  const totalArea = bbox.w * bbox.h;
+  return totalArea > 0 && visibleArea / totalArea > 0.5;
+}
+
+/**
  * Get the DETAILS entry for a specific node by id.
  *
  * Handles two formats:

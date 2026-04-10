@@ -57,6 +57,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Skips elements without text or computedStyles
 - 26 new tests (21 contrast unit + 5 a11y rule integration)
 
+
+### Viewport Visibility Flags (M11.3)
+- `isInViewport(bbox, viewport)` utility in node-queries.js (>50% area threshold)
+- `inViewport` boolean flag added to `get_elements_by_role` and `get_interactive_elements` output
+- 6 new tests (5 unit + 1 integration)
+
+### Form Validation State (M11.4)
+- `form-validation-error` rule in audit_accessibility
+- Detects `aria-invalid="true"` and required fields with empty value
+- 4 new tests (2 positive, 2 negative)
 ### Multi-Project Capture Routing
 - URL-based project routing: extension sends x-captures-dir header, server writes to override dir
 - Extension options page with project mappings (URL pattern -> captures directory)

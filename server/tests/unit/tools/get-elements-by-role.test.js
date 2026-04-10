@@ -37,4 +37,12 @@ describe('get_elements_by_role via MCP', () => {
     const result = await client.callTool({ name: 'get_elements_by_role', arguments: { filename: 'nope.json', role: 'button' } });
     expect(result.isError).toBe(true);
   });
+
+  it('includes inViewport flag on each element', async () => {
+    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    cleanup = c;
+    const result = await client.callTool({ name: 'get_elements_by_role', arguments: { filename: 'valid-capture.json', role: 'button' } });
+    const elements = JSON.parse(result.content[0].text);
+    elements.forEach((e) => expect(typeof e.inViewport).toBe('boolean'));
+  });
 });

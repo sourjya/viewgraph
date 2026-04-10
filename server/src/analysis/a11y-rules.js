@@ -45,6 +45,20 @@ export const RULES = [
     },
   },
   {
+    rule: 'form-validation-error',
+    severity: 'warning',
+    description: 'Form input is in an error or invalid state',
+    check: (node, details) => {
+      if (!['input', 'textarea', 'select'].includes(node.tag)) return false;
+      const attrs = details?.attributes || {};
+      // aria-invalid="true" explicitly marks the field as invalid
+      if (attrs['aria-invalid'] === 'true') return true;
+      // required field with empty value
+      if ('required' in attrs && (!attrs.value || !attrs.value.trim())) return true;
+      return false;
+    },
+  },
+  {
     rule: 'insufficient-contrast',
     // Severity is dynamic - set in auditNode based on AA vs AAA failure
     severity: 'error',

@@ -435,8 +435,8 @@ much they change an AI's ability to fix UI issues from capture data alone.
 |---|---|---|---|
 | 11.1 | Overlap/overflow detection | P0 - highest | DONE. `audit_layout` MCP tool with `detectOverflows`, `detectOverlaps`, `detectViewportOverflows`. 24 tests. |
 | 11.2 | WCAG contrast ratio audit | P0 - high | DONE. `contrast.js` module integrated into `audit_accessibility`. AA/AAA pass/fail. 26 tests. |
-| 11.3 | Viewport visibility flags | P1 - medium | Add `inViewport: true/false` flag per node by comparing bbox against viewport dimensions. Useful for "why can't I see this element" debugging. Could also add `belowFold: true` and `requiresScroll: true` flags. |
-| 11.4 | Form validation state | P2 - lower | Surface current validation state: `aria-invalid`, `:invalid` pseudo-class, visible error messages, `required` fields without values. Group by form element. Lower priority since agents can usually infer from code. |
+| 11.3 | Viewport visibility flags | P1 - medium | DONE. `isInViewport` flag on `get_elements_by_role` and `get_interactive_elements`. >50% area threshold. 6 tests. |
+| 11.4 | Form validation state | P2 - lower | DONE. `form-validation-error` rule in `audit_accessibility`. Checks `aria-invalid` and required+empty. 4 tests. |
 
 **Exit criteria:** `audit_layout` tool detects overlap/overflow issues. `audit_accessibility`
 includes contrast ratios with WCAG pass/fail. Viewport visibility flags on all nodes.
