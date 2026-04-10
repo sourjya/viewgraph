@@ -1,0 +1,1 @@
+Run audit_accessibility on the latest ViewGraph capture. For every issue found, locate the element in the source code using the selector from the audit results, and fix it. Priorities: 1) missing form labels, 2) buttons without accessible names, 3) images without alt text, 4) contrast failures. Show each fix.

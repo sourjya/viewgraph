@@ -1,0 +1,1 @@
+Use the latest ViewGraph capture to find interactive elements missing data-testid attributes via find_missing_testids. For each missing testid, locate the element in the source code and add the suggested data-testid attribute. Focus on ${1:-all interactive elements}.

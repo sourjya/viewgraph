@@ -1,0 +1,1 @@
+Request a fresh ViewGraph capture of ${1}. Use request_capture to trigger it, then poll with get_request_status until complete. Once captured, run get_page_summary on the result and report what's on the page.

@@ -1,0 +1,1 @@
+Run a full ViewGraph audit on the latest capture. Use get_latest_capture to find it, then run all three audits: audit_accessibility, audit_layout, and find_missing_testids. Summarize all issues found grouped by severity, and suggest fixes for the top 3 most impactful issues.
