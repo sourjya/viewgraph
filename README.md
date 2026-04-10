@@ -124,17 +124,19 @@ npm run dev:server
 ### 5. Capture a page
 
 1. Navigate to any web page in Chrome
-2. Click the **ViewGraph** icon in the toolbar, then **Annotate**
-3. **Click** any element to select it and add a comment
-4. **Shift+drag** to select a region and add a comment
-5. **Scroll wheel** to navigate up/down the DOM tree while hovering
-6. Set **severity** and **category** on each annotation
-7. Use the sidebar to filter (All/Open/Resolved), resolve, or delete annotations
-8. Export:
-   - **Send to Agent** - push annotations with full DOM context to your AI agent
-   - **Copy MD** - copy a markdown bug report to clipboard
-   - **Report** - download a ZIP with markdown + cropped screenshots
-9. **Save Page** captures a DOM snapshot; **Page Note** adds a page-level comment (labeled P1, P2, etc. - separate from element numbering)
+2. Click the **ViewGraph** icon in the toolbar - annotate mode activates directly
+3. The sidebar opens with two tabs: **Review** (annotations) and **Inspect** (page diagnostics)
+4. **Click** any element to select it and add a comment
+5. **Shift+drag** to select a region and add a comment
+6. **Scroll wheel** to navigate up/down the DOM tree while hovering
+7. Set **severity** and **category** on each annotation via the floating panel
+8. Use the sidebar to filter (All/Open/Resolved), resolve, or delete annotations
+9. Switch to the **Inspect** tab to see network requests, console errors, breakpoint info, and visibility warnings
+10. Export:
+    - **Send to Agent** - push annotations with full DOM context + enrichment data to your AI agent
+    - **Copy MD** - copy a markdown bug report to clipboard (includes environment section with network/console data)
+    - **Report** - download a ZIP with markdown, cropped screenshots, network.json, and console.json
+11. **Page Note** adds a page-level comment (labeled P1, P2, etc. - separate from element numbering)
 
 Captures are saved to `.viewgraph/captures/` and pushed to the MCP server automatically.
 
@@ -157,20 +159,21 @@ Open [`docs/demo/index.html`](./docs/demo/) in Chrome - a styled login page with
 
 ### For developers with AI agents
 
-1. Open your app in Chrome, click **Annotate** in the ViewGraph popup
+1. Open your app in Chrome, click the **ViewGraph** icon to enter annotate mode
 2. Click elements or shift+drag regions, add comments describing what to fix
-3. Click **Send to Agent** - annotations bundle with the full DOM capture
-4. In your AI agent, ask about the annotations - it has full DOM context to implement fixes
+3. Check the **Inspect** tab for network errors or console issues related to the bug
+4. Click **Send to Agent** - annotations bundle with the full DOM capture + enrichment data
+5. In your AI agent, ask about the annotations - it has full DOM context to implement fixes
 
 ### For testers and reviewers
 
 ViewGraph works without an AI agent. Testers annotate the UI the same way, then export their notes:
 
-1. Open the app in Chrome, click **Annotate**
+1. Open the app in Chrome, click the **ViewGraph** icon
 2. Click or shift+drag to select problem areas, add comments
 3. Export your review:
-   - **Copy Markdown** - copies a structured bug report to clipboard, paste into Jira/Linear/GitHub
-   - **Download Report** - saves a ZIP with markdown report + cropped screenshots per annotation
+   - **Copy Markdown** - copies a structured bug report to clipboard (includes environment data: network failures, console errors, viewport breakpoint), paste into Jira/Linear/GitHub
+   - **Download Report** - saves a ZIP with markdown report, cropped screenshots, network.json, and console.json
 
 No MCP server needed. No AI agent needed. The extension works standalone for anyone who needs to document UI issues.
 
@@ -273,6 +276,7 @@ scripts/         Git and build scripts
 - [ViewGraph v2 Format Spec](./docs/architecture/viewgraph-v2-format.md) - capture format (v2.1.0)
 - [Format Research](./docs/architecture/viewgraph-format-research.md) - format analysis and design rationale
 - [Scans and Recommendations](./docs/architecture/scans-and-recommendations.md) - 22 automated scans
+- [UX Design](./docs/architecture/ux-analysis.md) - two-tab sidebar model, design decisions, user journeys
 - [Universal Agent Integration](./docs/decisions/ADR-001-universal-agent-integration.md) - multi-tool architecture
 - [Multi-Project Routing](./docs/decisions/ADR-002-multi-project-capture-routing.md) - capture routing
 - [Kiro Power Packaging](./docs/decisions/ADR-008-kiro-power-packaging.md) - Power packaging decision

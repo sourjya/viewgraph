@@ -78,24 +78,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Console Error Capture (M12.2)
 
-### Responsive Breakpoint Context (M12.6)
-
-### Phase B UX Redesign - Two-Tab Sidebar
-- Sidebar restructured into Review + Inspect tabs
-- Review tab: mode bar, filter tabs, annotation list, export footer (existing behavior)
-- Inspect tab: breakpoint indicator, network section (collapsible, failed red), console section (collapsible, errors/warnings), visibility warnings (hidden-by-ancestor)
-- All Inspect sections use shared collapsible pattern with arrow toggle
-- Inspect tab refreshes from live page data on each tab switch
-- Settings is now a slide-over overlay instead of screen replacement
-- Sidebar entries simplified: severity encoded as badge color, no category/detail noise
-
-### Phase A UX Redesign
-- Enhanced tooltip: a11y info line (role, accessible name, states) in blue
-- Enhanced tooltip: isRendered warning in orange when element hidden by ancestor
-- Enhanced tooltip: console error line in red showing most recent error
-- Enrichment in markdown export: Environment section with breakpoints, failed requests, console errors
-- Enrichment in ZIP report: network.json and console.json included alongside report.md
-- Sidebar: moved trash button from header to filter tab row (contextually correct placement)
+### Phase A+B UX Redesign
+- **Two-tab sidebar:** Review (annotations, filters, export) + Inspect (page diagnostics)
+- **Inspect tab:** viewport breakpoint indicator, network requests (collapsible, failed highlighted), console errors/warnings (collapsible), visibility warnings (hidden-by-ancestor elements)
+- **Enrichment in exports:** markdown Copy MD includes Environment section (breakpoint, failed requests, console errors); ZIP Report includes network.json and console.json
+- **Sidebar entries simplified:** severity encoded as number badge color (red/yellow/gray/purple), no category chips in list
+- **Trash button relocated:** moved from header to filter tab row (Open | Resolved | All | trash)
+- **Settings as overlay:** slide-over panel instead of screen replacement
+- **Tooltip fixed at 2 lines:** breadcrumb + meta always, no variable-height conditional lines
+- **Viewport label:** Inspect tab breakpoint shows "VIEWPORT [2xl] 1685px" with section header
+- **Network false-positive fix:** cached/dev-server resources no longer flagged as failed (checks decodedBodySize)
+- **UX design doc:** docs/architecture/ux-analysis.md - two-tab model, design decisions, user journeys
 
 ### Responsive Breakpoint Context (M12.6)
 - `collectBreakpoints()` reports active CSS media query breakpoints at current viewport

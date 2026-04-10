@@ -7,21 +7,37 @@ Built with [WXT](https://wxt.dev/) for cross-browser Manifest V3 support.
 
 ## Features
 
+- **Direct-Toggle Annotate** - click the toolbar icon to enter annotate mode instantly (no popup)
 - **DOM Capture** - full page DOM traversal with salience scoring, spatial clustering, style extraction
 - **Unified Annotate** - click elements or shift+drag regions to annotate with comments and severity
-- **Page Notes** - page-level comments labeled P1, P2, etc. with separate numbering from element annotations
-- **Multi-Export** - Send to Kiro (MCP push), Copy Markdown (clipboard), Download Report (ZIP with screenshots)
+- **Two-Tab Sidebar** - Review tab for annotations/export, Inspect tab for page diagnostics
+- **Inspect Tab** - live viewport breakpoint, network requests (failed highlighted), console errors/warnings, visibility warnings
+- **Page Notes** - page-level comments labeled P1, P2, etc. with separate numbering
+- **Multi-Export** - Send to Agent (MCP push), Copy Markdown (with environment data), Download Report (ZIP with screenshots + network.json + console.json)
+- **Enrichment Data** - network state, console errors, breakpoints, isRendered flags captured and included in exports
 - **Auto-Detect Project** - fetches `/info` from MCP server to auto-detect project root and captures directory
 - **Server Discovery** - auto-discovers MCP server on ports 9876-9879, matches by project
-- **Sidebar UX** - mode hints on buttons, two-line entry layout, themed scrollbar, settings with read-only project info
-- **Connection Status** - green dot indicator in popup and sidebar when MCP server is connected
+- **Connection Status** - green dot indicator in sidebar header when MCP server is connected
+
+## UI Surfaces
+
+| Surface | Purpose |
+|---|---|
+| Toolbar icon | Single-click toggles annotate mode. Popup fallback on non-injectable pages. |
+| Overlay | Hover highlight with 2-line tooltip (breadcrumb + meta). Click to freeze. Scroll wheel for DOM navigation. |
+| Sidebar - Review tab | Annotation list, filter tabs, mode bar, Send/Copy/Report export buttons |
+| Sidebar - Inspect tab | Viewport breakpoint, network requests, console errors, visibility warnings |
+| Annotation panel | Floating editor near selected element: severity, category chips, comment textarea |
+| Settings overlay | Server status, project mapping, capture format toggles |
+| Options page | Advanced multi-project URL-to-directory mapping |
+
+See [UX Design](../docs/architecture/ux-analysis.md) for design decisions and user journeys.
 
 ## Specs
 
 - [Extension Core](../.kiro/specs/extension-core/) - DOM traversal, serialization, popup UI
 - [Unified Annotate Mode](../.kiro/specs/unified-annotate-mode/) - merged inspect + review
 - [Multi-Export](../.kiro/specs/multi-export/) - markdown, ZIP, MCP push
-- [Unified Review Panel](../.kiro/specs/unified-review-panel/) - upcoming sidebar redesign
 
 ## Testing
 
@@ -51,17 +67,25 @@ npm run zip:firefox      # package for distribution
 entrypoints/
   background.js          Service worker - capture orchestration, HTTP push, request polling
   content.js             Content script - DOM traversal, annotation injection
-  popup/                 Extension popup - Capture/Annotate buttons, connection status
-  options/               Settings page - auto-detected project info, manual override toggle
+  popup/                 Fallback popup for non-injectable pages
+  options/               Settings page - project mapping, manual overrides
 lib/
-  annotate.js            Unified annotation state machine (click + drag + page notes)
-  annotation-panel.js    Floating comment panel with severity selector
-  annotation-sidebar.js  Sidebar with timeline, export buttons, settings, auto-detect
+  annotate.js            Annotation state machine (click + drag + page notes + a11y helpers)
+  annotation-panel.js    Floating comment panel with severity/category selectors
+  annotation-sidebar.js  Two-tab sidebar (Review + Inspect), export buttons, settings overlay
+  breakpoint-collector.js  Viewport breakpoint detection (xs through 2xl)
+  console-collector.js   Console error/warning interceptor
+  network-collector.js   Performance API network request collector
+  visibility-collector.js  isRendered ancestor walk (opacity, clip-path, off-screen)
   constants.js           Shared constants, server discovery (port scanning)
-  dom-walker.js          DOM traversal and ViewGraph JSON serialization
-  export-markdown.js     Markdown bug report formatter
-  export-zip.js          ZIP assembly (markdown + cropped screenshots)
+  export-markdown.js     Markdown bug report formatter (with environment section)
+  export-zip.js          ZIP assembly (markdown + screenshots + network.json + console.json)
   screenshot-crop.js     Viewport screenshot cropping per annotation
+  traverser.js           DOM traversal and node extraction
+  serializer.js          ViewGraph v2.1 JSON serialization
+  salience.js            Element salience scoring (interactivity, testid, aria, viewport)
+  html-snapshot.js       HTML snapshot serializer for fidelity measurement
+  url-checks.js          Injectable page detection (chrome://, about:, etc.)
 public/                  Static assets (icons)
-tests/                   Extension tests (309 tests)
+tests/                   Extension tests (339 tests)
 ```
