@@ -7,6 +7,7 @@
  *
  * Endpoints:
  * - GET  /health             -> { status: "ok", pending: N }
+ * - GET  /info               -> { capturesDir, projectRoot }
  * - GET  /requests/pending   -> { requests: [...] }
  * - POST /requests/:id/ack   -> { id, status: "acknowledged" }
  * - POST /captures           -> { filename, requestId? }
@@ -109,6 +110,17 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         try { accessSync(capturesDir, fsConstants.W_OK); writable = true; } catch { /* not writable */ }
       }
       return json(res, 200, { status: 'ok', capturesDir, dirExists, writable, pending: queue.getPending().length });
+    }
+
+    // GET /info - project info for auto-detection by the extension
+    if (method === 'GET' && url === '/info') {
+      const { resolve, dirname } = await import('path');
+      const absCaptures = resolve(capturesDir);
+      // Derive project root: walk up from capturesDir past .viewgraph/captures
+      const projectRoot = absCaptures.endsWith('.viewgraph/captures')
+        ? dirname(dirname(absCaptures))
+        : dirname(absCaptures);
+      return json(res, 200, { capturesDir: absCaptures, projectRoot });
     }
 
     // GET /requests/pending
