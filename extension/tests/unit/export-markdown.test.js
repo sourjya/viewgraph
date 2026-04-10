@@ -204,6 +204,30 @@ describe('sanitization in export', () => {
     expect(md).toContain('A \\| B \\| C');
   });
 
+  it('includes environment section when enrichment provided', () => {
+    const enrichment = {
+      breakpoints: { activeRange: 'md', viewport: { width: 768 } },
+      network: { requests: [{ url: '/api/users', transferSize: 0, failed: true }], summary: { total: 5, failed: 1 } },
+      console: { errors: [{ message: 'No QueryClient set' }], warnings: [], summary: { errors: 1, warnings: 0 } },
+    };
+    const md = formatMarkdown([{ id: 1, comment: 'broken', ancestor: 'div' }], META, { enrichment });
+    expect(md).toContain('### Environment');
+    expect(md).toContain('**Breakpoint:** md (768px)');
+    expect(md).toContain('**Failed requests:** 1');
+    expect(md).toContain('/api/users');
+    expect(md).toContain('**Console:** 1 error(s)');
+    expect(md).toContain('No QueryClient set');
+  });
+
+  it('omits environment section when no enrichment issues', () => {
+    const enrichment = {
+      network: { requests: [], summary: { total: 0, failed: 0 } },
+      console: { errors: [], warnings: [], summary: { errors: 0, warnings: 0 } },
+    };
+    const md = formatMarkdown([{ id: 1, comment: 'test' }], META, { enrichment });
+    expect(md).not.toContain('### Environment');
+  });
+
   it('escapes backticks in resolution summary', () => {
     const anns = [{
       id: 1, comment: 'Fix', ancestor: 'div', resolved: true,

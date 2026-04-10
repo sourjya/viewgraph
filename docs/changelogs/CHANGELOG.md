@@ -79,6 +79,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Console Error Capture (M12.2)
 
 ### Responsive Breakpoint Context (M12.6)
+
+### Phase A UX Redesign
+- Enhanced tooltip: a11y info line (role, accessible name, states) in blue
+- Enhanced tooltip: isRendered warning in orange when element hidden by ancestor
+- Enhanced tooltip: console error line in red showing most recent error
+- Enrichment in markdown export: Environment section with breakpoints, failed requests, console errors
+- Enrichment in ZIP report: network.json and console.json included alongside report.md
+- Sidebar: moved trash button from header to filter tab row (contextually correct placement)
+
+### Responsive Breakpoint Context (M12.6)
 - `collectBreakpoints()` reports active CSS media query breakpoints at current viewport
 - Standard breakpoints (xs through 2xl) with min-width/max-width match status
 - `activeRange` field identifies the current breakpoint name
