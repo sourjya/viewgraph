@@ -139,7 +139,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
     // POST /requests/create - create a capture request (used by agents via HTTP)
     if (method === 'POST' && url === '/requests/create') {
       if (!checkAuth(req, res)) return;
-      const body = await readBody(req);
+      const body = JSON.parse(await readBody(req));
       const created = queue.create(body.url, { guidance: body.guidance, purpose: body.purpose });
       return json(res, 201, { requestId: created.id, status: created.status });
     }
