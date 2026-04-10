@@ -18,7 +18,8 @@ describe('get_annotated_capture via MCP', () => {
     const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
     cleanup = c;
     const result = await client.callTool({ name: 'get_annotated_capture', arguments: { filename: 'annotated-capture.json' } });
-    const output = JSON.parse(result.content[0].text);
+    const parsed = JSON.parse(result.content[0].text);
+        const output = parsed.annotatedNodes || parsed;
     expect(output).toHaveLength(2);
     expect(output[0].annotation.comment).toContain('pagination');
     expect(output[0].nodes.length).toBeGreaterThan(0);
@@ -28,7 +29,8 @@ describe('get_annotated_capture via MCP', () => {
     const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
     cleanup = c;
     const result = await client.callTool({ name: 'get_annotated_capture', arguments: { filename: 'annotated-capture.json', annotation_id: 'ann-2' } });
-    const output = JSON.parse(result.content[0].text);
+    const parsed = JSON.parse(result.content[0].text);
+        const output = parsed.annotatedNodes || parsed;
     expect(output).toHaveLength(1);
     expect(output[0].annotation.comment).toContain('side panel');
   });

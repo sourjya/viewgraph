@@ -20,6 +20,9 @@ import { cropRegions } from '#lib/screenshot-crop.js';
 
 let drawImageCalls;
 
+// Capture original before any spying
+const _origCreateElement = Document.prototype.createElement;
+
 beforeEach(() => {
   drawImageCalls = [];
 
@@ -32,18 +35,16 @@ beforeEach(() => {
     }
   };
 
-  // Mock canvas getContext to capture drawImage calls
-  const origCreateElement = document.createElement.bind(document);
-  vi.spyOn(document, 'createElement').mockImplementation((tag) => {
+  // Patch canvas getContext on any canvas element created
+  vi.spyOn(document, 'createElement').mockImplementation(function (tag, ...rest) {
+    const el = _origCreateElement.call(this, tag, ...rest);
     if (tag === 'canvas') {
-      const canvas = origCreateElement(tag);
-      canvas.getContext = () => ({
+      el.getContext = () => ({
         drawImage: (...args) => drawImageCalls.push(args),
       });
-      canvas.toDataURL = () => 'data:image/png;base64,MOCK';
-      return canvas;
+      el.toDataURL = () => 'data:image/png;base64,MOCK';
     }
-    return origCreateElement(tag);
+    return el;
   });
 });
 

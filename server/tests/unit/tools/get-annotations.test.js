@@ -18,7 +18,8 @@ describe('get_annotations via MCP', () => {
     const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
     cleanup = c;
     const result = await client.callTool({ name: 'get_annotations', arguments: { filename: 'annotated-capture.json' } });
-    const annotations = JSON.parse(result.content[0].text);
+    const parsed = JSON.parse(result.content[0].text);
+        const annotations = parsed.annotations || parsed;
     expect(annotations).toHaveLength(2);
     expect(annotations[0].comment).toContain('pagination');
     expect(annotations[1].comment).toContain('side panel');
@@ -28,7 +29,8 @@ describe('get_annotations via MCP', () => {
     const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
     cleanup = c;
     const result = await client.callTool({ name: 'get_annotations', arguments: { filename: 'valid-capture.json' } });
-    const annotations = JSON.parse(result.content[0].text);
+    const parsed = JSON.parse(result.content[0].text);
+        const annotations = parsed.annotations || parsed;
     expect(annotations).toEqual([]);
   });
 
@@ -36,7 +38,8 @@ describe('get_annotations via MCP', () => {
     const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
     cleanup = c;
     const result = await client.callTool({ name: 'get_annotations', arguments: { filename: 'review-capture.json' } });
-    const annotations = JSON.parse(result.content[0].text);
+    const parsed = JSON.parse(result.content[0].text);
+        const annotations = parsed.annotations || parsed;
     expect(annotations).toHaveLength(3);
     expect(annotations[0].ancestor).toBe('div.card.p-4');
     expect(annotations[1].ancestor).toBe('div.card.text-white');
@@ -46,7 +49,8 @@ describe('get_annotations via MCP', () => {
     const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
     cleanup = c;
     const result = await client.callTool({ name: 'get_annotations', arguments: { filename: 'review-capture.json' } });
-    const annotations = JSON.parse(result.content[0].text);
+    const parsed = JSON.parse(result.content[0].text);
+        const annotations = parsed.annotations || parsed;
     expect(annotations[2].resolved).toBe(true);
     expect(annotations[0].resolved).toBe(false);
   });
@@ -55,7 +59,8 @@ describe('get_annotations via MCP', () => {
     const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
     cleanup = c;
     const result = await client.callTool({ name: 'get_annotations', arguments: { filename: 'subtree-capture.json' } });
-    const annotations = JSON.parse(result.content[0].text);
+    const parsed = JSON.parse(result.content[0].text);
+        const annotations = parsed.annotations || parsed;
     expect(annotations).toEqual([]);
   });
 });
