@@ -43,55 +43,6 @@ import { discoverServer } from './constants.js';
 import { collectNetworkState } from './network-collector.js';
 import { getConsoleState } from './console-collector.js';
 import { collectBreakpoints } from './breakpoint-collector.js';
-import { buildA11yLine } from './annotate.js';
-import { checkRendered } from './visibility-collector.js';
-
-/**
- * Build a detail row for a sidebar entry. Shows a11y info, isRendered
- * warning, and console errors. Hidden by default, shown on hover expand.
- * @param {object} ann - Annotation object with region and element data
- * @returns {HTMLElement|null} Detail row element, or null if no detail
- */
-function buildDetailRow(ann) {
-  const parts = [];
-
-  // Try to find the live DOM element from the annotation's region center
-  let el = null;
-  if (ann.region?.x != null && ann.region?.y != null && ann.type !== 'page-note') {
-    const cx = ann.region.x + (ann.region.width || 0) / 2;
-    const cy = ann.region.y + (ann.region.height || 0) / 2;
-    el = document.elementFromPoint(cx - window.scrollX, cy - window.scrollY);
-  }
-
-  // A11y info from live element
-  if (el) {
-    const a11y = buildA11yLine(el);
-    if (a11y) parts.push({ text: a11y, color: '#60a5fa' });
-    if (!checkRendered(el)) parts.push({ text: '! Hidden by ancestor', color: '#f59e0b' });
-  }
-
-  // Console errors (page-level, not element-specific)
-  const cs = getConsoleState();
-  if (cs.errors.length > 0) {
-    parts.push({ text: cs.errors[cs.errors.length - 1].message.slice(0, 60), color: '#f87171' });
-  }
-
-  if (parts.length === 0) return null;
-
-  const row = document.createElement('div');
-  row.setAttribute('data-vg-annotate', 'detail');
-  Object.assign(row.style, {
-    display: 'none', flexDirection: 'column', gap: '1px', marginTop: '3px',
-    fontSize: '10px', fontFamily: 'system-ui, sans-serif',
-  });
-  for (const { text, color } of parts) {
-    const line = document.createElement('div');
-    line.textContent = text;
-    Object.assign(line.style, { color, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' });
-    row.appendChild(line);
-  }
-  return row;
-}
 
 const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
@@ -791,7 +742,6 @@ export function refresh() {
       entry._expandTimer = setTimeout(() => {
         line1.style.whiteSpace = 'normal';
         line1.style.maxHeight = '120px';
-        if (detailRow) detailRow.style.display = 'flex';
       }, 600);
     });
     entry.addEventListener('mouseleave', () => {
@@ -800,7 +750,6 @@ export function refresh() {
       clearTimeout(entry._expandTimer);
       line1.style.whiteSpace = 'nowrap';
       line1.style.maxHeight = '20px';
-      if (detailRow) detailRow.style.display = 'none';
     });
 
     const label = document.createElement('span');
@@ -817,12 +766,14 @@ export function refresh() {
       maxHeight: '20px', transition: 'max-height 0.25s ease, white-space 0s',
     });
 
-    // Number badge or page-note icon
+    // Number badge - color encodes severity (red=critical, yellow=major, default=purple)
     const numBadge = document.createElement('span');
+    const SEV_BADGE_COLORS = { critical: '#dc2626', major: '#f59e0b', minor: '#6b7280' };
+    const badgeBg = ann.type === 'page-note' ? '#0ea5e9' : (SEV_BADGE_COLORS[ann.severity] || '#6366f1');
     if (ann.type === 'page-note') {
       numBadge.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${ann.id}`;
       Object.assign(numBadge.style, {
-        background: '#0ea5e9', color: '#fff', fontSize: '10px', fontWeight: '700',
+        background: badgeBg, color: '#fff', fontSize: '10px', fontWeight: '700',
         padding: '1px 5px', borderRadius: '3px', marginRight: '4px',
         fontFamily: 'system-ui, sans-serif', flexShrink: '0',
         display: 'inline-flex', alignItems: 'center', gap: '1px',
@@ -830,11 +781,12 @@ export function refresh() {
     } else {
       numBadge.textContent = `#${ann.id}`;
       Object.assign(numBadge.style, {
-        background: '#6366f1', color: '#fff', fontSize: '10px', fontWeight: '700',
+        background: badgeBg, color: '#fff', fontSize: '10px', fontWeight: '700',
         padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
         fontFamily: 'system-ui, sans-serif', flexShrink: '0',
       });
     }
+    if (ann.severity) numBadge.title = ann.severity;
     line1.appendChild(numBadge);
 
     // Ancestor element badge
@@ -854,33 +806,8 @@ export function refresh() {
     Object.assign(commentText.style, { overflow: 'hidden', textOverflow: 'ellipsis' });
     if (ann.resolved) Object.assign(commentText.style, { textDecoration: 'line-through' });
 
-    // Severity as a colored dot before the comment text
-    if (ann.severity) {
-      const sevDot = document.createElement('span');
-      const sevColor = CHIP_COLORS[ann.severity] || '#555';
-      Object.assign(sevDot.style, {
-        width: '6px', height: '6px', borderRadius: '50%', flexShrink: '0',
-        background: sevColor, display: 'inline-block', marginRight: '4px',
-      });
-      sevDot.title = ann.severity;
-      line1.appendChild(sevDot);
-    }
-
-    // Category as subtle suffix after comment
-    if (ann.category) {
-      const catText = document.createElement('span');
-      catText.textContent = ' ' + ann.category.split(',').map((s) => s.trim()).filter(Boolean).join(', ');
-      Object.assign(catText.style, { color: '#555', fontSize: '10px', flexShrink: '0' });
-      commentText.appendChild(catText);
-    }
-
     line1.appendChild(commentText);
     label.appendChild(line1);
-
-    // Detail row: a11y, isRendered, console - hidden until hover expand
-    // Builds detail from the annotation's stored element and live page state
-    const detailRow = buildDetailRow(ann);
-    if (detailRow) label.appendChild(detailRow);
 
     // Resolution details for resolved items
     if (ann.resolved && ann.resolution) {

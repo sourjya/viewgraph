@@ -295,26 +295,26 @@ describe('sidebar renders all annotations', () => {
 // ---------------------------------------------------------------------------
 
 describe('sidebar renders annotations with severity and category', () => {
-  it('(+) annotation with severity renders colored dot', () => {
+  it('(+) annotation with severity renders colored badge', () => {
     start();
     const n = addPageNote();
     updateSeverity(n.id, 'critical');
     create();
     expect(getEntries().length).toBe(1);
-    // Severity is now a colored dot with title attribute, not text
+    // Severity encodes as badge background color, with title attribute
     const list = getList();
-    const dot = list.querySelector('span[title="critical"]');
-    expect(dot).toBeTruthy();
+    const badge = list.querySelector('span[title="critical"]');
+    expect(badge).toBeTruthy();
   });
 
-  it('(+) annotation with category renders inline text', () => {
+  it('(+) annotation with category renders entry', () => {
     start();
     const n = addPageNote();
     updateCategory(n.id, 'visual');
     create();
     expect(getEntries().length).toBe(1);
-    const list = getList();
-    expect(list.textContent).toContain('visual');
+    // Category is stored on annotation but not shown inline in sidebar
+    expect(getAnnotations()[0].category).toBe('visual');
   });
 
   it('(+) 9 annotations with mixed severity/category all render', () => {
