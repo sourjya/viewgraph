@@ -40,6 +40,12 @@ function mcpConfig() {
         command: 'node',
         args: [SERVER_ENTRY],
         env: { VIEWGRAPH_CAPTURES_DIR: path.resolve(CWD, '.viewgraph', 'captures') },
+        autoApprove: [
+          'list_captures', 'get_capture', 'get_latest_capture', 'get_page_summary',
+          'get_elements_by_role', 'get_interactive_elements', 'find_missing_testids',
+          'audit_accessibility', 'compare_captures', 'get_annotations',
+          'get_annotated_capture', 'request_capture', 'get_request_status', 'get_fidelity_report',
+        ],
       },
     },
   };
