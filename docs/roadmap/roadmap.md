@@ -433,8 +433,8 @@ much they change an AI's ability to fix UI issues from capture data alone.
 
 | # | Task | Priority | Details |
 |---|---|---|---|
-| 11.1 | Overlap/overflow detection | P0 - highest | Detect elements that overflow their parent or overlap siblings. Report as `overflows: { parent: "div.card", by: "40px horizontal" }` and `overlaps: [{ with: "#btn-2", by: "8px" }]`. Can be a capture enrichment or standalone MCP tool `audit_layout`. |
-| 11.2 | WCAG contrast ratio audit | P0 - high | Compute contrast ratios for text elements against their background. Report AA/AAA pass/fail per WCAG 2.1. Add to `audit_accessibility` results or as separate `audit_contrast` tool. Requires resolved background colors (handle transparency, gradients). |
+| 11.1 | Overlap/overflow detection | P0 - highest | DONE. `audit_layout` MCP tool with `detectOverflows`, `detectOverlaps`, `detectViewportOverflows`. 24 tests. |
+| 11.2 | WCAG contrast ratio audit | P0 - high | DONE. `contrast.js` module integrated into `audit_accessibility`. AA/AAA pass/fail. 26 tests. |
 | 11.3 | Viewport visibility flags | P1 - medium | Add `inViewport: true/false` flag per node by comparing bbox against viewport dimensions. Useful for "why can't I see this element" debugging. Could also add `belowFold: true` and `requiresScroll: true` flags. |
 | 11.4 | Form validation state | P2 - lower | Surface current validation state: `aria-invalid`, `:invalid` pseudo-class, visible error messages, `required` fields without values. Group by form element. Lower priority since agents can usually infer from code. |
 

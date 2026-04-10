@@ -1,6 +1,6 @@
 # ViewGraph MCP Server
 
-MCP server that reads ViewGraph capture files from disk and exposes 15 query/analysis/request tools to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
+MCP server that reads ViewGraph capture files from disk and exposes 16 query/analysis/request tools to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
 Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline, Aider.
 
@@ -22,7 +22,8 @@ Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline,
 | `get_elements_by_role` | Filter nodes by role: button, link, input, heading, image, table, nav, form |
 | `get_interactive_elements` | All clickable/editable elements with selectors and labels |
 | `find_missing_testids` | Interactive elements lacking data-testid, with suggested values |
-| `audit_accessibility` | A11y audit: missing aria-labels, alt text, form labels |
+| `audit_accessibility` | A11y audit: missing aria-labels, alt text, form labels, contrast ratios |
+| `audit_layout` | Layout audit: element overflow, sibling overlap, viewport overflow |
 | `compare_captures` | Diff two captures: added/removed elements, layout shifts, testid changes |
 | `get_annotations` | Human annotations from review-mode captures |
 | `get_annotated_capture` | Capture filtered to annotated nodes + comments |
@@ -104,7 +105,7 @@ on localhost for extension communication.
 ## Testing
 
 ```bash
-npm test                 # single run (169 tests)
+npm test                 # single run (219 tests)
 npm run test:watch       # watch mode
 ```
 
@@ -123,7 +124,9 @@ src/
     viewgraph-v2.js      ViewGraph v2 JSON parser
   analysis/
     node-queries.js      Flatten, filter, query nodes from parsed captures
-    a11y-rules.js        Accessibility audit rules
+    a11y-rules.js        Accessibility audit rules + contrast checking
+    contrast.js          WCAG color contrast computation
+    layout-analysis.js   Overlap/overflow/viewport detection
     capture-diff.js      Structural diff between two captures
     fidelity.js          Capture vs HTML snapshot fidelity comparison
   tools/

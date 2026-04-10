@@ -45,6 +45,7 @@ function mcpConfig() {
           'get_elements_by_role', 'get_interactive_elements', 'find_missing_testids',
           'audit_accessibility', 'compare_captures', 'get_annotations',
           'get_annotated_capture', 'request_capture', 'get_request_status', 'get_fidelity_report',
+          'audit_layout',
         ],
       },
     },

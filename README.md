@@ -14,7 +14,7 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 
 | Component | Description | Status |
 |---|---|---|
-| [`server/`](./server/) | MCP server - reads capture files, exposes 15 query/analysis/request tools | M1+M2+M3 Complete |
+| [`server/`](./server/) | MCP server - reads capture files, exposes 16 query/analysis/request tools | M1+M2+M3 Complete |
 | [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, unified annotate, multi-export | M4+M5+M6+M7b+M7c Complete |
 | [`power/`](./power/) | Kiro Power assets - steering docs, hooks, workflow guidance | M8b Complete |
 
@@ -188,8 +188,8 @@ npm run dev:ext        # start extension dev server (Chrome HMR)
 ## Testing
 
 ```bash
-npm test               # all tests (478 tests)
-npm run test:server    # server only (169 tests)
+npm test               # all tests (528 tests)
+npm run test:server    # server only (219 tests)
 npm run test:ext       # extension only (309 tests)
 ```
 
@@ -211,7 +211,8 @@ npm run test:ext       # extension only (309 tests)
 | `get_elements_by_role` | Filter nodes by role: buttons, links, inputs, headings, etc. |
 | `get_interactive_elements` | All clickable/editable elements with selectors and labels |
 | `find_missing_testids` | Interactive elements lacking data-testid, with suggestions |
-| `audit_accessibility` | A11y audit: missing aria-labels, alt text, form labels |
+| `audit_accessibility` | A11y audit: missing aria-labels, alt text, form labels, contrast ratios |
+| `audit_layout` | Layout audit: element overflow, sibling overlap, viewport overflow |
 | `compare_captures` | Diff two captures: added/removed elements, layout shifts, testid changes |
 | `get_annotations` | Human annotations from review-mode captures |
 | `get_annotated_capture` | Capture filtered to annotated nodes + comments |

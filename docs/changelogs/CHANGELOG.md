@@ -41,7 +41,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `post-fix-verify.kiro.hook`: `fileEdited` trigger with `askAgent` action
 
 ### Test Coverage
-- 478 total tests (169 server + 309 extension)
+- 528 total tests (219 server + 309 extension)
+
+### Layout Audit (M11.1)
+- New `audit_layout` MCP tool: detects overlap, overflow, and viewport overflow issues
+- Layout analysis module: `buildNodeMap`, `buildChildrenMap`, `detectOverflows` (1px tolerance), `detectOverlaps` (2px tolerance, siblings only), `detectViewportOverflows`, `analyzeLayout`
+- Returns structured JSON with `overflows`, `overlaps`, `viewportOverflows`, and `summary` counts
+- 24 new tests (20 unit + 4 integration)
+
+### Contrast Ratio Audit (M11.2)
+- WCAG contrast ratio checking integrated into `audit_accessibility` tool
+- Contrast module: `parseColor` (hex 3/6 digit, rgb, rgba), `relativeLuminance`, `contrastRatio`, `checkContrast`
+- AA failure = error severity, AAA-only failure = warning severity
+- Large text threshold: >= 18px uses relaxed AA (3:1) and AAA (4.5:1) thresholds
+- Skips elements without text or computedStyles
+- 26 new tests (21 contrast unit + 5 a11y rule integration)
 
 ### Multi-Project Capture Routing
 - URL-based project routing: extension sends x-captures-dir header, server writes to override dir
