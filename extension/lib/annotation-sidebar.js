@@ -39,7 +39,7 @@ async function syncResolved() {
   } catch { /* server offline - no sync */ }
 }
 import { formatMarkdown } from './export-markdown.js';
-import { discoverServer } from './constants.js';
+import { discoverServer, authHeaders } from './constants.js';
 import { collectNetworkState } from './network-collector.js';
 import { getConsoleState } from './console-collector.js';
 import { collectBreakpoints } from './breakpoint-collector.js';
@@ -783,7 +783,7 @@ export function create() {
         try {
           const res = await fetch(`${serverUrl}/baselines`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...authHeaders() },
             body: JSON.stringify({ filename: cap.filename }),
           });
           if (res.ok) {
@@ -1066,7 +1066,7 @@ export function refresh() {
         (async () => {
           try {
             const serverUrl = await discoverServer();
-            if (serverUrl) await fetch(`${serverUrl}/requests/${req.id}/ack`, { method: 'POST' });
+            if (serverUrl) await fetch(`${serverUrl}/requests/${req.id}/ack`, { method: 'POST', headers: authHeaders() });
           } catch { /* best effort */ }
           chrome.runtime.sendMessage({ type: 'capture' }, () => {
             capBtn.textContent = '\u2713';
@@ -1096,7 +1096,7 @@ export function refresh() {
             if (serverUrl) {
               await fetch(`${serverUrl}/requests/${req.id}/decline`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', ...authHeaders() },
                 body: JSON.stringify({ reason: 'User declined from extension' }),
               });
             }

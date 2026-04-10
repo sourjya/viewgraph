@@ -21,10 +21,15 @@ export const SERVER_BASE_URL = `http://127.0.0.1:${DEFAULT_HTTP_PORT}`;
  * @returns {Promise<string|null>} Base URL of the server, or null
  */
 let _cachedUrl = null;
+let _cachedToken = null;
 let _cacheExpiry = 0;
 
 /** Reset the server discovery cache. Used in tests. */
-export function resetServerCache() { _cachedUrl = null; _cacheExpiry = 0; }
+export function resetServerCache() { _cachedUrl = null; _cachedToken = null; _cacheExpiry = 0; }
+
+/** Get the cached auth token. Available after discoverServer resolves. */
+export function getServerToken() { return _cachedToken; }
+
 export async function discoverServer(targetDir = null) {
   if (_cachedUrl && Date.now() < _cacheExpiry) return _cachedUrl;
   let fallback = null;
@@ -36,13 +41,36 @@ export async function discoverServer(targetDir = null) {
         if (!targetDir || data.capturesDir === targetDir) {
           _cachedUrl = `http://127.0.0.1:${p}`;
           _cacheExpiry = Date.now() + 30000;
+          await fetchToken(_cachedUrl);
           return _cachedUrl;
         }
         if (!fallback) fallback = `http://127.0.0.1:${p}`;
       }
     } catch { /* port not responding */ }
   }
-  // No exact match - use any healthy server
-  if (fallback) { _cachedUrl = fallback; _cacheExpiry = Date.now() + 30000; }
+  if (fallback) {
+    _cachedUrl = fallback;
+    _cacheExpiry = Date.now() + 30000;
+    await fetchToken(_cachedUrl);
+  }
   return fallback;
+}
+
+/** Fetch auth token from /info endpoint and cache it. */
+async function fetchToken(serverUrl) {
+  try {
+    const res = await fetch(`${serverUrl}/info`, { signal: AbortSignal.timeout(1000) });
+    if (res.ok) {
+      const data = await res.json();
+      _cachedToken = data.token || null;
+    }
+  } catch { _cachedToken = null; }
+}
+
+/**
+ * Build Authorization headers for POST requests to the server.
+ * Returns an object with the Bearer header if a token is cached, empty otherwise.
+ */
+export function authHeaders() {
+  return _cachedToken ? { Authorization: `Bearer ${_cachedToken}` } : {};
 }
