@@ -75,4 +75,46 @@ describe('a11y rules', () => {
     expect(Array.isArray(RULES)).toBe(true);
     expect(RULES.length).toBeGreaterThan(0);
   });
+
+  describe('insufficient-contrast', () => {
+    it('flags low contrast text (AA fail)', () => {
+      const node = { id: 'p1', tag: 'p', text: 'Hello', actions: [] };
+      const details = { attributes: {}, computedStyles: { color: '#777777', backgroundColor: '#ffffff', fontSize: '14px' } };
+      const issues = auditNode(node, details);
+      const contrast = issues.find((i) => i.rule === 'insufficient-contrast');
+      expect(contrast).toBeDefined();
+      expect(contrast.severity).toBe('error');
+    });
+
+    it('flags AAA-only fail as warning', () => {
+      // #767676 on white is ~4.54:1 - passes AA but fails AAA for normal text
+      const node = { id: 'p1', tag: 'p', text: 'Hello', actions: [] };
+      const details = { attributes: {}, computedStyles: { color: '#767676', backgroundColor: '#ffffff', fontSize: '14px' } };
+      const issues = auditNode(node, details);
+      const contrast = issues.find((i) => i.rule === 'insufficient-contrast');
+      expect(contrast).toBeDefined();
+      expect(contrast.severity).toBe('warning');
+    });
+
+    it('(-) no issue for high contrast (black on white)', () => {
+      const node = { id: 'p1', tag: 'p', text: 'Hello', actions: [] };
+      const details = { attributes: {}, computedStyles: { color: '#000000', backgroundColor: '#ffffff', fontSize: '14px' } };
+      const issues = auditNode(node, details);
+      expect(issues.find((i) => i.rule === 'insufficient-contrast')).toBeUndefined();
+    });
+
+    it('(-) skips elements without computedStyles', () => {
+      const node = { id: 'p1', tag: 'p', text: 'Hello', actions: [] };
+      const details = { attributes: {} };
+      const issues = auditNode(node, details);
+      expect(issues.find((i) => i.rule === 'insufficient-contrast')).toBeUndefined();
+    });
+
+    it('(-) skips elements without text', () => {
+      const node = { id: 'div1', tag: 'div', text: '', actions: [] };
+      const details = { attributes: {}, computedStyles: { color: '#777777', backgroundColor: '#ffffff', fontSize: '14px' } };
+      const issues = auditNode(node, details);
+      expect(issues.find((i) => i.rule === 'insufficient-contrast')).toBeUndefined();
+    });
+  });
 });
