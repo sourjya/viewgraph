@@ -1131,11 +1131,21 @@ export function refresh() {
             const serverUrl = await discoverServer();
             if (serverUrl) await fetch(`${serverUrl}/requests/${req.id}/ack`, { method: 'POST', headers: authHeaders() });
           } catch { /* best effort */ }
-          chrome.runtime.sendMessage({ type: 'capture' }, () => {
+          // Use send-review to capture without tearing down sidebar
+          chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true }, () => {
+            // Green flash + fade out
+            entry.style.transition = 'background 0.3s, opacity 0.5s';
+            entry.style.background = 'rgba(74, 222, 128, 0.15)';
             capBtn.innerHTML = '\u2713';
             capBtn.style.background = '#4ade80';
-            pendingRequests = pendingRequests.filter((r) => r.id !== req.id);
-            setTimeout(() => refresh(), 1000);
+            setTimeout(() => {
+              entry.style.opacity = '0';
+              setTimeout(() => {
+                pendingRequests = pendingRequests.filter((r) => r.id !== req.id);
+                storageSet(KEYS.pendingRequests, pendingRequests);
+                refresh();
+              }, 500);
+            }, 800);
           });
         })();
       });
@@ -1161,8 +1171,17 @@ export function refresh() {
               });
             }
           } catch { /* best effort */ }
-          pendingRequests = pendingRequests.filter((r) => r.id !== req.id);
-          refresh();
+          // Red flash + fade out
+          entry.style.transition = 'background 0.3s, opacity 0.5s';
+          entry.style.background = 'rgba(248, 113, 113, 0.15)';
+          setTimeout(() => {
+            entry.style.opacity = '0';
+            setTimeout(() => {
+              pendingRequests = pendingRequests.filter((r) => r.id !== req.id);
+              storageSet(KEYS.pendingRequests, pendingRequests);
+              refresh();
+            }, 500);
+          }, 600);
         })();
       });
       btnRow.append(capBtn, decBtn);
