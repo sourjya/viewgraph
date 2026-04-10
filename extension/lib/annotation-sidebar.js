@@ -54,6 +54,8 @@ let collapsed = false;
 let hasCaptured = false;
 let pendingRequests = [];
 let activeFilter = 'open'; // 'all' | 'open' | 'resolved'
+let pollTimer = null;
+let bellBtn = null;
 
 /**
  * Poll the server for pending Kiro capture requests.
@@ -66,9 +68,23 @@ async function pollRequests() {
     const res = await fetch(`${serverUrl}/requests/pending`, { signal: AbortSignal.timeout(3000) });
     if (!res.ok) return;
     const data = await res.json();
+    const prev = pendingRequests.length;
     pendingRequests = data.requests || [];
-    refresh();
+    // Only refresh if count changed to avoid flicker
+    if (pendingRequests.length !== prev) refresh();
   } catch { /* server offline */ }
+}
+
+/** Start polling for requests every 5s. */
+function startRequestPolling() {
+  stopRequestPolling();
+  pollRequests();
+  pollTimer = setInterval(pollRequests, 5000);
+}
+
+/** Stop polling. */
+function stopRequestPolling() {
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
 }
 
 /** Create and mount the sidebar. */
@@ -177,7 +193,24 @@ export function create() {
     destroy();
   });
 
-  header.append(toggle, statusDot, collapseBtn, closeBtn);
+  // Notification bell - pulses when agent requests are pending
+  bellBtn = document.createElement('button');
+  bellBtn.setAttribute(ATTR, 'bell');
+  bellBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>';
+  bellBtn.title = 'Agent requests';
+  Object.assign(bellBtn.style, {
+    border: 'none', background: 'transparent', cursor: 'pointer',
+    padding: '8px', display: 'none', alignItems: 'center', borderRadius: '6px',
+    color: '#f59e0b', position: 'relative',
+  });
+  bellBtn.addEventListener('mouseenter', () => { bellBtn.style.background = 'rgba(255,255,255,0.06)'; });
+  bellBtn.addEventListener('mouseleave', () => { bellBtn.style.background = 'transparent'; });
+  bellBtn.addEventListener('click', () => {
+    // Switch to Review tab where request cards are shown
+    if (typeof switchTab === 'function') switchTab('review');
+  });
+
+  header.append(toggle, statusDot, bellBtn, collapseBtn, closeBtn);
 
   // Gear icon in header - opens settings screen
   const gearBtn = document.createElement('button');
@@ -893,7 +926,7 @@ export function create() {
   Object.assign(hostEl.style, { all: 'initial', position: 'fixed', top: '0', right: '0', zIndex: '2147483646' });
   const shadow = hostEl.attachShadow({ mode: 'open' });
   const scrollStyle = document.createElement('style');
-  scrollStyle.textContent = `:host{scrollbar-color:#2a2a3a transparent}*::-webkit-scrollbar{width:8px}*::-webkit-scrollbar-track{background:transparent}*::-webkit-scrollbar-thumb{background:#2a2a3a;border-radius:4px}*::-webkit-scrollbar-thumb:hover{background:#3a3a4a}`;
+  scrollStyle.textContent = `:host{scrollbar-color:#2a2a3a transparent}*::-webkit-scrollbar{width:8px}*::-webkit-scrollbar-track{background:transparent}*::-webkit-scrollbar-thumb{background:#2a2a3a;border-radius:4px}*::-webkit-scrollbar-thumb:hover{background:#3a3a4a}@keyframes vg-bell-pulse{0%,100%{transform:rotate(0)}15%{transform:rotate(14deg)}30%{transform:rotate(-14deg)}45%{transform:rotate(8deg)}60%{transform:rotate(-8deg)}75%{transform:rotate(0)}}`;
   shadow.append(scrollStyle, sidebarEl);
   document.documentElement.appendChild(hostEl);
 
@@ -956,7 +989,7 @@ export function create() {
 
   refresh();
   syncResolved();
-  pollRequests();
+  startRequestPolling();
 }
 
 /** Collapse sidebar to strip. Exported for capture mode integration. */
@@ -1013,6 +1046,20 @@ export function refresh() {
   const list = sidebarEl.querySelector(`[${ATTR}="list"]`);
   const tabContainer = sidebarEl.querySelector(`[${ATTR}="tab-container"]`);
   if (!list || !tabContainer) return;
+
+  // Update header bell indicator
+  if (bellBtn) {
+    if (pendingRequests.length > 0) {
+      bellBtn.style.display = 'flex';
+      bellBtn.style.animation = 'none';
+      // Trigger reflow then apply pulse
+      void bellBtn.offsetWidth;
+      bellBtn.style.animation = 'vg-bell-pulse 1s ease-in-out 3';
+    } else {
+      bellBtn.style.display = 'none';
+    }
+  }
+
   list.innerHTML = '';
 
   const anns = getAnnotations();
@@ -1393,9 +1440,11 @@ export function refresh() {
 
 /** Remove the sidebar from the DOM. */
 export function destroy() {
+  stopRequestPolling();
   if (hostEl) { hostEl.remove(); hostEl = null; }
   if (sidebarEl) { sidebarEl = null; }
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }
+  bellBtn = null;
   collapsed = false;
   hasCaptured = false;
   pendingRequests = [];
