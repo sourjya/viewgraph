@@ -659,6 +659,111 @@ export function create() {
       }
       inspectContent.appendChild(visSection);
     }
+
+    // Captures + Baseline section - fetches from server asynchronously
+    fetchCapturesSection(inspectContent);
+  }
+
+  /**
+   * Fetch capture history and baseline data from the server, then render
+   * the captures list, set-baseline button, and diff summary.
+   * Runs async after the synchronous Inspect sections are rendered.
+   */
+  async function fetchCapturesSection(container) {
+    const serverUrl = await discoverServer();
+    if (!serverUrl) return;
+    const pageUrl = location.href;
+
+    // Fetch captures list for this URL from the indexer
+    let captures = [];
+    try {
+      const res = await fetch(`${serverUrl}/health`);
+      if (!res.ok) return;
+      // Use list endpoint filtered by current URL
+      const listRes = await fetch(`${serverUrl}/captures?url=${encodeURIComponent(pageUrl)}`);
+      if (listRes.ok) captures = (await listRes.json()).captures || [];
+    } catch { return; }
+
+    // Fetch baselines
+    let baselines = [];
+    try {
+      const res = await fetch(`${serverUrl}/baselines?url=${encodeURIComponent(pageUrl)}`);
+      if (res.ok) baselines = (await res.json()).baselines || [];
+    } catch { /* server may not support baselines yet */ }
+    const baselineKeys = new Set(baselines.map((b) => b.key));
+
+    if (captures.length === 0) return;
+
+    const { section: capSection, body: capBody } = createSection('Captures', `${captures.length}`, '#6366f1');
+    for (const cap of captures.slice(0, 10)) {
+      const row = document.createElement('div');
+      Object.assign(row.style, { display: 'flex', alignItems: 'center', gap: '6px', padding: '3px 0' });
+
+      // Timestamp
+      const ts = document.createElement('span');
+      const d = cap.timestamp ? new Date(cap.timestamp) : null;
+      ts.textContent = d ? `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}` : cap.filename.slice(0, 20);
+      Object.assign(ts.style, { color: '#9ca3af', fontSize: '11px', flexShrink: '0' });
+
+      // Node count
+      const nc = document.createElement('span');
+      nc.textContent = `${cap.nodeCount || '?'} nodes`;
+      Object.assign(nc.style, { color: '#666', fontSize: '10px', flex: '1' });
+
+      row.append(ts, nc);
+
+      // Baseline star button
+      const starBtn = document.createElement('button');
+      const isBaseline = baselines.some((b) => b.url && pageUrl.includes(b.url.replace(/^https?:\/\//, '')));
+      starBtn.textContent = isBaseline ? '\u2605' : '\u2606';
+      starBtn.title = isBaseline ? 'Current baseline' : 'Set as baseline';
+      Object.assign(starBtn.style, {
+        border: 'none', background: 'transparent', cursor: 'pointer',
+        color: isBaseline ? '#f59e0b' : '#555', fontSize: '14px', padding: '0 2px',
+      });
+      starBtn.addEventListener('click', async () => {
+        try {
+          const res = await fetch(`${serverUrl}/baselines`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename: cap.filename }),
+          });
+          if (res.ok) {
+            starBtn.textContent = '\u2605';
+            starBtn.style.color = '#f59e0b';
+          }
+        } catch { /* ignore */ }
+      });
+      row.appendChild(starBtn);
+      capBody.appendChild(row);
+    }
+    container.appendChild(capSection);
+
+    // Diff vs baseline
+    try {
+      const diffRes = await fetch(`${serverUrl}/baselines/compare?url=${encodeURIComponent(pageUrl)}`);
+      if (!diffRes.ok) return;
+      const diffData = await diffRes.json();
+      if (!diffData.hasBaseline) return;
+      const diff = diffData.diff;
+      if (!diff) return;
+      const total = (diff.added || 0) + (diff.removed || 0) + (diff.moved || 0) + (diff.testidChanges || 0);
+      if (total === 0) return;
+
+      const { section: diffSection, body: diffBody } = createSection('Diff vs Baseline', `${total}`, total > 0 ? '#dc2626' : '#333');
+      const lines = [];
+      if (diff.added) lines.push({ text: `+${diff.added} elements added`, color: '#4ade80' });
+      if (diff.removed) lines.push({ text: `-${diff.removed} elements removed`, color: '#f87171' });
+      if (diff.moved) lines.push({ text: `~${diff.moved} layout shifts`, color: '#f59e0b' });
+      if (diff.testidChanges) lines.push({ text: `${diff.testidChanges} testid changes`, color: '#60a5fa' });
+      for (const { text, color } of lines) {
+        const row = document.createElement('div');
+        row.textContent = text;
+        Object.assign(row.style, { padding: '2px 0', color, fontWeight: '600' });
+        diffBody.appendChild(row);
+      }
+      container.appendChild(diffSection);
+    } catch { /* no diff available */ }
   }
 
   /** Switch between Review and Inspect tabs. */

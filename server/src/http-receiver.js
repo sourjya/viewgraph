@@ -228,6 +228,57 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       return json(res, 200, { resolved });
     }
 
+    // GET /captures?url=... - list captures, optionally filtered by URL
+    if (method === 'GET' && url.startsWith('/captures') && !url.startsWith('/captures/')) {
+      const params = new URL(url, 'http://localhost').searchParams;
+      const urlFilter = params.get('url') || undefined;
+      const list = indexer.list(urlFilter).slice(0, 20).map((e) => ({
+        filename: e.filename, url: e.url, timestamp: e.timestamp, nodeCount: e.nodeCount,
+      }));
+      return json(res, 200, { captures: list });
+    }
+
+    // GET /baselines - list all baselines with metadata
+    if (method === 'GET' && url.startsWith('/baselines') && !url.includes('/compare')) {
+      const params = new URL(url, 'http://localhost').searchParams;
+      const urlFilter = params.get('url') || undefined;
+      const { listBaselines } = await import('#src/baselines.js');
+      const baselines = await listBaselines(capturesDir, urlFilter);
+      return json(res, 200, { baselines });
+    }
+
+    // GET /baselines/compare?url=... - diff latest capture vs baseline
+    if (method === 'GET' && url.startsWith('/baselines/compare')) {
+      const params = new URL(url, 'http://localhost').searchParams;
+      const pageUrl = params.get('url');
+      if (!pageUrl) return json(res, 400, { error: 'Missing url parameter' });
+      const { getBaseline } = await import('#src/baselines.js');
+      const baseline = await getBaseline(capturesDir, pageUrl);
+      if (!baseline) return json(res, 200, { hasBaseline: false });
+      const latest = indexer.getLatest(pageUrl);
+      if (!latest) return json(res, 200, { hasBaseline: true, noCapture: true });
+      const { readFile } = await import('fs/promises');
+      const capPath = validateCapturePath(latest.filename, capturesDir);
+      const capContent = await readFile(capPath, 'utf-8');
+      const { parseCapture } = await import('#src/parsers/viewgraph-v2.js');
+      const capResult = parseCapture(capContent);
+      if (!capResult.ok) return json(res, 500, { error: 'Failed to parse capture' });
+      const { diffCaptures } = await import('#src/analysis/capture-diff.js');
+      const diff = diffCaptures(baseline, capResult.data);
+      return json(res, 200, { hasBaseline: true, diff: { added: diff.added.length, removed: diff.removed.length, moved: diff.moved.length, testidChanges: diff.testidChanges.length } });
+    }
+
+    // POST /baselines - promote a capture to baseline
+    if (method === 'POST' && url === '/baselines') {
+      const body = await readBody(req);
+      if (!body) return json(res, 400, { error: 'Missing body' });
+      const { filename } = JSON.parse(body);
+      if (!filename) return json(res, 400, { error: 'Missing filename' });
+      const { setBaseline } = await import('#src/baselines.js');
+      const result = await setBaseline(capturesDir, filename);
+      return json(res, 200, result);
+    }
+
     json(res, 404, { error: 'Not found' });
   }
 

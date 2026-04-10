@@ -78,6 +78,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Console Error Capture (M12.2)
 
+### Regression Baselines (M15.2)
+- Baseline storage module: save/load/list golden captures in `.viewgraph/baselines/` keyed by normalized URL
+- `set_baseline` MCP tool: promote a capture to baseline for its URL
+- `compare_baseline` MCP tool: diff latest capture vs baseline with interactive count delta and summary
+- `list_baselines` MCP tool: list all stored baselines with metadata
+- HTTP endpoints: GET /captures, GET /baselines, POST /baselines, GET /baselines/compare
+- Extension Inspect tab: captures history section, star button to set baseline, diff vs baseline display
+- 13 new baseline storage tests
+
 ### Phase A+B UX Redesign
 - **Two-tab sidebar:** Review (annotations, filters, export) + Inspect (page diagnostics)
 - **Inspect tab:** viewport breakpoint indicator, network requests (collapsible, failed highlighted), console errors/warnings (collapsible), visibility warnings (hidden-by-ancestor elements)
