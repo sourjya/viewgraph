@@ -12,6 +12,7 @@
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
 import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker } from './annotate.js';
 import { KEYS, get as storageGet, set as storageSet } from './storage.js';
+import { groupRequests, smartPath } from './network-grouper.js';
 
 /**
  * Sync resolved state from the server. Polls /annotations/resolved for the
@@ -690,34 +691,82 @@ export function create() {
       }
     });
     autoRow.append(autoLabel, autoToggle);
-    inspectContent.appendChild(autoRow);
 
-    // Network section
+    // Network section - grouped by category
     const net = collectNetworkState();
-    const failedReqs = (net.requests || []).filter((r) => r.failed);
-    const netBadge = failedReqs.length > 0 ? `${failedReqs.length} failed` : null;
-    const { section: netSection, body: netBody } = createSection('Network', netBadge, '#dc2626');
-    if ((net.requests || []).length === 0) {
+    const allReqs = net.requests || [];
+    const failedReqs = allReqs.filter((r) => r.failed);
+    const netSummary = `${failedReqs.length ? failedReqs.length + ' failed / ' : ''}${allReqs.length}`;
+    const netColor = failedReqs.length > 0 ? '#dc2626' : '#333';
+    const { section: netSection, body: netBody } = createSection('Network', netSummary, netColor);
+    if (allReqs.length === 0) {
       netBody.textContent = 'No requests captured';
       Object.assign(netBody.style, { color: '#555', fontStyle: 'italic' });
     } else {
-      for (const req of (net.requests || []).slice(0, 20)) {
-        const row = document.createElement('div');
-        Object.assign(row.style, {
-          display: 'flex', gap: '6px', padding: '2px 0',
-          color: req.failed ? '#f87171' : '#9ca3af',
+      const groups = groupRequests(allReqs);
+      for (const group of groups) {
+        // Group header row
+        const groupRow = document.createElement('div');
+        Object.assign(groupRow.style, {
+          display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 0',
+          cursor: 'pointer', userSelect: 'none',
         });
-        const method = document.createElement('span');
-        method.textContent = req.method || 'GET';
-        Object.assign(method.style, { fontWeight: '600', flexShrink: '0', width: '30px' });
-        const url = document.createElement('span');
-        url.textContent = req.url?.replace(/^https?:\/\/[^/]+/, '') || req.url;
-        Object.assign(url.style, { flex: '1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
-        const size = document.createElement('span');
-        size.textContent = req.failed ? 'FAIL' : `${((req.transferSize || 0) / 1024).toFixed(1)}K`;
-        Object.assign(size.style, { flexShrink: '0', color: req.failed ? '#f87171' : '#555', fontWeight: req.failed ? '600' : '400' });
-        row.append(method, url, size);
-        netBody.appendChild(row);
+        const arrow = document.createElement('span');
+        const isFailed = group.name === 'Failed';
+        // Failed expanded by default, others collapsed
+        let expanded = isFailed;
+        arrow.textContent = expanded ? '\u25be' : '\u25b8';
+        Object.assign(arrow.style, { color: '#666', fontSize: '10px', width: '10px' });
+        const gName = document.createElement('span');
+        gName.textContent = group.name;
+        Object.assign(gName.style, {
+          fontWeight: '600', fontSize: '11px', flex: '1',
+          color: isFailed ? '#f87171' : '#9ca3af',
+        });
+        const gCount = document.createElement('span');
+        const sizeStr = group.totalSize > 0 ? ` - ${(group.totalSize / 1024).toFixed(1)}K` : '';
+        gCount.textContent = `${group.requests.length}${sizeStr}`;
+        Object.assign(gCount.style, { color: '#555', fontSize: '10px' });
+        groupRow.append(arrow, gName, gCount);
+
+        // Group body - request rows
+        const groupBody = document.createElement('div');
+        Object.assign(groupBody.style, {
+          display: expanded ? 'block' : 'none',
+          paddingLeft: '14px',
+        });
+        groupRow.addEventListener('click', () => {
+          expanded = !expanded;
+          arrow.textContent = expanded ? '\u25be' : '\u25b8';
+          groupBody.style.display = expanded ? 'block' : 'none';
+        });
+
+        for (const req of group.requests) {
+          const row = document.createElement('div');
+          Object.assign(row.style, {
+            display: 'flex', gap: '6px', padding: '2px 0',
+            color: req.failed ? '#f87171' : '#9ca3af',
+          });
+          // Smart path: filename + parent on hover
+          const sp = smartPath(req.url);
+          const urlEl = document.createElement('span');
+          urlEl.textContent = sp.filename;
+          urlEl.title = sp.full;
+          Object.assign(urlEl.style, { flex: '1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
+          if (sp.parent) {
+            const parentEl = document.createElement('span');
+            parentEl.textContent = ` ${sp.parent}`;
+            Object.assign(parentEl.style, { color: '#444', fontSize: '10px' });
+            urlEl.appendChild(parentEl);
+          }
+          const size = document.createElement('span');
+          size.textContent = req.failed ? 'FAIL' : `${((req.transferSize || 0) / 1024).toFixed(1)}K`;
+          Object.assign(size.style, { flexShrink: '0', color: req.failed ? '#f87171' : '#555', fontWeight: req.failed ? '600' : '400' });
+          row.append(urlEl, size);
+          groupBody.appendChild(row);
+        }
+
+        netBody.append(groupRow, groupBody);
       }
     }
     inspectContent.appendChild(netSection);
@@ -777,6 +826,9 @@ export function create() {
 
     // Captures + Baseline section - fetches from server asynchronously
     fetchCapturesSection(inspectContent);
+
+    // Auto-capture toggle at bottom (it's a setting, not a primary action)
+    inspectContent.appendChild(autoRow);
   }
 
   /**
@@ -810,27 +862,42 @@ export function create() {
     if (captures.length === 0) return;
 
     const { section: capSection, body: capBody } = createSection('Captures', `${captures.length}`, '#6366f1');
-    for (const cap of captures.slice(0, 10)) {
+    for (let i = 0; i < Math.min(captures.length, 10); i++) {
+      const cap = captures[i];
+      const prev = captures[i + 1]; // next in list = previous in time (sorted newest first)
       const row = document.createElement('div');
       Object.assign(row.style, { display: 'flex', alignItems: 'center', gap: '6px', padding: '3px 0' });
 
       // Timestamp
       const ts = document.createElement('span');
       const d = cap.timestamp ? new Date(cap.timestamp) : null;
-      ts.textContent = d ? `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}` : cap.filename.slice(0, 20);
+      ts.textContent = d ? `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}` : cap.filename.slice(0, 20);
       Object.assign(ts.style, { color: '#9ca3af', fontSize: '11px', flexShrink: '0' });
 
-      // Node count
+      // Node count with diff vs previous
       const nc = document.createElement('span');
-      nc.textContent = `${cap.nodeCount || '?'} nodes`;
-      Object.assign(nc.style, { color: '#666', fontSize: '10px', flex: '1' });
+      const count = cap.nodeCount || 0;
+      if (prev && prev.nodeCount) {
+        const delta = count - prev.nodeCount;
+        if (delta === 0) {
+          nc.textContent = `${count} nodes`;
+          Object.assign(nc.style, { color: '#555', fontSize: '10px', flex: '1' });
+        } else {
+          const sign = delta > 0 ? '+' : '';
+          nc.textContent = `${count} nodes (${sign}${delta})`;
+          Object.assign(nc.style, { color: delta > 0 ? '#4ade80' : '#f87171', fontSize: '10px', flex: '1' });
+        }
+      } else {
+        nc.textContent = `${count} nodes`;
+        Object.assign(nc.style, { color: '#666', fontSize: '10px', flex: '1' });
+      }
 
       row.append(ts, nc);
 
-      // Baseline star button
+      // Baseline indicator
       const starBtn = document.createElement('button');
       const isBaseline = baselines.some((b) => b.url && pageUrl.includes(b.url.replace(/^https?:\/\//, '')));
-      starBtn.textContent = isBaseline ? '\u2605' : '\u2606';
+      starBtn.textContent = isBaseline ? '\u2605 Baseline' : '\u2606';
       starBtn.title = isBaseline ? 'Current baseline' : 'Set as baseline';
       Object.assign(starBtn.style, {
         border: 'none', background: 'transparent', cursor: 'pointer',
