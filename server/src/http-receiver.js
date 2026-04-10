@@ -228,6 +228,16 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       return json(res, 200, { resolved });
     }
 
+    // GET /captures?url=... - list captures, optionally filtered by URL
+    if (method === 'GET' && url.startsWith('/captures') && !url.startsWith('/captures/')) {
+      const params = new URL(url, 'http://localhost').searchParams;
+      const urlFilter = params.get('url') || undefined;
+      const list = indexer.list(urlFilter).slice(0, 20).map((e) => ({
+        filename: e.filename, url: e.url, timestamp: e.timestamp, nodeCount: e.nodeCount,
+      }));
+      return json(res, 200, { captures: list });
+    }
+
     // GET /baselines - list all baselines with metadata
     if (method === 'GET' && url.startsWith('/baselines') && !url.includes('/compare')) {
       const params = new URL(url, 'http://localhost').searchParams;

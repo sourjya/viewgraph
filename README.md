@@ -220,8 +220,8 @@ npm run dev:ext        # start extension dev server (Chrome HMR)
 ## Testing
 
 ```bash
-npm test               # all tests (580 tests)
-npm run test:server    # server only (235 tests)
+npm test               # all tests (593 tests)
+npm run test:server    # server only (248 tests)
 npm run test:ext       # extension only (345 tests)
 ```
 
@@ -256,6 +256,14 @@ npm run test:ext       # extension only (345 tests)
 | `request_capture` | Request a capture from the browser extension |
 | `get_request_status` | Poll for capture request completion |
 | `get_fidelity_report` | Compare capture against HTML snapshot for fidelity metrics |
+
+### Baseline Tools (M15.2)
+
+| Tool | Description |
+|---|---|
+| `set_baseline` | Promote a capture to golden baseline for its URL |
+| `compare_baseline` | Diff latest capture vs baseline - detect structural regressions |
+| `list_baselines` | List all stored baselines with metadata |
 
 ## Project Structure
 
