@@ -80,6 +80,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Responsive Breakpoint Context (M12.6)
 
+### Phase B UX Redesign - Two-Tab Sidebar
+- Sidebar restructured into Review + Inspect tabs
+- Review tab: mode bar, filter tabs, annotation list, export footer (existing behavior)
+- Inspect tab: breakpoint indicator, network section (collapsible, failed red), console section (collapsible, errors/warnings), visibility warnings (hidden-by-ancestor)
+- All Inspect sections use shared collapsible pattern with arrow toggle
+- Inspect tab refreshes from live page data on each tab switch
+- Settings is now a slide-over overlay instead of screen replacement
+- Sidebar entries simplified: severity encoded as badge color, no category/detail noise
+
 ### Phase A UX Redesign
 - Enhanced tooltip: a11y info line (role, accessible name, states) in blue
 - Enhanced tooltip: isRendered warning in orange when element hidden by ancestor
