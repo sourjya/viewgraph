@@ -1,0 +1,1 @@
+List recent ViewGraph captures using list_captures. Compare the two most recent captures using compare_captures. Report what changed: added/removed elements, layout shifts, style changes, and testid changes. Flag anything that looks like a regression.
