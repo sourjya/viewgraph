@@ -183,8 +183,16 @@ if (agent?.name === 'Kiro') {
 
 console.log('\nDone. Starting ViewGraph server...\n');
 
-// 7. Auto-start the MCP server (detached so init exits cleanly)
-import { spawn } from 'child_process';
+// 7. Kill any existing ViewGraph server, then start fresh (detached)
+import { spawn, execSync } from 'child_process';
+try {
+  const pids = execSync(`pgrep -f "${SERVER_ENTRY.replace(/\//g, '\\/')}"`, { encoding: 'utf-8' }).trim().split('\n').filter(Boolean);
+  for (const pid of pids) {
+    process.kill(Number(pid), 'SIGTERM');
+    console.log(`  Stopped existing server (PID ${pid})`);
+  }
+} catch { /* no existing server */ }
+
 const server = spawn('node', [SERVER_ENTRY], {
   stdio: 'ignore',
   detached: true,
