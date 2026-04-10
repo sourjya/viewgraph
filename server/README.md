@@ -90,10 +90,21 @@ npm run dev:server       # via workspace (from project root)
 The server uses stdio transport for MCP communication and starts an HTTP receiver
 on localhost for extension communication.
 
+### HTTP Endpoints
+
+| Endpoint | Description |
+|---|---|
+| `GET /health` | Server status, captures dir, writability |
+| `GET /info` | Project info for auto-detection (capturesDir, projectRoot) |
+| `GET /requests/pending` | Pending capture requests for extension polling |
+| `POST /captures` | Receive capture JSON from extension |
+| `POST /snapshots` | Receive HTML snapshots from extension |
+| `GET /annotations/resolved` | Resolved annotations for extension sync |
+
 ## Testing
 
 ```bash
-npm test                 # single run (148 tests)
+npm test                 # single run (169 tests)
 npm run test:watch       # watch mode
 ```
 
@@ -106,7 +117,7 @@ src/
   constants.js           Domain constants
   watcher.js             Chokidar file watcher on captures directory
   indexer.js             In-memory capture index (filename -> metadata)
-  http-receiver.js       HTTP server for extension push, request polling, health check
+  http-receiver.js       HTTP server for extension push, request polling, health check, /info
   request-queue.js       In-memory request queue (pending -> ack -> complete/expire)
   parsers/
     viewgraph-v2.js      ViewGraph v2 JSON parser

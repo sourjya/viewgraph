@@ -8,6 +8,41 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Auto-Detect Project Mapping
+- Server `GET /info` endpoint returns `capturesDir` and `projectRoot` (derived from captures path)
+- Extension sidebar fetches `/info` directly (with background proxy fallback for CSP)
+- Settings shows auto-detected project root and captures dir (read-only)
+- Options page: "Active Mapping" section with green/grey connection dot
+- Manual overrides hidden behind toggle for power users
+- `lookupCapturesDir` priority: manual overrides (if enabled) > auto-detected from `/info`
+- 4 new server tests for `/info` endpoint and path derivation
+
+### Sidebar UX Improvements
+- Two-line entry layout: #id + element + comment on line 1, severity/category chips on line 2
+- Mode button hints: "Click to select", "Shift+drag area", "Add a page note"
+- Themed scrollbar: 8px, dark rounded thumb matching sidebar background
+- Lighter hover color on entries for better visibility
+- Tabs (Open/Resolved/All) hidden when settings screen is active
+- Advanced settings link opens options in new tab (not embedded in chrome://extensions)
+
+### Page Notes
+- Separate P-prefix numbering (P1, P2, P3) - no gaps in element annotation sequence
+- Styled cyan badge with document SVG icon (replaces emoji)
+- Auto-opens comment panel when adding a page note
+- Separate `nextPageNoteId` counter persisted to chrome.storage
+
+### Init Script Improvements
+- Kills existing ViewGraph server processes before spawning fresh one (prevents stale servers)
+- Detached server start with `stdio: 'ignore'` - init exits cleanly
+- Installs Kiro Power assets (steering docs + hooks)
+
+### Power Assets
+- Hook rewritten in Kiro JSON format (was invalid YAML frontmatter)
+- `post-fix-verify.kiro.hook`: `fileEdited` trigger with `askAgent` action
+
+### Test Coverage
+- 478 total tests (169 server + 309 extension)
+
 ### Multi-Project Capture Routing
 - URL-based project routing: extension sends x-captures-dir header, server writes to override dir
 - Extension options page with project mappings (URL pattern -> captures directory)
