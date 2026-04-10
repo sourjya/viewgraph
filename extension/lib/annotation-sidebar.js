@@ -113,6 +113,8 @@ export function create() {
   Object.assign(statusDot.style, {
     width: '8px', height: '8px', borderRadius: '50%',
     background: '#666', flexShrink: '0', transition: 'background 0.3s',
+    marginRight: '6px', marginLeft: '2px',
+    boxShadow: '0 0 0 3px #1e1e2e',
   });
 
   // Status banner - shown between primary tabs and content when disconnected
