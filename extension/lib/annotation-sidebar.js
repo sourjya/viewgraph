@@ -562,6 +562,9 @@ export function create() {
     const bp = collectBreakpoints();
     const bpRow = document.createElement('div');
     Object.assign(bpRow.style, { display: 'flex', alignItems: 'center', gap: '8px' });
+    const bpTitle = document.createElement('span');
+    bpTitle.textContent = 'VIEWPORT';
+    Object.assign(bpTitle.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px' });
     const bpBadge = document.createElement('span');
     bpBadge.textContent = bp.activeRange;
     Object.assign(bpBadge.style, {
@@ -571,7 +574,7 @@ export function create() {
     const bpLabel = document.createElement('span');
     bpLabel.textContent = `${bp.viewport.width}px`;
     Object.assign(bpLabel.style, { color: '#666', fontSize: '11px' });
-    bpRow.append(bpBadge, bpLabel);
+    bpRow.append(bpTitle, bpBadge, bpLabel);
     inspectContent.appendChild(bpRow);
 
     // Network section
