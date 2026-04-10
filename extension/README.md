@@ -42,7 +42,7 @@ See [UX Design](../docs/architecture/ux-analysis.md) for design decisions and us
 ## Testing
 
 ```bash
-npm test               # unit tests (339 tests)
+npm test               # unit tests (345 tests)
 npm run test:watch     # watch mode
 ```
 

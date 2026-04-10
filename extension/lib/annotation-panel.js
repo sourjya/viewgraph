@@ -220,7 +220,7 @@ export function show(annotation, callbacks = {}) {
     width: '100%', minHeight: '90px', padding: '6px 8px',
     background: '#16161e', border: '1px solid #333', borderRadius: '4px',
     color: '#e0e0e0', fontSize: '13px', fontFamily: 'system-ui, sans-serif',
-    resize: 'vertical', outline: 'none',
+    resize: 'vertical', outline: 'none', boxSizing: 'border-box',
   });
   textarea.addEventListener('input', () => {
     updateComment(annotation.id, textarea.value);
