@@ -786,12 +786,12 @@ export function create() {
     const conBadgeParts = [];
     if (errCount) conBadgeParts.push(`${errCount} err`);
     if (warnCount) conBadgeParts.push(`${warnCount} wrn`);
-    const conBadge = conBadgeParts.length ? conBadgeParts.join(' ') : null;
-    const conColor = errCount > 0 ? '#dc2626' : warnCount > 0 ? '#f59e0b' : '#333';
+    const conBadge = conBadgeParts.length ? conBadgeParts.join(' ') : '0 / 0';
+    const conColor = errCount > 0 ? '#dc2626' : warnCount > 0 ? '#f59e0b' : '#22c55e';
     const { section: conSection, body: conBody } = createSection('Console', conBadge, conColor);
     if (cs.errors.length === 0 && cs.warnings.length === 0) {
-      conBody.textContent = 'No errors or warnings';
-      Object.assign(conBody.style, { color: '#555', fontStyle: 'italic' });
+      conBody.textContent = '\u2713 No errors or warnings captured';
+      Object.assign(conBody.style, { color: '#22c55e', fontSize: '10px' });
     } else {
       for (const err of cs.errors.slice(0, 10)) {
         const row = document.createElement('div');
@@ -884,22 +884,38 @@ export function create() {
 
     // ARIA landmarks (only shown when issues detected)
     const lm = collectLandmarks();
-    if (lm.issues.length > 0) {
-      const { section: lmSection, body: lmBody } = createSection('Landmarks', `\u26a0 ${lm.issues.length}`, '#f59e0b');
-      for (const issue of lm.issues) {
-        const row = document.createElement('div');
-        Object.assign(row.style, { padding: '3px 0', fontSize: '10px', color: '#f59e0b' });
-        row.textContent = issue.message;
-        lmBody.appendChild(row);
-      }
-      if (lm.landmarks.length > 0) {
-        const info = document.createElement('div');
-        info.textContent = lm.landmarks.map((l) => l.label ? `${l.role}(${l.label})` : l.role).join(' > ');
-        Object.assign(info.style, { color: '#444', fontSize: '9px', marginTop: '4px', fontStyle: 'italic' });
-        lmBody.appendChild(info);
-      }
-      inspectContent.appendChild(lmSection);
+    const lmHasIssues = lm.issues.length > 0;
+    const lmBadge = lmHasIssues ? `\u26a0 ${lm.issues.length}` : `${lm.landmarks.length}`;
+    const lmColor = lmHasIssues ? '#f59e0b' : '#22c55e';
+    const { section: lmSection, body: lmBody } = createSection('Landmarks', lmBadge, lmColor);
+
+    // Brief explainer
+    const lmExplainer = document.createElement('div');
+    lmExplainer.textContent = 'Page regions screen readers use for navigation';
+    Object.assign(lmExplainer.style, { color: '#555', fontSize: '9px', marginBottom: '4px' });
+    lmBody.appendChild(lmExplainer);
+
+    // Issues
+    for (const issue of lm.issues) {
+      const row = document.createElement('div');
+      Object.assign(row.style, { padding: '2px 0', fontSize: '10px', color: '#f59e0b' });
+      row.textContent = `\u26a0 ${issue.message}`;
+      lmBody.appendChild(row);
     }
+
+    // Always show landmark list
+    if (lm.landmarks.length > 0) {
+      const list = document.createElement('div');
+      Object.assign(list.style, { marginTop: '4px', fontSize: '10px', color: '#9ca3af' });
+      list.textContent = lm.landmarks.map((l) => l.label ? `${l.role}(${l.label})` : l.role).join(' \u2192 ');
+      lmBody.appendChild(list);
+    } else {
+      const none = document.createElement('div');
+      none.textContent = 'No landmarks found';
+      Object.assign(none.style, { color: '#555', fontSize: '10px' });
+      lmBody.appendChild(none);
+    }
+    inspectContent.appendChild(lmSection);
 
     // Visual separator between diagnostics and capture sections
     const capSep = document.createElement('hr');
@@ -907,7 +923,16 @@ export function create() {
     inspectContent.appendChild(capSep);
 
     // Auto-capture toggle (grouped with captures below)
+    const autoDesc = document.createElement('div');
+    autoDesc.textContent = 'Captures on every DOM change or hot-reload';
+    Object.assign(autoDesc.style, { color: '#555', fontSize: '9px', marginBottom: '6px' });
     inspectContent.appendChild(autoRow);
+    inspectContent.appendChild(autoDesc);
+
+    // Thin divider between auto-capture and record flow
+    const flowSep = document.createElement('hr');
+    Object.assign(flowSep.style, { border: 'none', borderTop: '1px solid #2a2a3a', margin: '4px 0' });
+    inspectContent.appendChild(flowSep);
 
     // Session recording row
     const sessionRow = document.createElement('div');
@@ -954,6 +979,14 @@ export function create() {
 
     sessionRow.append(recDot, recLabel, recInfo, recBtn);
     inspectContent.appendChild(sessionRow);
+
+    // Record flow description (only when not recording)
+    if (!recording) {
+      const recDesc = document.createElement('div');
+      recDesc.textContent = 'Tag captures as steps in a multi-page flow';
+      Object.assign(recDesc.style, { color: '#555', fontSize: '9px', marginBottom: '2px' });
+      inspectContent.appendChild(recDesc);
+    }
 
     // Step note input (only visible when recording)
     if (recording) {
@@ -1068,12 +1101,25 @@ export function create() {
     });
     idRow.append(idText, copyBtn);
     container.appendChild(idRow);
-    // Page title (if available)
+
+    // URL (truncated, always shown)
+    if (latest.url) {
+      const urlEl = document.createElement('div');
+      urlEl.setAttribute(ATTR, 'capture-url');
+      try {
+        const u = new URL(latest.url);
+        urlEl.textContent = u.host + u.pathname;
+      } catch { urlEl.textContent = latest.url; }
+      Object.assign(urlEl.style, { color: '#6b7280', fontSize: '10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '0' });
+      container.appendChild(urlEl);
+    }
+
+    // Page title (if available, on same tight spacing)
     if (latest.title) {
       const titleEl = document.createElement('div');
       titleEl.setAttribute(ATTR, 'capture-title');
       titleEl.textContent = latest.title;
-      Object.assign(titleEl.style, { color: '#555', fontSize: '11px', padding: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
+      Object.assign(titleEl.style, { color: '#555', fontSize: '10px', padding: '0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
       container.appendChild(titleEl);
     }
 
