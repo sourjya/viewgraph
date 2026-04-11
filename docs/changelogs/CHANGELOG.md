@@ -49,6 +49,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - 5 unit tests
 
 ### Pattern-Based Steering Generation (M10.6)
+
+### Performance Collector (M15.5)
+- New `performance-collector.js`: collects browser Performance API metrics
+- Navigation timing (page load, DOM content loaded, first byte, DOM interactive)
+- Resource timing (slow resources > 500ms, total transfer size)
+- Memory info (Chrome only - JS heap size)
+- Included in capture as `performance` enrichment section
+- `get_page_summary` includes `pageLoadMs` and `slowResources` count
+- 4 new extension tests
+
+### Pattern-Based Steering Generation (M10.6)
 - New `steering-generator.js`: analyzes resolved annotations for recurring patterns
 - Detects dominant categories, element types, and severity distributions
 - Generates project-specific recommendations (e.g., "add eslint-plugin-jsx-a11y")
