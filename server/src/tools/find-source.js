@@ -38,14 +38,15 @@ export function register(server, _indexer, capturesDir) {
       aria_label: z.string().optional().describe('aria-label attribute value'),
       selector: z.string().optional().describe('CSS selector (e.g., "button#submit", "div.card-header")'),
       text: z.string().optional().describe('Visible text content of the element'),
+      component: z.string().optional().describe('Framework component name (e.g., "ProductCard", "LoginForm")'),
     },
-    async ({ testid, aria_label, selector, text }) => {
-      if (!testid && !aria_label && !selector && !text) {
-        return { content: [{ type: 'text', text: 'Error: Provide at least one of: testid, aria_label, selector, text' }], isError: true };
+    async ({ testid, aria_label, selector, text, component }) => {
+      if (!testid && !aria_label && !selector && !text && !component) {
+        return { content: [{ type: 'text', text: 'Error: Provide at least one of: testid, aria_label, selector, text, component' }], isError: true };
       }
 
       const results = await findSource(projectRoot, {
-        testid, ariaLabel: aria_label, selector, text,
+        testid, ariaLabel: aria_label, selector, text, component,
       });
 
       if (results.length === 0) {

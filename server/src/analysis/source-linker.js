@@ -34,7 +34,7 @@ const MAX_FILE_SIZE = 200 * 1024;
 /**
  * Find source file locations for a DOM element.
  * @param {string} projectRoot - Absolute path to the project root
- * @param {{ testid?: string, ariaLabel?: string, selector?: string, text?: string }} query
+ * @param {{ testid?: string, ariaLabel?: string, selector?: string, text?: string, component?: string }} query
  * @returns {Promise<Array<{ file: string, line: number, match: string, confidence: string }>>}
  */
 export async function findSource(projectRoot, query) {
@@ -48,6 +48,13 @@ export async function findSource(projectRoot, query) {
   }
   if (query.ariaLabel) {
     searches.push({ pattern: query.ariaLabel, confidence: 'high', label: `aria-label="${query.ariaLabel}"` });
+  }
+  if (query.component) {
+    // Component name search - look for definition patterns
+    searches.push({ pattern: `function ${query.component}`, confidence: 'high', label: `component ${query.component}` });
+    searches.push({ pattern: `const ${query.component}`, confidence: 'high', label: `component ${query.component}` });
+    searches.push({ pattern: `export default ${query.component}`, confidence: 'high', label: `component ${query.component}` });
+    searches.push({ pattern: `class ${query.component}`, confidence: 'high', label: `component ${query.component}` });
   }
   if (query.selector) {
     // Extract id or meaningful class from selector
