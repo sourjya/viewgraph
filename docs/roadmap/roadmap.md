@@ -356,6 +356,7 @@ installable globally.
 **ADR:** [`docs/decisions/ADR-008-kiro-power-packaging.md`](../decisions/ADR-008-kiro-power-packaging.md)
 **Spec:** [`.kiro/specs/kiro-power/`](../../.kiro/specs/kiro-power/)
 **Depends on:** [Unified Review Panel](../../.kiro/specs/unified-review-panel/) spec
+**Status:** Complete
 
 A Kiro Power bundles MCP tools + steering docs + hooks into a single installable unit.
 ViewGraph tools activate dynamically when the user mentions UI, annotation, layout,

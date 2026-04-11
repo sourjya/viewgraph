@@ -9,6 +9,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ## [Unreleased]
 
 ### Inspect Tab Captures UX Redesign
+
+### Kiro Power Package (M8b)
+- `POWER.md` entry point with YAML frontmatter (name, displayName, description, 14 activation keywords)
+- Tool catalog: all 19+ MCP tools documented with descriptions
+- Onboarding steps: Node.js check, extension check, init script, hook installation
+- Steering file mapping: workflow and resolution docs loaded contextually
+- Best practices: capture, annotation, verification, and a11y workflows
+- `mcp.json` with local command-based server config
+- 3 `.kiro.hook` JSON hooks: Capture and Audit (userTriggered), Fix Annotations (userTriggered), Check TestIDs (fileEdited on UI files)
+- Init script updated to dynamically install all hook files (both .kiro.hook and legacy .sh)
+- Power directory structure: `power/{POWER.md, mcp.json, steering/, hooks/}`
+
+### Inspect Tab Captures UX Redesign
 - Simplified captures section: latest capture summary with relative time and element count
 - Auto-diff vs previous capture shown inline (e.g. "+10 elements since previous")
 - Older captures shown as compact timestamp timeline (no interactive rows)
