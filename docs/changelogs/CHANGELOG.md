@@ -41,6 +41,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Event Listener Inventory (M12.4)
 
 ### Annotation Diffing (M10.4)
+
+### Annotation-to-Spec Pipeline (M10.7)
+- New `spec-generator.js`: converts annotations into Kiro spec format
+- Groups by page and severity, generates requirements.md and tasks.md
+- New MCP tool: `generate_spec` - takes captures, outputs structured spec
+- 5 unit tests
+
+### Pattern-Based Steering Generation (M10.6)
+- New `steering-generator.js`: analyzes resolved annotations for recurring patterns
+- Detects dominant categories, element types, and severity distributions
+- Generates project-specific recommendations (e.g., "add eslint-plugin-jsx-a11y")
+- New MCP tool: `analyze_patterns` - scans all resolved annotations
+- 5 unit tests
+
+### Annotation Diffing (M10.4)
 - New `annotation-diff.js`: compares annotations across captures chronologically
 - Tracks persistent issues, new issues, and resolved issues over time
 - New MCP tool: `diff_annotations` - takes 2-20 capture filenames
