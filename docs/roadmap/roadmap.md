@@ -37,6 +37,7 @@
 | Code Quality Audit | Complete | Deduplication, static import conversion, timeout fixes |
 | Dead Code Elimination | Complete | 16 unused exports/imports/functions removed |
 | Redundancy Centralization | Complete | selector(), ATTR, readAndParse() helpers extracted |
+| M16: Sidebar UX Polish | Planned | 10 tasks: bug fix, adaptive footer, keyboard nav, interaction polish |
 
 **Current totals:** 923 tests (324 server + 599 extension), 34 MCP tools, 14 enrichment collectors
 
@@ -618,6 +619,25 @@ See [problem-feature-mapping.md](./problem-feature-mapping.md) for how each
 core problem (weak tests, brittle selectors, missed regressions, vague QA
 handoffs, bad a11y fixes, poor layout reproduction, hallucinated UI) maps
 to specific ViewGraph features, tools, workflows, and remaining gaps.
+
+---
+
+## Milestone 16: Sidebar UX Polish (Future)
+
+**Goal:** Fix UX friction points identified in the [sidebar UX review](sidebar-ux-fixes.md). Bug fixes, adaptive layouts, keyboard navigation, and interaction polish.
+
+| # | Task | Details |
+|---|---|---|
+| 16.1 | Fix collapsed strip mode toggle | Bug: `captureMode` undefined variable on line 1265. Replace with `getCaptureMode()`. Strip mode toggle is broken. |
+| 16.2 | Adaptive footer for disconnected state | When server offline, promote Copy MD/Report to primary, collapse disabled Send to hint text. |
+| 16.3 | Separate capture controls in Inspect tab | Wrap auto-capture, record flow, snapshots in a collapsible "Capture Controls" section instead of mixing with diagnostics. |
+| 16.4 | Mode bar collapse feedback | Show first-time toast on collapse: "Click elements on the page. Tap here to expand." Track in storage. |
+| 16.5 | Keyboard navigation in annotation list | Arrow Up/Down to move focus, Enter to open panel. Complete the keyboard-driven workflow. |
+| 16.6 | Filter tabs incremental update | Update tab count text instead of destroying/recreating tab bar on every refresh. |
+| 16.7 | Click-to-expand annotations | Replace 600ms hover-expand with click chevron. Eliminates layout shift on hover. |
+| 16.8 | Inspect tab empty state | Show green "No issues detected" when all diagnostic sections are clean. |
+| 16.9 | Report button feedback | Change "Saving..." to "Saved!" with checkmark, matching Send/Copy pattern. |
+| 16.10 | Collapsed strip active state | Highlight active mode icon in strip (indigo background) when mode is set. |
 
 ---
 
