@@ -63,6 +63,11 @@ function readBody(req, limit = MAX_BODY) {
 
 /** Send a JSON response. */
 function json(res, status, data) {
+  // CORS: Allow all origins. Security relies on:
+  // 1. Binding to 127.0.0.1 (not network-accessible)
+  // 2. Auth tokens on all POST endpoints
+  // 3. No sensitive data in unauthenticated GET responses
+  // Content scripts run in the page's origin, so we can't restrict by origin.
   res.writeHead(status, { 'content-type': 'application/json', 'access-control-allow-origin': '*' });
   res.end(JSON.stringify(data));
 }
@@ -125,7 +130,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       // Read agent name written by viewgraph-init
       let agent;
       try { const { readFileSync } = await import('fs'); agent = readFileSync(resolve(projectRoot, '.viewgraph', '.agent'), 'utf-8').trim(); } catch { /* not set */ }
-      return json(res, 200, { capturesDir: absCaptures, projectRoot, token: secret || undefined, agent });
+      return json(res, 200, { capturesDir: absCaptures, projectRoot, agent });
     }
 
     // GET /requests/pending
@@ -141,7 +146,8 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
     // POST /requests/create - create a capture request (used by agents via HTTP)
     if (method === 'POST' && url === '/requests/create') {
       if (!checkAuth(req, res)) return;
-      const body = JSON.parse(await readBody(req));
+      let body;
+      try { body = JSON.parse(await readBody(req)); } catch { return json(res, 400, { error: 'Invalid JSON' }); }
       const created = queue.create(body.url, { guidance: body.guidance, purpose: body.purpose });
       return json(res, 201, { requestId: created.id, status: created.status });
     }
@@ -160,7 +166,8 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
     if (declineMatch) {
       if (!checkAuth(req, res)) return;
       const body = await readBody(req);
-      const reason = body ? JSON.parse(body).reason : undefined;
+      let reason;
+      try { reason = body ? JSON.parse(body).reason : undefined; } catch { /* optional body */ }
       const declined = queue.decline(declineMatch[1], reason);
       if (!declined) return json(res, 404, { error: 'Request not found' });
       return json(res, 200, { id: declined.id, status: 'declined', reason: declined.declineReason });
@@ -329,9 +336,12 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
 
     // POST /baselines - promote a capture to baseline
     if (method === 'POST' && url === '/baselines') {
+      if (!checkAuth(req, res)) return;
       const body = await readBody(req);
       if (!body) return json(res, 400, { error: 'Missing body' });
-      const { filename } = JSON.parse(body);
+      let parsed;
+      try { parsed = JSON.parse(body); } catch { return json(res, 400, { error: 'Invalid JSON' }); }
+      const { filename } = parsed;
       if (!filename) return json(res, 400, { error: 'Missing filename' });
       const { setBaseline } = await import('#src/baselines.js');
       const result = await setBaseline(capturesDir, filename);
@@ -361,6 +371,9 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         });
         server.listen(tryPort, '127.0.0.1', () => {
           const actualPort = server.address().port;
+          // Prevent slow-loris: timeout idle connections after 30s, requests after 10s
+          server.timeout = 30000;
+          server.requestTimeout = 10000;
           // Attach WebSocket server for real-time annotation sync (only when auth is configured)
           if (secret) {
             wsServer = createWebSocketServer(server, { authToken: secret });

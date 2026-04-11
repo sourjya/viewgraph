@@ -54,7 +54,7 @@ export function register(server, _indexer, capturesDir) {
       const result = buildStateMachine(steps);
       return { content: [{ type: 'text', text: JSON.stringify({
         steps: result.states.length,
-        transitions: result.transitions.length,
+        transitionCount: result.transitions.length,
         states: result.states,
         transitions: result.transitions,
         mermaid: result.mermaid,

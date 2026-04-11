@@ -85,7 +85,7 @@ export function register(server, _indexer, capturesDir) {
 
       return { content: [{ type: 'text', text: JSON.stringify({
         steps: summary.length,
-        issues: issues.length,
+        issueCount: issues.length,
         journey: summary,
         issues: issues,
       }, null, 2) }] };

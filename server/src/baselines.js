@@ -12,6 +12,7 @@
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import { validateCapturePath } from './utils/validate-path.js';
 
 /**
  * Normalize a URL into a filesystem-safe baseline key.
@@ -58,7 +59,7 @@ export async function ensureBaselinesDir(capturesDir) {
  * @returns {{ ok: boolean, baselineKey: string, url: string }}
  */
 export async function setBaseline(capturesDir, filename) {
-  const srcPath = path.join(capturesDir, filename);
+  const srcPath = validateCapturePath(filename, capturesDir);
   const content = await fs.readFile(srcPath, 'utf-8');
   const capture = JSON.parse(content);
   const url = capture.METADATA?.url || capture.url;
