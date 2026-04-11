@@ -171,7 +171,7 @@ if (agent?.name === 'Kiro') {
   // Copy steering docs if source exists
   if (existsSync(srcSteering)) {
     ensureDir(steeringDir);
-    for (const file of ['viewgraph-workflow.md', 'viewgraph-resolution.md']) {
+    for (const file of ['viewgraph-workflow.md', 'viewgraph-resolution.md', 'viewgraph-hostile-dom.md']) {
       const src = path.join(srcSteering, file);
       const dest = path.join(steeringDir, file);
       if (existsSync(src) && !existsSync(dest)) {
