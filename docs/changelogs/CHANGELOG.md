@@ -15,6 +15,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### MCP Server Audit Fixes
 
 ### Z-Index Stacking Context Resolution (M13.1)
+
+### Focus Management Chain (M13.2)
+- New `focus-collector.js`: captures active element, tab order sequence, focus traps, unreachable elements
+- Tab order follows browser rules: tabIndex > 0 first (ascending), then tabIndex = 0 in DOM order
+- Detects focus traps (role=dialog, aria-modal=true, dialog[open]) and flags empty traps
+- Flags interactive elements with tabIndex=-1 as unreachable
+- Focus data included in capture JSON as `focus` section (backward compatible)
+- Inspect tab: FOCUS section appears only when issues detected
+- Server parser extracts focus section; `get_page_summary` includes `focusIssues` count
+- 16 new extension tests (6 tab order + 3 unreachable + 5 traps + 2 active element)
+
+### Z-Index Stacking Context Resolution (M13.1)
 - New `stacking-collector.js`: walks DOM to identify stacking context boundaries (position+z-index, opacity, transform, filter, will-change, isolation, mix-blend-mode, contain, fixed/sticky)
 - Detects z-index conflicts between overlapping sibling stacking contexts
 - Stacking data included in capture JSON as `stacking` section (backward compatible)

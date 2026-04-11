@@ -18,6 +18,7 @@ import { collectNetworkState } from '../lib/network-collector.js';
 import { installConsoleInterceptor, getConsoleState } from '../lib/console-collector.js';
 import { collectBreakpoints } from '../lib/breakpoint-collector.js';
 import { collectStackingContexts } from '../lib/stacking-collector.js';
+import { collectFocusChain } from '../lib/focus-collector.js';
 import {
   start as startAnnotate, stop as stopAnnotate, isActive as isAnnotating,
   getAnnotations, load as loadAnnotations, hideMarkers,
@@ -45,7 +46,7 @@ export default defineContentScript({
           const viewport = { width: window.innerWidth, height: window.innerHeight };
           const { elements, relations } = traverseDOM();
           const scored = scoreAll(elements, viewport);
-          const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts() };
+          const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain() };
           const capture = serialize(scored, relations, enrichment);
           const snapshot = message.includeSnapshot ? captureSnapshot() : null;
           sendResponse({ ok: true, capture, snapshot });
@@ -89,7 +90,7 @@ export default defineContentScript({
             const anns = getAnnotations();
             const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString() };
             const screenshots = message.screenshot ? await cropRegions(message.screenshot, anns, { scrollX: window.scrollX, scrollY: window.scrollY }) : [];
-            const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts() };
+            const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain() };
             const blob = await buildReportZip(anns, meta, screenshots, enrichment);
             // Trigger download via object URL
             const url = URL.createObjectURL(blob);
