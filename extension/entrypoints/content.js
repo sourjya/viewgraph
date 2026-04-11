@@ -23,6 +23,7 @@ import { collectScrollContainers } from '../lib/scroll-collector.js';
 import { collectLandmarks } from '../lib/landmark-collector.js';
 import { isRecording, addStep, getCaptureMetadata } from '../lib/session-manager.js';
 import { collectComponents } from '../lib/component-collector.js';
+import { collectAxeResults } from '../lib/axe-collector.js';
 import {
   start as startAnnotate, stop as stopAnnotate, isActive as isAnnotating,
   getAnnotations, load as loadAnnotations, hideMarkers,
@@ -46,21 +47,24 @@ export default defineContentScript({
         // Exit annotate mode before capturing clean DOM (unless keepSidebar is set)
         if (isAnnotating() && !message.keepSidebar) { hideMarkers(); destroySidebar(); stopAnnotate(); }
         if (isAnnotating() && message.keepSidebar) { hideMarkers(); }
-        try {
-          const viewport = { width: window.innerWidth, height: window.innerHeight };
-          const { elements, relations } = traverseDOM();
-          const scored = scoreAll(elements, viewport);
-          const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents() };
-          if (isRecording()) {
-            addStep(message.sessionNote);
-            enrichment.session = getCaptureMetadata();
+        (async () => {
+          try {
+            const viewport = { width: window.innerWidth, height: window.innerHeight };
+            const { elements, relations } = traverseDOM();
+            const scored = scoreAll(elements, viewport);
+            const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents() };
+            enrichment.axe = await collectAxeResults();
+            if (isRecording()) {
+              addStep(message.sessionNote);
+              enrichment.session = getCaptureMetadata();
+            }
+            const capture = serialize(scored, relations, enrichment);
+            const snapshot = message.includeSnapshot ? captureSnapshot() : null;
+            sendResponse({ ok: true, capture, snapshot });
+          } catch (err) {
+            sendResponse({ ok: false, error: err.message });
           }
-          const capture = serialize(scored, relations, enrichment);
-          const snapshot = message.includeSnapshot ? captureSnapshot() : null;
-          sendResponse({ ok: true, capture, snapshot });
-        } catch (err) {
-          sendResponse({ ok: false, error: err.message });
-        }
+        })();
         return true;
       }
 
@@ -99,6 +103,7 @@ export default defineContentScript({
             const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString() };
             const screenshots = message.screenshot ? await cropRegions(message.screenshot, anns, { scrollX: window.scrollX, scrollY: window.scrollY }) : [];
             const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents() };
+            enrichment.axe = await collectAxeResults();
             const blob = await buildReportZip(anns, meta, screenshots, enrichment);
             // Trigger download via object URL
             const url = URL.createObjectURL(blob);
@@ -118,24 +123,27 @@ export default defineContentScript({
       }
 
       if (message.type === 'send-review') {
-        const viewport = { width: window.innerWidth, height: window.innerHeight };
-        const { elements, relations } = traverseDOM();
-        const scored = scoreAll(elements, viewport);
-        const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents() };
-        if (isRecording()) {
-          addStep(message.sessionNote);
-          enrichment.session = getCaptureMetadata();
-        }
-        const capture = serialize(scored, relations, enrichment);
-        capture.metadata.captureMode = 'review';
-        capture.annotations = getAnnotations().map((a) => ({
-          id: a.id, uuid: a.uuid, type: a.type, region: a.region,
-          comment: a.comment, severity: a.severity || '', category: a.category || '',
-          nodeIds: a.nids, ancestor: a.ancestor,
-          timestamp: a.timestamp || new Date().toISOString(),
-          resolved: a.resolved || false, resolution: a.resolution || null,
-        }));
-        sendResponse({ ok: true, capture });
+        (async () => {
+          const viewport = { width: window.innerWidth, height: window.innerHeight };
+          const { elements, relations } = traverseDOM();
+          const scored = scoreAll(elements, viewport);
+          const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents() };
+          enrichment.axe = await collectAxeResults();
+          if (isRecording()) {
+            addStep(message.sessionNote);
+            enrichment.session = getCaptureMetadata();
+          }
+          const capture = serialize(scored, relations, enrichment);
+          capture.metadata.captureMode = 'review';
+          capture.annotations = getAnnotations().map((a) => ({
+            id: a.id, uuid: a.uuid, type: a.type, region: a.region,
+            comment: a.comment, severity: a.severity || '', category: a.category || '',
+            nodeIds: a.nids, ancestor: a.ancestor,
+            timestamp: a.timestamp || new Date().toISOString(),
+            resolved: a.resolved || false, resolution: a.resolution || null,
+          }));
+          sendResponse({ ok: true, capture });
+        })();
         return true;
       }
 

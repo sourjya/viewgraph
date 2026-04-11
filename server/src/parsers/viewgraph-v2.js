@@ -100,6 +100,7 @@ export function parseCapture(jsonString) {
       scroll: raw.scroll ?? null,
       landmarks: raw.landmarks ?? null,
       components: raw.components ?? null,
+      axe: raw.axe ?? null,
     },
   };
 }
