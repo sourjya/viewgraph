@@ -8,6 +8,8 @@
  * @see docs/roadmap/roadmap.md - M12.5
  */
 
+import { buildSelector } from './selector.js';
+
 const ATTR = 'data-vg-annotate';
 const MAX_ELEMENTS = 500;
 
@@ -53,16 +55,4 @@ export function collectAnimations() {
     pending: allAnimations.filter((a) => a.playState === 'idle' || a.pending).length,
     supported: true,
   };
-}
-
-/** Build a compact selector. */
-function buildSelector(el) {
-  const tag = el.tagName?.toLowerCase() || 'unknown';
-  if (el.id) return `${tag}#${el.id}`;
-  const testid = el.getAttribute?.('data-testid');
-  if (testid) return `${tag}[data-testid="${testid}"]`;
-  const cls = el.className && typeof el.className === 'string'
-    ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.')
-    : '';
-  return `${tag}${cls}`;
 }

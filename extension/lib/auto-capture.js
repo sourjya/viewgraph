@@ -21,19 +21,7 @@ import { watchHmr } from './hmr-detector.js';
 import { traverseDOM } from './traverser.js';
 import { scoreAll } from './salience.js';
 import { serialize } from './serializer.js';
-import { collectNetworkState } from './network-collector.js';
-import { getConsoleState } from './console-collector.js';
-import { collectBreakpoints } from './breakpoint-collector.js';
-import { collectStackingContexts } from './stacking-collector.js';
-import { collectFocusChain } from './focus-collector.js';
-import { collectScrollContainers } from './scroll-collector.js';
-import { collectLandmarks } from './landmark-collector.js';
-import { collectComponents } from './component-collector.js';
-import { collectEventListeners } from './event-listener-collector.js';
-import { collectPerformance } from './performance-collector.js';
-import { collectAnimations } from './animation-collector.js';
-import { collectIntersectionState } from './intersection-collector.js';
-import { safeCollect } from './safe-collect.js';
+import { collectEnrichmentSync } from './enrichment.js';
 
 let watcher = null;
 let previousCapture = null;
@@ -93,20 +81,7 @@ function buildCapture(event) {
   const viewport = { width: window.innerWidth, height: window.innerHeight };
   const { elements, relations } = traverseDOM();
   const scored = scoreAll(elements, viewport);
-  const enrichment = {
-    network: safeCollect('network', collectNetworkState),
-    console: safeCollect('console', getConsoleState),
-    breakpoints: safeCollect('breakpoints', collectBreakpoints),
-    stacking: safeCollect('stacking', collectStackingContexts),
-    focus: safeCollect('focus', collectFocusChain),
-    scroll: safeCollect('scroll', collectScrollContainers),
-    landmarks: safeCollect('landmarks', collectLandmarks),
-    components: safeCollect('components', collectComponents),
-    eventListeners: safeCollect('eventListeners', collectEventListeners),
-    performance: safeCollect('performance', collectPerformance),
-    animations: safeCollect('animations', collectAnimations),
-    intersection: safeCollect('intersection', collectIntersectionState),
-  };
+  const enrichment = collectEnrichmentSync();
   const capture = serialize(scored, relations, enrichment);
   capture.metadata.captureMode = 'auto';
   capture.metadata.hmrSource = event.source;

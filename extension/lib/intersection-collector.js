@@ -12,6 +12,8 @@
  * @see docs/roadmap/roadmap.md - M13.8
  */
 
+import { buildSelector } from './selector.js';
+
 const ATTR = 'data-vg-annotate';
 
 /**
@@ -62,16 +64,4 @@ function getVisibility(rect, vw, vh) {
   if (rect.bottom < 0 || rect.top > vh || rect.right < 0 || rect.left > vw) return 'offscreen';
   if (rect.top >= 0 && rect.bottom <= vh && rect.left >= 0 && rect.right <= vw) return 'visible';
   return 'partial';
-}
-
-/** Build a compact selector. */
-function buildSelector(el) {
-  const tag = el.tagName.toLowerCase();
-  if (el.id) return `${tag}#${el.id}`;
-  const testid = el.getAttribute('data-testid');
-  if (testid) return `${tag}[data-testid="${testid}"]`;
-  const cls = el.className && typeof el.className === 'string'
-    ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.')
-    : '';
-  return `${tag}${cls}`;
 }
