@@ -61,6 +61,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### CSS Animation State (M12.5)
 
 ### CLI Tools
+
+### Resolution Push (M10.3)
+- Sidebar now polls `/annotations/resolved` every 5 seconds while open
+- Annotations resolved by the agent update in real-time in the sidebar
+- Polling starts on sidebar open, stops on sidebar close/destroy
+- No WebSocket needed - simple HTTP polling with 3-second timeout
+
+### CLI Tools
 - New `viewgraph-status.js`: health check showing server, captures, agent, auth status
 - New `viewgraph-doctor.js`: diagnostic tool checking Node.js, npm, deps, builds, ports
 - Both registered as npm bin commands
