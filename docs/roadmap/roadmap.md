@@ -22,8 +22,12 @@
 | M15.4: State Machine | Complete | Mermaid diagrams from sessions |
 | M15.5: Performance | Complete | Navigation/resource timing metrics |
 | R1-R6: Strategic | Complete | Component tree, axe-core, screenshot diff, source linking |
+| M12.5: Animation State | Complete | CSS animation/transition detection |
+| M13.8: Intersection State | Complete | Viewport visibility tracking |
+| M14.4: Subtree Capture | Complete | Focused DOM subtree with full styles |
+| CLI: Status/Doctor | Complete | Health check and diagnostic tools |
 
-**Current totals:** 553 tests, 32 MCP tools, 11 enrichment collectors
+**Current totals:** 568 tests, 33 MCP tools, 13 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and
