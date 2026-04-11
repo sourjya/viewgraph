@@ -27,6 +27,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Capture Sessions
 
 ### Element-Level Diagnostic Hints
+
+### Source Linking (M15.1)
+- New `source-linker.js`: searches project codebase for DOM element identifiers
+- Search strategy by confidence: data-testid (high) > aria-label (high) > id (medium) > class (low) > text (low)
+- Searches .jsx, .tsx, .vue, .svelte, .html, .js, .ts, .css files only
+- Skips node_modules, dist, build, .git, and other non-source directories
+- Safety limits: max 5000 files, max 200KB per file, max depth 10
+- New MCP tool: `find_source` - maps DOM elements to source files with line numbers
+- Project root auto-derived from captures directory (two levels up from .viewgraph/captures/)
+- 11 unit tests (source linker) + 4 integration tests (MCP tool) = 15 new tests
+
+### Element-Level Diagnostic Hints
 - New `element-diagnostics.js`: analyzes a single DOM element for a11y, testid, focus, stacking, and contrast issues
 - Integrated into annotation panel: when user clicks an element, contextual hints appear below the comment box
 - Checks: missing alt text, empty aria-label, unlabeled inputs, no data-testid, tabIndex=-1, high z-index, low contrast
