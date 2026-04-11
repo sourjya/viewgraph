@@ -60,6 +60,41 @@ inclusion: always
 - Root `package.json` uses npm workspaces to manage both
 - Shared utilities are extracted into common modules, not duplicated
 
+### Folder Organization Principles — MANDATORY
+
+These rules apply regardless of framework, language, or stack.
+
+#### Server/Backend: Domain-Grouped Within Layers
+
+Organize server code by **layer first, domain second**. Each layer directory contains subdirectories grouped by domain when the project has more than a handful of files per layer.
+
+**Rules:**
+- Group by domain when a layer has 5+ files. Below that, flat is fine.
+- Each domain subdirectory gets an `index.js` or `index.ts` that re-exports its public API.
+- Shared/common directories are for truly cross-cutting concerns (logging, middleware, error handling). Not a dumping ground.
+- Constants directories hold all domain constants — never define them inline in handler or service files.
+- Adapt layer names to your framework's conventions.
+
+#### Extension/Frontend: Feature-Sliced Design
+
+Organize extension/frontend code by **feature first**. Each feature is a self-contained module.
+
+**Rules:**
+- Features never import from each other's internals — only through public API exports.
+- If feature A needs something from feature B, it goes through B's public export, or it belongs in shared/lib.
+- Each feature's public export is the only entry point. Internal files are private to the feature.
+- This pattern works for any component-based or module-based architecture.
+
+#### Shared vs Feature-Scoped — Graduation Policy
+
+Code starts in the feature where it was first needed and graduates to shared only when reuse is proven:
+
+1. **First use**: lives inside the feature directory
+2. **Second feature needs it**: move it to shared and update both imports
+3. **Never preemptively put code in shared** — that creates a junk drawer
+4. Shared items must be genuinely generic: no feature-specific logic, no domain assumptions, no hardcoded business rules
+5. If a shared item accumulates feature-specific parameters or branches, it should be split back into feature-scoped copies
+
 ## Test File Locations -- STRICT
 
 - NEVER create `__tests__/` folders or co-located test files unless the framework requires it
