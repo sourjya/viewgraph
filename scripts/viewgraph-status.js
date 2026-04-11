@@ -1,31 +1,29 @@
 #!/usr/bin/env node
-
 /**
- * ViewGraph Status Check
+ * viewgraph status - Health check CLI
  *
- * Quick health check for the entire ViewGraph setup. Shows:
- * - Server status (running, port, PID)
- * - Captures directory (exists, count, latest)
- * - Extension connectivity (can reach server)
- * - MCP config (detected agent, config file)
- * - Auth token status
+ * Shows the status of the ViewGraph setup in the current project:
+ * - Server running/stopped
+ * - Captures directory exists and is writable
+ * - Number of captures
+ * - Agent detected
+ * - Extension connection status
  *
- * Run from any project root: node /path/to/viewgraph/scripts/viewgraph-status.js
+ * Run from your project root:
+ *   node /path/to/viewgraph/scripts/viewgraph-status.js
  *
- * @see docs/roadmap/roadmap.md
+ * @see scripts/viewgraph-init.js
  */
 
-import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
+import { existsSync, readdirSync, readFileSync } from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CWD = process.cwd();
-const VIEWGRAPH_ROOT = path.resolve(__dirname, '..');
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+const VG_DIR = path.join(CWD, '.viewgraph');
+const CAPTURES_DIR = path.join(VG_DIR, 'captures');
+const TOKEN_FILE = path.join(VG_DIR, '.token');
+const AGENT_FILE = path.join(VG_DIR, '.agent');
+const PID_FILE = path.join(VG_DIR, '.pid');
 
 const GREEN = '\x1b[32m';
 const RED = '\x1b[31m';
@@ -33,129 +31,75 @@ const YELLOW = '\x1b[33m';
 const DIM = '\x1b[2m';
 const RESET = '\x1b[0m';
 
-function ok(msg) { console.log(`  ${GREEN}\u2713${RESET} ${msg}`); }
-function fail(msg) { console.log(`  ${RED}\u2717${RESET} ${msg}`); }
-function warn(msg) { console.log(`  ${YELLOW}!${RESET} ${msg}`); }
-function info(msg) { console.log(`  ${DIM}${msg}${RESET}`); }
+function check(label, ok, detail) {
+  const icon = ok ? `${GREEN}[ok]${RESET}` : `${RED}[!!]${RESET}`;
+  const msg = detail ? `${DIM}${detail}${RESET}` : '';
+  console.log(`  ${icon} ${label} ${msg}`);
+  return ok;
+}
 
-// ---------------------------------------------------------------------------
-// Checks
-// ---------------------------------------------------------------------------
+async function main() {
+  console.log(`\n  ViewGraph Status\n`);
+  let allOk = true;
 
-console.log(`\n${GREEN}ViewGraph Status${RESET} ${DIM}(${CWD})${RESET}\n`);
+  // 1. .viewgraph directory
+  allOk &= check('.viewgraph/ directory', existsSync(VG_DIR), existsSync(VG_DIR) ? VG_DIR : 'Run viewgraph-init.js first');
 
-// 1. Captures directory
-const capturesDir = path.join(CWD, '.viewgraph', 'captures');
-if (existsSync(capturesDir)) {
-  const files = readdirSync(capturesDir).filter((f) => f.endsWith('.json'));
-  ok(`Captures directory: ${files.length} capture(s)`);
-  if (files.length > 0) {
-    const sorted = files
-      .map((f) => ({ name: f, mtime: statSync(path.join(capturesDir, f)).mtimeMs }))
-      .sort((a, b) => b.mtime - a.mtime);
-    const latest = sorted[0];
-    const ago = Math.floor((Date.now() - latest.mtime) / 60000);
-    const timeStr = ago < 1 ? 'just now' : ago < 60 ? `${ago}m ago` : `${Math.floor(ago / 60)}h ago`;
-    info(`Latest: ${latest.name} (${timeStr})`);
+  // 2. Captures directory
+  const capturesExist = existsSync(CAPTURES_DIR);
+  allOk &= check('captures/ directory', capturesExist);
+
+  // 3. Capture count
+  if (capturesExist) {
+    const files = readdirSync(CAPTURES_DIR).filter((f) => f.endsWith('.json'));
+    check(`captures available`, files.length > 0, `${files.length} capture(s)`);
   }
-} else {
-  fail('No .viewgraph/captures/ directory - run viewgraph-init.js first');
-}
 
-// 2. Auth token
-const tokenPath = path.join(CWD, '.viewgraph', '.token');
-if (existsSync(tokenPath)) {
-  ok('Auth token present');
-} else {
-  warn('No auth token (.viewgraph/.token) - server may not be initialized');
-}
-
-// 3. MCP config detection
-const agents = [
-  { name: 'Kiro', paths: ['.kiro/settings/mcp.json'] },
-  { name: 'Claude Code', paths: ['.mcp.json'] },
-  { name: 'Cursor', paths: ['.cursor/mcp.json'] },
-  { name: 'Windsurf', paths: ['.windsurf/mcp.json'] },
-  { name: 'Cline', paths: ['.cline/mcp.json'] },
-];
-
-let foundAgent = null;
-for (const agent of agents) {
-  for (const p of agent.paths) {
-    const full = path.join(CWD, p);
-    if (existsSync(full)) {
-      try {
-        const config = JSON.parse(readFileSync(full, 'utf-8'));
-        if (config.mcpServers?.viewgraph) {
-          foundAgent = { name: agent.name, path: p };
-          break;
-        }
-      } catch { /* skip */ }
-    }
+  // 4. Agent detection
+  let agent = 'none';
+  if (existsSync(AGENT_FILE)) {
+    agent = readFileSync(AGENT_FILE, 'utf-8').trim();
   }
-  if (foundAgent) break;
-}
+  check('agent detected', agent !== 'none', agent);
 
-if (foundAgent) {
-  ok(`MCP config: ${foundAgent.name} (${foundAgent.path})`);
-} else {
-  fail('No MCP config found for any agent - run viewgraph-init.js');
-}
+  // 5. Server PID
+  let serverRunning = false;
+  if (existsSync(PID_FILE)) {
+    const pid = readFileSync(PID_FILE, 'utf-8').trim();
+    try {
+      process.kill(parseInt(pid, 10), 0); // Signal 0 = check if alive
+      serverRunning = true;
+    } catch { /* not running */ }
+  }
+  allOk &= check('MCP server', serverRunning, serverRunning ? `PID ${readFileSync(PID_FILE, 'utf-8').trim()}` : 'not running - start with npm run dev:server');
 
-// 4. Server status
-async function checkServer() {
-  const serverUrl = 'http://localhost:9876';
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 2000);
-    const res = await fetch(`${serverUrl}/health`, { signal: controller.signal });
-    clearTimeout(timeout);
-    if (res.ok) {
-      const data = await res.json();
-      ok(`Server running at ${serverUrl} (v${data.version || '?'})`);
-      if (data.captures !== undefined) {
-        info(`Server sees ${data.captures} indexed capture(s)`);
+  // 6. Server health check
+  if (serverRunning) {
+    try {
+      const token = existsSync(TOKEN_FILE) ? readFileSync(TOKEN_FILE, 'utf-8').trim() : null;
+      const port = 9876;
+      const res = await fetch(`http://127.0.0.1:${port}/health`, { signal: AbortSignal.timeout(2000) });
+      if (res.ok) {
+        const data = await res.json();
+        check('server health', true, `port ${port}, ${data.pending} pending request(s)`);
+        check('captures dir writable', data.writable);
+      } else {
+        check('server health', false, `HTTP ${res.status}`);
       }
-    } else {
-      fail(`Server at ${serverUrl} returned ${res.status}`);
+    } catch (e) {
+      check('server health', false, e.message);
     }
-  } catch (err) {
-    if (err.name === 'AbortError') {
-      fail('Server not responding (timeout)');
-    } else {
-      fail('Server not running at localhost:9876');
-    }
-    info('Start with: npm run dev:server');
   }
-}
 
-// 5. Steering docs and hooks
-const steeringDir = path.join(CWD, '.kiro', 'steering');
-const hooksDir = path.join(CWD, '.kiro', 'hooks');
-const vgSteering = ['viewgraph-workflow.md', 'viewgraph-resolution.md']
-  .filter((f) => existsSync(path.join(steeringDir, f)));
-const vgHooks = existsSync(hooksDir)
-  ? readdirSync(hooksDir).filter((f) => f.startsWith('capture-') || f.startsWith('fix-') || f.startsWith('check-testids'))
-  : [];
+  // 7. Auth token
+  allOk &= check('auth token', existsSync(TOKEN_FILE), existsSync(TOKEN_FILE) ? 'configured' : 'missing');
 
-if (vgSteering.length > 0 || vgHooks.length > 0) {
-  ok(`Power assets: ${vgSteering.length} steering doc(s), ${vgHooks.length} hook(s)`);
-} else {
-  warn('No ViewGraph steering docs or hooks installed');
-}
-
-// 6. Gitignore check
-const gitignorePath = path.join(CWD, '.gitignore');
-if (existsSync(gitignorePath)) {
-  const content = readFileSync(gitignorePath, 'utf-8');
-  if (content.includes('.viewgraph')) {
-    ok('.viewgraph/ is gitignored');
+  console.log('');
+  if (allOk) {
+    console.log(`  ${GREEN}All checks passed.${RESET}\n`);
   } else {
-    warn('.viewgraph/ is NOT in .gitignore - tokens may leak');
+    console.log(`  ${YELLOW}Some checks failed. Run viewgraph-init.js to fix.${RESET}\n`);
   }
 }
 
-// Run async check last
-await checkServer();
-
-console.log('');
+main().catch((e) => { console.error(e.message); process.exit(1); });

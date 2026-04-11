@@ -6,7 +6,8 @@
   "main": "server/index.js",
   "bin": {
     "viewgraph-init": "scripts/viewgraph-init.js",
-    "viewgraph-status": "scripts/viewgraph-status.js"
+    "viewgraph-status": "scripts/viewgraph-status.js",
+    "viewgraph-doctor": "scripts/viewgraph-doctor.js"
   },
   "files": [
     "server/index.js",
