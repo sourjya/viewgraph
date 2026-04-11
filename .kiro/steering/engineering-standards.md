@@ -95,11 +95,56 @@ Code starts in the feature where it was first needed and graduates to shared onl
 4. Shared items must be genuinely generic: no feature-specific logic, no domain assumptions, no hardcoded business rules
 5. If a shared item accumulates feature-specific parameters or branches, it should be split back into feature-scoped copies
 
-## Test File Locations -- STRICT
+## Reusable Component Architecture -- MANDATORY
+
+Before building any new service, module, component, or helper, think reuse-first.
+
+### Design-Time Mindset
+
+1. **Search before building** -- scan the codebase for existing implementations. Duplication is a bug.
+2. **Identify the generic core** -- extract the generic core as a standalone unit with clean inputs/outputs.
+3. **Design for reuse, place locally** -- architect with clean interfaces but place in the feature where first needed.
+4. **Pure functions by default** -- helpers should be pure functions wherever possible.
+5. **Parameterize, don't specialize** -- accept variations as parameters rather than forking.
+
+### When NOT to Make Something Reusable
+
+- If it requires more than 3 domain-specific parameters to generalize, keep it feature-scoped
+- If the generic version would be more complex than two specialized copies, don't abstract
+- If only one consumer exists and no second is foreseeable, don't over-engineer
+
+### Review Checkpoint
+
+When designing any new module, answer these before writing code:
+- Does something similar already exist in the codebase?
+- What is the generic core vs. the domain-specific wrapper?
+- Could another feature, service, or project use this with zero modification?
+- Am I hardcoding anything that should be a parameter?
+
+## Centralized Configuration & Constants -- MANDATORY
+
+**ZERO embedded literals.** All configuration values, magic numbers, string constants, and environment-dependent settings must live in dedicated, centralized locations.
+
+### Rules
+
+1. **No string literals in business logic** -- all go in constants files or config.
+2. **No magic numbers** -- every numeric value with business meaning gets a named constant.
+3. **Config reads from environment** -- all environment-dependent values go through a single config module.
+4. **Constants are grouped by domain** -- not one giant constants file.
+5. **Feature-scoped constants stay in the feature** -- graduates to shared when a second consumer appears.
+6. **Enums/const objects over string literals** -- use `as const` or similar for fixed option sets.
+7. **Single source of truth** -- never duplicate constants across server and extension.
+
+## Test Folder Organization -- STRICT
 
 - NEVER create `__tests__/` folders or co-located test files unless the framework requires it
 - Tests go in a dedicated `tests/` directory within each component
 - Mirror the source directory structure in the test directory
+- **Unit test subdirectories mirror source domains**
+- **One test file per source file**
+- **Shared fixtures/setup in a central setup file**
+- **Integration tests are separate from unit tests**
+- **Create subdirectories as domains emerge** -- don't pre-create empty test directories
 
 ## Task-First Discipline -- MANDATORY
 

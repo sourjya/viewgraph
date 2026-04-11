@@ -23,6 +23,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### ARIA Landmarks (M13.6)
 
 ### ViewGraph Status Command
+
+### Capture Sessions
+- New `session-manager.js`: manages multi-step flow recording with start/stop/addStep/getState
+- Session state persisted to chrome.storage.session (survives sidebar rebuilds, not browser restarts)
+- Sidebar UX: record toggle with pulsing red dot, step counter, optional note input per step
+- Session metadata embedded in capture JSON as `metadata.session` (id, name, step, note)
+- Background script passes session notes through the capture pipeline
+- New MCP tools: `list_sessions` (groups captures by session ID) and `get_session` (full step sequence with diffs)
+- `get_session` computes URL changes, title changes, and node count deltas between consecutive steps
+- Prompt injection notice on session step notes (user-provided content)
+- 17 extension tests (session manager) + 8 server tests (MCP tools) = 25 new tests
+
+### ViewGraph Status Command
 - New `scripts/viewgraph-status.js`: one-command health check for entire setup
 - Checks: captures directory, auth token, MCP config (auto-detects agent), server health, Power assets, gitignore
 - Color-coded output: green checkmarks, red failures, yellow warnings

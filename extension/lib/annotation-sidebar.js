@@ -51,6 +51,7 @@ import { collectScrollContainers } from './scroll-collector.js';
 import { collectLandmarks } from './landmark-collector.js';
 import { checkRendered } from './visibility-collector.js';
 import { startWatcher, stopWatcher, isWatcherEnabled } from './continuous-capture.js';
+import { isRecording, startSession, stopSession, addStep, getState, setName, restore as restoreSession } from './session-manager.js';
 
 const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
@@ -345,9 +346,11 @@ export function create() {
   sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#5558e6'; });
   sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = '#6366f1'; });
   sendBtn.addEventListener('click', () => {
-    // Always include a full capture when sending - ensures JSON, snapshot,
-    // and screenshot all get generated based on user's toggle settings
-    chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true }, () => {});
+    // Read session note from input if recording
+    const noteInput = sidebar?.shadowRoot?.querySelector(`[${ATTR}="session-note"]`);
+    const sessionNote = noteInput?.value?.trim() || undefined;
+    if (noteInput) noteInput.value = '';
+    chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true, sessionNote }, () => {});
     sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Sent!';
     sendBtn.style.background = '#059669';
     setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Agent'; sendBtn.style.background = '#6366f1'; }, 2000);
@@ -905,6 +908,73 @@ export function create() {
     // Auto-capture toggle (grouped with captures below)
     inspectContent.appendChild(autoRow);
 
+    // Session recording row
+    const sessionRow = document.createElement('div');
+    sessionRow.setAttribute(ATTR, 'session-row');
+    Object.assign(sessionRow.style, { display: 'flex', alignItems: 'center', gap: '6px', padding: '2px 0' });
+
+    const recording = isRecording();
+    const sessionState = getState();
+
+    const recDot = document.createElement('span');
+    Object.assign(recDot.style, {
+      width: '8px', height: '8px', borderRadius: '50%', flexShrink: '0',
+      background: recording ? '#dc2626' : '#333',
+      animation: recording ? 'vg-pulse 1.5s infinite' : 'none',
+    });
+
+    const recLabel = document.createElement('span');
+    recLabel.textContent = recording ? `RECORDING` : 'RECORD FLOW';
+    Object.assign(recLabel.style, {
+      fontWeight: '600', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px',
+      color: recording ? '#dc2626' : '#9ca3af',
+    });
+
+    const recInfo = document.createElement('span');
+    recInfo.textContent = recording ? `Step ${sessionState.step}` : '';
+    Object.assign(recInfo.style, { color: '#666', fontSize: '11px', flex: '1' });
+
+    const recBtn = document.createElement('button');
+    recBtn.setAttribute(ATTR, 'session-toggle');
+    recBtn.textContent = recording ? 'Stop' : 'Start';
+    Object.assign(recBtn.style, {
+      border: 'none', borderRadius: '10px', padding: '2px 10px', fontSize: '10px',
+      fontWeight: '700', cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+      background: recording ? '#7f1d1d' : '#333', color: recording ? '#fca5a5' : '#666',
+    });
+    recBtn.addEventListener('click', () => {
+      if (isRecording()) {
+        stopSession();
+      } else {
+        startSession();
+      }
+      refreshInspect();
+    });
+
+    sessionRow.append(recDot, recLabel, recInfo, recBtn);
+    inspectContent.appendChild(sessionRow);
+
+    // Step note input (only visible when recording)
+    if (recording) {
+      const noteRow = document.createElement('div');
+      Object.assign(noteRow.style, { display: 'flex', gap: '4px', padding: '2px 0' });
+      const noteInput = document.createElement('input');
+      noteInput.setAttribute(ATTR, 'session-note');
+      noteInput.type = 'text';
+      noteInput.placeholder = 'Note for next step (optional)';
+      Object.assign(noteInput.style, {
+        flex: '1', background: '#1a1a2e', border: '1px solid #333', borderRadius: '4px',
+        color: '#ccc', fontSize: '10px', padding: '3px 6px', fontFamily: 'system-ui, sans-serif',
+        outline: 'none',
+      });
+      noteInput.addEventListener('focus', () => { noteInput.style.borderColor = '#6366f1'; });
+      noteInput.addEventListener('blur', () => { noteInput.style.borderColor = '#333'; });
+      // Store note for next addStep call
+      noteInput.dataset.vgNoteTarget = 'session';
+      noteRow.appendChild(noteInput);
+      inspectContent.appendChild(noteRow);
+    }
+
     // Captures + Baseline section - fetches from server asynchronously
     fetchCapturesSection(inspectContent);
   }
@@ -1058,7 +1128,7 @@ export function create() {
   Object.assign(hostEl.style, { all: 'initial', position: 'fixed', top: '0', right: '0', zIndex: '2147483646' });
   const shadow = hostEl.attachShadow({ mode: 'open' });
   const scrollStyle = document.createElement('style');
-  scrollStyle.textContent = `:host{scrollbar-color:#2a2a3a transparent}*::-webkit-scrollbar{width:8px}*::-webkit-scrollbar-track{background:transparent}*::-webkit-scrollbar-thumb{background:#2a2a3a;border-radius:4px}*::-webkit-scrollbar-thumb:hover{background:#3a3a4a}@keyframes vg-bell-pulse{0%,100%{transform:rotate(0)}15%{transform:rotate(14deg)}30%{transform:rotate(-14deg)}45%{transform:rotate(8deg)}60%{transform:rotate(-8deg)}75%{transform:rotate(0)}}`;
+  scrollStyle.textContent = `:host{scrollbar-color:#2a2a3a transparent}*::-webkit-scrollbar{width:8px}*::-webkit-scrollbar-track{background:transparent}*::-webkit-scrollbar-thumb{background:#2a2a3a;border-radius:4px}*::-webkit-scrollbar-thumb:hover{background:#3a3a4a}@keyframes vg-bell-pulse{0%,100%{transform:rotate(0)}15%{transform:rotate(14deg)}30%{transform:rotate(-14deg)}45%{transform:rotate(8deg)}60%{transform:rotate(-8deg)}75%{transform:rotate(0)}}@keyframes vg-pulse{0%,100%{opacity:1}50%{opacity:0.3}}`;
   shadow.append(scrollStyle, sidebarEl);
   document.documentElement.appendChild(hostEl);
 
