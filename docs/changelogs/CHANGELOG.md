@@ -67,6 +67,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Keyboard Shortcuts
 
 ### WebSocket Live Collaboration (M14.3)
+
+### Enrichment Error Boundary
+- New `safe-collect.js`: wraps enrichment collectors so a single failure never crashes the capture
+- All 13 enrichment collectors in content.js and auto-capture.js now use `safeCollect()`
+- Failed collectors return null and log a warning instead of throwing
+- 7 new extension tests
+
+### WebSocket Live Collaboration (M14.3)
 - New `ws-server.js`: WebSocket server attached to HTTP receiver via upgrade event
 - New `ws-client.js`: extension WebSocket client with auto-reconnect and exponential backoff
 - Auth handshake on connect (token-based, same as HTTP auth)

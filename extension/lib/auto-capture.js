@@ -33,6 +33,7 @@ import { collectEventListeners } from './event-listener-collector.js';
 import { collectPerformance } from './performance-collector.js';
 import { collectAnimations } from './animation-collector.js';
 import { collectIntersectionState } from './intersection-collector.js';
+import { safeCollect } from './safe-collect.js';
 
 let watcher = null;
 let previousCapture = null;
@@ -93,18 +94,18 @@ function buildCapture(event) {
   const { elements, relations } = traverseDOM();
   const scored = scoreAll(elements, viewport);
   const enrichment = {
-    network: collectNetworkState(),
-    console: getConsoleState(),
-    breakpoints: collectBreakpoints(),
-    stacking: collectStackingContexts(),
-    focus: collectFocusChain(),
-    scroll: collectScrollContainers(),
-    landmarks: collectLandmarks(),
-    components: collectComponents(),
-    eventListeners: collectEventListeners(),
-    performance: collectPerformance(),
-    animations: collectAnimations(),
-    intersection: collectIntersectionState(),
+    network: safeCollect('network', collectNetworkState),
+    console: safeCollect('console', getConsoleState),
+    breakpoints: safeCollect('breakpoints', collectBreakpoints),
+    stacking: safeCollect('stacking', collectStackingContexts),
+    focus: safeCollect('focus', collectFocusChain),
+    scroll: safeCollect('scroll', collectScrollContainers),
+    landmarks: safeCollect('landmarks', collectLandmarks),
+    components: safeCollect('components', collectComponents),
+    eventListeners: safeCollect('eventListeners', collectEventListeners),
+    performance: safeCollect('performance', collectPerformance),
+    animations: safeCollect('animations', collectAnimations),
+    intersection: safeCollect('intersection', collectIntersectionState),
   };
   const capture = serialize(scored, relations, enrichment);
   capture.metadata.captureMode = 'auto';
