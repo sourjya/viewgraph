@@ -20,6 +20,8 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | - | Visual Diff Report | [`visual-diff-report/`](./visual-diff-report/) | Specced |
 | - | Team Collaboration | [`team-collaboration/`](./team-collaboration/) | Specced |
 | - | Plugin System | [`plugin-system/`](./plugin-system/) | Specced |
+| - | npx viewgraph-init | [`npx-init/`](./npx-init/) | Specced |
+| - | Format Migration | [`format-migration/`](./format-migration/) | Specced |
 
 ## Architecture Decisions
 

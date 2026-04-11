@@ -10,7 +10,31 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ## [Unreleased]
 
+### CI/CD
+
+#### GitHub Actions Pipeline (2026-04-12)
+- 6 parallel test jobs: lint, server tests (Node 18/20/22), extension tests (Node 18/22)
+- 2 build jobs: Chrome and Firefox extension artifacts (30-day retention)
+- npm caching via actions/setup-node, concurrency groups for PR dedup
+
+### UX Improvements
+
+#### Sidebar Polish - M16 (2026-04-12)
+- UX-01: Fixed collapsed strip mode toggle bug (`captureMode` undefined variable)
+- UX-02: Adaptive footer when server disconnected - Send hidden, Copy MD/Report promoted to primary
+- UX-07: Click-to-expand replaces 600ms hover-expand for annotation comments > 40 chars
+- UX-08: "No issues detected" green checkmark in Inspect tab when all diagnostics clean
+- UX-09: Report button shows "Saved!" with checkmark (was "Saving..." with clock icon)
+- UX-10: Collapsed strip mode icons highlight active mode (indigo background)
+
 ### Code Quality
+
+#### ESLint Clean (2026-04-12)
+- 5 errors and 13 warnings resolved across 11 files
+- Added WXT globals (`defineBackground`, `defineContentScript`)
+- Fixed `sidebar` -> `hostEl`, `captureMode` -> `getCaptureMode()` undefined references
+- Removed 10 unused variables/imports, fixed useless `rank++` assignment
+- Updated ESLint config with `varsIgnorePattern: '^_'`
 
 #### Dead Code Elimination (2026-04-12)
 - Server: removed unused exports (ENV_HTTP_SECRET), unused imports in 4 tool files
