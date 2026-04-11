@@ -4,6 +4,27 @@
 **Status:** Active
 **Total estimated effort:** 4-6 weeks
 
+## Completion Status
+
+| Milestone | Status | Key Deliverables |
+|---|---|---|
+| M0-M8: Foundation | Complete | 32 MCP tools, extension core, Kiro Power |
+| M9.5: Settings Page | Complete | Auto-capture, server URL, quality settings |
+| M10.1: Element Flash | Complete | Visual feedback on select |
+| M10.2: Annotation Status | Complete | Stale annotation detection |
+| M10.4: Annotation Diffing | Complete | Track persistent issues across captures |
+| M10.5: Recurring Issues | Complete | UI hot spot detection |
+| M10.6: Pattern Analysis | Complete | Project-specific recommendations |
+| M10.7: Spec Generation | Complete | Annotations to Kiro spec pipeline |
+| M12.4: Event Listeners | Complete | Handler detection on DOM elements |
+| M14.1: Auto-Capture HMR | Complete | Vite/webpack hot-reload detection |
+| M14.2: Journey Recording | Complete | Auto-capture on SPA navigation |
+| M15.4: State Machine | Complete | Mermaid diagrams from sessions |
+| M15.5: Performance | Complete | Navigation/resource timing metrics |
+| R1-R6: Strategic | Complete | Component tree, axe-core, screenshot diff, source linking |
+
+**Current totals:** 553 tests, 32 MCP tools, 11 enrichment collectors
+
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and
 `tasks.md` before implementation begins.
