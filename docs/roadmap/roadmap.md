@@ -37,7 +37,7 @@
 | Code Quality Audit | Complete | Deduplication, static import conversion, timeout fixes |
 | Dead Code Elimination | Complete | 16 unused exports/imports/functions removed |
 | Redundancy Centralization | Complete | selector(), ATTR, readAndParse() helpers extracted |
-| M16: Sidebar UX Polish | Planned | 10 tasks: bug fix, adaptive footer, keyboard nav, interaction polish |
+| M16: Sidebar UX Polish | In Progress | UX-01/08/09/10 done, UX-02/03/04/05/06/07 remaining |
 | M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
 
 **Current totals:** 923 tests (324 server + 599 extension), 34 MCP tools, 14 enrichment collectors

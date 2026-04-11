@@ -16,6 +16,10 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | - | Inspect Tab Redesign | [`inspect-tab-redesign/`](./inspect-tab-redesign/) | Complete |
 | - | SingleFile Fidelity | [`singlefile-fidelity/`](./singlefile-fidelity/) | Not Started |
 | M17 | Telemetry | [`telemetry/`](./telemetry/) | Specced |
+| - | CI Test Matrix | [`ci-test-matrix/`](./ci-test-matrix/) | Specced |
+| - | Visual Diff Report | [`visual-diff-report/`](./visual-diff-report/) | Specced |
+| - | Team Collaboration | [`team-collaboration/`](./team-collaboration/) | Specced |
+| - | Plugin System | [`plugin-system/`](./plugin-system/) | Specced |
 
 ## Architecture Decisions
 
