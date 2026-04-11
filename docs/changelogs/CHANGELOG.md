@@ -65,6 +65,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Resolution Push (M10.3)
 
 ### Keyboard Shortcuts
+
+### WebSocket Live Collaboration (M14.3)
+- New `ws-server.js`: WebSocket server attached to HTTP receiver via upgrade event
+- New `ws-client.js`: extension WebSocket client with auto-reconnect and exponential backoff
+- Auth handshake on connect (token-based, same as HTTP auth)
+- Extension sends annotation CRUD events in real-time
+- Server broadcasts resolution events to all connected clients
+- `resolve_annotation` MCP tool now pushes resolution via WebSocket
+- Sidebar connects on open, disconnects on destroy
+- Keepalive pings every 30 seconds
+- WebSocket only created when auth token is configured (no impact on tests)
+- 13 new tests (7 server + 6 client)
+
+### Keyboard Shortcuts
 - New `keyboard-shortcuts.js`: keyboard shortcut manager for annotate mode
 - Escape: deselect / close panel
 - Ctrl+Enter: send to agent

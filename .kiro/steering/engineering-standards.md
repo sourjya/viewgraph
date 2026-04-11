@@ -60,7 +60,7 @@ inclusion: always
 - Root `package.json` uses npm workspaces to manage both
 - Shared utilities are extracted into common modules, not duplicated
 
-### Folder Organization Principles — MANDATORY
+### Folder Organization Principles - MANDATORY
 
 These rules apply regardless of framework, language, or stack.
 
@@ -72,7 +72,7 @@ Organize server code by **layer first, domain second**. Each layer directory con
 - Group by domain when a layer has 5+ files. Below that, flat is fine.
 - Each domain subdirectory gets an `index.js` or `index.ts` that re-exports its public API.
 - Shared/common directories are for truly cross-cutting concerns (logging, middleware, error handling). Not a dumping ground.
-- Constants directories hold all domain constants — never define them inline in handler or service files.
+- Constants directories hold all domain constants - never define them inline in handler or service files.
 - Adapt layer names to your framework's conventions.
 
 #### Extension/Frontend: Feature-Sliced Design
@@ -80,18 +80,18 @@ Organize server code by **layer first, domain second**. Each layer directory con
 Organize extension/frontend code by **feature first**. Each feature is a self-contained module.
 
 **Rules:**
-- Features never import from each other's internals — only through public API exports.
+- Features never import from each other's internals - only through public API exports.
 - If feature A needs something from feature B, it goes through B's public export, or it belongs in shared/lib.
 - Each feature's public export is the only entry point. Internal files are private to the feature.
 - This pattern works for any component-based or module-based architecture.
 
-#### Shared vs Feature-Scoped — Graduation Policy
+#### Shared vs Feature-Scoped - Graduation Policy
 
 Code starts in the feature where it was first needed and graduates to shared only when reuse is proven:
 
 1. **First use**: lives inside the feature directory
 2. **Second feature needs it**: move it to shared and update both imports
-3. **Never preemptively put code in shared** — that creates a junk drawer
+3. **Never preemptively put code in shared** - that creates a junk drawer
 4. Shared items must be genuinely generic: no feature-specific logic, no domain assumptions, no hardcoded business rules
 5. If a shared item accumulates feature-specific parameters or branches, it should be split back into feature-scoped copies
 
@@ -123,7 +123,7 @@ When designing any new module, answer these before writing code:
 
 ## Infrastructure Abstraction -- MANDATORY
 
-**Every external dependency gets an interface.** Storage, email, payments, auth providers, AI models, notification channels — all must be accessed through an abstract interface with swappable backend implementations. No service should be hardwired to a specific vendor or infrastructure.
+**Every external dependency gets an interface.** Storage, email, payments, auth providers, AI models, notification channels - all must be accessed through an abstract interface with swappable backend implementations. No service should be hardwired to a specific vendor or infrastructure.
 
 ### Adapter Pattern for External Services
 
@@ -147,24 +147,24 @@ email = create_email_backend(settings.EMAIL_BACKEND)         # "console" | "ses"
 ```
 
 - The factory is the only place that knows about concrete implementations
-- Application code receives the interface — it never imports a specific backend directly
+- Application code receives the interface - it never imports a specific backend directly
 - Switching providers is a config change, not a code change
 
 ### Secure Defaults
 
 All infrastructure adapters must enforce security at the interface level:
 
-1. **Content-type validation** — never trust client-provided MIME types on upload. Validate server-side.
-2. **Size limits at the interface** — enforce max file size in the abstract interface, not just the implementation. Every backend inherits the same limits.
-3. **Path traversal prevention** — sanitize all keys and paths. Reject `../`, absolute paths, and null bytes.
-4. **Signed/expiring URLs** — never expose raw storage paths (S3 keys, file paths). All download URLs must be signed with expiration.
-5. **Least privilege** — each adapter uses credentials scoped to its specific function. Storage adapters don't get database credentials.
+1. **Content-type validation** - never trust client-provided MIME types on upload. Validate server-side.
+2. **Size limits at the interface** - enforce max file size in the abstract interface, not just the implementation. Every backend inherits the same limits.
+3. **Path traversal prevention** - sanitize all keys and paths. Reject `../`, absolute paths, and null bytes.
+4. **Signed/expiring URLs** - never expose raw storage paths (S3 keys, file paths). All download URLs must be signed with expiration.
+5. **Least privilege** - each adapter uses credentials scoped to its specific function. Storage adapters don't get database credentials.
 
 ### Idempotency
 
-- **Uploads** are idempotent — uploading the same key with the same content is a no-op
-- **Deletes** are idempotent — deleting a non-existent object succeeds silently
-- **Config writes** are idempotent — writing the same value is a no-op
+- **Uploads** are idempotent - uploading the same key with the same content is a no-op
+- **Deletes** are idempotent - deleting a non-existent object succeeds silently
+- **Config writes** are idempotent - writing the same value is a no-op
 - Design all infrastructure operations so they can be safely retried without side effects
 
 ### Observability
@@ -175,7 +175,7 @@ Every infrastructure adapter must emit structured logs for every operation:
 - **Size**: bytes transferred (where applicable)
 - **Duration**: wall-clock time of the operation
 - **Outcome**: success or failure with error category
-- The abstract interface defines the logging contract — implementations inherit it, not duplicate it
+- The abstract interface defines the logging contract - implementations inherit it, not duplicate it
 
 ## Centralized Configuration & Constants -- MANDATORY
 

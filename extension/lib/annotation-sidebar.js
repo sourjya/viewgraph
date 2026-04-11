@@ -74,6 +74,7 @@ import { collectComponents } from './component-collector.js';
 import { checkRendered } from './visibility-collector.js';
 import { startWatcher, stopWatcher, isWatcherEnabled } from './continuous-capture.js';
 import { isRecording, startSession, stopSession, addStep, getState, setName, restore as restoreSession } from './session-manager.js';
+import { connect as wsConnect, disconnect as wsDisconnect, sendAnnotationCreate, sendAnnotationUpdate, sendAnnotationDelete } from './ws-client.js';
 
 const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
@@ -1261,6 +1262,25 @@ export function create() {
   syncResolved();
   startResolutionPolling();
   startRequestPolling();
+
+  // Connect WebSocket for real-time annotation sync
+  (async () => {
+    const serverUrl = await discoverServer();
+    if (!serverUrl) return;
+    const hdrs = await authHeaders();
+    const token = hdrs?.['X-ViewGraph-Token'] || '';
+    wsConnect({
+      url: serverUrl,
+      token,
+      onMessage: (msg) => {
+        if (msg.type === 'annotation:resolved') {
+          const anns = getAnnotations();
+          const ann = anns.find((a) => a.uuid === msg.uuid && !a.resolved);
+          if (ann) { ann.resolved = true; ann.resolution = msg.resolution; refresh(); }
+        }
+      },
+    });
+  })();
 }
 
 /** Collapse sidebar to strip. Exported for capture mode integration. */
@@ -1740,6 +1760,7 @@ export function refresh() {
 export function destroy() {
   stopRequestPolling();
   stopResolutionPolling();
+  wsDisconnect();
   if (hostEl) { hostEl.remove(); hostEl = null; }
   if (sidebarEl) { sidebarEl = null; }
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }

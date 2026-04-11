@@ -18,6 +18,7 @@ import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { LOG_PREFIX } from './constants.js';
 import { validateCapturePath } from './utils/validate-path.js';
+import { createWebSocketServer } from './ws-server.js';
 
 /**
  * Capture payload limit. MCP tool responses target ~400KB for LLM context
@@ -75,6 +76,7 @@ function json(res, status, data) {
  */
 export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port = 9876, secret = null, indexer = null }) {
   let server;
+  let wsServer;
 
   /**
    * Verify the shared secret on mutating requests. Returns true if
@@ -359,6 +361,10 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         });
         server.listen(tryPort, '127.0.0.1', () => {
           const actualPort = server.address().port;
+          // Attach WebSocket server for real-time annotation sync (only when auth is configured)
+          if (secret) {
+            wsServer = createWebSocketServer(server, { authToken: secret });
+          }
           process.stderr.write(`${LOG_PREFIX} HTTP receiver listening on 127.0.0.1:${actualPort}\n`);
           resolve(actualPort);
         });
@@ -369,9 +375,13 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
     /** Stop the HTTP server. */
     stop() {
       return new Promise((resolve) => {
+        if (wsServer) wsServer.close();
         if (!server) return resolve();
         server.close(resolve);
       });
     },
+
+    /** Get the WebSocket server for broadcasting. */
+    getWsServer() { return wsServer; },
   };
 }
