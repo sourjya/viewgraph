@@ -1,6 +1,6 @@
 # ViewGraph MCP Tools - Quick Reference
 
-25 tools in 6 categories. Ask your AI agent to run any of these.
+31 tools in 6 categories. Ask your AI agent to run any of these.
 
 ---
 
@@ -34,12 +34,17 @@
 | `get_unresolved` | All open (unfixed) annotations across all captures | "What's still broken?" |
 | `resolve_annotation` | Marks an annotation as fixed/wontfix/duplicate/invalid with a summary | "Mark this issue as fixed" |
 | `check_annotation_status` | Compares old annotations against a new capture to see what's still relevant | "Are these old annotations still valid?" |
+| `diff_annotations` | Compares annotations across captures to track persistent vs new vs resolved issues | "Which bugs keep coming back?" |
+| `detect_recurring_issues` | Scans all captures to find UI elements flagged repeatedly (hot spots) | "What parts of the UI keep breaking?" |
+| `generate_spec` | Converts annotations into a Kiro spec (requirements.md + tasks.md) | "Turn these review notes into a spec" |
+| `analyze_patterns` | Analyzes resolved annotations to detect recurring patterns and recommend fixes | "What types of issues do we keep having?" |
 
 ## Comparison - "What changed?"
 
 | Tool | What it does | When to use |
 |---|---|---|
 | `compare_captures` | Diffs two captures: added/removed elements, layout shifts, testid changes | "What changed between these two versions?" |
+| `compare_screenshots` | Pixel-by-pixel PNG comparison with diff percentage and verdict | "Are there visual differences between these screenshots?" |
 | `set_baseline` | Saves a capture as the "known good" state for a page | "This page looks correct - save it as baseline" |
 | `compare_baseline` | Compares current capture against the saved baseline | "Did my changes break anything?" |
 | `list_baselines` | Shows all saved baselines | "Which pages have baselines?" |
@@ -58,6 +63,7 @@
 |---|---|---|
 | `list_sessions` | Shows recorded multi-step user flows | "What user flows have been captured?" |
 | `get_session` | Full step-by-step detail of a recorded flow with diffs between steps | "Show me the checkout flow step by step" |
+| `visualize_flow` | Builds a Mermaid state diagram from session captures showing what changes at each step | "Show me the login flow as a state machine" |
 
 ---
 
