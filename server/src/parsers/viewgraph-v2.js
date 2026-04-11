@@ -102,6 +102,7 @@ export function parseCapture(jsonString) {
       components: raw.components ?? null,
       axe: raw.axe ?? null,
       eventListeners: raw.eventListeners ?? null,
+      performance: raw.performance ?? null,
     },
   };
 }
@@ -150,6 +151,8 @@ export function parseSummary(jsonString) {
       componentCount: raw.components?.components?.length ?? 0,
       eventListenerCount: raw.eventListeners?.elements?.length ?? 0,
       suspiciousClickables: raw.eventListeners?.suspicious?.length ?? 0,
+      pageLoadMs: raw.performance?.navigation?.loadEvent ?? null,
+      slowResources: raw.performance?.resources?.slowResources?.length ?? 0,
     },
   };
 }
