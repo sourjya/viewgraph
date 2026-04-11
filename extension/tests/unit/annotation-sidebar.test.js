@@ -474,19 +474,21 @@ describe('inspect tab captures section', () => {
     expect(hrIdx).toBeLessThan(autoIdx);
   });
 
-  it('(+) latest capture shows relative time and element count', async () => {
+  it('(+) latest capture shows short ID, relative time, and element count', async () => {
     const now = Date.now();
     globalThis.fetch = mockFetchWith([
-      { filename: 'cap-1.json', timestamp: new Date(now - 30000).toISOString(), nodeCount: 80 },
+      { filename: 'viewgraph-localhost-20260408-120612.json', timestamp: new Date(now - 30000).toISOString(), nodeCount: 80 },
     ]);
     start();
     create();
     clickInspectTab();
     const ic = getInspectContent();
     await vi.waitFor(() => {
-      expect(ic.textContent).toContain('Captured just now');
+      expect(ic.textContent).toContain('just now');
     });
     expect(ic.textContent).toContain('80 elements');
+    // Short ID derived from filename tail
+    expect(ic.textContent).toContain('120612');
   });
 
   it('(+) auto-diff shown when node count changed vs previous', async () => {
@@ -535,20 +537,21 @@ describe('inspect tab captures section', () => {
     });
   });
 
-  it('(+) older captures shown as compact timeline', async () => {
+  it('(+) older captures shown with IDs and timestamps', async () => {
     const now = Date.now();
     globalThis.fetch = mockFetchWith([
-      { filename: 'cap-1.json', timestamp: new Date(now - 60000).toISOString(), nodeCount: 80 },
-      { filename: 'cap-2.json', timestamp: new Date(now - 180000).toISOString(), nodeCount: 80 },
-      { filename: 'cap-3.json', timestamp: new Date(now - 300000).toISOString(), nodeCount: 80 },
+      { filename: 'viewgraph-localhost-20260408-130000.json', timestamp: new Date(now - 60000).toISOString(), nodeCount: 80 },
+      { filename: 'viewgraph-localhost-20260408-125700.json', timestamp: new Date(now - 180000).toISOString(), nodeCount: 80 },
+      { filename: 'viewgraph-localhost-20260408-125500.json', timestamp: new Date(now - 300000).toISOString(), nodeCount: 80 },
     ]);
     start();
     create();
     clickInspectTab();
     const ic = getInspectContent();
     await vi.waitFor(() => {
-      expect(ic.textContent).toContain('3m');
-      expect(ic.textContent).toContain('5m');
+      // Older captures show their short IDs
+      expect(ic.textContent).toContain('125700');
+      expect(ic.textContent).toContain('125500');
     });
   });
 
