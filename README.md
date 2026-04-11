@@ -297,4 +297,6 @@ scripts/         Git and build scripts
 
 ## License
 
-MIT
+AGPL-3.0 -- see [COPYING](COPYING) for the full license text.
+
+Copyright (c) 2026 Sourjya S. Sen. See [ADR-009](docs/decisions/ADR-009-agpl-licensing.md) for licensing rationale.

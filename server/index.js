@@ -48,6 +48,8 @@ import { register as registerListBaselines } from '#src/tools/list-baselines.js'
 import { register as registerListSessions } from '#src/tools/list-sessions.js';
 import { register as registerGetSession } from '#src/tools/get-session.js';
 import { register as registerFindSource } from '#src/tools/find-source.js';
+import { register as registerCheckConsistency } from '#src/tools/check-consistency.js';
+import { register as registerCheckAnnotationStatus } from '#src/tools/check-annotation-status.js';
 import { createRequestQueue } from '#src/request-queue.js';
 import { createHttpReceiver } from '#src/http-receiver.js';
 
@@ -96,6 +98,8 @@ registerListBaselines(server, indexer, CAPTURES_DIR);
 registerListSessions(server, indexer, CAPTURES_DIR);
 registerGetSession(server, indexer, CAPTURES_DIR);
 registerFindSource(server, indexer, CAPTURES_DIR);
+registerCheckConsistency(server, indexer, CAPTURES_DIR);
+registerCheckAnnotationStatus(server, indexer, CAPTURES_DIR);
 
 // ---------------------------------------------------------------------------
 // File indexing  -  parse metadata from a capture file and add to index
