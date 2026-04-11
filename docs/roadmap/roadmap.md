@@ -28,8 +28,9 @@
 | CLI: Status/Doctor | Complete | Health check and diagnostic tools |
 | M10.3: Resolution Push | Complete | Periodic polling for resolved annotations |
 | Keyboard Shortcuts | Complete | Power user shortcuts for annotate mode |
+| M14.3: WebSocket Collab | Complete | Real-time annotation sync via WebSocket |
 
-**Current totals:** 575 tests, 33 MCP tools, 13 enrichment collectors
+**Current totals:** 905 tests (324 server + 581 extension), 33 MCP tools, 13 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and
