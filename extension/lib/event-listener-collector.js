@@ -13,6 +13,8 @@
  * @see docs/roadmap/roadmap.md - M12.4
  */
 
+import { buildSelector } from './selector.js';
+
 const ATTR = 'data-vg-annotate';
 const MAX_ELEMENTS = 2000;
 
@@ -110,16 +112,4 @@ function isNativelyClickable(el) {
   return ['a', 'button', 'input', 'select', 'textarea', 'summary', 'label'].includes(tag)
     || el.hasAttribute('tabindex')
     || el.getAttribute('role') === 'button';
-}
-
-/** Build a compact selector for an element. */
-function buildSelector(el) {
-  const tag = el.tagName.toLowerCase();
-  if (el.id) return `${tag}#${el.id}`;
-  const testid = el.getAttribute('data-testid');
-  if (testid) return `${tag}[data-testid="${testid}"]`;
-  const cls = el.className && typeof el.className === 'string'
-    ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.')
-    : '';
-  return `${tag}${cls}`;
 }

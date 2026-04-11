@@ -60,16 +60,20 @@ export async function discoverServer(targetDir = null) {
   return fallback;
 }
 
-/** Fetch auth token from /info endpoint and cache it. */
+/** Fetch server info and cache agent name. Token read from extension settings. */
 async function fetchToken(serverUrl) {
   try {
     const res = await fetch(`${serverUrl}/info`, { signal: AbortSignal.timeout(1000) });
     if (res.ok) {
       const data = await res.json();
-      _cachedToken = data.token || null;
       _cachedAgent = data.agent || null;
     }
-  } catch { _cachedToken = null; _cachedAgent = null; }
+  } catch { _cachedAgent = null; }
+  // Token comes from extension settings (user pastes from server startup log)
+  try {
+    const result = await chrome.storage.local.get('vg-auth-token');
+    _cachedToken = result['vg-auth-token'] || null;
+  } catch { /* no token configured */ }
 }
 
 /**

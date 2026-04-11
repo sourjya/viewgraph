@@ -9,7 +9,6 @@
 
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
-import path from 'path';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';

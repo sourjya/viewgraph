@@ -187,22 +187,16 @@ export function serialize(elements, relations, enrichment = {}) {
     details: buildDetails(elements),
   };
 
-  // Optional enrichment sections (M12.1, M12.2, M12.6, M13.1)
-  if (enrichment.network) capture.network = enrichment.network;
-  if (enrichment.console) capture.console = enrichment.console;
-  if (enrichment.breakpoints) capture.breakpoints = enrichment.breakpoints;
-  if (enrichment.stacking) capture.stacking = enrichment.stacking;
-  if (enrichment.focus) capture.focus = enrichment.focus;
-  if (enrichment.scroll) capture.scroll = enrichment.scroll;
-  if (enrichment.landmarks) capture.landmarks = enrichment.landmarks;
+  // Enrichment sections - each key maps directly to a top-level capture field
+  const ENRICHMENT_KEYS = [
+    'network', 'console', 'breakpoints', 'stacking', 'focus', 'scroll',
+    'landmarks', 'components', 'axe', 'eventListeners', 'performance',
+    'animations', 'intersection', 'mediaQueries',
+  ];
+  for (const key of ENRICHMENT_KEYS) {
+    if (enrichment[key]) capture[key] = enrichment[key];
+  }
   if (enrichment.session) capture.metadata.session = enrichment.session;
-  if (enrichment.components) capture.components = enrichment.components;
-  if (enrichment.axe) capture.axe = enrichment.axe;
-  if (enrichment.eventListeners) capture.eventListeners = enrichment.eventListeners;
-  if (enrichment.performance) capture.performance = enrichment.performance;
-  if (enrichment.animations) capture.animations = enrichment.animations;
-  if (enrichment.intersection) capture.intersection = enrichment.intersection;
-  if (enrichment.mediaQueries) capture.mediaQueries = enrichment.mediaQueries;
 
   // Update capture size estimate
   const jsonStr = JSON.stringify(capture);

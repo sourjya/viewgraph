@@ -11,6 +11,8 @@
  * @see docs/roadmap/roadmap.md - M14.4
  */
 
+import { buildSelector } from './selector.js';
+
 /**
  * Capture a subtree rooted at the given element.
  * @param {Element} root - Root element of the subtree
@@ -76,13 +78,4 @@ function isInteractive(el) {
   return ['a', 'button', 'input', 'select', 'textarea', 'summary'].includes(tag)
     || el.hasAttribute('tabindex')
     || el.getAttribute('role') === 'button';
-}
-
-/** Build a compact selector. */
-function buildSelector(el) {
-  const tag = el.tagName.toLowerCase();
-  if (el.id) return `${tag}#${el.id}`;
-  const testid = el.getAttribute('data-testid');
-  if (testid) return `${tag}[data-testid="${testid}"]`;
-  return tag;
 }

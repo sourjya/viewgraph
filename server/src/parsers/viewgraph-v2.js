@@ -83,6 +83,12 @@ export function parseCapture(jsonString) {
     return { ok: false, error: 'Missing metadata section' };
   }
 
+  const ENRICHMENT_KEYS = [
+    'network', 'console', 'breakpoints', 'stacking', 'focus', 'scroll',
+    'landmarks', 'components', 'axe', 'eventListeners', 'performance',
+    'animations', 'intersection', 'mediaQueries',
+  ];
+
   return {
     ok: true,
     data: {
@@ -92,20 +98,7 @@ export function parseCapture(jsonString) {
       relations: raw.relations ?? null,
       details: raw.details ?? null,
       annotations: normalizeAnnotations(raw.annotations),
-      network: raw.network ?? null,
-      console: raw.console ?? null,
-      breakpoints: raw.breakpoints ?? null,
-      stacking: raw.stacking ?? null,
-      focus: raw.focus ?? null,
-      scroll: raw.scroll ?? null,
-      landmarks: raw.landmarks ?? null,
-      components: raw.components ?? null,
-      axe: raw.axe ?? null,
-      eventListeners: raw.eventListeners ?? null,
-      performance: raw.performance ?? null,
-      animations: raw.animations ?? null,
-      intersection: raw.intersection ?? null,
-      mediaQueries: raw.mediaQueries ?? null,
+      ...Object.fromEntries(ENRICHMENT_KEYS.map((k) => [k, raw[k] ?? null])),
     },
   };
 }

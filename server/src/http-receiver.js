@@ -14,11 +14,14 @@
  */
 
 import { createServer } from 'http';
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, readFile } from 'fs/promises';
+import { existsSync, accessSync, constants as fsConstants, readFileSync, mkdirSync } from 'fs';
 import path from 'path';
 import { LOG_PREFIX } from './constants.js';
 import { validateCapturePath } from './utils/validate-path.js';
 import { createWebSocketServer } from './ws-server.js';
+import { parseCapture } from '#src/parsers/viewgraph-v2.js';
+import { diffCaptures } from '#src/analysis/capture-diff.js';
 
 /**
  * Capture payload limit. MCP tool responses target ~400KB for LLM context
@@ -50,14 +53,15 @@ function generateFilename(metadata) {
 function readBody(req, limit = MAX_BODY) {
   return new Promise((resolve, reject) => {
     let size = 0;
+    let settled = false;
     const chunks = [];
     req.on('data', (chunk) => {
       size += chunk.length;
-      if (size > limit) { req.destroy(); reject(new Error('Payload too large')); return; }
+      if (size > limit) { settled = true; req.destroy(); reject(new Error('Payload too large')); return; }
       chunks.push(chunk);
     });
-    req.on('end', () => resolve(Buffer.concat(chunks).toString()));
-    req.on('error', reject);
+    req.on('end', () => { if (!settled) resolve(Buffer.concat(chunks).toString()); });
+    req.on('error', (err) => { if (!settled) { settled = true; reject(err); } });
   });
 }
 
@@ -110,7 +114,6 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
 
     // GET /health - server status, captures dir, and writability check
     if (method === 'GET' && url === '/health') {
-      const { existsSync, accessSync, constants: fsConstants } = await import('fs');
       const dirExists = existsSync(capturesDir);
       let writable = false;
       if (dirExists) {
@@ -121,15 +124,12 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
 
     // GET /info - project info for auto-detection by the extension
     if (method === 'GET' && url === '/info') {
-      const { resolve, dirname } = await import('path');
-      const absCaptures = resolve(capturesDir);
-      // Derive project root: walk up from capturesDir past .viewgraph/captures
+      const absCaptures = path.resolve(capturesDir);
       const projectRoot = absCaptures.endsWith('.viewgraph/captures')
-        ? dirname(dirname(absCaptures))
-        : dirname(absCaptures);
-      // Read agent name written by viewgraph-init
+        ? path.dirname(path.dirname(absCaptures))
+        : path.dirname(absCaptures);
       let agent;
-      try { const { readFileSync } = await import('fs'); agent = readFileSync(resolve(projectRoot, '.viewgraph', '.agent'), 'utf-8').trim(); } catch { /* not set */ }
+      try { agent = readFileSync(path.resolve(projectRoot, '.viewgraph', '.agent'), 'utf-8').trim(); } catch { /* not set */ }
       return json(res, 200, { capturesDir: absCaptures, projectRoot, agent });
     }
 
@@ -195,7 +195,6 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         if (!allowedDirs.some((d) => resolved === d || resolved.startsWith(d + path.sep))) {
           return json(res, 403, { error: 'Directory not in allowedDirs - add it to .viewgraphrc.json or VIEWGRAPH_ALLOWED_DIRS' });
         }
-        const { existsSync, mkdirSync } = await import('fs');
         if (!existsSync(resolved)) {
           try { mkdirSync(resolved, { recursive: true }); } catch {
             return json(res, 400, { error: `Cannot create directory: ${resolved}` });
@@ -247,7 +246,6 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       for (const entry of indexer.list()) {
         try {
           const filePath = validateCapturePath(entry.filename, capturesDir);
-          const { readFile } = await import('fs/promises');
           const raw = await readFile(filePath, 'utf-8');
           const capture = JSON.parse(raw);
           if (!capture.metadata?.url?.includes(pageUrl)) continue;
@@ -268,9 +266,6 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       const fileB = params.get('b');
       if (!fileA || !fileB) return json(res, 400, { error: 'Missing a or b parameter' });
       try {
-        const { readFile } = await import('fs/promises');
-        const { parseCapture } = await import('#src/parsers/viewgraph-v2.js');
-        const { diffCaptures } = await import('#src/analysis/capture-diff.js');
         const pathA = validateCapturePath(fileA, capturesDir);
         const pathB = validateCapturePath(fileB, capturesDir);
         const [rawA, rawB] = await Promise.all([readFile(pathA, 'utf-8'), readFile(pathB, 'utf-8')]);
@@ -317,13 +312,10 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       if (!baseline) return json(res, 200, { hasBaseline: false });
       const latest = indexer.getLatest(pageUrl);
       if (!latest) return json(res, 200, { hasBaseline: true, noCapture: true });
-      const { readFile } = await import('fs/promises');
       const capPath = validateCapturePath(latest.filename, capturesDir);
       const capContent = await readFile(capPath, 'utf-8');
-      const { parseCapture } = await import('#src/parsers/viewgraph-v2.js');
       const capResult = parseCapture(capContent);
       if (!capResult.ok) return json(res, 500, { error: 'Failed to parse capture' });
-      const { diffCaptures } = await import('#src/analysis/capture-diff.js');
       const diff = diffCaptures(baseline, capResult.data);
       const pick = (arr) => arr.slice(0, 10).map((n) => ({ tag: n.tag, text: (n.text || '').slice(0, 40), selector: n.selector }));
       return json(res, 200, { hasBaseline: true, diff: {

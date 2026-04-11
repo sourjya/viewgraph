@@ -75,6 +75,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Low-Priority Cleanup (M13.5, M13.7)
 
 ### Security Audit Remediations
+
+### Code Quality Audit Fixes
+- CQ-01: Extracted shared `buildSelector()` to `extension/lib/selector.js` - removed 5 duplicate implementations
+- CQ-02: Extracted shared `collectAllEnrichment()` to `extension/lib/enrichment.js` - removed 4 duplicate 15-line blocks
+- CQ-04: Fixed stale token fetch - reads from extension storage instead of removed `/info` token field
+- CQ-05: Removed 3 unused imports from annotate.js (traverseDOM, scoreAll, serialize)
+- CQ-06: Removed unused `path` import from get-unresolved.js
+- CQ-07: Fixed `flashElement(el)` -> `flashElement(currentEl)` - flash effect now works on element selection
+- CQ-08: Added 3-second fetch timeouts to sidebar /health and /captures calls
+- CQ-09: Replaced 15-line repetitive enrichment block in serializer with loop over shared key list
+- CQ-10: Replaced 15-line repetitive enrichment block in parser with loop over shared key list
+- CQ-12: Converted 8 dynamic `await import()` calls in HTTP receiver to static imports
+- CQ-16: Fixed readBody double-settlement with `settled` flag
+- Bundle size reduced from 849KB to 848KB from deduplication
+
+### Security Audit Remediations
 - S1-1 (HIGH): Removed auth token from `/info` endpoint response
 - S1-2 (HIGH): Added `checkAuth()` to `POST /baselines` endpoint
 - S1-3 (MEDIUM): WebSocket auth timeout - unauthenticated connections closed after 5s

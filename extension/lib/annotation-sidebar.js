@@ -1058,9 +1058,9 @@ export function create() {
 
     let captures = [];
     try {
-      const res = await fetch(`${serverUrl}/health`);
+      const res = await fetch(`${serverUrl}/health`, { signal: AbortSignal.timeout(3000) });
       if (!res.ok) return;
-      const listRes = await fetch(`${serverUrl}/captures?url=${encodeURIComponent(pageUrl)}`);
+      const listRes = await fetch(`${serverUrl}/captures?url=${encodeURIComponent(pageUrl)}`, { signal: AbortSignal.timeout(3000) });
       if (listRes.ok) captures = (await listRes.json()).captures || [];
     } catch { return; }
 

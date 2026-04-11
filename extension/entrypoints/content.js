@@ -14,22 +14,10 @@ import { traverseDOM } from '../lib/traverser.js';
 import { scoreAll } from '../lib/salience.js';
 import { serialize } from '../lib/serializer.js';
 import { captureSnapshot } from '../lib/html-snapshot.js';
-import { collectNetworkState } from '../lib/network-collector.js';
-import { installConsoleInterceptor, getConsoleState } from '../lib/console-collector.js';
-import { collectBreakpoints, collectMediaQueries } from '../lib/breakpoint-collector.js';
-import { collectStackingContexts } from '../lib/stacking-collector.js';
-import { collectFocusChain } from '../lib/focus-collector.js';
-import { collectScrollContainers } from '../lib/scroll-collector.js';
-import { collectLandmarks } from '../lib/landmark-collector.js';
-import { isRecording, addStep, getCaptureMetadata } from '../lib/session-manager.js';
-import { collectComponents } from '../lib/component-collector.js';
-import { collectAxeResults } from '../lib/axe-collector.js';
-import { collectEventListeners } from '../lib/event-listener-collector.js';
-import { collectPerformance } from '../lib/performance-collector.js';
+import { collectAllEnrichment } from '../lib/enrichment.js';
+import { installConsoleInterceptor } from '../lib/console-collector.js';
 import { startAutoCapture, stopAutoCapture, isAutoCapturing } from '../lib/auto-capture.js';
-import { collectAnimations } from '../lib/animation-collector.js';
-import { collectIntersectionState } from '../lib/intersection-collector.js';
-import { safeCollect, safeCollectAsync } from '../lib/safe-collect.js';
+import { isRecording, addStep, getCaptureMetadata } from '../lib/session-manager.js';
 import {
   start as startAnnotate, stop as stopAnnotate, isActive as isAnnotating,
   getAnnotations, load as loadAnnotations, hideMarkers,
@@ -66,8 +54,7 @@ export default defineContentScript({
             const viewport = { width: window.innerWidth, height: window.innerHeight };
             const { elements, relations } = traverseDOM();
             const scored = scoreAll(elements, viewport);
-            const enrichment = { network: safeCollect('network', collectNetworkState), console: safeCollect('console', getConsoleState), breakpoints: safeCollect('breakpoints', collectBreakpoints), mediaQueries: safeCollect('mediaQueries', collectMediaQueries), stacking: safeCollect('stacking', collectStackingContexts), focus: safeCollect('focus', collectFocusChain), scroll: safeCollect('scroll', collectScrollContainers), landmarks: safeCollect('landmarks', collectLandmarks), components: safeCollect('components', collectComponents), eventListeners: safeCollect('eventListeners', collectEventListeners), performance: safeCollect('performance', collectPerformance), animations: safeCollect('animations', collectAnimations), intersection: safeCollect('intersection', collectIntersectionState) };
-            enrichment.axe = await safeCollectAsync('axe', collectAxeResults);
+            const enrichment = await collectAllEnrichment();
             if (isRecording()) {
               addStep(message.sessionNote);
               enrichment.session = getCaptureMetadata();
@@ -116,8 +103,7 @@ export default defineContentScript({
             const anns = getAnnotations();
             const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString() };
             const screenshots = message.screenshot ? await cropRegions(message.screenshot, anns, { scrollX: window.scrollX, scrollY: window.scrollY }) : [];
-            const enrichment = { network: safeCollect('network', collectNetworkState), console: safeCollect('console', getConsoleState), breakpoints: safeCollect('breakpoints', collectBreakpoints), mediaQueries: safeCollect('mediaQueries', collectMediaQueries), stacking: safeCollect('stacking', collectStackingContexts), focus: safeCollect('focus', collectFocusChain), scroll: safeCollect('scroll', collectScrollContainers), landmarks: safeCollect('landmarks', collectLandmarks), components: safeCollect('components', collectComponents), eventListeners: safeCollect('eventListeners', collectEventListeners), performance: safeCollect('performance', collectPerformance), animations: safeCollect('animations', collectAnimations), intersection: safeCollect('intersection', collectIntersectionState) };
-            enrichment.axe = await safeCollectAsync('axe', collectAxeResults);
+            const enrichment = await collectAllEnrichment();
             const blob = await buildReportZip(anns, meta, screenshots, enrichment);
             // Trigger download via object URL
             const url = URL.createObjectURL(blob);
@@ -141,8 +127,7 @@ export default defineContentScript({
           const viewport = { width: window.innerWidth, height: window.innerHeight };
           const { elements, relations } = traverseDOM();
           const scored = scoreAll(elements, viewport);
-          const enrichment = { network: safeCollect('network', collectNetworkState), console: safeCollect('console', getConsoleState), breakpoints: safeCollect('breakpoints', collectBreakpoints), mediaQueries: safeCollect('mediaQueries', collectMediaQueries), stacking: safeCollect('stacking', collectStackingContexts), focus: safeCollect('focus', collectFocusChain), scroll: safeCollect('scroll', collectScrollContainers), landmarks: safeCollect('landmarks', collectLandmarks), components: safeCollect('components', collectComponents), eventListeners: safeCollect('eventListeners', collectEventListeners), performance: safeCollect('performance', collectPerformance), animations: safeCollect('animations', collectAnimations), intersection: safeCollect('intersection', collectIntersectionState) };
-          enrichment.axe = await safeCollectAsync('axe', collectAxeResults);
+          const enrichment = await collectAllEnrichment();
           if (isRecording()) {
             addStep(message.sessionNote);
             enrichment.session = getCaptureMetadata();
