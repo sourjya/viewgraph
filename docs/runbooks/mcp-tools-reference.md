@@ -1,6 +1,6 @@
 # ViewGraph MCP Tools - Quick Reference
 
-31 tools in 6 categories. Ask your AI agent to run any of these.
+32 tools in 6 categories. Ask your AI agent to run any of these.
 
 ---
 
@@ -64,6 +64,7 @@
 | `list_sessions` | Shows recorded multi-step user flows | "What user flows have been captured?" |
 | `get_session` | Full step-by-step detail of a recorded flow with diffs between steps | "Show me the checkout flow step by step" |
 | `visualize_flow` | Builds a Mermaid state diagram from session captures showing what changes at each step | "Show me the login flow as a state machine" |
+| `analyze_journey` | Checks a recorded journey for missing elements, performance degradation, and console errors | "Are there any issues in this user flow?" |
 
 ---
 
