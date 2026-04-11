@@ -21,6 +21,7 @@ import { collectStackingContexts } from '../lib/stacking-collector.js';
 import { collectFocusChain } from '../lib/focus-collector.js';
 import { collectScrollContainers } from '../lib/scroll-collector.js';
 import { collectLandmarks } from '../lib/landmark-collector.js';
+import { isRecording, addStep, getCaptureMetadata } from '../lib/session-manager.js';
 import {
   start as startAnnotate, stop as stopAnnotate, isActive as isAnnotating,
   getAnnotations, load as loadAnnotations, hideMarkers,
@@ -49,6 +50,11 @@ export default defineContentScript({
           const { elements, relations } = traverseDOM();
           const scored = scoreAll(elements, viewport);
           const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks() };
+          // If a session is recording, advance the step and embed metadata
+          if (isRecording()) {
+            addStep(message.sessionNote);
+            enrichment.session = getCaptureMetadata();
+          }
           const capture = serialize(scored, relations, enrichment);
           const snapshot = message.includeSnapshot ? captureSnapshot() : null;
           sendResponse({ ok: true, capture, snapshot });
@@ -115,7 +121,11 @@ export default defineContentScript({
         const viewport = { width: window.innerWidth, height: window.innerHeight };
         const { elements, relations } = traverseDOM();
         const scored = scoreAll(elements, viewport);
-        const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints() };
+        const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks() };
+        if (isRecording()) {
+          addStep(message.sessionNote);
+          enrichment.session = getCaptureMetadata();
+        }
         const capture = serialize(scored, relations, enrichment);
         capture.metadata.captureMode = 'review';
         capture.annotations = getAnnotations().map((a) => ({

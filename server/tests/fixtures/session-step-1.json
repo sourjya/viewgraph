@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "format": "viewgraph-v2",
+    "timestamp": "2026-04-11T10:00:00.000Z",
+    "url": "http://localhost:3000/login",
+    "title": "Login",
+    "viewport": { "width": 1280, "height": 720 },
+    "stats": { "totalNodes": 5, "salience": { "high": 2, "med": 2, "low": 1 } },
+    "session": { "id": "ses_1712834400", "name": "Checkout flow", "step": 1, "note": "Opened login page" }
+  },
+  "nodes": { "high": [], "med": [], "low": [] },
+  "relations": { "semantic": [], "groups": [] },
+  "details": { "high": {}, "med": {}, "low": {} }
+}

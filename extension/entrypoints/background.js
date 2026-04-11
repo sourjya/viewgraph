@@ -211,7 +211,7 @@ export default defineBackground(() => {
 
         // Ask content script for annotations (and optionally a full capture)
         const msgType = message.includeCapture ? 'send-review' : 'send-annotations-only';
-        const result = await chrome.tabs.sendMessage(tab.id, { type: msgType });
+        const result = await chrome.tabs.sendMessage(tab.id, { type: msgType, sessionNote: message.sessionNote });
         console.log('[viewgraph] send-review: content script result', result?.ok);
         if (!result?.ok) { sendResponse({ ok: false, error: result?.error }); return; }
 

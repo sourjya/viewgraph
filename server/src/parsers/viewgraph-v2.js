@@ -47,6 +47,7 @@ export function parseMetadata(jsonString) {
       viewport: meta.viewport,
       nodeCount: meta.stats?.totalNodes ?? 0,
       captureMode: meta.captureMode ?? 'unknown',
+      session: meta.session ?? null,
       hasAnnotations: 'annotations' in raw,
     },
   };

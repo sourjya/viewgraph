@@ -45,6 +45,8 @@ import { register as registerGetUnresolved } from '#src/tools/get-unresolved.js'
 import { register as registerCompareBaseline } from '#src/tools/compare-baseline.js';
 import { register as registerSetBaseline } from '#src/tools/set-baseline.js';
 import { register as registerListBaselines } from '#src/tools/list-baselines.js';
+import { register as registerListSessions } from '#src/tools/list-sessions.js';
+import { register as registerGetSession } from '#src/tools/get-session.js';
 import { createRequestQueue } from '#src/request-queue.js';
 import { createHttpReceiver } from '#src/http-receiver.js';
 
@@ -90,6 +92,8 @@ registerGetUnresolved(server, indexer, CAPTURES_DIR);
 registerCompareBaseline(server, indexer, CAPTURES_DIR);
 registerSetBaseline(server, indexer, CAPTURES_DIR);
 registerListBaselines(server, indexer, CAPTURES_DIR);
+registerListSessions(server, indexer, CAPTURES_DIR);
+registerGetSession(server, indexer, CAPTURES_DIR);
 
 // ---------------------------------------------------------------------------
 // File indexing  -  parse metadata from a capture file and add to index

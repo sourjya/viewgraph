@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "format": "viewgraph-v2",
+    "timestamp": "2026-04-11T10:01:00.000Z",
+    "url": "http://localhost:3000/dashboard",
+    "title": "Dashboard",
+    "viewport": { "width": 1280, "height": 720 },
+    "stats": { "totalNodes": 12, "salience": { "high": 4, "med": 5, "low": 3 } },
+    "session": { "id": "ses_1712834400", "name": "Checkout flow", "step": 2, "note": "Logged in" }
+  },
+  "nodes": { "high": [], "med": [], "low": [] },
+  "relations": { "semantic": [], "groups": [] },
+  "details": { "high": {}, "med": {}, "low": {} }
+}
