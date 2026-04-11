@@ -51,6 +51,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Pattern-Based Steering Generation (M10.6)
 
 ### Performance Collector (M15.5)
+
+### Auto-Capture on HMR (M14.1)
+- New `hmr-detector.js`: watches for Vite, webpack, and DOM mutation hot-reload events
+- New `auto-capture.js`: triggers full capture on HMR, sends to background for push
+- Debounced to avoid rapid-fire captures during successive updates
+- Background script handles `auto-capture` message type for push to server
+- Content script reads settings on load and starts auto-capture if enabled
+- 10 new extension tests (5 HMR detector + 5 auto-capture controller)
+
+### Extension Settings Page (M9.5)
+- Options page extended with auto-capture toggle and debounce delay
+- Server URL configuration
+- Screenshot quality setting (PNG lossless, JPEG high, JPEG low)
+- Settings persisted via chrome.storage.sync
+- Firefox MV2 and Chrome MV3 builds validated
+
+### Performance Collector (M15.5)
 - New `performance-collector.js`: collects browser Performance API metrics
 - Navigation timing (page load, DOM content loaded, first byte, DOM interactive)
 - Resource timing (slow resources > 500ms, total transfer size)

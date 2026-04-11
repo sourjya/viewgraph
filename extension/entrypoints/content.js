@@ -26,6 +26,7 @@ import { collectComponents } from '../lib/component-collector.js';
 import { collectAxeResults } from '../lib/axe-collector.js';
 import { collectEventListeners } from '../lib/event-listener-collector.js';
 import { collectPerformance } from '../lib/performance-collector.js';
+import { startAutoCapture, stopAutoCapture, isAutoCapturing } from '../lib/auto-capture.js';
 import {
   start as startAnnotate, stop as stopAnnotate, isActive as isAnnotating,
   getAnnotations, load as loadAnnotations, hideMarkers,
@@ -42,6 +43,14 @@ export default defineContentScript({
   main() {
     // Install console interceptor early to catch errors from page scripts
     installConsoleInterceptor();
+
+    // Check if auto-capture is enabled in settings
+    chrome.storage.sync.get('viewgraph-settings', (result) => {
+      const s = result['viewgraph-settings'] || {};
+      if (s.autoCaptureEnabled) {
+        startAutoCapture({ debounceMs: s.debounceMs || 1000 });
+      }
+    });
 
     chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
@@ -171,6 +180,22 @@ export default defineContentScript({
         };
         sendResponse({ ok: true, capture });
         return true;
+      }
+
+      // Auto-capture control
+      if (message.type === 'start-auto-capture') {
+        startAutoCapture({ debounceMs: message.debounceMs });
+        sendResponse({ ok: true, active: true });
+        return false;
+      }
+      if (message.type === 'stop-auto-capture') {
+        stopAutoCapture();
+        sendResponse({ ok: true, active: false });
+        return false;
+      }
+      if (message.type === 'auto-capture-status') {
+        sendResponse({ ok: true, active: isAutoCapturing() });
+        return false;
       }
 
       return false;
