@@ -39,6 +39,27 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Framework Source Linking (R6/M15.1)
 
 ### Event Listener Inventory (M12.4)
+
+### Annotation Diffing (M10.4)
+- New `annotation-diff.js`: compares annotations across captures chronologically
+- Tracks persistent issues, new issues, and resolved issues over time
+- New MCP tool: `diff_annotations` - takes 2-20 capture filenames
+- 5 unit tests
+
+### Recurring Issue Detection (M10.5)
+- New `recurring-issues.js`: scans all annotated captures for UI hot spots
+- Identifies elements flagged repeatedly across sessions
+- New MCP tool: `detect_recurring_issues` - scans all captures, configurable threshold
+- 4 unit tests
+
+### State Machine Visualization (M15.4)
+- New `state-machine.js`: builds state diagrams from session captures
+- Shows element additions/removals at each step transition
+- Generates Mermaid-compatible state diagrams
+- New MCP tool: `visualize_flow` - takes step captures, returns Mermaid diagram
+- 4 unit tests
+
+### Event Listener Inventory (M12.4)
 - New `event-listener-collector.js`: detects event handlers on DOM elements
 - Detects HTML event attributes (onclick, onchange, etc.)
 - Detects React synthetic events via fiber props (onClick, onChange, etc.)
