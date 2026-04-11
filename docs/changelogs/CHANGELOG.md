@@ -35,6 +35,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Cross-Page Consistency Checker (R4/M15.3)
 
 ### axe-core Integration (R2)
+
+### Framework Source Linking (R6/M15.1)
+- `find_source` now accepts `component` parameter for framework component name search
+- Searches for `function ComponentName`, `const ComponentName`, `export default`, `class ComponentName`
+- Component names from R1 captures feed directly into source linking at high confidence
+- 3 new server tests
+
+### Visual Screenshot Diff (R5/M17)
+- New `screenshot-diff.js`: pixel-by-pixel PNG comparison using pixelmatch
+- Handles different-sized images (crops to common dimensions)
+- Configurable threshold (0-1) for sensitivity control
+- New MCP tool: `compare_screenshots` - returns diff percentage, changed pixels, verdict
+- 6 new server tests
+
+### axe-core Integration (R2)
 - New `axe-collector.js`: runs axe-core scan (100+ WCAG rules) during capture
 - Scans wcag2a, wcag2aa, wcag21a, wcag21aa, and best-practice rules
 - Results capped at 50 violations / 5 nodes each for capture size control

@@ -50,6 +50,7 @@ import { register as registerGetSession } from '#src/tools/get-session.js';
 import { register as registerFindSource } from '#src/tools/find-source.js';
 import { register as registerCheckConsistency } from '#src/tools/check-consistency.js';
 import { register as registerCheckAnnotationStatus } from '#src/tools/check-annotation-status.js';
+import { register as registerCompareScreenshots } from '#src/tools/compare-screenshots.js';
 import { createRequestQueue } from '#src/request-queue.js';
 import { createHttpReceiver } from '#src/http-receiver.js';
 
@@ -100,6 +101,7 @@ registerGetSession(server, indexer, CAPTURES_DIR);
 registerFindSource(server, indexer, CAPTURES_DIR);
 registerCheckConsistency(server, indexer, CAPTURES_DIR);
 registerCheckAnnotationStatus(server, indexer, CAPTURES_DIR);
+registerCompareScreenshots(server, indexer, CAPTURES_DIR);
 
 // ---------------------------------------------------------------------------
 // File indexing  -  parse metadata from a capture file and add to index
