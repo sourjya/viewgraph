@@ -16,7 +16,7 @@ import { serialize } from '../lib/serializer.js';
 import { captureSnapshot } from '../lib/html-snapshot.js';
 import { collectNetworkState } from '../lib/network-collector.js';
 import { installConsoleInterceptor, getConsoleState } from '../lib/console-collector.js';
-import { collectBreakpoints } from '../lib/breakpoint-collector.js';
+import { collectBreakpoints, collectMediaQueries } from '../lib/breakpoint-collector.js';
 import { collectStackingContexts } from '../lib/stacking-collector.js';
 import { collectFocusChain } from '../lib/focus-collector.js';
 import { collectScrollContainers } from '../lib/scroll-collector.js';
@@ -66,7 +66,7 @@ export default defineContentScript({
             const viewport = { width: window.innerWidth, height: window.innerHeight };
             const { elements, relations } = traverseDOM();
             const scored = scoreAll(elements, viewport);
-            const enrichment = { network: safeCollect('network', collectNetworkState), console: safeCollect('console', getConsoleState), breakpoints: safeCollect('breakpoints', collectBreakpoints), stacking: safeCollect('stacking', collectStackingContexts), focus: safeCollect('focus', collectFocusChain), scroll: safeCollect('scroll', collectScrollContainers), landmarks: safeCollect('landmarks', collectLandmarks), components: safeCollect('components', collectComponents), eventListeners: safeCollect('eventListeners', collectEventListeners), performance: safeCollect('performance', collectPerformance), animations: safeCollect('animations', collectAnimations), intersection: safeCollect('intersection', collectIntersectionState) };
+            const enrichment = { network: safeCollect('network', collectNetworkState), console: safeCollect('console', getConsoleState), breakpoints: safeCollect('breakpoints', collectBreakpoints), mediaQueries: safeCollect('mediaQueries', collectMediaQueries), stacking: safeCollect('stacking', collectStackingContexts), focus: safeCollect('focus', collectFocusChain), scroll: safeCollect('scroll', collectScrollContainers), landmarks: safeCollect('landmarks', collectLandmarks), components: safeCollect('components', collectComponents), eventListeners: safeCollect('eventListeners', collectEventListeners), performance: safeCollect('performance', collectPerformance), animations: safeCollect('animations', collectAnimations), intersection: safeCollect('intersection', collectIntersectionState) };
             enrichment.axe = await safeCollectAsync('axe', collectAxeResults);
             if (isRecording()) {
               addStep(message.sessionNote);
@@ -116,7 +116,7 @@ export default defineContentScript({
             const anns = getAnnotations();
             const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString() };
             const screenshots = message.screenshot ? await cropRegions(message.screenshot, anns, { scrollX: window.scrollX, scrollY: window.scrollY }) : [];
-            const enrichment = { network: safeCollect('network', collectNetworkState), console: safeCollect('console', getConsoleState), breakpoints: safeCollect('breakpoints', collectBreakpoints), stacking: safeCollect('stacking', collectStackingContexts), focus: safeCollect('focus', collectFocusChain), scroll: safeCollect('scroll', collectScrollContainers), landmarks: safeCollect('landmarks', collectLandmarks), components: safeCollect('components', collectComponents), eventListeners: safeCollect('eventListeners', collectEventListeners), performance: safeCollect('performance', collectPerformance), animations: safeCollect('animations', collectAnimations), intersection: safeCollect('intersection', collectIntersectionState) };
+            const enrichment = { network: safeCollect('network', collectNetworkState), console: safeCollect('console', getConsoleState), breakpoints: safeCollect('breakpoints', collectBreakpoints), mediaQueries: safeCollect('mediaQueries', collectMediaQueries), stacking: safeCollect('stacking', collectStackingContexts), focus: safeCollect('focus', collectFocusChain), scroll: safeCollect('scroll', collectScrollContainers), landmarks: safeCollect('landmarks', collectLandmarks), components: safeCollect('components', collectComponents), eventListeners: safeCollect('eventListeners', collectEventListeners), performance: safeCollect('performance', collectPerformance), animations: safeCollect('animations', collectAnimations), intersection: safeCollect('intersection', collectIntersectionState) };
             enrichment.axe = await safeCollectAsync('axe', collectAxeResults);
             const blob = await buildReportZip(anns, meta, screenshots, enrichment);
             // Trigger download via object URL
@@ -141,7 +141,7 @@ export default defineContentScript({
           const viewport = { width: window.innerWidth, height: window.innerHeight };
           const { elements, relations } = traverseDOM();
           const scored = scoreAll(elements, viewport);
-          const enrichment = { network: safeCollect('network', collectNetworkState), console: safeCollect('console', getConsoleState), breakpoints: safeCollect('breakpoints', collectBreakpoints), stacking: safeCollect('stacking', collectStackingContexts), focus: safeCollect('focus', collectFocusChain), scroll: safeCollect('scroll', collectScrollContainers), landmarks: safeCollect('landmarks', collectLandmarks), components: safeCollect('components', collectComponents), eventListeners: safeCollect('eventListeners', collectEventListeners), performance: safeCollect('performance', collectPerformance), animations: safeCollect('animations', collectAnimations), intersection: safeCollect('intersection', collectIntersectionState) };
+          const enrichment = { network: safeCollect('network', collectNetworkState), console: safeCollect('console', getConsoleState), breakpoints: safeCollect('breakpoints', collectBreakpoints), mediaQueries: safeCollect('mediaQueries', collectMediaQueries), stacking: safeCollect('stacking', collectStackingContexts), focus: safeCollect('focus', collectFocusChain), scroll: safeCollect('scroll', collectScrollContainers), landmarks: safeCollect('landmarks', collectLandmarks), components: safeCollect('components', collectComponents), eventListeners: safeCollect('eventListeners', collectEventListeners), performance: safeCollect('performance', collectPerformance), animations: safeCollect('animations', collectAnimations), intersection: safeCollect('intersection', collectIntersectionState) };
           enrichment.axe = await safeCollectAsync('axe', collectAxeResults);
           if (isRecording()) {
             addStep(message.sessionNote);

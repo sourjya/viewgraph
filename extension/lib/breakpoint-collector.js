@@ -42,3 +42,34 @@ export function collectBreakpoints() {
 
   return { viewport: { width }, breakpoints, activeRange };
 }
+
+/**
+ * Extract active media queries from loaded stylesheets.
+ * Reads `@media` rules from document.styleSheets and reports which match.
+ * @returns {{ active: string[], inactive: string[], total: number }}
+ */
+export function collectMediaQueries() {
+  const active = new Set();
+  const inactive = new Set();
+
+  try {
+    for (const sheet of document.styleSheets) {
+      try {
+        for (const rule of sheet.cssRules || []) {
+          if (rule.type === CSSRule.MEDIA_RULE) {
+            const mq = rule.conditionText || rule.media?.mediaText;
+            if (!mq) continue;
+            if (window.matchMedia(mq).matches) active.add(mq);
+            else inactive.add(mq);
+          }
+        }
+      } catch { /* cross-origin stylesheet - skip */ }
+    }
+  } catch { /* no stylesheets */ }
+
+  return {
+    active: [...active].slice(0, 30),
+    inactive: [...inactive].slice(0, 30),
+    total: active.size + inactive.size,
+  };
+}

@@ -105,6 +105,7 @@ export function parseCapture(jsonString) {
       performance: raw.performance ?? null,
       animations: raw.animations ?? null,
       intersection: raw.intersection ?? null,
+      mediaQueries: raw.mediaQueries ?? null,
     },
   };
 }
@@ -157,6 +158,7 @@ export function parseSummary(jsonString) {
       slowResources: raw.performance?.resources?.slowResources?.length ?? 0,
       animatingElements: raw.animations?.count ?? 0,
       offscreenElements: raw.intersection?.offscreen ?? 0,
+      activeMediaQueries: raw.mediaQueries?.active?.length ?? 0,
     },
   };
 }

@@ -45,7 +45,14 @@ export function collectAnimations() {
     });
   }
 
-  return { animating: results.slice(0, 50), count: results.length, supported: true };
+  return {
+    animating: results.slice(0, 50),
+    count: results.length,
+    running: allAnimations.filter((a) => a.playState === 'running').length,
+    paused: allAnimations.filter((a) => a.playState === 'paused').length,
+    pending: allAnimations.filter((a) => a.playState === 'idle' || a.pending).length,
+    supported: true,
+  };
 }
 
 /** Build a compact selector. */
