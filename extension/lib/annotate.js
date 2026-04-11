@@ -17,6 +17,7 @@
 import { traverseDOM } from './traverser.js';
 import { scoreAll } from './salience.js';
 import { serialize } from './serializer.js';
+import { flashElement } from './element-flash.js';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -349,6 +350,7 @@ function freeze() {
   const annotation = { id, uuid: crypto.randomUUID(), type: 'element', region, comment: '', severity: '', category: '', nids: [], ancestor, element, timestamp: new Date().toISOString() };
   annotations.push(annotation);
   createMarker(annotation, rect);
+  flashElement(el);
   save();
   if (onAnnotationAdded) onAnnotationAdded(annotation);
 }
