@@ -837,8 +837,8 @@ export function create() {
   }
 
   /**
-   * Fetch capture history from the server and render a simple summary.
-   * Shows latest capture info and auto-diff vs previous - no interaction needed.
+   * Fetch capture count from the server and render a single status line.
+   * Surfaces warnings only when something looks wrong (empty capture, stale data).
    */
   async function fetchCapturesSection(container) {
     const serverUrl = await discoverServer();
@@ -855,106 +855,57 @@ export function create() {
 
     if (captures.length === 0) return;
 
-    /** Derive a short ID from a capture filename for agent reference. */
-    function shortId(filename) {
-      // e.g. "viewgraph-localhost-20260408-120612.json" -> "120612"
-      const base = filename.replace(/\.json$/, '');
-      return base.slice(-6);
-    }
-
-    const { section: capSection, body: capBody } = createSection('Captures', `${captures.length}`, '#6366f1');
     const now = Date.now();
     const latest = captures[0];
-    const prev = captures[1];
-
-    // Latest capture summary
-    const summaryRow = document.createElement('div');
-    summaryRow.setAttribute(ATTR, 'capture-summary');
-    Object.assign(summaryRow.style, {
-      padding: '6px 8px', borderRadius: '4px', background: '#1e1e2e',
-    });
-
-    // Line 1: short ID + relative time + element count
-    const line1 = document.createElement('div');
-    Object.assign(line1.style, { display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' });
-    const idEl = document.createElement('span');
-    idEl.textContent = shortId(latest.filename);
-    idEl.title = latest.filename;
-    idEl.setAttribute(ATTR, 'capture-id');
-    Object.assign(idEl.style, {
-      color: '#6366f1', fontSize: '10px', fontFamily: 'monospace',
-      background: '#1a1a2e', padding: '0 4px', borderRadius: '2px', cursor: 'default',
-    });
-    const tsEl = document.createElement('span');
     const d = latest.timestamp ? new Date(latest.timestamp) : null;
+
+    // Build relative time string
+    let timeStr = '';
     if (d) {
       const diffMin = Math.floor((now - d.getTime()) / 60000);
-      if (diffMin < 1) tsEl.textContent = 'just now';
-      else if (diffMin < 60) tsEl.textContent = `${diffMin}m ago`;
-      else tsEl.textContent = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-    } else {
-      tsEl.textContent = 'latest';
-    }
-    Object.assign(tsEl.style, { color: '#a5b4fc', fontSize: '11px', fontWeight: '600', flex: '1' });
-    const countEl = document.createElement('span');
-    countEl.textContent = `${latest.nodeCount || 0} elements`;
-    Object.assign(countEl.style, { color: '#555', fontSize: '10px' });
-    line1.append(idEl, tsEl, countEl);
-    summaryRow.appendChild(line1);
-
-    // Line 2: auto-diff vs previous capture (if exists)
-    if (prev) {
-      const delta = (latest.nodeCount || 0) - (prev.nodeCount || 0);
-      if (delta !== 0) {
-        const diffLine = document.createElement('div');
-        diffLine.setAttribute(ATTR, 'capture-diff');
-        const sign = delta > 0 ? '+' : '';
-        diffLine.textContent = `${sign}${delta} elements since previous`;
-        Object.assign(diffLine.style, {
-          color: delta > 0 ? '#4ade80' : '#f87171',
-          fontSize: '10px', fontWeight: '600', marginTop: '2px',
-        });
-        summaryRow.appendChild(diffLine);
-      }
+      if (diffMin < 1) timeStr = 'latest just now';
+      else if (diffMin < 60) timeStr = `latest ${diffMin}m ago`;
+      else if (diffMin < 1440) timeStr = `latest ${Math.floor(diffMin / 60)}h ago`;
+      else timeStr = `latest ${Math.floor(diffMin / 1440)}d ago`;
     }
 
-    capBody.appendChild(summaryRow);
+    // Status row - single line
+    const row = document.createElement('div');
+    row.setAttribute(ATTR, 'capture-status');
+    Object.assign(row.style, {
+      display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0',
+    });
 
-    // Older captures - compact timeline with IDs
-    if (captures.length > 1) {
-      const timeline = document.createElement('div');
-      Object.assign(timeline.style, { marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '2px' });
-      for (let i = 1; i < Math.min(captures.length, 8); i++) {
-        const cap = captures[i];
-        const row = document.createElement('div');
-        Object.assign(row.style, { display: 'flex', alignItems: 'center', gap: '6px' });
-        const id = document.createElement('span');
-        id.textContent = shortId(cap.filename);
-        id.title = cap.filename;
-        Object.assign(id.style, { color: '#444', fontSize: '10px', fontFamily: 'monospace' });
-        const ts = document.createElement('span');
-        const cd = cap.timestamp ? new Date(cap.timestamp) : null;
-        if (cd) {
-          const dm = Math.floor((now - cd.getTime()) / 60000);
-          if (dm < 60) ts.textContent = `${dm}m ago`;
-          else ts.textContent = `${cd.getHours().toString().padStart(2, '0')}:${cd.getMinutes().toString().padStart(2, '0')}`;
-        } else {
-          ts.textContent = '...';
-        }
-        Object.assign(ts.style, { color: '#444', fontSize: '10px' });
-        row.append(id, ts);
-        timeline.appendChild(row);
-      }
-      capBody.appendChild(timeline);
+    const label = document.createElement('span');
+    label.textContent = 'SNAPSHOTS';
+    Object.assign(label.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px' });
+
+    const info = document.createElement('span');
+    info.textContent = `${captures.length} - ${timeStr}`;
+    info.setAttribute(ATTR, 'capture-info');
+    Object.assign(info.style, { color: '#666', fontSize: '11px', flex: '1' });
+
+    // Freshness dot: green if < 5min, grey otherwise
+    const dot = document.createElement('span');
+    const isRecent = d && (now - d.getTime()) < 300000;
+    Object.assign(dot.style, {
+      width: '6px', height: '6px', borderRadius: '50%', flexShrink: '0',
+      background: isRecent ? '#4ade80' : '#444',
+    });
+
+    row.append(label, info, dot);
+    container.appendChild(row);
+
+    // Warning if latest capture is empty
+    if ((latest.nodeCount || 0) === 0) {
+      const warn = document.createElement('div');
+      warn.setAttribute(ATTR, 'capture-warning');
+      warn.textContent = '\u26a0 Latest capture is empty - page may not have loaded';
+      Object.assign(warn.style, {
+        color: '#f59e0b', fontSize: '10px', fontWeight: '600', padding: '2px 0',
+      });
+      container.appendChild(warn);
     }
-
-    // Agent hint
-    const hint = document.createElement('div');
-    hint.textContent = 'Your agent can query these via MCP tools';
-    Object.assign(hint.style, { color: '#333', fontSize: '9px', fontStyle: 'italic', marginTop: '6px' });
-    capBody.appendChild(hint);
-
-    container.appendChild(capSection);
   }
 
   /** Switch between Review and Inspect tabs. */

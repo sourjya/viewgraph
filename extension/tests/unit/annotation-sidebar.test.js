@@ -474,27 +474,10 @@ describe('inspect tab captures section', () => {
     expect(hrIdx).toBeLessThan(autoIdx);
   });
 
-  it('(+) latest capture shows short ID, relative time, and element count', async () => {
+  it('(+) snapshots status shows count and relative time', async () => {
     const now = Date.now();
     globalThis.fetch = mockFetchWith([
-      { filename: 'viewgraph-localhost-20260408-120612.json', timestamp: new Date(now - 30000).toISOString(), nodeCount: 80 },
-    ]);
-    start();
-    create();
-    clickInspectTab();
-    const ic = getInspectContent();
-    await vi.waitFor(() => {
-      expect(ic.textContent).toContain('just now');
-    });
-    expect(ic.textContent).toContain('80 elements');
-    // Short ID derived from filename tail
-    expect(ic.textContent).toContain('120612');
-  });
-
-  it('(+) auto-diff shown when node count changed vs previous', async () => {
-    const now = Date.now();
-    globalThis.fetch = mockFetchWith([
-      { filename: 'cap-1.json', timestamp: new Date(now - 60000).toISOString(), nodeCount: 90 },
+      { filename: 'cap-1.json', timestamp: new Date(now - 30000).toISOString(), nodeCount: 80 },
       { filename: 'cap-2.json', timestamp: new Date(now - 120000).toISOString(), nodeCount: 80 },
     ]);
     start();
@@ -502,80 +485,66 @@ describe('inspect tab captures section', () => {
     clickInspectTab();
     const ic = getInspectContent();
     await vi.waitFor(() => {
-      expect(ic.textContent).toContain('+10 elements since previous');
+      expect(ic.textContent).toContain('SNAPSHOTS');
     });
+    expect(ic.textContent).toContain('2');
+    expect(ic.textContent).toContain('just now');
   });
 
-  it('(-) no diff line when node counts are equal', async () => {
+  it('(+) green dot when latest capture is recent', async () => {
     const now = Date.now();
     globalThis.fetch = mockFetchWith([
-      { filename: 'cap-1.json', timestamp: new Date(now - 60000).toISOString(), nodeCount: 80 },
-      { filename: 'cap-2.json', timestamp: new Date(now - 120000).toISOString(), nodeCount: 80 },
+      { filename: 'cap-1.json', timestamp: new Date(now - 10000).toISOString(), nodeCount: 80 },
     ]);
     start();
     create();
     clickInspectTab();
     const ic = getInspectContent();
     await vi.waitFor(() => {
-      expect(ic.textContent).toContain('80 elements');
+      expect(ic.textContent).toContain('SNAPSHOTS');
     });
-    expect(ic.querySelectorAll(`[${ATTR}="capture-diff"]`).length).toBe(0);
+    const status = ic.querySelector(`[${ATTR}="capture-status"]`);
+    const dots = [...status.querySelectorAll('span')].filter((s) => s.style.borderRadius === '50%');
+    expect(dots.length).toBe(1);
+    expect(dots[0].style.background).toBe('rgb(74, 222, 128)');
   });
 
-  it('(+) negative diff shown when elements removed', async () => {
+  it('(+) warning shown when latest capture is empty', async () => {
     const now = Date.now();
     globalThis.fetch = mockFetchWith([
-      { filename: 'cap-1.json', timestamp: new Date(now - 60000).toISOString(), nodeCount: 30 },
-      { filename: 'cap-2.json', timestamp: new Date(now - 120000).toISOString(), nodeCount: 208 },
+      { filename: 'cap-1.json', timestamp: new Date(now - 30000).toISOString(), nodeCount: 0 },
     ]);
     start();
     create();
     clickInspectTab();
     const ic = getInspectContent();
     await vi.waitFor(() => {
-      expect(ic.textContent).toContain('-178 elements since previous');
+      expect(ic.textContent).toContain('empty');
     });
   });
 
-  it('(+) older captures shown with IDs and timestamps', async () => {
+  it('(-) no warning when capture has elements', async () => {
     const now = Date.now();
     globalThis.fetch = mockFetchWith([
-      { filename: 'viewgraph-localhost-20260408-130000.json', timestamp: new Date(now - 60000).toISOString(), nodeCount: 80 },
-      { filename: 'viewgraph-localhost-20260408-125700.json', timestamp: new Date(now - 180000).toISOString(), nodeCount: 80 },
-      { filename: 'viewgraph-localhost-20260408-125500.json', timestamp: new Date(now - 300000).toISOString(), nodeCount: 80 },
+      { filename: 'cap-1.json', timestamp: new Date(now - 30000).toISOString(), nodeCount: 80 },
     ]);
     start();
     create();
     clickInspectTab();
     const ic = getInspectContent();
     await vi.waitFor(() => {
-      // Older captures show their short IDs
-      expect(ic.textContent).toContain('125700');
-      expect(ic.textContent).toContain('125500');
+      expect(ic.textContent).toContain('SNAPSHOTS');
     });
+    expect(ic.querySelectorAll(`[${ATTR}="capture-warning"]`).length).toBe(0);
   });
 
-  it('(+) MCP hint shown', async () => {
-    const now = Date.now();
-    globalThis.fetch = mockFetchWith([
-      { filename: 'cap-1.json', timestamp: new Date(now - 60000).toISOString(), nodeCount: 80 },
-    ]);
-    start();
-    create();
-    clickInspectTab();
-    const ic = getInspectContent();
-    await vi.waitFor(() => {
-      expect(ic.textContent).toContain('agent can query');
-    });
-  });
-
-  it('(-) no captures section when server returns empty list', async () => {
+  it('(-) no snapshots row when server returns empty list', async () => {
     globalThis.fetch = mockFetchWith([]);
     start();
     create();
     clickInspectTab();
     const ic = getInspectContent();
     await new Promise((r) => setTimeout(r, 50));
-    expect(ic.textContent).not.toContain('Captures');
+    expect(ic.textContent).not.toContain('SNAPSHOTS');
   });
 });
