@@ -6,7 +6,7 @@
 
 Browser extension + MCP server for AI-powered UI capture, auditing, and annotation.
 
-ViewGraph captures structured DOM snapshots from any web page and exposes them to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/). Agents can query page structure, audit accessibility, find missing test IDs, compare captures, and act on human annotations - all through MCP tools.
+ViewGraph captures structured DOM snapshots from any web page and exposes them to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/). Agents can query page structure, audit accessibility, find missing test IDs, compare captures, track regressions, and act on human annotations - all through 34 MCP tools.
 
 Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Windsurf**, **Cline**, **Aider**, and more. No agent-specific code - pure MCP protocol. Tools that don't support MCP can read `.viewgraph.json` capture files directly from disk.
 
@@ -14,9 +14,9 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 
 | Component | Description | Status |
 |---|---|---|
-| [`server/`](./server/) | MCP server - reads capture files, exposes 34 query/analysis/request tools | M1+M2+M3+M15.2 Complete |
-| [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, unified annotate, multi-export, enrichment | M4+M5+M6+M7b+M7c+M11+M12 Complete |
-| [`power/`](./power/) | Kiro Power assets - POWER.md, steering docs, hooks, MCP config | M8b Complete |
+| [`server/`](./server/) | MCP server - 34 query/analysis/request tools, WebSocket collab, baselines | Complete |
+| [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, annotate, 12 enrichment collectors, multi-export | Complete |
+| [`power/`](./power/) | Kiro Power assets - 3 hooks, 7 prompts, 3 steering docs, MCP config | Complete |
 
 ## How It Works
 
@@ -216,6 +216,77 @@ Installed to `.kiro/steering/` - these guide the agent on when to use captures, 
 
 ViewGraph works with any MCP-compatible agent today via the standard MCP protocol. Dedicated Power packages (steering docs, hooks, prompt shortcuts) for Claude Code, Cursor, Windsurf, and Cline are coming soon.
 
+## MCP Tools (34)
+
+### Core (4 tools)
+
+| Tool | Description |
+|---|---|
+| `list_captures` | List available captures with URL filter and limit |
+| `get_capture` | Retrieve full capture JSON by filename |
+| `get_latest_capture` | Most recent capture (summary if >100KB) |
+| `get_page_summary` | Compact summary: URL, title, viewport, element counts, clusters |
+
+### Analysis (8 tools)
+
+| Tool | Description |
+|---|---|
+| `get_elements_by_role` | Filter nodes by role: buttons, links, inputs, headings, etc. |
+| `get_interactive_elements` | All clickable/editable elements with selectors and labels |
+| `find_missing_testids` | Interactive elements lacking data-testid, with suggestions |
+| `audit_accessibility` | A11y audit: missing aria-labels, alt text, form labels, contrast ratios, axe-core results |
+| `audit_layout` | Layout audit: element overflow, sibling overlap, viewport overflow |
+| `compare_captures` | Diff two captures: added/removed elements, layout shifts, testid changes |
+| `get_annotations` | Human annotations from review-mode captures |
+| `get_annotation_context` | Capture filtered to annotated nodes + comments |
+
+### Bidirectional (3 tools)
+
+| Tool | Description |
+|---|---|
+| `request_capture` | Request a capture from the browser extension (purpose: capture/inspect/verify) |
+| `get_request_status` | Poll for capture request completion |
+| `get_fidelity_report` | Compare capture against HTML snapshot for fidelity metrics |
+
+### Baseline and Regression (3 tools)
+
+| Tool | Description |
+|---|---|
+| `set_baseline` | Promote a capture to golden baseline for its URL |
+| `compare_baseline` | Diff latest capture vs baseline - detect structural regressions |
+| `list_baselines` | List all stored baselines with metadata |
+
+### Annotation Intelligence (7 tools)
+
+| Tool | Description |
+|---|---|
+| `resolve_annotation` | Mark annotation as fixed/wontfix/duplicate/invalid |
+| `get_unresolved` | Unresolved annotations from one or all captures |
+| `check_annotation_status` | Compare annotations against newer capture to detect resolved issues |
+| `diff_annotations` | Track persistent issues across multiple captures |
+| `detect_recurring_issues` | Find UI elements flagged repeatedly across captures |
+| `analyze_patterns` | Detect recurring issue patterns from resolved annotations |
+| `generate_spec` | Generate Kiro spec (requirements + tasks) from annotations |
+
+### Session and Journey (5 tools)
+
+| Tool | Description |
+|---|---|
+| `list_sessions` | List capture sessions (grouped user journeys) |
+| `get_session` | Full step sequence for a capture session |
+| `analyze_journey` | Analyze recorded user journey for issues across steps |
+| `visualize_flow` | Build Mermaid state machine diagram from session |
+| `get_capture_stats` | Aggregate statistics across all captures |
+
+### Source and Quality (4 tools)
+
+| Tool | Description |
+|---|---|
+| `find_source` | Find source file that renders a DOM element |
+| `check_consistency` | Compare elements across pages for style inconsistencies |
+| `compare_screenshots` | Pixel-by-pixel screenshot comparison |
+| `validate_capture` | Check capture for quality issues (empty pages, missing data) |
+
 ## Development
 
 ```bash
@@ -226,65 +297,32 @@ npm run dev:ext        # start extension dev server (Chrome HMR)
 ## Testing
 
 ```bash
-npm test               # all tests (919 tests)
+npm test               # all tests (923 tests)
 npm run test:server    # server only (324 tests)
-npm run test:ext       # extension only (595 tests)
+npm run test:ext       # extension only (599 tests)
 ```
-
-## MCP Tools
-
-### Core Tools (M1)
-
-| Tool | Description |
-|---|---|
-| `list_captures` | List available captures with URL filter and limit |
-| `get_capture` | Retrieve full capture JSON by filename |
-| `get_latest_capture` | Most recent capture (summary if >100KB) |
-| `get_page_summary` | Compact summary: URL, title, viewport, element counts, clusters |
-
-### Analysis Tools (M2)
-
-| Tool | Description |
-|---|---|
-| `get_elements_by_role` | Filter nodes by role: buttons, links, inputs, headings, etc. |
-| `get_interactive_elements` | All clickable/editable elements with selectors and labels |
-| `find_missing_testids` | Interactive elements lacking data-testid, with suggestions |
-| `audit_accessibility` | A11y audit: missing aria-labels, alt text, form labels, contrast ratios |
-| `audit_layout` | Layout audit: element overflow, sibling overlap, viewport overflow |
-| `compare_captures` | Diff two captures: added/removed elements, layout shifts, testid changes |
-| `get_annotations` | Human annotations from review-mode captures |
-| `get_annotation_context` | Capture filtered to annotated nodes + comments |
-
-### Bidirectional Tools (M3)
-
-| Tool | Description |
-|---|---|
-| `request_capture` | Request a capture from the browser extension (with optional purpose: capture/inspect/verify) |
-| `get_request_status` | Poll for capture request completion (pending/acknowledged/completed/declined/expired) |
-| `get_fidelity_report` | Compare capture against HTML snapshot for fidelity metrics |
-
-### Baseline Tools (M15.2)
-
-| Tool | Description |
-|---|---|
-| `set_baseline` | Promote a capture to golden baseline for its URL |
-| `compare_baseline` | Diff latest capture vs baseline - detect structural regressions |
-| `list_baselines` | List all stored baselines with metadata |
 
 ## Project Structure
 
 ```
 server/          MCP server (Node.js, @modelcontextprotocol/sdk)
+  src/
+    tools/       34 MCP tool handlers
+    analysis/    12 analysis modules (a11y, layout, diff, fidelity, source linking, etc.)
+    parsers/     ViewGraph v2 JSON parser
+    utils/       Path validation, tool helpers
 extension/       Browser extension (WXT, Manifest V3)
-power/           Kiro Power assets (steering docs, hooks)
+  lib/           42 modules (annotate, collectors, export, session, ws-client, etc.)
+  entrypoints/   background, content, popup, options
+power/           Kiro Power assets (steering docs, hooks, prompts)
 docs/            Documentation, architecture, decisions, changelogs
+scripts/         Git scripts, build scripts, init, status, doctor
 .kiro/           Specs, steering docs, hooks
-scripts/         Git and build scripts
 ```
 
 ## Documentation
 
-- [Roadmap](./docs/roadmap/roadmap.md) - milestone plan (10 milestones)
+- [Roadmap](./docs/roadmap/roadmap.md) - milestone plan and completion status
 - [Security Assessment](./docs/architecture/security-assessment.md) - threat model and mitigations
 - [Spec Index](./.kiro/specs/README.md) - Kiro specs, ADRs, architecture docs
 - [ViewGraph v2 Format Spec](./docs/architecture/viewgraph-v2-format.md) - capture format (v2.1.0)
@@ -294,9 +332,10 @@ scripts/         Git and build scripts
 - [Universal Agent Integration](./docs/decisions/ADR-001-universal-agent-integration.md) - multi-tool architecture
 - [Multi-Project Routing](./docs/decisions/ADR-002-multi-project-capture-routing.md) - capture routing
 - [Kiro Power Packaging](./docs/decisions/ADR-008-kiro-power-packaging.md) - Power packaging decision
+- [AGPL Licensing](./docs/decisions/ADR-009-agpl-licensing.md) - licensing rationale
 
 ## License
 
-AGPL-3.0 -- see [COPYING](COPYING) for the full license text.
+AGPL-3.0 - see [COPYING](COPYING) for the full license text.
 
 Copyright (c) 2026 Sourjya S. Sen. See [ADR-009](docs/decisions/ADR-009-agpl-licensing.md) for licensing rationale.

@@ -58,6 +58,7 @@ Type `@vg` then Tab to see all prompt shortcuts:
 | `vg-diff` | `@vg-diff` | Compare two most recent captures |
 | `vg-testids` | `@vg-testids [scope]` | Find and fix missing data-testid attributes |
 | `vg-a11y` | `@vg-a11y` | Deep a11y audit with source code fixes |
+| `vg-help` | `@vg-help` | ViewGraph usage guide and tool reference |
 
 ## Hook Integration
 

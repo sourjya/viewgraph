@@ -8,7 +8,7 @@
 
 | Milestone | Status | Key Deliverables |
 |---|---|---|
-| M0-M8: Foundation | Complete | 32 MCP tools, extension core, Kiro Power |
+| M0-M8: Foundation | Complete | 34 MCP tools, extension core, Kiro Power |
 | M9.5: Settings Page | Complete | Auto-capture, server URL, quality settings |
 | M10.1: Element Flash | Complete | Visual feedback on select |
 | M10.2: Annotation Status | Complete | Stale annotation detection |
@@ -33,6 +33,10 @@
 | M13.7: Pending Animations | Complete | Running/paused/pending animation counts |
 | Enrichment Error Boundary | Complete | safeCollect wraps all collectors |
 | Capture Quality Validation | Complete | Extension + MCP quality checks |
+| Security Audit | Complete | XSS fixes, auth hardening, path traversal prevention |
+| Code Quality Audit | Complete | Deduplication, static import conversion, timeout fixes |
+| Dead Code Elimination | Complete | 16 unused exports/imports/functions removed |
+| Redundancy Centralization | Complete | selector(), ATTR, readAndParse() helpers extracted |
 
 **Current totals:** 923 tests (324 server + 599 extension), 34 MCP tools, 14 enrichment collectors
 
