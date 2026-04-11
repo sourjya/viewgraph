@@ -13,9 +13,8 @@
  * @see docs/roadmap/roadmap.md - M12.4
  */
 
-import { buildSelector } from './selector.js';
+import { buildSelector, ATTR } from './selector.js';
 
-const ATTR = 'data-vg-annotate';
 const MAX_ELEMENTS = 2000;
 
 /** HTML event attributes to check. */

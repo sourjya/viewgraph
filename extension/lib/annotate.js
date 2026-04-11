@@ -21,7 +21,10 @@ import { flashElement } from './element-flash.js';
 // ---------------------------------------------------------------------------
 
 /** Attribute used on all annotate-mode DOM elements for cleanup/exclusion. */
-export const ATTR = 'data-vg-annotate';
+import { ATTR } from './selector.js';
+
+// Re-export ATTR so existing consumers can import from either location
+export { ATTR };
 
 /** Overlay colors by nesting depth for hover highlight. */
 const DEPTH_COLORS = [

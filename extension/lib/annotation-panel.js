@@ -11,7 +11,7 @@
 import { updateComment, updateSeverity, updateCategory, removeAnnotation, MARKER_COLORS } from './annotate.js';
 import { diagnoseElement } from './element-diagnostics.js';
 
-const ATTR = 'data-vg-annotate';
+import { ATTR } from './selector.js';
 let panelEl = null;
 let currentId = null;
 let onCommentChange = null;

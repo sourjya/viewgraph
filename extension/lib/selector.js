@@ -5,11 +5,17 @@
  * collectors and the traverser. Prefers data-testid, then id, then
  * structural fallback.
  *
+ * Also exports the ATTR constant used by all annotate-mode DOM elements
+ * for cleanup/exclusion. Centralized here to avoid 12 duplicate definitions.
+ *
  * Extracted from 5 duplicate implementations per CQ-01 in the code
  * quality audit (2026-04-12).
  *
  * @see docs/architecture/code-quality-audit-2026-04-12.md - CQ-01
  */
+
+/** Attribute used on all annotate-mode DOM elements for cleanup/exclusion. */
+export const ATTR = 'data-vg-annotate';
 
 /**
  * Build a compact CSS selector for a DOM element.

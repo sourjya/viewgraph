@@ -11,7 +11,8 @@
  * @see docs/roadmap/roadmap.md - M13.2 focus management chain
  */
 
-const ATTR = 'data-vg-annotate';
+import { buildSelector, ATTR } from './selector.js';
+
 
 /** Focusable element selectors (matches browser tab-stop behavior). */
 const FOCUSABLE = [
@@ -19,16 +20,6 @@ const FOCUSABLE = [
   'select:not([disabled])', 'textarea:not([disabled])',
   '[tabindex]', '[contenteditable="true"]',
 ].join(',');
-
-/** Build a compact selector for an element. */
-function selector(el) {
-  const tag = el.tagName.toLowerCase();
-  if (el.id) return `${tag}#${el.id}`;
-  const cls = el.className && typeof el.className === 'string'
-    ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.')
-    : '';
-  return `${tag}${cls}`;
-}
 
 /** Check if an element is visible and not hidden from the accessibility tree. */
 function isVisible(el) {
@@ -47,7 +38,7 @@ export function collectFocusChain() {
 
   // Active element
   const active = document.activeElement;
-  const activeSelector = active && active !== document.body ? selector(active) : null;
+  const activeSelector = active && active !== document.body ? buildSelector(active) : null;
 
   // Gather all focusable elements
   const all = [...document.querySelectorAll(FOCUSABLE)]
@@ -75,7 +66,7 @@ export function collectFocusChain() {
 
   // Tab order: positive first, then zero (DOM order)
   const tabOrder = [...positive, ...zero].slice(0, 200).map((el) => ({
-    selector: selector(el),
+    selector: buildSelector(el),
     tag: el.tagName.toLowerCase(),
     tabIndex: el.tabIndex,
     role: el.getAttribute('role') || undefined,
@@ -84,7 +75,7 @@ export function collectFocusChain() {
 
   // Unreachable: interactive elements with tabIndex=-1
   const unreachable = negative.slice(0, 50).map((el) => ({
-    selector: selector(el),
+    selector: buildSelector(el),
     tag: el.tagName.toLowerCase(),
     text: (el.textContent || '').trim().slice(0, 40) || undefined,
   }));
@@ -97,7 +88,7 @@ export function collectFocusChain() {
     const focusable = trap.querySelectorAll(FOCUSABLE);
     const visibleFocusable = [...focusable].filter(isVisible);
     traps.push({
-      selector: selector(trap),
+      selector: buildSelector(trap),
       tag: trap.tagName.toLowerCase(),
       focusableCount: visibleFocusable.length,
       containsActive: active ? trap.contains(active) : false,

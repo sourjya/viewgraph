@@ -17,7 +17,8 @@
  * @see docs/roadmap/roadmap.md - M12.3
  */
 
-const ATTR = 'data-vg-annotate';
+import { buildSelector, ATTR } from './selector.js';
+
 const MAX_ELEMENTS = 3000;
 
 /**
@@ -128,15 +129,6 @@ function getSvelteComponentName(el) {
 }
 
 /** Build a compact selector for an element. */
-function selector(el) {
-  const tag = el.tagName.toLowerCase();
-  if (el.id) return `${tag}#${el.id}`;
-  const cls = el.className && typeof el.className === 'string'
-    ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.')
-    : '';
-  return `${tag}${cls}`;
-}
-
 /**
  * Collect component names from the live DOM.
  * @returns {{ framework: string, components: Array<{ selector: string, component: string }> }}
@@ -165,9 +157,9 @@ export function collectComponents() {
       name = getSvelteComponentName(node);
     }
 
-    if (name && !seen.has(name + ':' + selector(node))) {
-      seen.add(name + ':' + selector(node));
-      components.push({ selector: selector(node), component: name });
+    if (name && !seen.has(name + ':' + buildSelector(node))) {
+      seen.add(name + ':' + buildSelector(node));
+      components.push({ selector: buildSelector(node), component: name });
     }
     node = walker.nextNode();
   }

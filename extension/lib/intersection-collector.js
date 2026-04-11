@@ -12,9 +12,8 @@
  * @see docs/roadmap/roadmap.md - M13.8
  */
 
-import { buildSelector } from './selector.js';
+import { buildSelector, ATTR } from './selector.js';
 
-const ATTR = 'data-vg-annotate';
 
 /**
  * Collect viewport intersection state for interactive and landmark elements.
