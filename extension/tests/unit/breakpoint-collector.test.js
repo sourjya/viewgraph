@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { collectBreakpoints } from '../../lib/breakpoint-collector.js';
+import { collectBreakpoints, collectMediaQueries } from '../../lib/breakpoint-collector.js';
 
 describe('collectBreakpoints', () => {
   let originalMatchMedia;
@@ -65,5 +65,30 @@ describe('collectBreakpoints', () => {
     const result = collectBreakpoints();
     expect(result.activeRange).toBeDefined();
     expect(typeof result.activeRange).toBe('string');
+  });
+});
+
+describe('collectMediaQueries', () => {
+  it('(+) returns expected shape', () => {
+    const result = collectMediaQueries();
+    expect(result).toHaveProperty('active');
+    expect(result).toHaveProperty('inactive');
+    expect(result).toHaveProperty('total');
+    expect(Array.isArray(result.active)).toBe(true);
+  });
+
+  it('(-) handles no stylesheets', () => {
+    const result = collectMediaQueries();
+    expect(result.total).toBeGreaterThanOrEqual(0);
+  });
+
+  it('(-) never throws', () => {
+    expect(() => collectMediaQueries()).not.toThrow();
+  });
+
+  it('(+) caps results at 30', () => {
+    const result = collectMediaQueries();
+    expect(result.active.length).toBeLessThanOrEqual(30);
+    expect(result.inactive.length).toBeLessThanOrEqual(30);
   });
 });

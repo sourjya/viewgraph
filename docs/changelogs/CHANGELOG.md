@@ -71,6 +71,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Enrichment Error Boundary
 
 ### Capture Quality Validation
+
+### Low-Priority Cleanup (M13.5, M13.7)
+- M13.5: `collectMediaQueries()` extracts `@media` rules from stylesheets, reports active/inactive
+- M13.7: Animation collector now reports running/paused/pending counts
+- `mediaQueries` added to capture enrichment, serializer, parser, and page summary
+- 4 new extension tests
+
+### Capture Quality Validation
 - New `capture-validator.js` (extension): checks capture quality before sending
 - New MCP tool: `validate_capture` - agents can check capture quality (34th tool)
 - Warns on: empty captures, few elements, no interactive elements, missing enrichment, oversized payloads, console errors, failed network requests

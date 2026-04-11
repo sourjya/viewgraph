@@ -202,6 +202,7 @@ export function serialize(elements, relations, enrichment = {}) {
   if (enrichment.performance) capture.performance = enrichment.performance;
   if (enrichment.animations) capture.animations = enrichment.animations;
   if (enrichment.intersection) capture.intersection = enrichment.intersection;
+  if (enrichment.mediaQueries) capture.mediaQueries = enrichment.mediaQueries;
 
   // Update capture size estimate
   const jsonStr = JSON.stringify(capture);

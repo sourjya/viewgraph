@@ -29,8 +29,12 @@
 | M10.3: Resolution Push | Complete | Periodic polling for resolved annotations |
 | Keyboard Shortcuts | Complete | Power user shortcuts for annotate mode |
 | M14.3: WebSocket Collab | Complete | Real-time annotation sync via WebSocket |
+| M13.5: Media Queries | Complete | @media rule extraction from stylesheets |
+| M13.7: Pending Animations | Complete | Running/paused/pending animation counts |
+| Enrichment Error Boundary | Complete | safeCollect wraps all collectors |
+| Capture Quality Validation | Complete | Extension + MCP quality checks |
 
-**Current totals:** 919 tests (324 server + 595 extension), 34 MCP tools, 13 enrichment collectors
+**Current totals:** 923 tests (324 server + 599 extension), 34 MCP tools, 14 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and
