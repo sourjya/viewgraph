@@ -49,6 +49,7 @@ import { collectStackingContexts } from './stacking-collector.js';
 import { collectFocusChain } from './focus-collector.js';
 import { collectScrollContainers } from './scroll-collector.js';
 import { collectLandmarks } from './landmark-collector.js';
+import { collectComponents } from './component-collector.js';
 import { checkRendered } from './visibility-collector.js';
 import { startWatcher, stopWatcher, isWatcherEnabled } from './continuous-capture.js';
 import { isRecording, startSession, stopSession, addStep, getState, setName, restore as restoreSession } from './session-manager.js';
@@ -366,7 +367,7 @@ export function create() {
   copyBtn.addEventListener('mouseleave', () => { copyBtn.style.background = 'transparent'; });
   copyBtn.addEventListener('click', () => {
     const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString(), viewport: { width: window.innerWidth, height: window.innerHeight }, browser: navigator.userAgent.match(/Chrome\/[\d.]+|Firefox\/[\d.]+/)?.[0] || 'Unknown' };
-    const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks() };
+    const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents() };
     const md = formatMarkdown(getAnnotations(), meta, { enrichment });
     navigator.clipboard.writeText(md).then(() => {
       copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Copied!';

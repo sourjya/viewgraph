@@ -238,6 +238,83 @@ No code may be written without a task list. This is non-negotiable.
 - Use .env.example for configuration templates
 - Use appropriate linters for the project's languages
 
+## Error Handling Standards -- MANDATORY
+
+**Errors must be explicit, contextual, and never silently swallowed.**
+
+### Rules
+
+1. **Never silently ignore errors** -- every error must be raised, logged, or explicitly handled. Empty `except:` / `catch {}` blocks are forbidden.
+2. **Use specific error types** -- not catch-all handlers. Each error type should clearly indicate what went wrong and where.
+3. **Error messages must include context** -- request parameters, status codes, what operation was being attempted, and what input caused the failure. No generic "something went wrong."
+4. **No automatic fallbacks** -- code should either succeed or fail clearly. Fallbacks are only allowed when explicitly designed and documented. Silent fallbacks hide real problems.
+5. **Fix root causes, not symptoms** -- if an error keeps occurring, fix the underlying issue rather than adding retry/fallback logic around it.
+6. **External service calls: retry with backoff** -- use exponential backoff for transient failures. Raise the last error if all attempts fail. Log each retry attempt.
+7. **API endpoints return proper HTTP status codes** -- never return 200 for errors. Use 4xx for client errors, 5xx for server errors, with structured error response bodies.
+8. **Frontend errors: catch at boundaries** -- use error boundaries or equivalent. Show user-friendly messages, log the full error for debugging.
+
+## Performance Guidelines -- MANDATORY
+
+**Design for efficiency from the start. Performance is not an afterthought.**
+
+### Rules
+
+1. **Cache expensive operations** -- database queries, API calls, computed values. Use appropriate cache invalidation strategies.
+2. **Pagination for all list endpoints** -- never return unbounded result sets. Default page size must be a named constant.
+3. **No N+1 queries** -- use eager loading, joins, or batch queries. Review ORM-generated SQL for new endpoints.
+4. **Lazy load heavy resources** -- large images, optional modules, below-the-fold content. Load on demand, not upfront.
+5. **Database indexes** -- every column used in WHERE, JOIN, or ORDER BY clauses in frequent queries must have an index. Document index decisions.
+6. **Bundle size awareness (frontend)** -- monitor bundle size. Use code splitting and tree shaking. Avoid importing entire libraries when only one function is needed.
+7. **Timeouts on all external calls** -- every HTTP request, database query, and external service call must have an explicit timeout. No indefinite waits.
+
+## Permission Boundaries -- MANDATORY
+
+**Explicit rules for what may be changed, what requires approval, and what must never be touched.**
+
+### ✅ Always Allowed
+- Read any file in the repository
+- Run linting, type checking, and tests
+- Edit source files within the scope of the current task
+- Update documentation and changelog
+
+### ⚠️ Ask First
+- Adding or removing dependencies
+- Database schema changes or new migrations
+- Deleting files or directories
+- Changing CI/CD configuration
+- Modifying shared infrastructure code used by multiple services
+
+### 🚫 Never
+- Commit secrets, `.env` files, or credentials
+- Force push to `main` or protected branches
+- Modify generated files (`dist/`, `build/`, lock files unless updating deps)
+- Modify already-applied database migrations
+- Remove or weaken existing tests (unless explicitly asked)
+- Change code outside the scope of the current task
+
+## Consistency -- Match Existing Patterns -- MANDATORY
+
+**When touching existing code, matching the existing style is more important than "ideal" style.**
+
+### Rules
+
+1. **New code must look like it was written by the same author** -- match naming conventions, formatting, patterns, and idioms already present in the file/module.
+2. **Follow existing patterns from similar components** -- before creating a new service, route, or component, find an existing one that does something similar and follow its structure.
+3. **Don't refactor while implementing** -- if you notice code that could be improved but it's outside the current task, note it for later. Don't mix refactoring with feature work.
+4. **When in doubt, be consistent** -- if the codebase uses one pattern and the style guide says another, follow the codebase. Consistency within a project trumps external standards.
+
+## Change Scope Discipline -- MANDATORY
+
+**Change only what was asked for. No drive-by refactors, no unsolicited improvements.**
+
+### Rules
+
+1. **Minimal changes** -- modify as few lines as possible while correctly solving the problem. Every changed line must be justified by the task.
+2. **No extra improvements** -- do not refactor, optimize, or "clean up" code that is not part of the current task, even if it looks wrong.
+3. **No unsolicited dependency updates** -- don't upgrade packages, change configs, or modify tooling unless the task requires it.
+4. **Scope creep is a bug** -- if implementation reveals a needed change outside the current scope, document it as a separate task. Don't silently expand the change.
+5. **Review your diff before committing** -- every line in the diff should relate to the task. If something doesn't, revert it.
+
 ## Commit Discipline
 
 - Commit at meaningful milestones

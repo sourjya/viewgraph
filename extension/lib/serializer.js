@@ -196,6 +196,7 @@ export function serialize(elements, relations, enrichment = {}) {
   if (enrichment.scroll) capture.scroll = enrichment.scroll;
   if (enrichment.landmarks) capture.landmarks = enrichment.landmarks;
   if (enrichment.session) capture.metadata.session = enrichment.session;
+  if (enrichment.components) capture.components = enrichment.components;
 
   // Update capture size estimate
   const jsonStr = JSON.stringify(capture);
