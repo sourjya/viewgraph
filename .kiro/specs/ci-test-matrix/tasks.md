@@ -1,18 +1,18 @@
 # CI Test Matrix - Tasks
 
 ### Task 1: Create GitHub Actions workflow
-- [ ] Create `.github/workflows/ci.yml` with lint, test-server, test-extension, build jobs
-- [ ] Matrix: server tests on Node 18/20/22, extension tests on Node 18/22
-- [ ] Build Chrome and Firefox extensions after tests pass
-- [ ] Upload build artifacts with 30-day retention
+- [x] Create `.github/workflows/ci.yml` with lint, test-server, test-extension, build jobs
+- [x] Matrix: server tests on Node 18/20/22, extension tests on Node 18/22
+- [x] Build Chrome and Firefox extensions after tests pass
+- [x] Upload build artifacts with 30-day retention
 
 ### Task 2: Add npm caching
-- [ ] Cache `~/.npm` keyed by `package-lock.json` hash
-- [ ] Verify cache hit on second run
+- [x] Cache via `actions/setup-node` cache: npm (built-in)
+- [x] Keyed by package-lock.json hash automatically
 
 ### Task 3: Configure branch protection
-- [ ] Require lint + test jobs to pass before merge to main
-- [ ] Document in CONTRIBUTING.md or README
+- [ ] Require lint + test jobs to pass before merge to main (manual GitHub settings)
+- [ ] Document in README
 
 ### Task 4: Add coverage reporting
 - [ ] Add `--coverage` flag to vitest runs

@@ -359,16 +359,15 @@ describe('sidebar MCP disconnected state', () => {
     expect(banner.textContent).toContain('No project connected');
   });
 
-  it('(+) disables Send button when MCP server is offline', async () => {
+  it('(+) hides Send button and promotes exports when MCP server is offline', async () => {
     start();
     create();
     await vi.waitFor(() => {
       const btn = shadowQuery(`[${ATTR}="send"]`);
-      expect(btn?.title).toBe('MCP server not connected');
+      expect(btn?.style.display).toBe('none');
     });
-    const sendBtn = shadowQuery(`[${ATTR}="send"]`);
-    expect(sendBtn.disabled).toBe(true);
-    expect(sendBtn.style.opacity).toBe('0.4');
+    const copyBtn = shadowQuery(`[${ATTR}="copy-md"]`);
+    expect(copyBtn.style.background).toMatch(/6366f1|rgb\(99,\s*102,\s*241\)/);
   });
 
   it('(+) Copy MD and Report buttons stay enabled when MCP is offline', async () => {

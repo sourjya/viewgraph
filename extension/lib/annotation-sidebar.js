@@ -199,10 +199,10 @@ export function create() {
         statusDot.title = 'MCP server offline';
         statusBanner.textContent = 'No project connected. Copy MD and Report available.';
         statusBanner.style.display = 'block';
-        sendBtn.disabled = true;
-        sendBtn.style.opacity = '0.4';
-        sendBtn.style.cursor = 'not-allowed';
-        sendBtn.title = 'MCP server not connected';
+        // Adaptive footer: hide Send, promote Copy MD and Report to primary
+        sendBtn.style.display = 'none';
+        Object.assign(copyBtn.style, { background: '#6366f1', color: '#fff', border: 'none', flex: '1' });
+        Object.assign(dlBtn.style, { background: '#374151', color: '#fff', border: 'none', flex: '1' });
       }
     });
 
@@ -1649,17 +1649,10 @@ export function refresh() {
     entry.addEventListener('mouseenter', () => {
       entry.style.background = '#2a2a4a';
       spotlightMarker(ann.id);
-      entry._expandTimer = setTimeout(() => {
-        line1.style.whiteSpace = 'normal';
-        line1.style.maxHeight = '120px';
-      }, 600);
     });
     entry.addEventListener('mouseleave', () => {
       entry.style.background = 'transparent';
       spotlightMarker(null);
-      clearTimeout(entry._expandTimer);
-      line1.style.whiteSpace = 'nowrap';
-      line1.style.maxHeight = '20px';
     });
 
     const label = document.createElement('span');
@@ -1717,6 +1710,29 @@ export function refresh() {
     if (ann.resolved) Object.assign(commentText.style, { textDecoration: 'line-through' });
 
     line1.appendChild(commentText);
+
+    // Click-to-expand for long comments (> 40 chars)
+    const commentLen = (ann.comment || '').length;
+    if (commentLen > 40) {
+      let expanded = false;
+      const chevron = document.createElement('span');
+      chevron.textContent = '\u25b8';
+      Object.assign(chevron.style, {
+        color: '#555', fontSize: '9px', cursor: 'pointer', flexShrink: '0',
+        marginLeft: '4px', transition: 'transform 0.15s', userSelect: 'none',
+      });
+      chevron.title = 'Expand comment';
+      chevron.addEventListener('click', (e) => {
+        e.stopPropagation();
+        expanded = !expanded;
+        line1.style.whiteSpace = expanded ? 'normal' : 'nowrap';
+        line1.style.maxHeight = expanded ? '120px' : '20px';
+        chevron.style.transform = expanded ? 'rotate(90deg)' : '';
+        chevron.title = expanded ? 'Collapse comment' : 'Expand comment';
+      });
+      line1.appendChild(chevron);
+    }
+
     label.appendChild(line1);
 
     // Resolution details for resolved items
