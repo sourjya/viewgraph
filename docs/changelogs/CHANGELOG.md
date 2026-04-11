@@ -55,6 +55,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Auto-Capture on HMR (M14.1)
 
 ### User Journey Recording (M14.2)
+
+### Element Flash on Select (M10.1)
+- New `element-flash.js`: brief highlight pulse on elements after selection
+- CSS animation overlay positioned over target element, fades out in 400ms
+- Integrated into annotate mode element click handler
+- 3 new extension tests
+
+### User Journey Recording (M14.2)
 - New `journey-recorder.js`: auto-captures on SPA navigation (pushState, popstate, hashchange)
 - Intercepts history.pushState/replaceState for SPA route changes
 - Detects link clicks for MPA navigation
