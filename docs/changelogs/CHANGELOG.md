@@ -77,6 +77,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Security Audit Remediations
 
 ### Code Quality Audit Fixes
+
+### Dead Code Elimination
+- Server: removed ENV_HTTP_SECRET (unused export), unused imports in layout-analysis.js, list-sessions.js, analyze-patterns.js, get-session.js
+- Extension: removed buildA11yLine, copySelector, fallbackCopy, getFrozenElement, resume (dead functions in annotate.js)
+- Extension: removed getSync, setSync (unused exports in storage.js)
+- Extension: removed STACKING_TRIGGERS (dead constant in stacking-collector.js, replaced by inline getStackingTrigger)
+- Extension: removed unused imports: sendAnnotationCreate/Update/Delete, setName, restore in sidebar; DEFAULT_HTTP_PORT, PORT_SCAN_RANGE in popup
+
+### Code Quality Audit Fixes
 - CQ-01: Extracted shared `buildSelector()` to `extension/lib/selector.js` - removed 5 duplicate implementations
 - CQ-02: Extracted shared `collectAllEnrichment()` to `extension/lib/enrichment.js` - removed 4 duplicate 15-line blocks
 - CQ-04: Fixed stale token fetch - reads from extension storage instead of removed `/info` token field

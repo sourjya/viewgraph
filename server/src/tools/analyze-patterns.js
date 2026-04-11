@@ -9,7 +9,6 @@
  * @see docs/roadmap/roadmap.md - M10.6
  */
 
-import { z } from 'zod';
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';

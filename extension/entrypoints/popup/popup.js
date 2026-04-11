@@ -111,7 +111,7 @@ annotateBtn.addEventListener('click', async () => {
 // Connection status - ping MCP server health endpoint on popup open
 // ---------------------------------------------------------------------------
 
-import { discoverServer, DEFAULT_HTTP_PORT, PORT_SCAN_RANGE } from '../../lib/constants.js';
+import { discoverServer } from '../../lib/constants.js';
 
 const connDot = document.getElementById('connDot');
 const connText = document.getElementById('connText');

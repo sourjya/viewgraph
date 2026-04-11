@@ -140,34 +140,6 @@ export function buildMetaLine(el) {
   return parts.join('  |  ');
 }
 
-/**
- * Build an accessibility info line for the tooltip.
- * Shows role, computed accessible name, and relevant states.
- * Returns null if no meaningful a11y info is available.
- */
-export function buildA11yLine(el) {
-  const { role } = getRole(el);
-  if (!role) return null;
-  const parts = [`role: ${role}`];
-  // Computed accessible name: aria-label > aria-labelledby > alt > title > text content
-  const name = el.getAttribute('aria-label')
-    || el.getAttribute('alt')
-    || el.getAttribute('title')
-    || (el.labels?.[0]?.textContent?.trim())
-    || (el.textContent?.trim().slice(0, 40));
-  if (name) parts.push(`name: "${name}"`);
-  // States
-  const states = [];
-  if (el.tabIndex >= 0) states.push('focusable');
-  if (el.disabled) states.push('disabled');
-  if (el.required) states.push('required');
-  if (el.getAttribute('aria-expanded')) states.push(el.getAttribute('aria-expanded') === 'true' ? 'expanded' : 'collapsed');
-  if (el.getAttribute('aria-checked') === 'true') states.push('checked');
-  if (el.getAttribute('aria-selected') === 'true') states.push('selected');
-  if (states.length) parts.push(states.join(', '));
-  return parts.join('  |  ');
-}
-
 export function bestSelector(el) {
   const testid = el.getAttribute('data-testid');
   if (testid) return `[data-testid="${testid}"]`;
@@ -360,29 +332,6 @@ function unfreeze() {
 // ---------------------------------------------------------------------------
 // Copy selector utility
 // ---------------------------------------------------------------------------
-
-export function copySelector(btn, el) {
-  if (!el) return;
-  const selector = bestSelector(el);
-  const doCopy = navigator.clipboard
-    ? navigator.clipboard.writeText(selector).catch(() => fallbackCopy(selector))
-    : Promise.resolve(fallbackCopy(selector));
-  doCopy.then(() => {
-    const original = btn.innerHTML;
-    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-    setTimeout(() => { btn.innerHTML = original; }, 1200);
-  });
-}
-
-function fallbackCopy(text) {
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  Object.assign(ta.style, { position: 'fixed', left: '-9999px' });
-  document.body.appendChild(ta);
-  ta.select();
-  document.execCommand('copy');
-  ta.remove();
-}
 
 // ---------------------------------------------------------------------------
 // Region selection (shift+drag) - creates annotation from region
@@ -718,9 +667,6 @@ export function hideMarkers() {
   document.querySelectorAll(`[${ATTR}]`).forEach((el) => el.remove());
 }
 
-/** Get the currently frozen element (for copy selector). */
-export function getFrozenElement() { return frozen ? currentEl : null; }
-
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
@@ -757,16 +703,6 @@ export function pause() {
   document.removeEventListener('mouseup', onMouseUp, true);
   document.removeEventListener('click', onClick, true);
   document.removeEventListener('wheel', onWheel, { capture: true, passive: false });
-}
-
-/** Resume interaction (sidebar expanded) - re-adds listeners. */
-export function resume() {
-  if (!active) return;
-  document.addEventListener('mousedown', onMouseDown, true);
-  document.addEventListener('mousemove', onMouseMove, true);
-  document.addEventListener('mouseup', onMouseUp, true);
-  document.addEventListener('click', onClick, true);
-  document.addEventListener('wheel', onWheel, { capture: true, passive: false });
 }
 
 export function stop() {

@@ -60,23 +60,3 @@ export async function set(key, value) {
 export async function remove(key) {
   await chrome.storage.local.remove(key);
 }
-
-/**
- * Read from sync storage (cross-device).
- * Used for project mappings that should follow the user.
- * @param {string} key - Raw key string
- * @returns {Promise<any>} Stored value or null
- */
-export async function getSync(key) {
-  const result = await chrome.storage.sync.get(key);
-  return result[key] ?? null;
-}
-
-/**
- * Write to sync storage.
- * @param {string} key - Raw key string
- * @param {any} value - JSON-serializable value
- */
-export async function setSync(key, value) {
-  await chrome.storage.sync.set({ [key]: value });
-}
