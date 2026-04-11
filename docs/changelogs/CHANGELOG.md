@@ -53,6 +53,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Performance Collector (M15.5)
 
 ### Auto-Capture on HMR (M14.1)
+
+### User Journey Recording (M14.2)
+- New `journey-recorder.js`: auto-captures on SPA navigation (pushState, popstate, hashchange)
+- Intercepts history.pushState/replaceState for SPA route changes
+- Detects link clicks for MPA navigation
+- Debounced to avoid capturing during rapid route transitions
+- New MCP tool: `analyze_journey` - checks for missing elements, performance degradation, console errors across steps
+- 7 new extension tests
+
+### Auto-Capture on HMR (M14.1)
 - New `hmr-detector.js`: watches for Vite, webpack, and DOM mutation hot-reload events
 - New `auto-capture.js`: triggers full capture on HMR, sends to background for push
 - Debounced to avoid rapid-fire captures during successive updates
