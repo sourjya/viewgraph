@@ -71,6 +71,18 @@ Events captured by the MCP server. All events include `installId`, `serverVersio
 - FR-5.6: Local buffer is capped at 500 events - oldest dropped when full
 - FR-5.7: Analytics endpoint URL is a constant in the codebase, not user-configurable
 
+### FR-5b: Endpoint Authentication (see [auth-spec.md](./auth-spec.md) for full design)
+
+- FR-5.8: All event batches must be signed with HMAC-SHA256 using a per-install signing key
+- FR-5.9: Signing keys are obtained via a one-time registration handshake on first telemetry flush
+- FR-5.10: Registration includes a build-hash challenge proving the client is a real ViewGraph build
+- FR-5.11: Signing keys expire after 90 days; client re-registers automatically on 401 Expired
+- FR-5.12: Server rejects events with timestamps more than 5 minutes from server time (replay protection)
+- FR-5.13: Server enforces per-install rate limits (1 request per 4 minutes, 50 requests per day)
+- FR-5.14: Server validates event names against a known enum; unknown events are rejected
+- FR-5.15: Server can revoke install IDs; revoked clients permanently stop sending telemetry
+- FR-5.16: Build token is injected at CI build time, not stored in source code; dev builds use a fallback token
+
 ### FR-6: Install ID
 
 - FR-6.1: On first run, generate a random UUID v4 and store in `chrome.storage.local` (extension) or `.viewgraph/.telemetry-id` (server)

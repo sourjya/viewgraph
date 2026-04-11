@@ -77,12 +77,42 @@
 - [ ] Add telemetry mention to root README.md under Getting Started
 - [ ] Update Chrome Web Store privacy practices declaration
 
-## Phase 5: Endpoint (Out of Scope for Extension/Server Code)
+## Phase 5: Endpoint Authentication (see [auth-spec.md](./auth-spec.md))
 
-### Task 11: Analytics endpoint
-- [ ] Deploy simple HTTPS endpoint that accepts POST /v1/events
-- [ ] Store events in append-only storage (S3, BigQuery, or similar)
-- [ ] No IP logging in access logs
-- [ ] 90-day retention policy
-- [ ] Rate limit: 1 request per install per minute
-- [ ] This task is infrastructure, not extension/server code
+### Task 11: Build token infrastructure
+- [ ] Add `VG_BUILD_TOKEN` env var to GitHub Actions CI
+- [ ] Inject token at build time into extension bundle (wxt.config.js define) and server bundle
+- [ ] Fallback to `'dev'` for local development builds
+
+### Task 12: Registration endpoint
+- [ ] `POST /v1/register` - validate challenge, generate signing key, store keyed by installId
+- [ ] Challenge: `sha256(installId + timestamp + sha256(buildToken))`
+- [ ] Per-IP rate limit: 10 registrations per hour
+- [ ] Return `{ signingKey, expiresAt }` (90-day expiry)
+- [ ] Tests: valid registration, invalid challenge rejected, rate limit enforced
+
+### Task 13: Signed event submission
+- [ ] Client: compute HMAC-SHA256 over `installId:timestamp:payload`, send in X-VG-Signature header
+- [ ] Server: verify signature, check 5-min timestamp window, check per-install rate limit
+- [ ] Client: on 401 Expired re-register and retry; on 403 Revoked permanently disable
+- [ ] Server: monotonic timestamp enforcement (reject older-than-last-seen)
+- [ ] Tests: valid sig accepted, tampered rejected, expired triggers re-register, replay rejected
+
+### Task 14: Payload validation
+- [ ] Server: validate event names against known enum, reject unknown
+- [ ] Server: validate installId UUID format, timestamp within 24h, strip unknown params
+- [ ] Server: enforce 50KB max body, 100 events max, 200-char string truncation
+- [ ] Tests: unknown event rejected, oversized payload rejected
+
+### Task 15: Anomaly detection (post-MVP)
+- [ ] Track event volume per install per day, flag > 10x median
+- [ ] Quarantine flagged installs, admin review endpoint
+
+## Phase 6: Endpoint Infrastructure (Out of Scope for Extension/Server Code)
+
+### Task 16: Analytics endpoint
+- [ ] Deploy HTTPS endpoint with /v1/register and /v1/events
+- [ ] Append-only event storage (S3, BigQuery, or similar)
+- [ ] Install registry (installId -> signingKey, expiresAt, revoked flag)
+- [ ] No IP logging in access logs (except registration rate limiting, ephemeral)
+- [ ] 90-day event retention policy

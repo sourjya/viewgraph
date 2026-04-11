@@ -660,7 +660,12 @@ to specific ViewGraph features, tools, workflows, and remaining gaps.
 | 17.8 | Extension infrastructure events | auto_capture_triggered, collector_error, server_connection |
 | 17.9 | Server tool/capture events | server_start, tool_called, tool_error, capture_received |
 | 17.10 | Disclosure notices | Init script output, README sections, Web Store privacy declaration |
-| 17.11 | Analytics endpoint | HTTPS receiver, append-only storage, no IP logging, 90-day retention |
+| 17.11 | Build token infrastructure | CI injects VG_BUILD_TOKEN at build time, dev fallback |
+| 17.12 | Registration handshake | POST /v1/register with build-hash challenge, signing key issuance |
+| 17.13 | Signed event submission | HMAC-SHA256 signatures, replay protection, key rotation |
+| 17.14 | Payload validation | Event enum whitelist, UUID format, timestamp window, size limits |
+| 17.15 | Anomaly detection | Volume flagging, quarantine, admin revocation (post-MVP) |
+| 17.16 | Analytics endpoint | HTTPS receiver, install registry, append-only storage, no IP logging |
 
 ---
 
