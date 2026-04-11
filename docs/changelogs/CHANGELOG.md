@@ -31,6 +31,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Source Linking (M15.1)
 
 ### Component Tree Mapping (R1/M12.3)
+
+### Cross-Page Consistency Checker (R4/M15.3)
+- New `consistency-checker.js`: matches elements across captures by testid, role+class, or tag+class
+- Compares 10 style properties (font-size, padding, color, border-radius, etc.) for design system drift
+- New MCP tool: `check_consistency` - takes 2-10 capture filenames, reports style inconsistencies
+- 7 unit tests + 2 integration tests
+
+### Automated Annotation Status Check (M10.2)
+- New MCP tool: `check_annotation_status` - compares annotations against a newer capture
+- Detects: still-present elements, missing elements (possibly resolved), already-resolved annotations
+- Matches by ancestor selector and testid
+- 2 integration tests
+
+### Component Tree Mapping (R1/M12.3)
 - New `component-collector.js`: detects React/Vue/Svelte and extracts component names from DOM nodes
 - React: reads `__reactFiber$` keys, walks fiber tree for function/class component names and displayName
 - Vue: reads `__vueParentComponent` (Vue 3) and `__vue__` (Vue 2) for component names

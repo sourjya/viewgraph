@@ -585,6 +585,25 @@ to specific ViewGraph features, tools, workflows, and remaining gaps.
 
 ---
 
+## Milestone 18: Go-To-Market Preparation (Future)
+
+**Goal:** Positioning, content, and documentation site for public launch.
+
+| # | Task | Details |
+|---|---|---|
+| 18.1 | Documentation site structure | Design IA for docs.viewgraph.dev - Inspect tab sections, MCP tool reference, workflow guides. Each sidebar section (Network, Console, Landmarks, etc.) gets its own page. |
+| 18.2 | Demo walkthrough video script | Script for a 3-5 min video: install, annotate the demo page, send to agent, watch fixes happen. Show both developer and tester workflows. |
+| 18.3 | Positioning and messaging | Refine the "UI context layer for agentic coding" positioning. Competitor differentiation one-liners. Landing page copy. |
+| 18.4 | Content plan | Blog posts: "Why AI agents can't fix UI bugs" (problem), "How ViewGraph bridges the gap" (solution), "ViewGraph vs Percy vs Chromatic" (comparison). |
+| 18.5 | Launch narrative | Story arc for Product Hunt / Hacker News: problem statement, demo GIF, key differentiators, call to action. |
+| 18.6 | README polish | Update README with current feature set, cleaner getting started, badges, GIF demo. |
+
+**Depends on:** Feature set stabilization (R1-R6 complete or deferred).
+
+**Reference:** [`docs/roadmap/product-positioning.md`](./product-positioning.md), [`docs/architecture/product-analysis.md`](../architecture/product-analysis.md)
+
+---
+
 ## Risk Register
 
 | Risk | Impact | Mitigation |

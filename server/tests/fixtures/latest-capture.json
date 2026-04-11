@@ -1,0 +1,24 @@
+{
+  "metadata": {
+    "format": "viewgraph-v2",
+    "timestamp": "2026-04-11T13:00:00.000Z",
+    "url": "http://localhost:3000/dashboard",
+    "title": "Dashboard",
+    "viewport": { "width": 1280, "height": 720 },
+    "stats": { "totalNodes": 4, "salience": { "high": 1, "med": 2, "low": 1 } }
+  },
+  "nodes": {
+    "high": [
+      { "id": "inp001", "tag": "input", "text": "", "selector": "input#email", "bbox": { "x": 100, "y": 100, "w": 200, "h": 30 }, "actions": ["input"] }
+    ],
+    "med": [
+      { "id": "hdr001", "tag": "header", "text": "Dashboard", "selector": "header.app-header", "bbox": { "x": 0, "y": 0, "w": 1280, "h": 60 } },
+      { "id": "nav001", "tag": "nav", "text": "Home Settings", "selector": "nav.main-nav", "bbox": { "x": 0, "y": 60, "w": 200, "h": 660 } }
+    ],
+    "low": [
+      { "id": "p001", "tag": "p", "text": "Welcome back", "selector": "p.welcome", "bbox": { "x": 220, "y": 80, "w": 400, "h": 20 } }
+    ]
+  },
+  "relations": { "semantic": [], "groups": [] },
+  "details": { "high": {}, "med": {}, "low": {} }
+}
