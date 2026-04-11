@@ -121,6 +121,62 @@ When designing any new module, answer these before writing code:
 - Could another feature, service, or project use this with zero modification?
 - Am I hardcoding anything that should be a parameter?
 
+## Infrastructure Abstraction -- MANDATORY
+
+**Every external dependency gets an interface.** Storage, email, payments, auth providers, AI models, notification channels — all must be accessed through an abstract interface with swappable backend implementations. No service should be hardwired to a specific vendor or infrastructure.
+
+### Adapter Pattern for External Services
+
+Define an abstract interface for each infrastructure concern. Implement one adapter per backend. Application code depends only on the interface, never on a concrete implementation.
+
+This applies to:
+- **File storage** (local filesystem ↔ S3 ↔ GCS)
+- **Configuration persistence** (file ↔ localStorage ↔ IndexedDB)
+- **Email/SMS** (console logger ↔ SES ↔ SendGrid)
+- **Notifications** (log ↔ SNS ↔ WebSocket)
+- **AI/ML providers** (local model ↔ OpenAI ↔ Bedrock)
+- **Payment processing**, **auth providers**, and any other external service
+
+### Factory + Config-Driven Instantiation
+
+Backends are selected via configuration, never hardcoded. A factory function reads the config and returns the correct adapter:
+
+```python
+storage = create_storage_backend(settings.STORAGE_BACKEND)  # "local" | "s3"
+email = create_email_backend(settings.EMAIL_BACKEND)         # "console" | "ses"
+```
+
+- The factory is the only place that knows about concrete implementations
+- Application code receives the interface — it never imports a specific backend directly
+- Switching providers is a config change, not a code change
+
+### Secure Defaults
+
+All infrastructure adapters must enforce security at the interface level:
+
+1. **Content-type validation** — never trust client-provided MIME types on upload. Validate server-side.
+2. **Size limits at the interface** — enforce max file size in the abstract interface, not just the implementation. Every backend inherits the same limits.
+3. **Path traversal prevention** — sanitize all keys and paths. Reject `../`, absolute paths, and null bytes.
+4. **Signed/expiring URLs** — never expose raw storage paths (S3 keys, file paths). All download URLs must be signed with expiration.
+5. **Least privilege** — each adapter uses credentials scoped to its specific function. Storage adapters don't get database credentials.
+
+### Idempotency
+
+- **Uploads** are idempotent — uploading the same key with the same content is a no-op
+- **Deletes** are idempotent — deleting a non-existent object succeeds silently
+- **Config writes** are idempotent — writing the same value is a no-op
+- Design all infrastructure operations so they can be safely retried without side effects
+
+### Observability
+
+Every infrastructure adapter must emit structured logs for every operation:
+- **What**: operation type (upload, download, delete, send)
+- **Target**: key, recipient, resource identifier
+- **Size**: bytes transferred (where applicable)
+- **Duration**: wall-clock time of the operation
+- **Outcome**: success or failure with error category
+- The abstract interface defines the logging contract — implementations inherit it, not duplicate it
+
 ## Centralized Configuration & Constants -- MANDATORY
 
 **ZERO embedded literals.** All configuration values, magic numbers, string constants, and environment-dependent settings must live in dedicated, centralized locations.

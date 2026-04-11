@@ -9,6 +9,7 @@
  */
 
 import { updateComment, updateSeverity, updateCategory, removeAnnotation, MARKER_COLORS } from './annotate.js';
+import { diagnoseElement } from './element-diagnostics.js';
 
 const ATTR = 'data-vg-annotate';
 let panelEl = null;
@@ -230,6 +231,31 @@ export function show(annotation, callbacks = {}) {
   textarea.addEventListener('blur', () => { textarea.style.borderColor = '#333'; });
 
   panelEl.append(header, chipRow, textarea);
+
+  // Element diagnostics - contextual hints for the selected element
+  if (annotation.element?.selector) {
+    try {
+      const domEl = document.querySelector(annotation.element.selector);
+      if (domEl) {
+        const hints = diagnoseElement(domEl);
+        if (hints.length > 0) {
+          const hintsDiv = document.createElement('div');
+          hintsDiv.setAttribute(ATTR, 'hints');
+          Object.assign(hintsDiv.style, { marginTop: '6px', borderTop: '1px solid #333', paddingTop: '6px' });
+          for (const hint of hints) {
+            const row = document.createElement('div');
+            Object.assign(row.style, {
+              fontSize: '10px', padding: '2px 0', display: 'flex', alignItems: 'center', gap: '4px',
+              color: hint.icon === '\u26a0' ? '#f59e0b' : '#6b7280',
+            });
+            row.textContent = `${hint.icon} ${hint.text}`;
+            hintsDiv.appendChild(row);
+          }
+          panelEl.appendChild(hintsDiv);
+        }
+      }
+    } catch { /* selector may not match */ }
+  }
 
   // Position near the annotation region, avoiding sidebar and screen edges
   const panelWidth = 270;
