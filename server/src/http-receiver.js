@@ -252,6 +252,33 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       return json(res, 200, { resolved });
     }
 
+    // GET /captures/compare?a=file1&b=file2 - diff two captures
+    if (method === 'GET' && url.startsWith('/captures/compare')) {
+      const params = new URL(url, 'http://localhost').searchParams;
+      const fileA = params.get('a');
+      const fileB = params.get('b');
+      if (!fileA || !fileB) return json(res, 400, { error: 'Missing a or b parameter' });
+      try {
+        const { readFile } = await import('fs/promises');
+        const { parseCapture } = await import('#src/parsers/viewgraph-v2.js');
+        const { diffCaptures } = await import('#src/analysis/capture-diff.js');
+        const pathA = validateCapturePath(fileA, capturesDir);
+        const pathB = validateCapturePath(fileB, capturesDir);
+        const [rawA, rawB] = await Promise.all([readFile(pathA, 'utf-8'), readFile(pathB, 'utf-8')]);
+        const a = parseCapture(rawA);
+        const b = parseCapture(rawB);
+        if (!a.ok || !b.ok) return json(res, 500, { error: 'Failed to parse captures' });
+        const diff = diffCaptures(a.data, b.data);
+        const pick = (arr) => arr.slice(0, 10).map((n) => ({ tag: n.tag, text: (n.text || '').slice(0, 40) }));
+        return json(res, 200, { diff: {
+          added: diff.added.length, removed: diff.removed.length,
+          moved: diff.moved.length, testidChanges: diff.testidChanges.length,
+          addedElements: pick(diff.added), removedElements: pick(diff.removed),
+          movedElements: diff.moved.slice(0, 10), testidDetails: diff.testidChanges.slice(0, 10),
+        } });
+      } catch (e) { return json(res, 500, { error: e.message }); }
+    }
+
     // GET /captures?url=... - list captures, optionally filtered by URL
     if (method === 'GET' && url.startsWith('/captures') && !url.startsWith('/captures/')) {
       const params = new URL(url, 'http://localhost').searchParams;

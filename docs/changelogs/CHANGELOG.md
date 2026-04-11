@@ -8,6 +8,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Inspect Tab Captures UX Redesign
+- Simplified captures section: latest capture summary with relative time and element count
+- Auto-diff vs previous capture shown inline (e.g. "+10 elements since previous")
+- Older captures shown as compact timestamp timeline (no interactive rows)
+- Removed selection, compare, pinning, right-click gestures - power features stay in MCP tools
+- Visual separator between diagnostics (viewport/network/console) and capture sections
+- AUTO-CAPTURE grouped with captures below the separator
+- Server: `GET /captures/compare?a=&b=` endpoint for arbitrary capture diffing
+- Init script: `.viewgraph/` directory gitignored (was only `.viewgraph/captures/`) - prevents token leaking
+- Init script: upgrades old `.viewgraph/captures` gitignore entries to `.viewgraph/`
+- 8 new sidebar tests for captures section UX
+- 639 total tests (251 server + 388 extension)
+
 ### Security: Zero-Config Auth
 - Server auto-generates UUID token at startup, writes to `.viewgraph/.token` (mode 0600)
 - Token exposed via `GET /info` endpoint for extension auto-discovery

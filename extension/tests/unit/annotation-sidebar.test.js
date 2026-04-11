@@ -386,3 +386,193 @@ describe('sidebar MCP disconnected state', () => {
     expect(dlBtn.title).not.toContain('not connected');
   });
 });
+
+// ---------------------------------------------------------------------------
+// Inspect tab: separator and capture list UX
+// ---------------------------------------------------------------------------
+
+describe('inspect tab captures section', () => {
+  let origFetch;
+
+  /** Click the Inspect tab button inside shadow DOM. */
+  function clickInspectTab() {
+    const tabs = shadowQuery(`[${ATTR}="primary-tabs"]`);
+    const inspectBtn = [...tabs.querySelectorAll('button')].find((b) => b.textContent === 'Inspect');
+    inspectBtn.click();
+  }
+
+  /** Get the inspect content container. */
+  function getInspectContent() {
+    return shadowQuery(`[${ATTR}="inspect-content"]`);
+  }
+
+  /**
+   * Build a mock fetch that responds to health, captures, and baselines endpoints.
+   * @param {Array} captures - capture objects to return
+   * @param {Array} baselines - baseline objects to return
+   */
+  function mockFetchWith(captures = [], baselines = []) {
+    return vi.fn((url, opts) => {
+      const u = typeof url === 'string' ? url : url.toString();
+      if (u.includes('/health')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
+      }
+      if (u.includes('/info')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ token: 'test' }) });
+      }
+      if (u.includes('/captures')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ captures }) });
+      }
+      if (u.includes('/baselines/compare')) {
+        return Promise.resolve({ ok: false });
+      }
+      if (u.includes('/baselines')) {
+        if (opts?.method === 'POST') {
+          return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ baselines }) });
+      }
+      if (u.includes('/annotations/resolved')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ resolved: [] }) });
+      }
+      return Promise.reject(new Error(`unmocked: ${u}`));
+    });
+  }
+
+  beforeEach(() => {
+    origFetch = globalThis.fetch;
+    resetServerCache();
+    // jsdom lacks matchMedia - mock it for collectBreakpoints
+    window.matchMedia = vi.fn((query) => ({
+      matches: false, media: query, addEventListener: vi.fn(), removeEventListener: vi.fn(),
+    }));
+  });
+
+  afterEach(() => {
+    globalThis.fetch = origFetch;
+    delete window.matchMedia;
+  });
+
+  it('(+) separator exists between diagnostics and capture sections', async () => {
+    const now = Date.now();
+    globalThis.fetch = mockFetchWith([
+      { filename: 'cap-1.json', timestamp: new Date(now - 60000).toISOString(), nodeCount: 80 },
+    ]);
+    start();
+    create();
+    clickInspectTab();
+    const ic = getInspectContent();
+    await vi.waitFor(() => {
+      const hrs = ic.querySelectorAll('hr');
+      expect(hrs.length).toBeGreaterThanOrEqual(1);
+    });
+    const children = [...ic.children];
+    const hrIdx = children.findIndex((el) => el.tagName === 'HR');
+    const autoRow = children.find((el) => el.textContent.includes('AUTO-CAPTURE'));
+    const autoIdx = children.indexOf(autoRow);
+    expect(hrIdx).toBeGreaterThan(0);
+    expect(hrIdx).toBeLessThan(autoIdx);
+  });
+
+  it('(+) latest capture shows relative time and element count', async () => {
+    const now = Date.now();
+    globalThis.fetch = mockFetchWith([
+      { filename: 'cap-1.json', timestamp: new Date(now - 30000).toISOString(), nodeCount: 80 },
+    ]);
+    start();
+    create();
+    clickInspectTab();
+    const ic = getInspectContent();
+    await vi.waitFor(() => {
+      expect(ic.textContent).toContain('Captured just now');
+    });
+    expect(ic.textContent).toContain('80 elements');
+  });
+
+  it('(+) auto-diff shown when node count changed vs previous', async () => {
+    const now = Date.now();
+    globalThis.fetch = mockFetchWith([
+      { filename: 'cap-1.json', timestamp: new Date(now - 60000).toISOString(), nodeCount: 90 },
+      { filename: 'cap-2.json', timestamp: new Date(now - 120000).toISOString(), nodeCount: 80 },
+    ]);
+    start();
+    create();
+    clickInspectTab();
+    const ic = getInspectContent();
+    await vi.waitFor(() => {
+      expect(ic.textContent).toContain('+10 elements since previous');
+    });
+  });
+
+  it('(-) no diff line when node counts are equal', async () => {
+    const now = Date.now();
+    globalThis.fetch = mockFetchWith([
+      { filename: 'cap-1.json', timestamp: new Date(now - 60000).toISOString(), nodeCount: 80 },
+      { filename: 'cap-2.json', timestamp: new Date(now - 120000).toISOString(), nodeCount: 80 },
+    ]);
+    start();
+    create();
+    clickInspectTab();
+    const ic = getInspectContent();
+    await vi.waitFor(() => {
+      expect(ic.textContent).toContain('80 elements');
+    });
+    expect(ic.querySelectorAll(`[${ATTR}="capture-diff"]`).length).toBe(0);
+  });
+
+  it('(+) negative diff shown when elements removed', async () => {
+    const now = Date.now();
+    globalThis.fetch = mockFetchWith([
+      { filename: 'cap-1.json', timestamp: new Date(now - 60000).toISOString(), nodeCount: 30 },
+      { filename: 'cap-2.json', timestamp: new Date(now - 120000).toISOString(), nodeCount: 208 },
+    ]);
+    start();
+    create();
+    clickInspectTab();
+    const ic = getInspectContent();
+    await vi.waitFor(() => {
+      expect(ic.textContent).toContain('-178 elements since previous');
+    });
+  });
+
+  it('(+) older captures shown as compact timeline', async () => {
+    const now = Date.now();
+    globalThis.fetch = mockFetchWith([
+      { filename: 'cap-1.json', timestamp: new Date(now - 60000).toISOString(), nodeCount: 80 },
+      { filename: 'cap-2.json', timestamp: new Date(now - 180000).toISOString(), nodeCount: 80 },
+      { filename: 'cap-3.json', timestamp: new Date(now - 300000).toISOString(), nodeCount: 80 },
+    ]);
+    start();
+    create();
+    clickInspectTab();
+    const ic = getInspectContent();
+    await vi.waitFor(() => {
+      expect(ic.textContent).toContain('3m');
+      expect(ic.textContent).toContain('5m');
+    });
+  });
+
+  it('(+) MCP hint shown', async () => {
+    const now = Date.now();
+    globalThis.fetch = mockFetchWith([
+      { filename: 'cap-1.json', timestamp: new Date(now - 60000).toISOString(), nodeCount: 80 },
+    ]);
+    start();
+    create();
+    clickInspectTab();
+    const ic = getInspectContent();
+    await vi.waitFor(() => {
+      expect(ic.textContent).toContain('agent can query');
+    });
+  });
+
+  it('(-) no captures section when server returns empty list', async () => {
+    globalThis.fetch = mockFetchWith([]);
+    start();
+    create();
+    clickInspectTab();
+    const ic = getInspectContent();
+    await new Promise((r) => setTimeout(r, 50));
+    expect(ic.textContent).not.toContain('Captures');
+  });
+});
