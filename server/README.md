@@ -4,6 +4,16 @@ MCP server that reads ViewGraph capture files from disk and exposes 34 query/ana
 
 Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline, Aider.
 
+## Quick Start
+
+Most users don't need to configure the server manually. Run the init script from your project root and it handles everything:
+
+```bash
+node /path/to/viewgraph/scripts/viewgraph-init.js
+```
+
+This writes the MCP config, creates the captures directory, generates an auth token, and starts the server. See the [root README](../README.md) for the full setup guide.
+
 ## Tools (34)
 
 ### Core (4)
@@ -75,21 +85,42 @@ Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline,
 | `compare_screenshots` | Pixel-by-pixel screenshot comparison |
 | `validate_capture` | Check capture for quality issues (empty pages, missing data) |
 
-## Setup
+## Running the Server
+
+All commands run from the **ViewGraph root directory** (not `server/`):
 
 ```bash
-npm install
+npm run dev:server       # recommended - starts with file watcher for auto-reload
 ```
 
-### Configuration
-
-Set the captures directory via env var:
+Or run the entry point directly from the `server/` directory:
 
 ```bash
-export VIEWGRAPH_CAPTURES_DIR=/path/to/captures
+node index.js            # no file watcher, no auto-reload
 ```
 
-Or create a `.viewgraphrc.json` in the ViewGraph project root:
+The server uses stdio transport for MCP communication (your agent connects via this) and starts an HTTP receiver on `localhost:9876` for extension communication. A WebSocket server runs alongside for real-time annotation sync.
+
+## Configuration
+
+The init script handles configuration automatically. These details are for manual setup or troubleshooting.
+
+### Captures directory
+
+The server needs to know where capture files are stored. It checks these sources in order:
+
+1. `VIEWGRAPH_CAPTURES_DIR` environment variable (highest priority)
+2. `capturesDir` field in `.viewgraphrc.json` in the ViewGraph project root
+3. Falls back to `.viewgraph/captures` relative to the working directory
+
+```bash
+# Option 1: Environment variable
+export VIEWGRAPH_CAPTURES_DIR=/path/to/your-project/.viewgraph/captures
+
+# Option 2: Config file (created by init script)
+```
+
+`.viewgraphrc.json` example:
 
 ```json
 {
@@ -101,66 +132,63 @@ Or create a `.viewgraphrc.json` in the ViewGraph project root:
 }
 ```
 
-### Multi-project routing
-
-The server supports routing captures to different project directories via the
-`x-captures-dir` HTTP header. The extension sends this header based on URL-to-project
-mappings configured in extension options.
-
-Security: the `x-captures-dir` value must match an entry in `allowedDirs`. Unrecognized
-directories are rejected with 403. `viewgraph init` auto-registers projects in `allowedDirs`.
+The `allowedDirs` array is for multi-project setups where one server handles captures from multiple projects. The init script auto-registers each project here.
 
 ### Authentication
 
-Zero-config by default. The server auto-generates a random UUID token at startup and writes it to `.viewgraph/.token` (mode 0600). The extension reads the token from the `/info` endpoint and includes it as a `Bearer` header on all POST requests.
+Zero-config by default:
 
-- **Default:** auto-generated token, no manual setup needed
-- **Override:** set `VIEWGRAPH_HTTP_SECRET` env var to use a fixed token (useful for CI or shared environments)
-- **Scope:** all POST endpoints require auth; GET endpoints (/health, /info, /requests/pending) remain open
+- The server auto-generates a random UUID token at startup and writes it to `.viewgraph/.token` (mode 0600)
+- The extension reads this token via the `/info` endpoint and includes it as a `Bearer` header on all POST requests
+- No manual setup needed
+
+To use a fixed token (useful for CI or shared environments), set:
+
+```bash
+export VIEWGRAPH_HTTP_SECRET=your-fixed-token
+```
+
+All POST endpoints require auth. GET endpoints (`/health`, `/info`, `/requests/pending`) remain open.
 
 ### Port fallback
 
-The HTTP receiver defaults to port 9876. If in use, it tries 9877, 9878, 9879 before failing.
-The extension auto-discovers the server by probing these ports.
+The HTTP receiver defaults to port 9876. If that port is in use, it tries 9877, 9878, 9879 before failing. The extension auto-discovers the server by probing these ports.
 
-## Running
+## HTTP Endpoints
 
-```bash
-node index.js            # standalone
-npm run dev:server       # via workspace (from project root)
-```
+These are used by the extension, not by end users directly.
 
-The server uses stdio transport for MCP communication and starts an HTTP receiver
-on localhost for extension communication. A WebSocket server runs alongside for
-real-time annotation collaboration.
-
-### HTTP Endpoints
-
-| Endpoint | Description |
-|---|---|
-| `GET /health` | Server status, captures dir, writability |
-| `GET /info` | Project info for auto-detection (capturesDir, projectRoot) |
-| `GET /captures` | List captures, optional URL filter |
-| `GET /captures/compare` | Diff two captures by filename (a, b params) |
-| `GET /requests/pending` | Pending capture requests for extension polling |
-| `POST /requests/:id/ack` | Acknowledge a capture request |
-| `POST /requests/:id/decline` | Decline a capture request (optional reason in body) |
-| `POST /captures` | Receive capture JSON from extension |
-| `POST /snapshots` | Receive HTML snapshots from extension |
-| `POST /baselines` | Promote a capture to golden baseline |
-| `GET /annotations/resolved` | Resolved annotations for extension sync |
+| Endpoint | Method | Description |
+|---|---|---|
+| `/health` | GET | Server status, captures dir, writability |
+| `/info` | GET | Project info for auto-detection (capturesDir, projectRoot) |
+| `/captures` | GET | List captures, optional URL filter |
+| `/captures/compare` | GET | Diff two captures by filename (a, b params) |
+| `/captures` | POST | Receive capture JSON from extension |
+| `/snapshots` | POST | Receive HTML snapshots from extension |
+| `/baselines` | POST | Promote a capture to golden baseline |
+| `/requests/pending` | GET | Pending capture requests for extension polling |
+| `/requests/:id/ack` | POST | Acknowledge a capture request |
+| `/requests/:id/decline` | POST | Decline a capture request (optional reason in body) |
+| `/annotations/resolved` | GET | Resolved annotations for extension sync |
 
 ### WebSocket
 
-The server runs a WebSocket endpoint at `ws://localhost:{port}/ws` for real-time
-annotation sync. The extension connects on sidebar open and receives live updates
-when annotations are created, updated, or resolved.
+`ws://localhost:{port}/ws` - real-time annotation sync. The extension connects when the sidebar opens and receives live updates when annotations are created, updated, or resolved.
 
 ## Testing
 
+Run from the **ViewGraph root directory**:
+
 ```bash
-npm test                 # single run (324 tests)
-npm run test:watch       # watch mode
+npm run test:server      # 324 tests
+npm run test:server -- --watch   # watch mode
+```
+
+Or from the `server/` directory:
+
+```bash
+npm test                 # same 324 tests
 ```
 
 ## Architecture

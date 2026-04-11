@@ -5,31 +5,32 @@ and sending feedback to AI coding assistants.
 
 Built with [WXT](https://wxt.dev/) for cross-browser Manifest V3 support.
 
-## Features
+## End-User Features
 
-- **Direct-Toggle Annotate** - click the toolbar icon to enter annotate mode instantly (no popup)
-- **DOM Capture** - full page DOM traversal with salience scoring, spatial clustering, style extraction
-- **Unified Annotate** - click elements or shift+drag regions to annotate with comments and severity
-- **Two-Tab Sidebar** - Review tab for annotations/export, Inspect tab for page diagnostics
-- **Inspect Tab** - live viewport breakpoint, network requests (failed highlighted), console errors/warnings, capture history with auto-diff, visibility warnings
-- **Page Notes** - page-level comments labeled P1, P2, etc. with separate numbering
-- **Multi-Export** - Send to Agent (MCP push with full capture), Copy Markdown (with environment data), Download Report (ZIP with screenshots + network.json + console.json)
-- **Agent Request Cards** - when the agent calls `request_capture`, a card appears in the sidebar with purpose icon (capture/inspect/verify), Accept and Decline buttons
-- **Collapsed Strip** - sidebar collapses to a slim strip with 32px mode icons and chat bubble annotation count
-- **Confirmation Dialog** - themed card dialog for destructive actions (Clear All) instead of native browser confirm
+These are the features you interact with directly:
+
+- **Direct-Toggle Annotate** - click the toolbar icon to enter annotate mode instantly
+- **Click to Annotate** - click any element to select it and add a comment with severity/category
+- **Region Select** - shift+drag to select an area and annotate it
+- **DOM Navigation** - scroll wheel while hovering to move up/down the DOM tree
+- **Page Notes** - page-level comments labeled P1, P2, etc. (separate from element numbering)
+- **Two-Tab Sidebar** - Review tab (annotations, export) + Inspect tab (network, console, breakpoints)
+- **Multi-Export** - Send to Agent (MCP), Copy Markdown (clipboard), Download Report (ZIP)
+- **Agent Request Cards** - when your agent requests a capture, a card appears with Accept/Decline
+- **Keyboard Shortcuts** - Esc (deselect), Ctrl+Enter (send), 1/2/3 (severity), Delete (remove)
+- **Element Flash** - green highlight pulse when selecting elements
+
+## Under-the-Hood Features
+
+These run automatically during capture:
+
 - **14 Enrichment Collectors** - network, console, breakpoints, stacking contexts, focus chain, scroll containers, landmarks, components, axe-core, event listeners, performance, animations, intersection state, visibility
-- **Auto-Capture on HMR** - detects Vite/webpack hot-reload events and auto-captures after DOM settles
-- **Journey Recording** - auto-captures on SPA navigation (pushState/popstate), groups into named sessions
-- **Continuous Capture** - periodic DOM snapshots for regression tracking
-- **Subtree Capture** - focused capture of a specific DOM subtree with full computed styles
-- **Keyboard Shortcuts** - power user shortcuts for annotate mode (Esc, Enter, Tab, arrow keys)
+- **Auto-Capture on HMR** - detects Vite/webpack hot-reload and auto-captures after DOM settles
+- **Journey Recording** - auto-captures on SPA navigation, groups into named sessions
 - **WebSocket Collaboration** - real-time annotation sync with MCP server
-- **Element Flash** - visual feedback (green flash) when selecting elements
-- **Auto-Detect Project** - fetches `/info` from MCP server to auto-detect project root and captures directory
-- **Zero-Config Auth** - reads auth token from server, includes Bearer header on all POSTs automatically
-- **Server Discovery** - auto-discovers MCP server on ports 9876-9879, matches by project
-- **Connection Status** - green dot indicator in sidebar header when MCP server is connected
-- **Capture Validation** - quality checks on captures before export (empty pages, missing data)
+- **Zero-Config Auth** - reads auth token from server automatically
+- **Server Discovery** - auto-discovers MCP server on ports 9876-9879
+- **Capture Validation** - quality checks before export (empty pages, missing data)
 
 ## UI Surfaces
 
@@ -37,19 +38,18 @@ Built with [WXT](https://wxt.dev/) for cross-browser Manifest V3 support.
 |---|---|
 | Toolbar icon | Single-click toggles annotate mode. Popup fallback on non-injectable pages. |
 | Overlay | Hover highlight with 2-line tooltip (breadcrumb + meta). Click to freeze. Scroll wheel for DOM navigation. |
-| Sidebar - Review tab | Annotation list, filter tabs, mode bar, agent request cards, Send/Copy/Report export buttons |
+| Sidebar - Review tab | Annotation list, filter tabs (All/Open/Resolved), export buttons |
 | Sidebar - Inspect tab | Viewport breakpoint, network requests, console errors, visibility warnings |
-| Sidebar - Collapsed strip | 32px mode icons (element/region/page), expand chevron, chat bubble count |
+| Sidebar - Collapsed strip | 32px mode icons (element/region/page), expand chevron, annotation count |
 | Annotation panel | Floating editor near selected element: severity, category chips, comment textarea |
-| Confirmation dialog | Themed card overlay for Clear All (dark card, red border, Cancel/Clear All) |
-| Settings overlay | Server status, project mapping, capture format toggles |
+| Settings overlay | Server status, project mapping |
 | Options page | Advanced multi-project URL-to-directory mapping |
 
 See [UX Design](../docs/architecture/ux-analysis.md) for design decisions and user journeys.
 
 ## Enrichment Collectors (14)
 
-Each collector is wrapped in `safeCollect()` - one failure never crashes the capture.
+Each collector is wrapped in `safeCollect()` - if one fails, the rest still run and the capture succeeds.
 
 | Collector | What it captures |
 |---|---|
@@ -68,34 +68,45 @@ Each collector is wrapped in `safeCollect()` - one failure never crashes the cap
 | `intersection-collector` | Viewport visibility state via IntersectionObserver |
 | `visibility-collector` | isRendered ancestor walk (opacity, clip-path, off-screen) |
 
+## Development
+
+All commands run from the **ViewGraph root directory** (not `extension/`):
+
+### Dev server (recommended for development)
+
+```bash
+npm run dev:ext          # Chrome with hot-reload (HMR)
+npm run dev:ext:firefox  # Firefox with hot-reload
+```
+
+### Building for production
+
+```bash
+npm run build:ext                          # Chrome
+npm run build:ext -- --browser firefox     # Firefox
+```
+
+Output goes to `extension/.output/chrome-mv3/` (or `firefox-mv3/`).
+
+### Testing
+
+```bash
+npm run test:ext                 # 599 tests, single run
+npm run test:ext -- --watch      # watch mode
+```
+
+Or from the `extension/` directory:
+
+```bash
+npm test                         # same 599 tests
+```
+
 ## Specs
 
 - [Extension Core](../.kiro/specs/extension-core/) - DOM traversal, serialization, popup UI
 - [Unified Annotate Mode](../.kiro/specs/unified-annotate-mode/) - merged inspect + review
 - [Multi-Export](../.kiro/specs/multi-export/) - markdown, ZIP, MCP push
 - [Inspect Tab Redesign](../.kiro/specs/inspect-tab-redesign/) - captures UX simplification
-
-## Testing
-
-```bash
-npm test               # unit tests (599 tests)
-npm run test:watch     # watch mode
-```
-
-## Development
-
-```bash
-npm run dev              # Chrome (default, recommended for dev)
-npm run dev:firefox      # Firefox
-```
-
-## Building
-
-```bash
-npm run build            # Chrome
-npm run build:firefox    # Firefox
-npm run zip:firefox      # package for distribution
-```
 
 ## Structure
 
