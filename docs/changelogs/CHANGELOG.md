@@ -69,6 +69,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### WebSocket Live Collaboration (M14.3)
 
 ### Enrichment Error Boundary
+
+### Capture Quality Validation
+- New `capture-validator.js` (extension): checks capture quality before sending
+- New MCP tool: `validate_capture` - agents can check capture quality (34th tool)
+- Warns on: empty captures, few elements, no interactive elements, missing enrichment, oversized payloads, console errors, failed network requests
+- 7 new extension tests
+
+### Enrichment Error Boundary
 - New `safe-collect.js`: wraps enrichment collectors so a single failure never crashes the capture
 - All 13 enrichment collectors in content.js and auto-capture.js now use `safeCollect()`
 - Failed collectors return null and log a warning instead of throwing
