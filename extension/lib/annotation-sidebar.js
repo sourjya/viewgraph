@@ -896,6 +896,29 @@ export function create() {
     row.append(label, info, dot);
     container.appendChild(row);
 
+    // Copy ID chip - click to copy latest capture filename
+    const copyRow = document.createElement('div');
+    Object.assign(copyRow.style, { padding: '0 0 2px' });
+    const copyBtn = document.createElement('button');
+    copyBtn.setAttribute(ATTR, 'copy-id');
+    const shortName = latest.filename.replace(/\.json$/, '');
+    copyBtn.textContent = shortName;
+    copyBtn.title = 'Click to copy filename';
+    Object.assign(copyBtn.style, {
+      border: 'none', background: '#1a1a2e', color: '#6366f1', fontSize: '9px',
+      fontFamily: 'monospace', padding: '1px 6px', borderRadius: '3px',
+      cursor: 'pointer', transition: 'color 0.15s',
+    });
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(latest.filename).then(() => {
+        copyBtn.textContent = 'Copied!';
+        copyBtn.style.color = '#4ade80';
+        setTimeout(() => { copyBtn.textContent = shortName; copyBtn.style.color = '#6366f1'; }, 1500);
+      }).catch(() => { /* clipboard not available */ });
+    });
+    copyRow.appendChild(copyBtn);
+    container.appendChild(copyRow);
+
     // Warning if latest capture is empty
     if ((latest.nodeCount || 0) === 0) {
       const warn = document.createElement('div');
