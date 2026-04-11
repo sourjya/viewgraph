@@ -193,6 +193,7 @@ export function serialize(elements, relations, enrichment = {}) {
   if (enrichment.breakpoints) capture.breakpoints = enrichment.breakpoints;
   if (enrichment.stacking) capture.stacking = enrichment.stacking;
   if (enrichment.focus) capture.focus = enrichment.focus;
+  if (enrichment.scroll) capture.scroll = enrichment.scroll;
 
   // Update capture size estimate
   const jsonStr = JSON.stringify(capture);

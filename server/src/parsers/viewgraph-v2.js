@@ -96,6 +96,7 @@ export function parseCapture(jsonString) {
       breakpoints: raw.breakpoints ?? null,
       stacking: raw.stacking ?? null,
       focus: raw.focus ?? null,
+      scroll: raw.scroll ?? null,
     },
   };
 }
@@ -138,6 +139,7 @@ export function parseSummary(jsonString) {
       breakpoints: raw.breakpoints ?? null,
       stackingIssues: raw.stacking?.issues?.length ?? 0,
       focusIssues: raw.focus?.issues?.length ?? 0,
+      scrollContainers: raw.scroll?.containers?.length ?? 0,
     },
   };
 }

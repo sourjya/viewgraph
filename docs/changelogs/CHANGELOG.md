@@ -17,6 +17,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Z-Index Stacking Context Resolution (M13.1)
 
 ### Focus Management Chain (M13.2)
+
+### Scroll Container Detection (M13.4)
+- New `scroll-collector.js`: identifies scrollable elements (overflow:auto/scroll with scrollable content)
+- Calculates nesting depth for each container (how many scroll ancestors)
+- Flags nested scroll containers as issues (root cause of "wrong thing scrolls" bugs)
+- Scroll data included in capture JSON as `scroll` section (backward compatible)
+- Inspect tab: SCROLL section appears only when nested containers detected
+- Server parser extracts scroll section; `get_page_summary` includes `scrollContainers` count
+- 13 new extension tests (6 detection + 4 nesting + 3 issues)
+
+### Focus Management Chain (M13.2)
 - New `focus-collector.js`: captures active element, tab order sequence, focus traps, unreachable elements
 - Tab order follows browser rules: tabIndex > 0 first (ascending), then tabIndex = 0 in DOM order
 - Detects focus traps (role=dialog, aria-modal=true, dialog[open]) and flags empty traps
