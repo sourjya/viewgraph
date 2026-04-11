@@ -25,6 +25,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### ViewGraph Status Command
 
 ### Capture Sessions
+
+### Element-Level Diagnostic Hints
+- New `element-diagnostics.js`: analyzes a single DOM element for a11y, testid, focus, stacking, and contrast issues
+- Integrated into annotation panel: when user clicks an element, contextual hints appear below the comment box
+- Checks: missing alt text, empty aria-label, unlabeled inputs, no data-testid, tabIndex=-1, high z-index, low contrast
+- Hints are auto-detected, element-specific, and only shown when issues exist
+- Connects annotation workflow to diagnostic data without requiring tab switching
+- 17 new extension tests
+
+### Capture Sessions
 - New `session-manager.js`: manages multi-step flow recording with start/stop/addStep/getState
 - Session state persisted to chrome.storage.session (survives sidebar rebuilds, not browser restarts)
 - Sidebar UX: record toggle with pulsing red dot, step counter, optional note input per step
