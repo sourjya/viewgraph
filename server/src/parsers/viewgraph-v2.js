@@ -101,6 +101,7 @@ export function parseCapture(jsonString) {
       landmarks: raw.landmarks ?? null,
       components: raw.components ?? null,
       axe: raw.axe ?? null,
+      eventListeners: raw.eventListeners ?? null,
     },
   };
 }
@@ -147,6 +148,8 @@ export function parseSummary(jsonString) {
       landmarkIssues: raw.landmarks?.issues?.length ?? 0,
       framework: raw.components?.framework ?? 'unknown',
       componentCount: raw.components?.components?.length ?? 0,
+      eventListenerCount: raw.eventListeners?.elements?.length ?? 0,
+      suspiciousClickables: raw.eventListeners?.suspicious?.length ?? 0,
     },
   };
 }

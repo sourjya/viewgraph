@@ -37,6 +37,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### axe-core Integration (R2)
 
 ### Framework Source Linking (R6/M15.1)
+
+### Event Listener Inventory (M12.4)
+- New `event-listener-collector.js`: detects event handlers on DOM elements
+- Detects HTML event attributes (onclick, onchange, etc.)
+- Detects React synthetic events via fiber props (onClick, onChange, etc.)
+- Detects Vue event bindings via __vue__ instance
+- Flags suspicious elements: cursor:pointer with no detected handler
+- Included in capture as `eventListeners` enrichment section
+- `get_page_summary` includes `eventListenerCount` and `suspiciousClickables`
+- 7 new extension tests
+
+### Framework Source Linking (R6/M15.1)
 - `find_source` now accepts `component` parameter for framework component name search
 - Searches for `function ComponentName`, `const ComponentName`, `export default`, `class ComponentName`
 - Component names from R1 captures feed directly into source linking at high confidence

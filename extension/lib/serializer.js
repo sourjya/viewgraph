@@ -198,6 +198,7 @@ export function serialize(elements, relations, enrichment = {}) {
   if (enrichment.session) capture.metadata.session = enrichment.session;
   if (enrichment.components) capture.components = enrichment.components;
   if (enrichment.axe) capture.axe = enrichment.axe;
+  if (enrichment.eventListeners) capture.eventListeners = enrichment.eventListeners;
 
   // Update capture size estimate
   const jsonStr = JSON.stringify(capture);

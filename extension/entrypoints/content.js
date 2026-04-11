@@ -24,6 +24,7 @@ import { collectLandmarks } from '../lib/landmark-collector.js';
 import { isRecording, addStep, getCaptureMetadata } from '../lib/session-manager.js';
 import { collectComponents } from '../lib/component-collector.js';
 import { collectAxeResults } from '../lib/axe-collector.js';
+import { collectEventListeners } from '../lib/event-listener-collector.js';
 import {
   start as startAnnotate, stop as stopAnnotate, isActive as isAnnotating,
   getAnnotations, load as loadAnnotations, hideMarkers,
@@ -52,7 +53,7 @@ export default defineContentScript({
             const viewport = { width: window.innerWidth, height: window.innerHeight };
             const { elements, relations } = traverseDOM();
             const scored = scoreAll(elements, viewport);
-            const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents() };
+            const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents(), eventListeners: collectEventListeners() };
             enrichment.axe = await collectAxeResults();
             if (isRecording()) {
               addStep(message.sessionNote);
@@ -102,7 +103,7 @@ export default defineContentScript({
             const anns = getAnnotations();
             const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString() };
             const screenshots = message.screenshot ? await cropRegions(message.screenshot, anns, { scrollX: window.scrollX, scrollY: window.scrollY }) : [];
-            const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents() };
+            const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents(), eventListeners: collectEventListeners() };
             enrichment.axe = await collectAxeResults();
             const blob = await buildReportZip(anns, meta, screenshots, enrichment);
             // Trigger download via object URL
@@ -127,7 +128,7 @@ export default defineContentScript({
           const viewport = { width: window.innerWidth, height: window.innerHeight };
           const { elements, relations } = traverseDOM();
           const scored = scoreAll(elements, viewport);
-          const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents() };
+          const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents(), eventListeners: collectEventListeners() };
           enrichment.axe = await collectAxeResults();
           if (isRecording()) {
             addStep(message.sessionNote);
