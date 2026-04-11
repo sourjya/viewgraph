@@ -9,6 +9,7 @@
  * @see lib/annotate.js - unified hover/click/drag annotation state machine
  * @see docs/decisions/ADR-006-merge-inspect-review.md
  */
+/* global defineContentScript */
 
 import { traverseDOM } from '../lib/traverser.js';
 import { scoreAll } from '../lib/salience.js';

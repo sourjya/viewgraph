@@ -96,7 +96,7 @@ export function collectStackingContexts() {
   }
 
   // Strip element references before returning (not serializable)
-  const serializable = contexts.map(({ element, ...rest }) => rest);
+  const serializable = contexts.map(({ element: _el, ...rest }) => rest);
   return { contexts: serializable, issues };
 }
 
