@@ -116,3 +116,39 @@ chrome.storage.sync.get(STORAGE_KEY, (result) => {
     for (const m of mappings) createRow(m.pattern, m.dir);
   }
 });
+
+// ──────────────────────────────────────────────
+// Auto-Capture, Server, and Quality Settings
+// ──────────────────────────────────────────────
+
+const SETTINGS_KEY = 'viewgraph-settings';
+
+const autoCaptureEl = document.getElementById('autoCaptureEnabled');
+const debounceEl = document.getElementById('debounceMs');
+const serverUrlEl = document.getElementById('serverUrl');
+const captureQualityEl = document.getElementById('captureQuality');
+const saveAllBtn = document.getElementById('saveAllBtn');
+const statusAllEl = document.getElementById('statusAll');
+
+/** Load settings from storage. */
+chrome.storage.sync.get(SETTINGS_KEY, (result) => {
+  const s = result[SETTINGS_KEY] || {};
+  if (s.autoCaptureEnabled != null) autoCaptureEl.checked = s.autoCaptureEnabled;
+  if (s.debounceMs != null) debounceEl.value = s.debounceMs;
+  if (s.serverUrl) serverUrlEl.value = s.serverUrl;
+  if (s.captureQuality) captureQualityEl.value = s.captureQuality;
+});
+
+/** Save all settings. */
+saveAllBtn.addEventListener('click', () => {
+  const settings = {
+    autoCaptureEnabled: autoCaptureEl.checked,
+    debounceMs: parseInt(debounceEl.value, 10) || 1000,
+    serverUrl: serverUrlEl.value.trim() || '',
+    captureQuality: captureQualityEl.value,
+  };
+  chrome.storage.sync.set({ [SETTINGS_KEY]: settings }, () => {
+    statusAllEl.style.display = 'inline';
+    setTimeout(() => { statusAllEl.style.display = 'none'; }, 2000);
+  });
+});

@@ -202,6 +202,17 @@ export default defineBackground(() => {
       return true;
     }
 
+    // Handle auto-capture from HMR detection
+    if (message.type === 'auto-capture') {
+      (async () => {
+        const dir = sender.tab?.url ? await lookupCapturesDir(sender.tab.url) : null;
+        const result = await pushToServer(message.capture, dir);
+        console.log(`[viewgraph] auto-capture #${message.captureNumber} (${message.hmrSource}): pushed=${!!result}`);
+        sendResponse({ ok: true, pushed: !!result, filename: result?.filename });
+      })();
+      return true;
+    }
+
     // Handle review-mode send - push annotated capture to server
     if (message.type === 'send-review') {
       (async () => {
