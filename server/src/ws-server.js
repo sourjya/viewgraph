@@ -55,7 +55,12 @@ export function createWebSocketServer(httpServer, options = {}) {
     let authenticated = !options.authToken; // No token = open access
     ws.isAlive = true;
 
-    ws.on('pong', () => { ws.isAlive = true; });
+    // Close unauthenticated connections after 5 seconds
+    const authTimeout = !authenticated ? setTimeout(() => {
+      if (!authenticated) { ws.close(4001, 'Auth timeout'); }
+    }, 5000) : null;
+
+    ws.on('pong', () => { if (authenticated) ws.isAlive = true; });
 
     ws.on('message', (data) => {
       let msg;
@@ -65,6 +70,7 @@ export function createWebSocketServer(httpServer, options = {}) {
       if (!authenticated) {
         if (msg.type === 'auth' && msg.token === options.authToken) {
           authenticated = true;
+          clearTimeout(authTimeout);
           clients.add(ws);
           ws.send(JSON.stringify({ type: 'auth:ok' }));
           process.stderr.write(`${LOG_PREFIX} WebSocket client authenticated (${clients.size} total)\n`);

@@ -31,11 +31,29 @@ function renderAutoMapping(data) {
   }
   const age = Date.now() - (data.detectedAt || 0);
   const fresh = age < 120000; // 2 min
-  autoMappingEl.innerHTML = `
-    <div class="auto-row"><span class="auto-dot ${fresh ? 'connected' : 'disconnected'}"></span><span class="auto-label">Server:</span> <span class="auto-value">${data.serverUrl || 'unknown'}</span></div>
-    <div class="auto-row"><span class="auto-label">Project:</span> <span class="auto-value">${data.projectRoot || 'unknown'}</span></div>
-    <div class="auto-row"><span class="auto-label">Captures:</span> <span class="auto-value">${data.capturesDir || 'unknown'}</span></div>
-  `;
+  autoMappingEl.textContent = '';
+  const rows = [
+    { label: 'Server:', value: data.serverUrl || 'unknown', dot: true, fresh },
+    { label: 'Project:', value: data.projectRoot || 'unknown' },
+    { label: 'Captures:', value: data.capturesDir || 'unknown' },
+  ];
+  for (const row of rows) {
+    const div = document.createElement('div');
+    div.className = 'auto-row';
+    if (row.dot) {
+      const dot = document.createElement('span');
+      dot.className = `auto-dot ${row.fresh ? 'connected' : 'disconnected'}`;
+      div.appendChild(dot);
+    }
+    const lbl = document.createElement('span');
+    lbl.className = 'auto-label';
+    lbl.textContent = row.label;
+    const val = document.createElement('span');
+    val.className = 'auto-value';
+    val.textContent = row.value;
+    div.append(lbl, ' ', val);
+    autoMappingEl.appendChild(div);
+  }
 }
 
 // Load auto-mapping on page open

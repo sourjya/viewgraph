@@ -73,6 +73,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Capture Quality Validation
 
 ### Low-Priority Cleanup (M13.5, M13.7)
+
+### Security Audit Remediations
+- S1-1 (HIGH): Removed auth token from `/info` endpoint response
+- S1-2 (HIGH): Added `checkAuth()` to `POST /baselines` endpoint
+- S1-3 (MEDIUM): WebSocket auth timeout - unauthenticated connections closed after 5s
+- S2-1/S2-2/S2-3 (MEDIUM): Wrapped all `JSON.parse` calls in HTTP handlers with try/catch
+- S2-4 (MEDIUM): Added `validateCapturePath()` to `setBaseline()` - prevents path traversal
+- S4-1 (MEDIUM): Added `server.timeout` (30s) and `server.requestTimeout` (10s) to HTTP server
+- S4-2 (MEDIUM): Documented CORS `*` rationale (security relies on auth tokens + 127.0.0.1 binding)
+- S5-1 (HIGH): Fixed XSS in options page - replaced innerHTML with textContent for server data
+- S5-3 (MEDIUM): Fixed XSS in sidebar settings - replaced innerHTML with createElement
+- S5-4 (MEDIUM): Fixed WebSocket token extraction - was reading wrong header key
+- Q1-2 (LOW): Fixed duplicate `transitions` key in visualize-flow.js
+- Q1-3 (LOW): Fixed duplicate `issues` key in analyze-journey.js
+
+### Low-Priority Cleanup (M13.5, M13.7)
 - M13.5: `collectMediaQueries()` extracts `@media` rules from stylesheets, reports active/inactive
 - M13.7: Animation collector now reports running/paused/pending counts
 - `mediaQueries` added to capture enrichment, serializer, parser, and page summary

@@ -504,7 +504,19 @@ export function create() {
     autoInfo.style.fontStyle = 'normal';
     const valStyle = 'color:#93c5fd;font-family:SF Mono,Cascadia Code,monospace;font-size:10px;word-break:break-all';
     const lblStyle = 'color:#666;font-size:10px;margin-bottom:1px';
-    autoInfo.innerHTML = `<div style="${lblStyle}">Root</div><div style="${valStyle};margin-bottom:6px">${data.projectRoot}</div><div style="${lblStyle}">Captures</div><div style="${valStyle}">${data.capturesDir}</div>`;
+    const items = [
+      { label: 'Root', value: data.projectRoot },
+      { label: 'Captures', value: data.capturesDir },
+    ];
+    for (const item of items) {
+      const lbl = document.createElement('div');
+      Object.assign(lbl.style, { color: '#666', fontSize: '10px', marginBottom: '1px' });
+      lbl.textContent = item.label;
+      const val = document.createElement('div');
+      Object.assign(val.style, { color: '#93c5fd', fontFamily: 'SF Mono,Cascadia Code,monospace', fontSize: '10px', wordBreak: 'break-all', marginBottom: '6px' });
+      val.textContent = item.value;
+      autoInfo.append(lbl, val);
+    }
   }
 
   const advLink = document.createElement('button');
@@ -1267,8 +1279,8 @@ export function create() {
   (async () => {
     const serverUrl = await discoverServer();
     if (!serverUrl) return;
-    const hdrs = await authHeaders();
-    const token = hdrs?.['X-ViewGraph-Token'] || '';
+    const hdrs = authHeaders();
+    const token = hdrs?.Authorization?.replace('Bearer ', '') || '';
     wsConnect({
       url: serverUrl,
       token,
