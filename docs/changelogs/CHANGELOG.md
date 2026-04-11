@@ -33,6 +33,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Component Tree Mapping (R1/M12.3)
 
 ### Cross-Page Consistency Checker (R4/M15.3)
+
+### axe-core Integration (R2)
+- New `axe-collector.js`: runs axe-core scan (100+ WCAG rules) during capture
+- Scans wcag2a, wcag2aa, wcag21a, wcag21aa, and best-practice rules
+- Results capped at 50 violations / 5 nodes each for capture size control
+- Included in capture JSON as `axe` enrichment section
+- `audit_accessibility` MCP tool now includes axe results when available in capture
+- Graceful fallback: if axe-core fails, ViewGraph's 6 built-in rules still run
+- Extension bundle size: 261KB -> 835KB (axe-core is ~300KB minified)
+- 7 new extension tests
+
+### Cross-Page Consistency Checker (R4/M15.3)
 - New `consistency-checker.js`: matches elements across captures by testid, role+class, or tag+class
 - Compares 10 style properties (font-size, padding, color, border-radius, etc.) for design system drift
 - New MCP tool: `check_consistency` - takes 2-10 capture filenames, reports style inconsistencies

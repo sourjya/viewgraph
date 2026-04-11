@@ -25,7 +25,8 @@ export function register(server, _indexer, capturesDir) {
     'audit_accessibility',
     `Audit a ${PROJECT_NAME} capture for accessibility issues. ` +
     'Checks for: missing aria-labels, missing alt text, unlabeled form inputs, ' +
-    'buttons without accessible names. Returns issues grouped by severity.',
+    'buttons without accessible names, insufficient contrast ratios. ' +
+    'Includes axe-core results (100+ WCAG rules) when available in the capture.',
     {
       filename: z.string().describe('Capture filename'),
     },
@@ -51,6 +52,18 @@ export function register(server, _indexer, capturesDir) {
           warnings: allIssues.filter((i) => i.severity === 'warning'),
           total: allIssues.length,
         };
+
+        // Include axe-core results when available in the capture
+        if (result.data.axe?.violations) {
+          grouped.axe = {
+            violations: result.data.axe.violations,
+            passes: result.data.axe.passes,
+            incomplete: result.data.axe.incomplete,
+            source: 'axe-core (captured at scan time)',
+          };
+          grouped.total += result.data.axe.violations.length;
+        }
+
         return { content: [{ type: 'text', text: JSON.stringify(grouped, null, 2) }] };
       } catch (err) {
         if (err.code === 'ENOENT') return { content: [{ type: 'text', text: `Error: Capture not found: ${filename}` }], isError: true };
