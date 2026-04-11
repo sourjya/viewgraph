@@ -45,6 +45,7 @@ import { discoverServer, authHeaders, getAgentName } from './constants.js';
 import { collectNetworkState } from './network-collector.js';
 import { getConsoleState } from './console-collector.js';
 import { collectBreakpoints } from './breakpoint-collector.js';
+import { collectStackingContexts } from './stacking-collector.js';
 import { checkRendered } from './visibility-collector.js';
 import { startWatcher, stopWatcher, isWatcherEnabled } from './continuous-capture.js';
 
@@ -359,7 +360,7 @@ export function create() {
   copyBtn.addEventListener('mouseleave', () => { copyBtn.style.background = 'transparent'; });
   copyBtn.addEventListener('click', () => {
     const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString(), viewport: { width: window.innerWidth, height: window.innerHeight }, browser: navigator.userAgent.match(/Chrome\/[\d.]+|Firefox\/[\d.]+/)?.[0] || 'Unknown' };
-    const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints() };
+    const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts() };
     const md = formatMarkdown(getAnnotations(), meta, { enrichment });
     navigator.clipboard.writeText(md).then(() => {
       copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
@@ -822,6 +823,24 @@ export function create() {
         visBody.appendChild(row);
       }
       inspectContent.appendChild(visSection);
+    }
+
+    // Stacking context issues (only shown when conflicts detected)
+    const stacking = collectStackingContexts();
+    if (stacking.issues.length > 0) {
+      const { section: stackSection, body: stackBody } = createSection('Stacking', `\u26a0 ${stacking.issues.length}`, '#f59e0b');
+      for (const issue of stacking.issues) {
+        const row = document.createElement('div');
+        Object.assign(row.style, { padding: '3px 0', fontSize: '10px', color: '#f59e0b' });
+        row.textContent = issue.message;
+        stackBody.appendChild(row);
+      }
+      // Context count as subtle info
+      const ctxInfo = document.createElement('div');
+      ctxInfo.textContent = `${stacking.contexts.length} stacking contexts on page`;
+      Object.assign(ctxInfo.style, { color: '#444', fontSize: '9px', marginTop: '4px', fontStyle: 'italic' });
+      stackBody.appendChild(ctxInfo);
+      inspectContent.appendChild(stackSection);
     }
 
     // Visual separator between diagnostics and capture sections

@@ -187,10 +187,11 @@ export function serialize(elements, relations, enrichment = {}) {
     details: buildDetails(elements),
   };
 
-  // Optional enrichment sections (M12.1, M12.2, M12.6)
+  // Optional enrichment sections (M12.1, M12.2, M12.6, M13.1)
   if (enrichment.network) capture.network = enrichment.network;
   if (enrichment.console) capture.console = enrichment.console;
   if (enrichment.breakpoints) capture.breakpoints = enrichment.breakpoints;
+  if (enrichment.stacking) capture.stacking = enrichment.stacking;
 
   // Update capture size estimate
   const jsonStr = JSON.stringify(capture);
