@@ -54,6 +54,8 @@ import { register as registerCompareScreenshots } from '#src/tools/compare-scree
 import { register as registerDiffAnnotations } from '#src/tools/diff-annotations.js';
 import { register as registerDetectRecurring } from '#src/tools/detect-recurring-issues.js';
 import { register as registerVisualizeFlow } from '#src/tools/visualize-flow.js';
+import { register as registerGenerateSpec } from '#src/tools/generate-spec.js';
+import { register as registerAnalyzePatterns } from '#src/tools/analyze-patterns.js';
 import { createRequestQueue } from '#src/request-queue.js';
 import { createHttpReceiver } from '#src/http-receiver.js';
 
@@ -108,6 +110,8 @@ registerCompareScreenshots(server, indexer, CAPTURES_DIR);
 registerDiffAnnotations(server, indexer, CAPTURES_DIR);
 registerDetectRecurring(server, indexer, CAPTURES_DIR);
 registerVisualizeFlow(server, indexer, CAPTURES_DIR);
+registerGenerateSpec(server, indexer, CAPTURES_DIR);
+registerAnalyzePatterns(server, indexer, CAPTURES_DIR);
 
 // ---------------------------------------------------------------------------
 // File indexing  -  parse metadata from a capture file and add to index
