@@ -896,28 +896,42 @@ export function create() {
     row.append(label, info, dot);
     container.appendChild(row);
 
-    // Copy ID chip - click to copy latest capture filename
-    const copyRow = document.createElement('div');
-    Object.assign(copyRow.style, { padding: '0 0 2px' });
+    // Capture ID row: filename + copy button, and page title
+    const idRow = document.createElement('div');
+    idRow.setAttribute(ATTR, 'capture-id-row');
+    Object.assign(idRow.style, { display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 0' });
+    const idText = document.createElement('span');
+    idText.textContent = latest.filename.replace(/\.json$/, '');
+    idText.setAttribute(ATTR, 'capture-id');
+    Object.assign(idText.style, { color: '#6366f1', fontSize: '9px', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1' });
     const copyBtn = document.createElement('button');
     copyBtn.setAttribute(ATTR, 'copy-id');
-    const shortName = latest.filename.replace(/\.json$/, '');
-    copyBtn.textContent = shortName;
-    copyBtn.title = 'Click to copy filename';
+    copyBtn.textContent = '\u2398';
+    copyBtn.title = 'Copy capture ID';
     Object.assign(copyBtn.style, {
-      border: 'none', background: '#1a1a2e', color: '#6366f1', fontSize: '9px',
-      fontFamily: 'monospace', padding: '1px 6px', borderRadius: '3px',
-      cursor: 'pointer', transition: 'color 0.15s',
+      border: 'none', background: '#1a1a2e', color: '#666', fontSize: '11px',
+      padding: '0 4px', borderRadius: '3px', cursor: 'pointer', flexShrink: '0',
+      lineHeight: '1', transition: 'color 0.15s',
     });
+    copyBtn.addEventListener('mouseenter', () => { copyBtn.style.color = '#a5b4fc'; });
+    copyBtn.addEventListener('mouseleave', () => { copyBtn.style.color = '#666'; });
     copyBtn.addEventListener('click', () => {
       navigator.clipboard.writeText(latest.filename).then(() => {
-        copyBtn.textContent = 'Copied!';
+        copyBtn.textContent = '\u2713';
         copyBtn.style.color = '#4ade80';
-        setTimeout(() => { copyBtn.textContent = shortName; copyBtn.style.color = '#6366f1'; }, 1500);
+        setTimeout(() => { copyBtn.textContent = '\u2398'; copyBtn.style.color = '#666'; }, 1500);
       }).catch(() => { /* clipboard not available */ });
     });
-    copyRow.appendChild(copyBtn);
-    container.appendChild(copyRow);
+    idRow.append(idText, copyBtn);
+    container.appendChild(idRow);
+    // Page title (if available)
+    if (latest.title) {
+      const titleEl = document.createElement('div');
+      titleEl.setAttribute(ATTR, 'capture-title');
+      titleEl.textContent = latest.title;
+      Object.assign(titleEl.style, { color: '#555', fontSize: '10px', padding: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
+      container.appendChild(titleEl);
+    }
 
     // Warning if latest capture is empty
     if ((latest.nodeCount || 0) === 0) {

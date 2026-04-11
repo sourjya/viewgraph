@@ -284,7 +284,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       const params = new URL(url, 'http://localhost').searchParams;
       const urlFilter = params.get('url') || undefined;
       const list = indexer.list(urlFilter).slice(0, 20).map((e) => ({
-        filename: e.filename, url: e.url, timestamp: e.timestamp, nodeCount: e.nodeCount,
+        filename: e.filename, url: e.url, title: e.title, timestamp: e.timestamp, nodeCount: e.nodeCount,
       }));
       return json(res, 200, { captures: list });
     }

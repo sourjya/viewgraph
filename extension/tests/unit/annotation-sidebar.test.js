@@ -548,7 +548,7 @@ describe('inspect tab captures section', () => {
     expect(ic.textContent).not.toContain('SNAPSHOTS');
   });
 
-  it('(+) copy-id button shows capture filename', async () => {
+  it('(+) capture ID shown with filename', async () => {
     const now = Date.now();
     globalThis.fetch = mockFetchWith([
       { filename: 'viewgraph-localhost-20260408-120612.json', timestamp: new Date(now - 30000).toISOString(), nodeCount: 80 },
@@ -558,19 +558,49 @@ describe('inspect tab captures section', () => {
     clickInspectTab();
     const ic = getInspectContent();
     await vi.waitFor(() => {
-      const btn = ic.querySelector(`[${ATTR}="copy-id"]`);
-      expect(btn).toBeTruthy();
+      const id = ic.querySelector(`[${ATTR}="capture-id"]`);
+      expect(id).toBeTruthy();
     });
-    const btn = ic.querySelector(`[${ATTR}="copy-id"]`);
-    expect(btn.textContent).toBe('viewgraph-localhost-20260408-120612');
+    const id = ic.querySelector(`[${ATTR}="capture-id"]`);
+    expect(id.textContent).toBe('viewgraph-localhost-20260408-120612');
   });
 
-  it('(+) clicking copy-id copies filename and shows confirmation', async () => {
+  it('(+) page title shown when available', async () => {
+    const now = Date.now();
+    globalThis.fetch = mockFetchWith([
+      { filename: 'cap-1.json', timestamp: new Date(now - 30000).toISOString(), nodeCount: 80, title: 'My App - Dashboard' },
+    ]);
+    start();
+    create();
+    clickInspectTab();
+    const ic = getInspectContent();
+    await vi.waitFor(() => {
+      const title = ic.querySelector(`[${ATTR}="capture-title"]`);
+      expect(title).toBeTruthy();
+    });
+    expect(ic.querySelector(`[${ATTR}="capture-title"]`).textContent).toBe('My App - Dashboard');
+  });
+
+  it('(-) no title row when title is absent', async () => {
+    const now = Date.now();
+    globalThis.fetch = mockFetchWith([
+      { filename: 'cap-1.json', timestamp: new Date(now - 30000).toISOString(), nodeCount: 80 },
+    ]);
+    start();
+    create();
+    clickInspectTab();
+    const ic = getInspectContent();
+    await vi.waitFor(() => {
+      expect(ic.querySelector(`[${ATTR}="capture-id"]`)).toBeTruthy();
+    });
+    expect(ic.querySelector(`[${ATTR}="capture-title"]`)).toBeNull();
+  });
+
+  it('(+) copy button copies filename and shows checkmark', async () => {
     const now = Date.now();
     globalThis.fetch = mockFetchWith([
       { filename: 'viewgraph-localhost-20260408-120612.json', timestamp: new Date(now - 30000).toISOString(), nodeCount: 80 },
     ]);
-    // Mock clipboard
     let copied = null;
     navigator.clipboard = { writeText: vi.fn((t) => { copied = t; return Promise.resolve(); }) };
     start();
@@ -583,7 +613,7 @@ describe('inspect tab captures section', () => {
     const btn = ic.querySelector(`[${ATTR}="copy-id"]`);
     btn.click();
     await vi.waitFor(() => {
-      expect(btn.textContent).toBe('Copied!');
+      expect(btn.textContent).toBe('\u2713');
     });
     expect(copied).toBe('viewgraph-localhost-20260408-120612.json');
     delete navigator.clipboard;
