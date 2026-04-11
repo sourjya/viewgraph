@@ -12,15 +12,15 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 
 ## Components
 
-| Component | Description | Status |
-|---|---|---|
-| [`server/`](./server/) | MCP server - 34 query/analysis/request tools, WebSocket collab, baselines | Complete |
-| [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, annotate, 12 enrichment collectors, multi-export | Complete |
-| [`power/`](./power/) | Kiro Power assets - 3 hooks, 7 prompts, 3 steering docs, MCP config | Complete |
+| Component | Description |
+|---|---|
+| [`server/`](./server/) | MCP server - 34 query/analysis/request tools, WebSocket collab, baselines |
+| [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, annotate, 14 enrichment collectors, multi-export |
+| [`power/`](./power/) | Kiro Power assets - 3 hooks, 7 prompts, 3 steering docs, MCP config |
 
 ## How It Works
 
-ViewGraph is a standalone tool that runs alongside your project - it doesn't embed into your codebase or require any changes to your application. It works with any web app regardless of the backend technology (Python, Ruby, Java, Go, PHP, etc.).
+ViewGraph runs alongside your project as a standalone tool. It does not embed into your codebase or require changes to your application. It works with any web app regardless of backend technology (Python, Ruby, Java, Go, PHP, etc.).
 
 ```
 Your app (any language) --> serves HTML --> Chrome renders it --> Extension captures DOM
@@ -29,35 +29,7 @@ Your app (any language) --> serves HTML --> Chrome renders it --> Extension capt
 Kiro / Claude / Cursor  <-- MCP protocol <-- ViewGraph server <-- .viewgraph.json files
 ```
 
-**What you need on your machine:**
-
-| Component | Purpose |
-|---|---|
-| Node.js 18+ | Runs the ViewGraph MCP server (not part of your project) |
-| Chrome 116+ | Runs the ViewGraph browser extension |
-| Your language runtime | Runs your actual application (Python, Node, etc.) |
-
-**Setup for any project:**
-
-1. Install ViewGraph once (clone this repo, `npm install`) - this is the only place Node.js is needed
-2. Install the browser extension in Chrome (build with `npm run build:ext`, load unpacked)
-3. Run `node /path/to/viewgraph/scripts/viewgraph-init.js` from your project root - auto-detects your AI agent, writes MCP config, and starts the server
-4. Open your app in Chrome, annotate, and send - captures route to the right project folder
-5. Your AI agent queries captures via MCP tools - reads the JSON files, doesn't care what backend generated the HTML
-
-The ViewGraph server never touches your application code. It only reads `.viewgraph.json` capture files. Your project just needs a small MCP config file pointing to the ViewGraph server:
-
-```json
-{
-  "mcpServers": {
-    "viewgraph": {
-      "command": "node",
-      "args": ["/path/to/viewgraph/server/index.js"],
-      "env": { "VIEWGRAPH_CAPTURES_DIR": ".viewgraph/captures" }
-    }
-  }
-}
-```
+The extension captures the DOM. The server reads those capture files and exposes them to your AI agent via MCP. Your agent never touches your app directly - it reads the structured capture data.
 
 ## Getting Started
 
@@ -65,21 +37,13 @@ The ViewGraph server never touches your application code. It only reads `.viewgr
 
 | Requirement | Minimum Version | Notes |
 |---|---|---|
-| Node.js | 18.0.0+ (LTS) | Required for ES modules and MCP SDK |
+| Node.js | 18.0.0+ (LTS) | Runs the ViewGraph server and builds the extension |
 | npm | 9.0.0+ | Workspaces support required |
-| Chrome | 116+ | Manifest V3 service worker support |
-| Firefox | 109+ | Manifest V3 support (build with `--browser firefox`) |
+| Chrome | 116+ | Required for the browser extension (Manifest V3) |
 
-### Key Dependencies
+> **Firefox:** supported but not recommended for development. Build with `npm run build:ext -- --browser firefox` from the ViewGraph root. See [extension/README.md](./extension/) for details.
 
-| Package | Version | Used In |
-|---|---|---|
-| `@modelcontextprotocol/sdk` | ^1.29.0 | Server - MCP protocol |
-| `zod` | ^3.x | Server - input validation |
-| `wxt` | ^0.20.20 | Extension - build framework |
-| `vitest` | ^4.1.3 | Both - test runner |
-
-### 1. Clone and install
+### Step 1: Clone and install ViewGraph
 
 ```bash
 git clone https://github.com/sourjya/viewgraph.git
@@ -87,73 +51,83 @@ cd viewgraph
 npm install
 ```
 
-This installs dependencies for both the server and extension workspaces.
+This installs dependencies for both the server and extension via npm workspaces. You only need Node.js here - your actual project can use any language.
 
-### 2. Build the extension
+### Step 2: Build and load the browser extension
+
+Build the extension:
 
 ```bash
 npm run build:ext
 ```
 
-The built extension is output to `extension/.output/chrome-mv3/`.
+Then load it into Chrome:
 
-### 3. Load the extension in Chrome
-
-1. Open `chrome://extensions/` in Chrome
-2. Enable **Developer mode** (toggle in top-right)
+1. Open `chrome://extensions/`
+2. Enable **Developer mode** (toggle in top-right corner)
 3. Click **Load unpacked**
-4. Select the folder: `<your-path>/viewgraph/extension/.output/chrome-mv3`
-5. The ViewGraph icon appears in your toolbar
+4. Select: `<your-viewgraph-path>/extension/.output/chrome-mv3`
+5. The ViewGraph icon appears in your Chrome toolbar
 
-### 4. Initialize in your project
+### Step 3: Initialize ViewGraph in your project
 
-From your project root (not the ViewGraph directory):
+Open a terminal in **your project's root directory** (not the ViewGraph directory) and run:
 
 ```bash
 node /path/to/viewgraph/scripts/viewgraph-init.js
 ```
 
-This auto-detects your AI agent, writes MCP config, creates `.viewgraph/captures/`, installs Power assets (Kiro steering docs + hooks), kills any stale server, and starts a fresh detached server. The server auto-generates an auth token (written to `.viewgraph/.token`) - the extension picks it up automatically via the `/info` endpoint. No manual config needed.
+The init script does the following automatically:
+- Detects your AI agent (Kiro, Claude Code, Cursor, etc.) and writes the appropriate MCP config file
+- Creates `.viewgraph/captures/` for storing capture files
+- Generates an auth token at `.viewgraph/.token` for secure extension-to-server communication
+- Installs Kiro Power assets (hooks, prompts, steering docs) if using Kiro
+- Starts the MCP server as a background process
 
-The extension sidebar shows a green dot when connected and auto-detects the project mapping via the server's `/info` endpoint.
+**How to verify it worked:** The extension sidebar shows a green dot when connected to the server. Click the ViewGraph toolbar icon on any page to check.
 
-For subsequent sessions, start the server directly:
+### Step 4: Capture and annotate
+
+1. Navigate to your app in Chrome
+2. Click the **ViewGraph** toolbar icon - annotate mode activates
+3. The sidebar opens with two tabs: **Review** (annotations) and **Inspect** (diagnostics)
+
+**Annotating:**
+- **Click** any element to select it and add a comment
+- **Shift+drag** to select a region
+- **Scroll wheel** while hovering to navigate up/down the DOM tree
+- Set **severity** and **category** on each annotation via the floating panel
+
+**Exporting:**
+- **Send to Agent** - pushes annotations + full DOM capture to your AI agent via MCP
+- **Copy MD** - copies a markdown bug report to clipboard (includes network/console data)
+- **Report** - downloads a ZIP with markdown, screenshots, network.json, and console.json
+
+Captures are saved to `.viewgraph/captures/` in your project and pushed to the MCP server automatically.
+
+### Step 5: Let your AI agent act on captures
+
+Your AI agent can now query captures through MCP. You don't call these tools directly - your agent does. Example prompts you'd give your agent:
+
+```
+"Audit the latest capture for accessibility issues"
+"Find all buttons missing data-testid"
+"Fix the annotations from my last review"
+```
+
+Behind the scenes, the agent calls tools like `audit_accessibility`, `find_missing_testids`, and `get_annotations`.
+
+### Starting the server in subsequent sessions
+
+The init script starts the server automatically on first run. For later sessions:
 
 ```bash
-npm run dev:server
+npm run dev:server       # run from the ViewGraph directory
 ```
 
-### 5. Capture a page
+Or re-run the init script from your project - it kills any stale server and starts a fresh one.
 
-1. Navigate to any web page in Chrome
-2. Click the **ViewGraph** icon in the toolbar - annotate mode activates directly
-3. The sidebar opens with two tabs: **Review** (annotations) and **Inspect** (page diagnostics)
-4. **Click** any element to select it and add a comment
-5. **Shift+drag** to select a region and add a comment
-6. **Scroll wheel** to navigate up/down the DOM tree while hovering
-7. Set **severity** and **category** on each annotation via the floating panel
-8. Use the sidebar to filter (All/Open/Resolved), resolve, or delete annotations
-9. Switch to the **Inspect** tab to see network requests, console errors, breakpoint info, and visibility warnings
-10. Export:
-    - **Send to Agent** - push annotations with full DOM context + enrichment data to your AI agent
-    - **Copy MD** - copy a markdown bug report to clipboard (includes environment section with network/console data)
-    - **Report** - download a ZIP with markdown, cropped screenshots, network.json, and console.json
-11. **Page Note** adds a page-level comment (labeled P1, P2, etc. - separate from element numbering)
-
-Captures are saved to `.viewgraph/captures/` and pushed to the MCP server automatically.
-
-### 6. Query captures via MCP
-
-Your AI agent can now use ViewGraph tools:
-
-```
-> list_captures
-> get_page_summary filename="viewgraph-localhost-20260408-120612.json"
-> audit_accessibility filename="viewgraph-localhost-20260408-120612.json"
-> find_missing_testids filename="viewgraph-localhost-20260408-120612.json"
-```
-
-### 7. Try the demo
+### Try the demo
 
 Open [`docs/demo/index.html`](./docs/demo/) in Chrome - a styled login page with 8 planted UI bugs. Annotate the issues, send to Kiro, and watch them get fixed. See the [demo walkthrough](./docs/demo/README.md) for step-by-step instructions.
 
@@ -161,43 +135,41 @@ Open [`docs/demo/index.html`](./docs/demo/) in Chrome - a styled login page with
 
 ### For developers with AI agents
 
-1. Open your app in Chrome, click the **ViewGraph** icon to enter annotate mode
+1. Open your app in Chrome, click the **ViewGraph** icon
 2. Click elements or shift+drag regions, add comments describing what to fix
-3. Check the **Inspect** tab for network errors or console issues related to the bug
+3. Check the **Inspect** tab for network errors or console issues
 4. Click **Send to Agent** - annotations bundle with the full DOM capture + enrichment data
-5. In your AI agent, ask about the annotations - it has full DOM context to implement fixes
+5. Ask your agent to fix the issues - it has full DOM context
 
-### For testers and reviewers
+### For testers and reviewers (no AI agent needed)
 
-ViewGraph works without an AI agent. Testers annotate the UI the same way, then export their notes:
+The extension works standalone. No MCP server required.
 
 1. Open the app in Chrome, click the **ViewGraph** icon
 2. Click or shift+drag to select problem areas, add comments
-3. Export your review:
-   - **Copy Markdown** - copies a structured bug report to clipboard (includes environment data: network failures, console errors, viewport breakpoint), paste into Jira/Linear/GitHub
-   - **Download Report** - saves a ZIP with markdown report, cropped screenshots, network.json, and console.json
-
-No MCP server needed. No AI agent needed. The extension works standalone for anyone who needs to document UI issues.
+3. Export:
+   - **Copy Markdown** - paste into Jira/Linear/GitHub (includes network failures, console errors, viewport breakpoint)
+   - **Download Report** - ZIP with markdown, screenshots, network.json, console.json
 
 ### For teams
 
-A tester annotates and exports to markdown. A developer annotates and sends to Kiro. Both use the same tool, same workflow, same annotation format. The only difference is where the notes go.
+A tester annotates and exports to markdown. A developer annotates and sends to Kiro. Same tool, same workflow, same format - the only difference is where the notes go.
 
 ## Kiro Power: Hooks and Prompts
 
 When you run `viewgraph-init.js` in a Kiro project, ViewGraph installs hooks, prompts, and steering docs that automate common workflows. These work in both Kiro IDE and Kiro CLI.
 
-### Hooks
+### Hooks (installed automatically by init script)
 
 | Hook | Trigger | What it does |
 |---|---|---|
-| **Capture and Audit Page** | Manual (IDE sidebar) or `@vg-audit` (CLI) | Captures the current page, runs a11y audit, checks for missing testids and aria-labels. Summarizes all issues by severity. |
+| **Capture and Audit Page** | Manual (IDE sidebar) or `@vg-audit` (CLI) | Captures the current page, runs a11y audit, checks for missing testids. Summarizes all issues by severity. |
 | **Fix ViewGraph Annotations** | Manual (IDE sidebar) or `@vg-review` (CLI) | Pulls unresolved annotations, maps them to source files, implements fixes in sequence, marks each resolved. |
 | **Check TestID Coverage** | Auto on UI file edit | When you edit `.html`, `.jsx`, `.tsx`, `.vue`, `.svelte`, or `.css` files, checks if interactive elements in recent captures are missing `data-testid`. |
 
-**In Kiro IDE:** Trigger manual hooks from the **Agent Hooks** section in the sidebar. The annotation hook is the most powerful - annotate issues in the browser, click the hook, and Kiro fixes them all in sequence.
+### CLI prompt shortcuts
 
-**In Kiro CLI:** Use the `@vg-` prompt shortcuts (type `@vg` then Tab to see all):
+In Kiro CLI, type `@vg` then Tab to see all shortcuts:
 
 | Shortcut | Workflow |
 |---|---|
@@ -208,15 +180,13 @@ When you run `viewgraph-init.js` in a Kiro project, ViewGraph installs hooks, pr
 | `@vg-testids` | Find and add missing data-testid attributes |
 | `@vg-a11y` | Deep a11y audit with automatic source fixes |
 
-### Steering docs
-
-Installed to `.kiro/steering/` - these guide the agent on when to use captures, how to resolve annotations, and the expected resolution format.
-
 ### Other agents
 
-ViewGraph works with any MCP-compatible agent today via the standard MCP protocol. Dedicated Power packages (steering docs, hooks, prompt shortcuts) for Claude Code, Cursor, Windsurf, and Cline are coming soon.
+ViewGraph works with any MCP-compatible agent via the standard MCP protocol. The tools are the same regardless of agent. Dedicated Power packages (steering docs, hooks) for Claude Code, Cursor, Windsurf, and Cline are coming soon.
 
 ## MCP Tools (34)
+
+These tools are called by your AI agent, not by you directly. The agent discovers them automatically via the MCP protocol.
 
 ### Core (4 tools)
 
@@ -287,16 +257,23 @@ ViewGraph works with any MCP-compatible agent today via the standard MCP protoco
 | `compare_screenshots` | Pixel-by-pixel screenshot comparison |
 | `validate_capture` | Check capture for quality issues (empty pages, missing data) |
 
+## Troubleshooting
+
+| Problem | Solution |
+|---|---|
+| Extension icon doesn't appear | Check `chrome://extensions/` - is it enabled? Is Developer mode on? |
+| Sidebar shows no green dot | Server isn't running. Run `npm run dev:server` from the ViewGraph directory, or re-run the init script from your project. |
+| "Send to Agent" does nothing | Check the sidebar connection status. The server must be running and the auth token must match. |
+| Captures not appearing in agent | Verify `.viewgraph/captures/` exists in your project and the MCP config points to the right path. Run `node scripts/viewgraph-status.js` from the ViewGraph directory for a full health check. |
+| Firefox extension won't load | Firefox requires a signed extension or `about:config` > `xpinstall.signatures.required` = false. For development, use Chrome. |
+
 ## Development
+
+All commands run from the ViewGraph root directory:
 
 ```bash
 npm run dev:server     # start MCP server with file watcher
 npm run dev:ext        # start extension dev server (Chrome HMR)
-```
-
-## Testing
-
-```bash
 npm test               # all tests (923 tests)
 npm run test:server    # server only (324 tests)
 npm run test:ext       # extension only (599 tests)
@@ -308,7 +285,7 @@ npm run test:ext       # extension only (599 tests)
 server/          MCP server (Node.js, @modelcontextprotocol/sdk)
   src/
     tools/       34 MCP tool handlers
-    analysis/    12 analysis modules (a11y, layout, diff, fidelity, source linking, etc.)
+    analysis/    14 analysis modules (a11y, layout, diff, fidelity, source linking, etc.)
     parsers/     ViewGraph v2 JSON parser
     utils/       Path validation, tool helpers
 extension/       Browser extension (WXT, Manifest V3)

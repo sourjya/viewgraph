@@ -1,13 +1,15 @@
 # ViewGraph Power Assets
 
-Kiro-specific assets installed into user projects by `viewgraph-init.js`.
+Kiro-specific assets that get installed into your project by `viewgraph-init.js`.
 These enhance the AI agent's ability to work with ViewGraph captures.
+
+You don't need to install these manually - the init script handles it. This README documents what gets installed and how it works.
 
 ## What Gets Installed
 
-### For Kiro IDE
+### Hooks (3)
 
-Three hooks appear in the **Agent Hooks** section of the Kiro sidebar:
+These appear in the **Agent Hooks** section of the Kiro IDE sidebar, or can be triggered via CLI prompts:
 
 | Hook | Trigger | What it does |
 |---|---|---|
@@ -17,9 +19,9 @@ Three hooks appear in the **Agent Hooks** section of the Kiro sidebar:
 
 The annotation hook is the most powerful workflow: annotate issues in the browser, click the hook in the sidebar, and Kiro fixes them all in sequence.
 
-### For Kiro CLI
+### CLI Prompt Shortcuts (7)
 
-Type `@vg` then Tab to see all prompt shortcuts:
+In Kiro CLI, type `@vg` then Tab to see all shortcuts:
 
 | Shortcut | Workflow |
 |---|---|
@@ -29,26 +31,30 @@ Type `@vg` then Tab to see all prompt shortcuts:
 | `@vg-diff` | Compare two most recent captures |
 | `@vg-testids` | Find and add missing data-testid attributes |
 | `@vg-a11y` | Deep a11y audit with automatic source fixes |
-
-### Assets Installed
+| `@vg-help` | ViewGraph usage guide and tool reference |
 
 ### Steering Docs (`.kiro/steering/`)
+
+These guide the agent on when and how to use ViewGraph:
 
 | File | Purpose |
 |---|---|
 | `viewgraph-workflow.md` | When and how to use captures, annotations, and audits |
 | `viewgraph-resolution.md` | How to resolve annotations (action types, summary format) |
+| `viewgraph-hostile-dom.md` | How to handle degraded, empty, or broken captures |
 
 ### Hook Scripts (`.kiro/hooks/`)
 
+These fire automatically during agent workflows:
+
 | File | Trigger | Purpose |
 |---|---|---|
-| `vg-context.sh` | agentSpawn | Injects capture count and latest filename on agent start |
-| `vg-post-fix.sh` | postToolUse (fs_write) | Reminds agent to verify after editing UI files |
-| `vg-fix-annotations.sh` | postToolUse (get_annotations) | Guides agent through annotation resolution workflow |
-| `vg-check-testids.sh` | postToolUse (find_missing_testids) | Guides agent to add suggested testids to source code |
+| `vg-context.sh` | Agent starts | Injects capture count and latest filename into agent context |
+| `vg-post-fix.sh` | After file write | Reminds agent to verify after editing UI files |
+| `vg-fix-annotations.sh` | After get_annotations | Guides agent through annotation resolution workflow |
+| `vg-check-testids.sh` | After find_missing_testids | Guides agent to add suggested testids to source code |
 
-### Prompts (`.kiro/prompts/`)
+### Prompt Files (`.kiro/prompts/`)
 
 | Prompt | Usage | Purpose |
 |---|---|---|
@@ -60,9 +66,19 @@ Type `@vg` then Tab to see all prompt shortcuts:
 | `vg-a11y` | `@vg-a11y` | Deep a11y audit with source code fixes |
 | `vg-help` | `@vg-help` | ViewGraph usage guide and tool reference |
 
-## Hook Integration
+## Install / Update
 
-To activate the hooks, add them to your Kiro agent config (`.kiro/agents/your-agent.json`):
+Run from your project root:
+
+```bash
+node /path/to/viewgraph/scripts/viewgraph-init.js
+```
+
+The init script copies assets only if they don't already exist, so it won't overwrite your customizations. To force-update, delete the files first and re-run.
+
+## Advanced: Manual Hook Configuration
+
+The init script registers hooks automatically. If you need to customize the hook configuration (e.g., change triggers or add conditions), edit `.kiro/agents/your-agent.json`:
 
 ```json
 {
@@ -93,13 +109,3 @@ To activate the hooks, add them to your Kiro agent config (`.kiro/agents/your-ag
   }
 }
 ```
-
-## Install / Update
-
-Run from your project root:
-
-```bash
-node /path/to/viewgraph/scripts/viewgraph-init.js
-```
-
-Assets are only copied if they don't already exist (won't overwrite customizations).
