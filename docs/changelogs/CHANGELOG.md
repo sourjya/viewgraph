@@ -57,6 +57,29 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### User Journey Recording (M14.2)
 
 ### Element Flash on Select (M10.1)
+
+### CSS Animation State (M12.5)
+- New `animation-collector.js`: detects active CSS animations/transitions via Web Animations API
+- Reports animation name, play state, progress, and duration per element
+- Included in capture as `animations` enrichment section
+- `get_page_summary` includes `animatingElements` count
+- 4 new extension tests
+
+### Intersection State (M13.8)
+- New `intersection-collector.js`: checks viewport visibility of interactive elements
+- Reports visible, partially visible, and offscreen element counts
+- Details for non-visible elements (selector, rect, state)
+- Included in capture as `intersection` enrichment section
+- `get_page_summary` includes `offscreenElements` count
+- 5 new extension tests
+
+### Intent-Based Subtree Capture (M14.4)
+- New `subtree-capture.js`: captures focused DOM subtree with full computed styles
+- All styles, attributes, and interactivity flags per element
+- Respects maxDepth limit for deep trees
+- 6 new extension tests
+
+### Element Flash on Select (M10.1)
 - New `element-flash.js`: brief highlight pulse on elements after selection
 - CSS animation overlay positioned over target element, fades out in 400ms
 - Integrated into annotate mode element click handler

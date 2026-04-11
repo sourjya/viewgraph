@@ -103,6 +103,8 @@ export function parseCapture(jsonString) {
       axe: raw.axe ?? null,
       eventListeners: raw.eventListeners ?? null,
       performance: raw.performance ?? null,
+      animations: raw.animations ?? null,
+      intersection: raw.intersection ?? null,
     },
   };
 }
@@ -153,6 +155,8 @@ export function parseSummary(jsonString) {
       suspiciousClickables: raw.eventListeners?.suspicious?.length ?? 0,
       pageLoadMs: raw.performance?.navigation?.loadEvent ?? null,
       slowResources: raw.performance?.resources?.slowResources?.length ?? 0,
+      animatingElements: raw.animations?.count ?? 0,
+      offscreenElements: raw.intersection?.offscreen ?? 0,
     },
   };
 }

@@ -31,6 +31,8 @@ import { collectLandmarks } from './landmark-collector.js';
 import { collectComponents } from './component-collector.js';
 import { collectEventListeners } from './event-listener-collector.js';
 import { collectPerformance } from './performance-collector.js';
+import { collectAnimations } from './animation-collector.js';
+import { collectIntersectionState } from './intersection-collector.js';
 
 let watcher = null;
 let previousCapture = null;
@@ -101,6 +103,8 @@ function buildCapture(event) {
     components: collectComponents(),
     eventListeners: collectEventListeners(),
     performance: collectPerformance(),
+    animations: collectAnimations(),
+    intersection: collectIntersectionState(),
   };
   const capture = serialize(scored, relations, enrichment);
   capture.metadata.captureMode = 'auto';
