@@ -78,6 +78,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Code Quality Audit Fixes
 
+### Centralize Redundant Code Patterns
+- Extension: replaced 5 duplicate `selector()` functions in collectors with shared `buildSelector` from selector.js
+- Extension: centralized ATTR constant (12 duplicate definitions) into selector.js, all files now import it
+- Extension: extracted `serializeAnnotations()` helper in content.js (was duplicated 2x)
+- Server: created `readAndParse()` helper in utils/tool-helpers.js for validate-read-parse pattern
+- Server: refactored 7 tool files to use readAndParse (audit-accessibility, audit-layout, get-elements-by-role, get-interactive, get-annotations, get-annotation-context, get-page-summary, find-missing-testids)
+
 ### Dead Code Elimination
 - Server: removed ENV_HTTP_SECRET (unused export), unused imports in layout-analysis.js, list-sessions.js, analyze-patterns.js, get-session.js
 - Extension: removed buildA11yLine, copySelector, fallbackCopy, getFrozenElement, resume (dead functions in annotate.js)

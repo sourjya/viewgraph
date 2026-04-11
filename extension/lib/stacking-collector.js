@@ -13,17 +13,8 @@
  * @see docs/roadmap/roadmap.md - M13.1 z-index stacking context resolution
  */
 
-const ATTR = 'data-vg-annotate';
+import { buildSelector, ATTR } from './selector.js';
 
-/** Build a compact selector for an element. */
-function selector(el) {
-  const tag = el.tagName.toLowerCase();
-  if (el.id) return `${tag}#${el.id}`;
-  const cls = el.className && typeof el.className === 'string'
-    ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.')
-    : '';
-  return `${tag}${cls}`;
-}
 
 /**
  * Check if an element creates a new stacking context.
@@ -67,7 +58,7 @@ export function collectStackingContexts() {
       // Skip invisible elements
       if (rect.width === 0 && rect.height === 0) { node = walker.nextNode(); continue; }
       contexts.push({
-        selector: selector(node),
+        selector: buildSelector(node),
         trigger,
         zIndex: cs.zIndex === 'auto' ? 'auto' : parseInt(cs.zIndex, 10),
         bbox: [Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height)],

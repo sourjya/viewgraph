@@ -11,17 +11,8 @@
  * @see docs/roadmap/roadmap.md - M13.4 scroll containers
  */
 
-const ATTR = 'data-vg-annotate';
+import { buildSelector, ATTR } from './selector.js';
 
-/** Build a compact selector for an element. */
-function selector(el) {
-  const tag = el.tagName.toLowerCase();
-  if (el.id) return `${tag}#${el.id}`;
-  const cls = el.className && typeof el.className === 'string'
-    ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.')
-    : '';
-  return `${tag}${cls}`;
-}
 
 /**
  * Check if an element is a scroll container.
@@ -63,7 +54,7 @@ export function collectScrollContainers() {
       }
 
       containers.push({
-        selector: selector(node),
+        selector: buildSelector(node),
         tag: node.tagName.toLowerCase(),
         scrollTop: Math.round(node.scrollTop),
         scrollLeft: Math.round(node.scrollLeft),

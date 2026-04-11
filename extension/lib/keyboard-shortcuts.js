@@ -15,7 +15,7 @@
  * @see docs/roadmap/roadmap.md
  */
 
-const ATTR = 'data-vg-annotate';
+import { ATTR } from './selector.js';
 
 /**
  * @typedef {Object} ShortcutHandlers

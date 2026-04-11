@@ -76,7 +76,7 @@ import { startWatcher, stopWatcher, isWatcherEnabled } from './continuous-captur
 import { isRecording, startSession, stopSession, addStep, getState } from './session-manager.js';
 import { connect as wsConnect, disconnect as wsDisconnect } from './ws-client.js';
 
-const ATTR = 'data-vg-annotate';
+import { ATTR } from './selector.js';
 let sidebarEl = null;
 let hostEl = null;
 let badgeEl = null;

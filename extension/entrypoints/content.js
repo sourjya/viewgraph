@@ -27,6 +27,17 @@ import { create as createSidebar, refresh as refreshSidebar, destroy as destroyS
 import { cropRegions } from '../lib/screenshot-crop.js';
 import { buildReportZip } from '../lib/export-zip.js';
 
+/** Serialize annotations for capture JSON. Used by send-review and annotations-only. */
+function serializeAnnotations(annotations) {
+  return annotations.map((a) => ({
+    id: a.id, uuid: a.uuid, type: a.type, region: a.region,
+    comment: a.comment, severity: a.severity || '', category: a.category || '',
+    nodeIds: a.nids, ancestor: a.ancestor,
+    timestamp: a.timestamp || new Date().toISOString(),
+    resolved: a.resolved || false, resolution: a.resolution || null,
+  }));
+}
+
 export default defineContentScript({
   matches: ['<all_urls>'],
   runAt: 'document_idle',
@@ -134,13 +145,7 @@ export default defineContentScript({
           }
           const capture = serialize(scored, relations, enrichment);
           capture.metadata.captureMode = 'review';
-          capture.annotations = getAnnotations().map((a) => ({
-            id: a.id, uuid: a.uuid, type: a.type, region: a.region,
-            comment: a.comment, severity: a.severity || '', category: a.category || '',
-            nodeIds: a.nids, ancestor: a.ancestor,
-            timestamp: a.timestamp || new Date().toISOString(),
-            resolved: a.resolved || false, resolution: a.resolution || null,
-          }));
+          capture.annotations = serializeAnnotations(getAnnotations());
           sendResponse({ ok: true, capture });
         })();
         return true;
@@ -158,13 +163,7 @@ export default defineContentScript({
             stats: { totalNodes: 0 },
           },
           nodes: [],
-          annotations: getAnnotations().map((a) => ({
-            id: a.id, uuid: a.uuid, type: a.type, region: a.region,
-            comment: a.comment, severity: a.severity || '', category: a.category || '',
-            nodeIds: a.nids, ancestor: a.ancestor,
-            timestamp: a.timestamp || new Date().toISOString(),
-            resolved: a.resolved || false, resolution: a.resolution || null,
-          })),
+          annotations: serializeAnnotations(getAnnotations()),
         };
         sendResponse({ ok: true, capture });
         return true;

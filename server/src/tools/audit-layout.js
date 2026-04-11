@@ -9,10 +9,8 @@
  */
 
 import { z } from 'zod';
-import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
-import { parseCapture } from '#src/parsers/viewgraph-v2.js';
+import { readAndParse } from '#src/utils/tool-helpers.js';
 import { analyzeLayout } from '#src/analysis/layout-analysis.js';
 
 /**
@@ -32,20 +30,10 @@ export function register(server, _indexer, capturesDir) {
       filename: z.string().describe('Capture filename'),
     },
     async ({ filename }) => {
-      let filePath;
-      try { filePath = validateCapturePath(filename, capturesDir); } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid filename - ${filename}` }], isError: true };
-      }
-      try {
-        const content = await readFile(filePath, 'utf-8');
-        const result = parseCapture(content);
-        if (!result.ok) return { content: [{ type: 'text', text: `Error: ${result.error}` }], isError: true };
-        const layout = analyzeLayout(result.data);
-        return { content: [{ type: 'text', text: JSON.stringify(layout, null, 2) }] };
-      } catch (err) {
-        if (err.code === 'ENOENT') return { content: [{ type: 'text', text: `Error: Capture not found: ${filename}` }], isError: true };
-        return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
-      }
+      const { ok, parsed, error } = await readAndParse(filename, capturesDir);
+      if (!ok) return error;
+      const layout = analyzeLayout(parsed);
+      return { content: [{ type: 'text', text: JSON.stringify(layout, null, 2) }] };
     },
   );
 }

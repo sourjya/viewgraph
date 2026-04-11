@@ -13,7 +13,8 @@
  * @see docs/roadmap/roadmap.md - M13.6 semantic ARIA landmarks
  */
 
-const ATTR = 'data-vg-annotate';
+import { buildSelector, ATTR } from './selector.js';
+
 
 /**
  * Map of HTML elements to their implicit ARIA landmark roles.
@@ -36,15 +37,6 @@ const LANDMARK_ROLES = new Set([
 ]);
 
 /** Build a compact selector for an element. */
-function selector(el) {
-  const tag = el.tagName.toLowerCase();
-  if (el.id) return `${tag}#${el.id}`;
-  const cls = el.className && typeof el.className === 'string'
-    ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.')
-    : '';
-  return `${tag}${cls}`;
-}
-
 /**
  * Get the landmark role for an element, if any.
  * @param {Element} el
@@ -81,7 +73,7 @@ export function collectLandmarks() {
     if (!role) continue;
     landmarks.push({
       role,
-      selector: selector(el),
+      selector: buildSelector(el),
       tag: el.tagName.toLowerCase(),
       label: el.getAttribute('aria-label') || el.getAttribute('aria-labelledby') || undefined,
     });
