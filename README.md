@@ -23,13 +23,13 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 ViewGraph runs alongside your project as a standalone tool. It does not embed into your codebase or require changes to your application. It works with any web app regardless of backend technology (Python, Ruby, Java, Go, PHP, etc.).
 
 ```
-Your app (any language) --> serves HTML --> Chrome renders it --> Extension captures DOM
+Your app (any language) --> serves HTML --> Browser renders it --> Extension captures DOM
                                                                         |
                                                                         v
 Kiro / Claude / Cursor  <-- MCP protocol <-- ViewGraph server <-- .viewgraph.json files
 ```
 
-The extension captures the DOM. The server reads those capture files and exposes them to your AI agent via MCP. Your agent never touches your app directly - it reads the structured capture data.
+The extension captures the DOM from Chrome or Firefox. The server reads those capture files and exposes them to your AI agent via MCP. Your agent then uses this context to modify your source code - it never injects into or manipulates the running application directly.
 
 ## Getting Started
 
@@ -39,9 +39,10 @@ The extension captures the DOM. The server reads those capture files and exposes
 |---|---|---|
 | Node.js | 18.0.0+ (LTS) | Runs the ViewGraph server and builds the extension |
 | npm | 9.0.0+ | Workspaces support required |
-| Chrome | 116+ | Required for the browser extension (Manifest V3) |
+| Chrome | 116+ | Manifest V3 browser extension |
+| Firefox | 109+ | Manifest V3 browser extension |
 
-> **Firefox:** supported but not recommended for development. Build with `npm run build:ext -- --browser firefox` from the ViewGraph root. See [extension/README.md](./extension/) for details.
+Build for your browser of choice: `npm run build:ext` (Chrome, default) or `npm run build:ext -- --browser firefox`. See [extension/README.md](./extension/) for details.
 
 ### Step 1: Clone and install ViewGraph
 
@@ -58,16 +59,22 @@ This installs dependencies for both the server and extension via npm workspaces.
 Build the extension:
 
 ```bash
-npm run build:ext
+npm run build:ext                        # Chrome (default)
+npm run build:ext -- --browser firefox   # Firefox
 ```
 
-Then load it into Chrome:
-
+**Chrome:**
 1. Open `chrome://extensions/`
 2. Enable **Developer mode** (toggle in top-right corner)
 3. Click **Load unpacked**
 4. Select: `<your-viewgraph-path>/extension/.output/chrome-mv3`
-5. The ViewGraph icon appears in your Chrome toolbar
+
+**Firefox:**
+1. Open `about:debugging#/runtime/this-firefox`
+2. Click **Load Temporary Add-on**
+3. Select any file inside: `<your-viewgraph-path>/extension/.output/firefox-mv3`
+
+The ViewGraph icon appears in your browser toolbar.
 
 ### Step 3: Initialize ViewGraph in your project
 
@@ -88,7 +95,7 @@ The init script does the following automatically:
 
 ### Step 4: Capture and annotate
 
-1. Navigate to your app in Chrome
+1. Navigate to your app in the browser
 2. Click the **ViewGraph** toolbar icon - annotate mode activates
 3. The sidebar opens with two tabs: **Review** (annotations) and **Inspect** (diagnostics)
 
@@ -129,13 +136,13 @@ Or re-run the init script from your project - it kills any stale server and star
 
 ### Try the demo
 
-Open [`docs/demo/index.html`](./docs/demo/) in Chrome - a styled login page with 8 planted UI bugs. Annotate the issues, send to Kiro, and watch them get fixed. See the [demo walkthrough](./docs/demo/README.md) for step-by-step instructions.
+Open [`docs/demo/index.html`](./docs/demo/) in your browser - a styled login page with 8 planted UI bugs. Annotate the issues, send to Kiro, and watch them get fixed. See the [demo walkthrough](./docs/demo/README.md) for step-by-step instructions.
 
 ## Workflows
 
 ### For developers with AI agents
 
-1. Open your app in Chrome, click the **ViewGraph** icon
+1. Open your app in the browser, click the **ViewGraph** icon
 2. Click elements or shift+drag regions, add comments describing what to fix
 3. Check the **Inspect** tab for network errors or console issues
 4. Click **Send to Agent** - annotations bundle with the full DOM capture + enrichment data
@@ -145,7 +152,7 @@ Open [`docs/demo/index.html`](./docs/demo/) in Chrome - a styled login page with
 
 The extension works standalone. No MCP server required.
 
-1. Open the app in Chrome, click the **ViewGraph** icon
+1. Open the app in the browser, click the **ViewGraph** icon
 2. Click or shift+drag to select problem areas, add comments
 3. Export:
    - **Copy Markdown** - paste into Jira/Linear/GitHub (includes network failures, console errors, viewport breakpoint)
@@ -261,11 +268,10 @@ These tools are called by your AI agent, not by you directly. The agent discover
 
 | Problem | Solution |
 |---|---|
-| Extension icon doesn't appear | Check `chrome://extensions/` - is it enabled? Is Developer mode on? |
+| Extension icon doesn't appear | Check your browser's extension management page - is it enabled? |
 | Sidebar shows no green dot | Server isn't running. Run `npm run dev:server` from the ViewGraph directory, or re-run the init script from your project. |
 | "Send to Agent" does nothing | Check the sidebar connection status. The server must be running and the auth token must match. |
 | Captures not appearing in agent | Verify `.viewgraph/captures/` exists in your project and the MCP config points to the right path. Run `node scripts/viewgraph-status.js` from the ViewGraph directory for a full health check. |
-| Firefox extension won't load | Firefox requires a signed extension or `about:config` > `xpinstall.signatures.required` = false. For development, use Chrome. |
 
 ## Development
 
@@ -274,6 +280,7 @@ All commands run from the ViewGraph root directory:
 ```bash
 npm run dev:server     # start MCP server with file watcher
 npm run dev:ext        # start extension dev server (Chrome HMR)
+npm run dev:ext:ff     # start extension dev server (Firefox HMR)
 npm test               # all tests (923 tests)
 npm run test:server    # server only (324 tests)
 npm run test:ext       # extension only (599 tests)
