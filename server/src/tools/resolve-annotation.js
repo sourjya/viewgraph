@@ -22,9 +22,10 @@ const ACTIONS = ['fixed', 'wontfix', 'duplicate', 'invalid'];
  * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
  * @param {import('#src/indexer.js').Indexer} _indexer
  * @param {string} capturesDir
+ * @param {{ onResolve?: function }} options - Optional callback when annotation is resolved
  * @see docs/decisions/ADR-007-jsonl-history-store.md
  */
-export function register(server, _indexer, capturesDir) {
+export function register(server, _indexer, capturesDir, options = {}) {
   server.tool(
     'resolve_annotation',
     `Mark a ${PROJECT_NAME} annotation as resolved after fixing the issue. ` +
@@ -65,6 +66,9 @@ export function register(server, _indexer, capturesDir) {
         };
 
         await writeFile(filePath, JSON.stringify(capture, null, 2) + '\n');
+
+        // Notify WebSocket clients of resolution
+        if (options.onResolve) options.onResolve({ uuid: annotation_uuid, resolution: ann.resolution });
 
         return { content: [{ type: 'text', text: JSON.stringify(ann, null, 2) }] };
       } catch (err) {

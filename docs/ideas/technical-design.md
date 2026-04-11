@@ -1,7 +1,7 @@
-# ViewGraph — Technical Design Document
+# ViewGraph - Technical Design Document
 
 **Date:** 2026-04-08
-**Status:** Concept — ready for implementation
+**Status:** Concept - ready for implementation
 **Scope:** Firefox extension + MCP server + Kiro integration
 
 ---
@@ -11,7 +11,7 @@
 A seamless, bidirectional pipeline between a browser extension and Kiro IDE/CLI
 via MCP. The extension captures any web page's DOM structure and full-page
 hi-res screenshots, writes them to disk, and exposes them to Kiro via MCP tools.
-Kiro can also request captures on demand — the MCP server acts as a request
+Kiro can also request captures on demand - the MCP server acts as a request
 bridge, queuing capture requests that the extension polls and fulfills.
 
 This enables AI-powered UI auditing, test generation, visual regression,
@@ -62,7 +62,7 @@ full-page PNG screenshot:
 The extension popup replaces the single "Select Element" button (from Element-to-LLM)
 with a mode switcher. Modes are split into two tiers based on workflow:
 
-**Tier 1 — Quick-fire (immediate, one-click, no annotation step):**
+**Tier 1 - Quick-fire (immediate, one-click, no annotation step):**
 
 | Mode | Icon | Behavior | Output |
 |---|---|---|---|
@@ -70,7 +70,7 @@ with a mode switcher. Modes are split into two tiers based on workflow:
 | 📋 ViewGraph Capture | Document | Immediate DOM traverse + screenshot | JSON + PNG |
 | 🎯 Select Element | Crosshair | Enter hover-inspect mode, click to capture one element subtree | JSON (subtree) + element screenshot |
 
-**Tier 2 — Review Mode (batch, annotate, then send):**
+**Tier 2 - Review Mode (batch, annotate, then send):**
 
 | Mode | Icon | Behavior | Output |
 |---|---|---|---|
@@ -78,9 +78,9 @@ with a mode switcher. Modes are split into two tiers based on workflow:
 | 📝 Review Mode | Clipboard | Combines hover-inspect + region-select + annotations. Accumulate multiple selections, annotate each, preview all, then Send/Save | Full annotated capture bundle |
 
 **Why two tiers:** Quick-fire modes cover the "I just need a capture right now"
-workflow — zero friction, fires immediately, saves to disk and pushes to MCP.
+workflow - zero friction, fires immediately, saves to disk and pushes to MCP.
 Review Mode covers the "I want to mark up this page with change requests and
-send it to Kiro" workflow — you build up a set of annotated selections, review
+send it to Kiro" workflow - you build up a set of annotated selections, review
 them, then publish as a bundle.
 
 **Popup UI layout:**
@@ -176,7 +176,7 @@ large background containers that technically intersect but aren't the target).
 
 ### Annotation System
 
-Each selection (element or region) can have an annotation — a text comment
+Each selection (element or region) can have an annotation - a text comment
 describing the desired change, bug, or observation. Annotations are the core
 value of Review Mode: they turn a capture into actionable feedback for Kiro.
 
@@ -265,7 +265,7 @@ extension uses a scroll-and-stitch approach:
 forcing a specific scale factor.
 
 **Caveats:**
-- Visible scroll occurs during capture — pages with scroll-triggered animations
+- Visible scroll occurs during capture - pages with scroll-triggered animations
   or lazy-loaded content may produce artifacts
 - A configurable `scrollDelay` (default 150ms) between scroll and capture
   mitigates most timing issues
@@ -274,7 +274,7 @@ forcing a specific scale factor.
 - Very tall pages (>20 viewport heights) are capped with a warning in metadata
 
 ```javascript
-// lib/screenshotter.js — scroll-and-stitch core loop
+// lib/screenshotter.js - scroll-and-stitch core loop
 async function captureFullPage(tabId) {
   const { scrollHeight, viewportHeight } = await getPageDimensions(tabId);
   const slices = [];
@@ -453,7 +453,7 @@ async function outputCapture(json, screenshotBlob) {
         body: JSON.stringify(payload),
       });
     } catch (e) {
-      // MCP server not running — silent fail, disk write already succeeded
+      // MCP server not running - silent fail, disk write already succeeded
     }
   }
 }
@@ -486,7 +486,7 @@ export function startPolling(endpoint, interval) {
       // Perform capture (triggers normal capture flow)
       await performCapture(request);
     } catch (e) {
-      // MCP server unreachable — skip this cycle
+      // MCP server unreachable - skip this cycle
     }
   }, interval);
 }
@@ -763,7 +763,7 @@ Kiro: [calls get_elements_by_role("button")] Found 8 buttons.
 
 **Visual Regression:**
 ```
-You: Compare today's capture with yesterday's — what changed?
+You: Compare today's capture with yesterday's - what changed?
 Kiro: [calls compare_captures] Changes detected:
       - Added: "Delete" button on each project row
       - Removed: "Beta" badge from header
@@ -897,8 +897,8 @@ Service workers terminate after ~5 minutes of inactivity. This is the single
 biggest architectural change from MV2 and breaks most legacy patterns.
 
 **What breaks:**
-- Global variables are lost on restart — use `chrome.storage.local` instead
-- `setInterval` for periodic tasks stops — use `chrome.alarms` instead
+- Global variables are lost on restart - use `chrome.storage.local` instead
+- `setInterval` for periodic tasks stops - use `chrome.alarms` instead
 - In-memory state disappears without warning
 - WebSocket connections drop on termination
 
@@ -925,7 +925,7 @@ async function saveState(data) {
    This is a 2+ year old Bugzilla issue with no fix in sight.
 
 3. **CSP restrictions on content scripts.** Firefox restricts extension-injected
-   content scripts based on the website's own CSP — a 9-year-old bug. Workaround:
+   content scripts based on the website's own CSP - a 9-year-old bug. Workaround:
    use `declarativeNetRequest` to strip CSP headers from target sites.
 
 4. **Extensions must be signed.** Unlike Chrome, Firefox requires all extensions
@@ -943,7 +943,7 @@ Over-permissioning is the #1 reason for store rejection and user distrust.
 - Request `activeTab` + `storage` upfront (minimal friction)
 - Use `optional_permissions` for features like `tabs`, `history`
 - Request optional permissions contextually when the user needs the feature
-- Avoid `<all_urls>` in permissions — use specific host patterns
+- Avoid `<all_urls>` in permissions - use specific host patterns
 - `host_permissions` are shown to users at install time
 
 ### Performance Targets
@@ -958,7 +958,7 @@ Over-permissioning is the #1 reason for store rejection and user distrust.
 ### Development Framework
 
 WXT (`wxt.dev`) is recommended for this project:
-- Vite-based build with HMR (Chrome only — Firefox lacks localhost access)
+- Vite-based build with HMR (Chrome only - Firefox lacks localhost access)
 - Automatic manifest generation from code
 - Cross-browser builds from single codebase
 - Built-in TypeScript support
@@ -967,7 +967,7 @@ WXT (`wxt.dev`) is recommended for this project:
 ### Security Checklist
 
 - Never use `eval()` or `new Function()`
-- Sanitize all user inputs before DOM insertion — use `textContent` over `innerHTML`
+- Sanitize all user inputs before DOM insertion - use `textContent` over `innerHTML`
 - Implement strict Content Security Policy in manifest
 - Pin dependency versions, run `npm audit` regularly
 - Encrypt sensitive data before storage
@@ -997,10 +997,10 @@ In stdio transport, `stdout` is reserved for JSON-RPC messages. Any stray
 `console.log()` corrupts the protocol stream and crashes the connection silently.
 
 ```javascript
-// WRONG — breaks the protocol
+// WRONG - breaks the protocol
 console.log('Server starting');
 
-// CORRECT — use stderr for all logging
+// CORRECT - use stderr for all logging
 console.error('Server starting');
 ```
 
@@ -1020,7 +1020,7 @@ Audit every dependency for stdout pollution. Redirect logging frameworks to stde
    not `page_summary`. Common verbs: get, list, search, create, update, delete.
 
 4. **Cap response sizes.** Target ~100KB max per response. The LLM's context
-   window is finite — sending 50MB of JSON is worse than useless. Include
+   window is finite - sending 50MB of JSON is worse than useless. Include
    metadata like "Found 847 entries (showing 100)" so the LLM knows to refine.
 
 5. **Validate all inputs.** Use Zod schemas for type validation. Add business
@@ -1030,21 +1030,21 @@ Audit every dependency for stdout pollution. Redirect logging frameworks to stde
 
 MCP defines two error categories:
 
-- **`isError: true`** — Recoverable, application-level failure. The LLM sees the
+- **`isError: true`** - Recoverable, application-level failure. The LLM sees the
   error message and can retry with different parameters or try a different tool.
   Use for: file not found, invalid query, permission denied.
 
-- **Thrown `McpError`** — Protocol-level, hard failure. Use for: invalid params
+- **Thrown `McpError`** - Protocol-level, hard failure. Use for: invalid params
   that bypass Zod, security violations, impossible states.
 
 ```javascript
-// Recoverable — LLM can act on this
+// Recoverable - LLM can act on this
 return {
   content: [{ type: 'text', text: 'Error: Capture not found. Use list_captures to see available files.' }],
   isError: true
 };
 
-// Hard failure — security violation
+// Hard failure - security violation
 throw new McpError(ErrorCode.InvalidParams, 'Path traversal not allowed');
 ```
 
@@ -1066,10 +1066,10 @@ function validatePath(filePath) {
 
 ### Testing Strategy
 
-1. **Unit tests** — Extract business logic from handlers, test independently
-2. **Integration tests** — Use `InMemoryTransport` from the SDK to test full
+1. **Unit tests** - Extract business logic from handlers, test independently
+2. **Integration tests** - Use `InMemoryTransport` from the SDK to test full
    tool lifecycle (registration, discovery, validation, execution)
-3. **Manual testing** — Use Kiro CLI with the MCP server registered
+3. **Manual testing** - Use Kiro CLI with the MCP server registered
 
 ```javascript
 const { InMemoryTransport } = require('@modelcontextprotocol/sdk/inMemory.js');
@@ -1097,7 +1097,7 @@ process.on('SIGINT', async () => {
 
 ### How Annotations Merge with Capture Formats
 
-Annotations are **not a separate format** — they are a layer that attaches to
+Annotations are **not a separate format** - they are a layer that attaches to
 any capture format. The capture JSON is the structural truth (DOM, selectors,
 styles, layout). Annotations are the human intent layer on top: "what I want
 changed, and where."
@@ -1114,7 +1114,7 @@ METADATA: url, viewport        ◄──  timestamp, annotation ID
 ```
 
 Annotations reference nodes by UID. This means:
-- An annotation on a button references `n:btn:view-chain` — the same UID that
+- An annotation on a button references `n:btn:view-chain` - the same UID that
   appears in NODES, DETAILS, and RELATIONS
 - A region annotation includes a bbox AND the UIDs of all nodes within it
 - Kiro can resolve any annotation to its full structural context by joining
@@ -1153,12 +1153,12 @@ and node references. Each annotation is self-contained:
 ```
 
 Kiro sees: "the user wants pagination on this specific table, here's its
-selector and position." That's enough to act on — find the component in the
+selector and position." That's enough to act on - find the component in the
 codebase, implement the change.
 
 **For the `get_annotated_capture` tool:**
 Returns the full capture JSON but filtered to only the nodes referenced by
-annotations. This is the "focused view" — instead of 375 nodes, Kiro gets
+annotations. This is the "focused view" - instead of 375 nodes, Kiro gets
 the 5-10 nodes the user actually cares about, with their full details and
 the user's comments. This keeps context tight.
 
@@ -1166,7 +1166,7 @@ the user's comments. This keeps context tight.
 
 The annotation layer is format-agnostic. If the capture format changes from
 ViewGraph v2 to a future bundle format (with accessibility trees, provenance, etc.),
-annotations still work — they reference nodes by UID, and UIDs are stable
+annotations still work - they reference nodes by UID, and UIDs are stable
 across format versions.
 
 If a non-ViewGraph format is used (e.g., raw CDP DOMSnapshot), the MCP server's
@@ -1184,14 +1184,14 @@ However, a steering doc can improve Kiro's behavior with captures:
 When working with ViewGraph captures via MCP tools:
 
 1. Always call `get_annotations` first if the capture has `captureMode: "review"`
-2. Use annotation comments as the primary task list — each annotation is a change request
+2. Use annotation comments as the primary task list - each annotation is a change request
 3. Use `get_annotated_capture` for focused context instead of loading the full capture
 4. Reference elements by their `data-testid` or `selector` from the capture, not by
    guessing selectors
 5. After implementing changes, suggest the user re-capture to verify
 ```
 
-This steering doc is optional — Kiro will work without it, but it improves
+This steering doc is optional - Kiro will work without it, but it improves
 the workflow by teaching Kiro to prioritize annotations and use focused queries.
 
 ---
@@ -1200,7 +1200,7 @@ the workflow by teaching Kiro to prioritize annotations and use focused queries.
 
 The Output Formats research doc identifies that no single representation format
 gives an agent full layout understanding. The strongest approach is a **capture
-bundle** — a set of complementary artifacts per capture, cross-referenced via
+bundle** - a set of complementary artifacts per capture, cross-referenced via
 stable IDs and a shared coordinate frame. SIFR v2 already covers the DOM
 structure + salience + selectors + computed styles layer. The following additions
 would make it a full agentic-ready bundle:
@@ -1217,16 +1217,16 @@ to pixels, enabling multimodal agents to plan clicks from screenshots. The
 annotation system's region selections already produce this mapping naturally.
 
 **Provenance and confidence tags:** Each captured field should indicate its source:
-- `measured` — browser API reported (high confidence)
-- `derived` — computed from measured fields (medium-high)
-- `inferred` — ML/OCR/heuristic (variable)
-- `user-provided` — test IDs, annotations (high if maintained)
+- `measured` - browser API reported (high confidence)
+- `derived` - computed from measured fields (medium-high)
+- `inferred` - ML/OCR/heuristic (variable)
+- `user-provided` - test IDs, annotations (high if maintained)
 
 This lets Kiro know which facts to trust and which to verify.
 
 **Incremental diffs:** For streaming or repeated captures, JSON Patch (RFC 6902)
 provides operation-based updates. This avoids resending the entire capture when
-only a few elements changed — critical for regression workflows.
+only a few elements changed - critical for regression workflows.
 
 These additions are tracked as future phases and don't block the core
 implementation. The current SIFR v2 format + annotations + screenshots already
@@ -1248,7 +1248,7 @@ provides a strong foundation for agentic coding workflows.
 - compare_captures (diff two captures)
 - **Effort:** 1-2 days
 
-### Phase 3: Firefox Extension — Core (replaces Element-to-LLM)
+### Phase 3: Firefox Extension - Core (replaces Element-to-LLM)
 - Popup UI with mode switcher (Screenshot, ViewGraph Capture, Select Element)
 - DOM traversal with salience scoring
 - Spatial clustering + style extraction
@@ -1309,13 +1309,13 @@ The MCP server and extension are standalone tools, not tied to any specific code
 
 ## Decisions
 
-1. **Shadow DOM:** Yes — pierce through shadow DOM to capture internal elements.
+1. **Shadow DOM:** Yes - pierce through shadow DOM to capture internal elements.
    PrimeNG's `<p-button>` resolves to the actual `<button>` inside.
-2. **Screenshot:** Yes — full-page hi-res PNG via scroll-and-stitch. Configurable
+2. **Screenshot:** Yes - full-page hi-res PNG via scroll-and-stitch. Configurable
    in extension settings (on/off, scale, scroll delay). Uses `captureVisibleTab`
    at each viewport offset, stitched on OffscreenCanvas. Respects devicePixelRatio
    for automatic hi-res on retina displays. Saved as `.png` alongside `.json`.
-3. **Size limits:** Yes — MCP tools return summaries by default (`get_page_summary`).
+3. **Size limits:** Yes - MCP tools return summaries by default (`get_page_summary`).
    Full JSON only via explicit `get_capture`. Keeps LLM context manageable.
 4. **Index persistence:** Rebuild from files on startup. No SQLite. Files are
    source of truth, index is an in-memory cache. <1s scan for 50 captures.
@@ -1324,7 +1324,7 @@ The MCP server and extension are standalone tools, not tied to any specific code
    all selections and annotations, publishes only when user clicks Send/Save.
    This balances speed for simple captures with flexibility for annotated reviews.
 6. **DOM tree navigation:** Scroll wheel on hover inspector walks parent chain.
-   This avoids needing a separate tree panel and keeps the interaction spatial —
+   This avoids needing a separate tree panel and keeps the interaction spatial -
    you're always looking at the page, not a sidebar. Nesting depth shown via
    color-coded overlays (blue → green → orange → red).
 7. **Region selection intersection:** 50% area overlap threshold by default.
@@ -1332,4 +1332,4 @@ The MCP server and extension are standalone tools, not tied to any specific code
    a small rectangle over a specific component. Configurable via settings.
 8. **Annotation storage:** Annotations are embedded in the capture JSON under
    `====ANNOTATIONS====`, not stored separately. This keeps captures self-contained
-   and portable — one file = complete context for Kiro.
+   and portable - one file = complete context for Kiro.

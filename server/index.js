@@ -98,7 +98,12 @@ registerGetAnnotatedCapture(server, indexer, CAPTURES_DIR);
 registerRequestCapture(server, requestQueue);
 registerGetRequestStatus(server, requestQueue);
 registerGetFidelityReport(server, CAPTURES_DIR);
-registerResolveAnnotation(server, indexer, CAPTURES_DIR);
+registerResolveAnnotation(server, indexer, CAPTURES_DIR, {
+  onResolve: ({ uuid, resolution }) => {
+    const ws = httpReceiver?.getWsServer?.();
+    if (ws) ws.broadcast({ type: 'annotation:resolved', uuid, resolution });
+  },
+});
 registerGetUnresolved(server, indexer, CAPTURES_DIR);
 registerCompareBaseline(server, indexer, CAPTURES_DIR);
 registerSetBaseline(server, indexer, CAPTURES_DIR);

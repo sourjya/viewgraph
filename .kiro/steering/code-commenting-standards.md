@@ -4,12 +4,12 @@ inclusion: always
 
 # Code Commenting Standards
 
-Every piece of code must be commented so that a follow-on developer — or a coding agent picking up the project cold — can understand all pieces without needing to ask the original author.
+Every piece of code must be commented so that a follow-on developer - or a coding agent picking up the project cold - can understand all pieces without needing to ask the original author.
 
 ## Enforcement
 
-1. **Automated hook** — `.kiro/hooks/comment-standards-check.kiro.hook` intercepts git commits and verifies staged source files meet this standard.
-2. **Linting rules** — Enable docstring rules in your linter config.
+1. **Automated hook** - `.kiro/hooks/comment-standards-check.kiro.hook` intercepts git commits and verifies staged source files meet this standard.
+2. **Linting rules** - Enable docstring rules in your linter config.
 
 ## Guiding Principle
 
@@ -33,7 +33,7 @@ Every file must start with a docstring/JSDoc block that includes:
 
 ## Class Docstrings
 
-Every class — public, internal, or private — must have a docstring/JSDoc that includes:
+Every class - public, internal, or private - must have a docstring/JSDoc that includes:
 1. What the class represents and its responsibility boundary
 2. Why this class exists as a separate abstraction (justification)
 3. Key collaborators: what other classes/services it interacts with
@@ -47,11 +47,11 @@ Every class property, instance variable, and TypeScript class member must be doc
 - State what the property holds, its valid range or constraints, and why it exists if non-obvious
 - For Pydantic/dataclass fields: document each field's purpose, not just its type
 
-## Method and Function Docstrings — All Visibility Levels
+## Method and Function Docstrings - All Visibility Levels
 
 Every method and function must have a docstring/JSDoc, regardless of visibility (public, protected, private, internal helper):
 1. **Purpose**: what it does and when it should be called
-2. **Justification**: why this method exists — what requirement, design decision, or constraint motivated it. If it could have been done differently, briefly note why this approach was chosen
+2. **Justification**: why this method exists - what requirement, design decision, or constraint motivated it. If it could have been done differently, briefly note why this approach was chosen
 3. **Args/Params**: describe each parameter, its expected values, and edge cases
 4. **Returns**: what is returned and under what conditions
 5. **Raises/Throws**: exceptions that can be raised and when
