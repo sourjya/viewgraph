@@ -12,6 +12,13 @@ import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { flattenNodes, filterByRole, getNodeDetails, isInViewport } from '#src/analysis/node-queries.js';
 
+/**
+ * Register the get_elements_by_role MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/indexer.js').Indexer} _indexer
+ * @param {string} capturesDir
+ * @see #src/analysis/node-queries.js
+ */
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'get_elements_by_role',

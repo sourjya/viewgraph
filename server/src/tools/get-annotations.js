@@ -11,6 +11,13 @@ import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 
+/**
+ * Register the get_annotations MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/indexer.js').Indexer} _indexer
+ * @param {string} capturesDir
+ * @see #src/parsers/viewgraph-v2.js
+ */
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'get_annotations',

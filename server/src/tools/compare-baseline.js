@@ -18,6 +18,13 @@ import { diffCaptures } from '#src/analysis/capture-diff.js';
 import { getBaseline } from '#src/baselines.js';
 import { flattenNodes } from '#src/analysis/node-queries.js';
 
+/**
+ * Register the compare_baseline MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/indexer.js').Indexer} indexer
+ * @param {string} capturesDir
+ * @see #src/baselines.js
+ */
 export function register(server, indexer, capturesDir) {
   server.tool(
     'compare_baseline',

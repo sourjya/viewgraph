@@ -11,7 +11,14 @@ import { readFile } from 'fs/promises';
 import path from 'path';
 import { PROJECT_NAME } from '#src/constants.js';
 import { parseSnapshot, compareFidelity } from '#src/analysis/fidelity.js';
+import { validateCapturePath } from '#src/utils/validate-path.js';
 
+/**
+ * Register the get_fidelity_report MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {string} capturesDir - Absolute path to the captures directory
+ * @see .kiro/specs/singlefile-fidelity/ - fidelity measurement spec
+ */
 export function register(server, capturesDir) {
   server.tool(
     'get_fidelity_report',
@@ -21,9 +28,15 @@ export function register(server, capturesDir) {
       filename: z.string().describe('Capture JSON filename (e.g., viewgraph-localhost-20260408-120612.json)'),
     },
     async ({ filename }) => {
+      let capturePath;
+      try {
+        capturePath = validateCapturePath(filename, capturesDir);
+      } catch {
+        return { content: [{ type: 'text', text: `Error: Invalid filename "${filename}"` }], isError: true };
+      }
+
       const stem = filename.replace(/\.json$/, '');
       const snapshotPath = path.join(capturesDir, '..', 'snapshots', `${stem}.html`);
-      const capturePath = path.join(capturesDir, filename);
 
       let captureJson, snapshotHtml;
       try {

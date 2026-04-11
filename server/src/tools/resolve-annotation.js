@@ -17,6 +17,13 @@ import { validateCapturePath } from '#src/utils/validate-path.js';
 /** Allowed resolution actions. */
 const ACTIONS = ['fixed', 'wontfix', 'duplicate', 'invalid'];
 
+/**
+ * Register the resolve_annotation MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/indexer.js').Indexer} _indexer
+ * @param {string} capturesDir
+ * @see docs/decisions/ADR-007-jsonl-history-store.md
+ */
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'resolve_annotation',

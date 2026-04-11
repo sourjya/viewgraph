@@ -31,7 +31,7 @@ Local MCP server that reads `.viewgraph/captures/*.json` files and exposes 19 qu
 | `audit_layout` | Overflow, overlap, viewport overflow detection |
 | `compare_captures` | Diff two captures: added/removed, layout shifts, testid changes |
 | `get_annotations` | Human annotations from review-mode captures |
-| `get_annotated_capture` | Capture filtered to annotated nodes + comments |
+| `get_annotation_context` | Capture filtered to annotated nodes + comments |
 | `request_capture` | Ask the browser extension to capture a page |
 | `get_request_status` | Poll for capture completion |
 | `get_fidelity_report` | Compare capture vs HTML snapshot |
@@ -102,7 +102,7 @@ Add these hooks to the project's `.kiro/hooks/` directory:
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Call get_unresolved to find all open annotations. For each annotation, use get_annotated_capture to get full DOM context. Implement the fix described in the annotation comment. After fixing, call resolve_annotation with action 'fixed', a summary of what changed, and the files modified. Work through annotations by severity: critical first, then major, then minor."
+    "prompt": "Call get_unresolved to find all open annotations. For each annotation, use get_annotation_context to get full DOM context. Implement the fix described in the annotation comment. After fixing, call resolve_annotation with action 'fixed', a summary of what changed, and the files modified. Work through annotations by severity: critical first, then major, then minor."
   }
 }
 ```

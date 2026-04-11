@@ -11,6 +11,13 @@ import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { setBaseline } from '#src/baselines.js';
 
+/**
+ * Register the set_baseline MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/indexer.js').Indexer} _indexer
+ * @param {string} capturesDir
+ * @see #src/baselines.js
+ */
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'set_baseline',

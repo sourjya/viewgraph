@@ -253,7 +253,7 @@ npm run test:ext       # extension only (388 tests)
 | `audit_layout` | Layout audit: element overflow, sibling overlap, viewport overflow |
 | `compare_captures` | Diff two captures: added/removed elements, layout shifts, testid changes |
 | `get_annotations` | Human annotations from review-mode captures |
-| `get_annotated_capture` | Capture filtered to annotated nodes + comments |
+| `get_annotation_context` | Capture filtered to annotated nodes + comments |
 
 ### Bidirectional Tools (M3)
 

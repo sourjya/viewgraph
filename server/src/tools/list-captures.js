@@ -8,6 +8,11 @@
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 
+/**
+ * Register the list_captures MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/indexer.js').Indexer} indexer
+ */
 export function register(server, indexer) {
   server.tool(
     'list_captures',

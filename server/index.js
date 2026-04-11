@@ -36,7 +36,7 @@ import { register as registerAuditAccessibility } from '#src/tools/audit-accessi
 import { register as registerAuditLayout } from '#src/tools/audit-layout.js';
 import { register as registerCompareCaptures } from '#src/tools/compare-captures.js';
 import { register as registerGetAnnotations } from '#src/tools/get-annotations.js';
-import { register as registerGetAnnotatedCapture } from '#src/tools/get-annotated-capture.js';
+import { register as registerGetAnnotatedCapture } from '#src/tools/get-annotation-context.js';
 import { register as registerRequestCapture } from '#src/tools/request-capture.js';
 import { register as registerGetRequestStatus } from '#src/tools/get-request-status.js';
 import { register as registerGetFidelityReport } from '#src/tools/get-fidelity-report.js';

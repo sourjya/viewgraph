@@ -11,6 +11,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Inspect Tab Captures UX Redesign
 
 ### Kiro Power Package (M8b)
+
+### MCP Server Audit Fixes
+- Security: `get_fidelity_report` now uses `validateCapturePath()` instead of raw `path.join()` (path traversal fix)
+- Security: `get_unresolved` output now includes `_notice` field for prompt injection defense (matches `get_annotations`)
+- Renamed `get_annotated_capture` to `get_annotation_context` for clarity (too similar to `get_annotations`)
+- Fixed `compare_captures` description: removed "style changes" (code only diffs structural changes)
+- Fixed `get_interactive_elements` description: starts with verb phrase ("Return all...")
+- Fixed `get_annotation_context` description: starts with verb phrase ("Return a...")
+- Added JSDoc to all 20 `register()` functions with `@param` types and `@see` cross-references
+
+### Kiro Power Package (M8b)
 - `POWER.md` entry point with YAML frontmatter (name, displayName, description, 14 activation keywords)
 - Tool catalog: all 19+ MCP tools documented with descriptions
 - Onboarding steps: Node.js check, extension check, init script, hook installation

@@ -1,5 +1,5 @@
 /**
- * MCP Tool: get_annotated_capture
+ * MCP Tool: get_annotation_context
  *
  * Returns a capture filtered to only the nodes referenced by annotations,
  * with full details and the annotation comments alongside. Gives the agent
@@ -13,10 +13,17 @@ import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { flattenNodes, getNodeDetails } from '#src/analysis/node-queries.js';
 
+/**
+ * Register the get_annotation_context MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/indexer.js').Indexer} _indexer
+ * @param {string} capturesDir
+ * @see #src/analysis/node-queries.js
+ */
 export function register(server, _indexer, capturesDir) {
   server.tool(
-    'get_annotated_capture',
-    `${PROJECT_NAME} capture filtered to annotated nodes + their comments. ` +
+    'get_annotation_context',
+    `Return a ${PROJECT_NAME} capture filtered to annotated nodes + their comments. ` +
     'Returns only the nodes the user flagged in review mode, with full details. ' +
     'Use annotation_id to focus on a single annotation.',
     {

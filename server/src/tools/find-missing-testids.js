@@ -18,6 +18,13 @@ function suggestTestId(tag, text) {
   return base ? `${tag}-${base}` : tag;
 }
 
+/**
+ * Register the find_missing_testids MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/indexer.js').Indexer} _indexer
+ * @param {string} capturesDir
+ * @see #src/analysis/node-queries.js
+ */
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'find_missing_testids',
