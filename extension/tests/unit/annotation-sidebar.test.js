@@ -613,7 +613,7 @@ describe('inspect tab captures section', () => {
     const btn = ic.querySelector(`[${ATTR}="copy-id"]`);
     btn.click();
     await vi.waitFor(() => {
-      expect(btn.textContent).toBe('\u2713');
+      expect(btn.textContent).toBe('Copied');
     });
     expect(copied).toBe('viewgraph-localhost-20260408-120612.json');
     delete navigator.clipboard;

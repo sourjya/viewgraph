@@ -903,23 +903,23 @@ export function create() {
     const idText = document.createElement('span');
     idText.textContent = latest.filename.replace(/\.json$/, '');
     idText.setAttribute(ATTR, 'capture-id');
-    Object.assign(idText.style, { color: '#6366f1', fontSize: '9px', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1' });
+    Object.assign(idText.style, { color: '#6366f1', fontSize: '11px', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1' });
     const copyBtn = document.createElement('button');
     copyBtn.setAttribute(ATTR, 'copy-id');
-    copyBtn.textContent = '\u2398';
+    copyBtn.textContent = 'Copy';
     copyBtn.title = 'Copy capture ID';
     Object.assign(copyBtn.style, {
-      border: 'none', background: '#1a1a2e', color: '#666', fontSize: '11px',
-      padding: '0 4px', borderRadius: '3px', cursor: 'pointer', flexShrink: '0',
-      lineHeight: '1', transition: 'color 0.15s',
+      border: 'none', background: '#1a1a2e', color: '#666', fontSize: '10px',
+      padding: '1px 6px', borderRadius: '3px', cursor: 'pointer', flexShrink: '0',
+      fontFamily: 'system-ui, sans-serif', transition: 'color 0.15s',
     });
     copyBtn.addEventListener('mouseenter', () => { copyBtn.style.color = '#a5b4fc'; });
     copyBtn.addEventListener('mouseleave', () => { copyBtn.style.color = '#666'; });
     copyBtn.addEventListener('click', () => {
       navigator.clipboard.writeText(latest.filename).then(() => {
-        copyBtn.textContent = '\u2713';
+        copyBtn.textContent = 'Copied';
         copyBtn.style.color = '#4ade80';
-        setTimeout(() => { copyBtn.textContent = '\u2398'; copyBtn.style.color = '#666'; }, 1500);
+        setTimeout(() => { copyBtn.textContent = 'Copy'; copyBtn.style.color = '#666'; }, 1500);
       }).catch(() => { /* clipboard not available */ });
     });
     idRow.append(idText, copyBtn);
@@ -929,7 +929,7 @@ export function create() {
       const titleEl = document.createElement('div');
       titleEl.setAttribute(ATTR, 'capture-title');
       titleEl.textContent = latest.title;
-      Object.assign(titleEl.style, { color: '#555', fontSize: '10px', padding: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
+      Object.assign(titleEl.style, { color: '#555', fontSize: '11px', padding: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
       container.appendChild(titleEl);
     }
 
