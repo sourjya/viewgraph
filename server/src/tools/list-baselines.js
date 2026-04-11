@@ -10,6 +10,13 @@ import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { listBaselines } from '#src/baselines.js';
 
+/**
+ * Register the list_baselines MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/indexer.js').Indexer} _indexer
+ * @param {string} capturesDir
+ * @see #src/baselines.js
+ */
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'list_baselines',

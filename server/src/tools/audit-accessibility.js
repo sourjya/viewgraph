@@ -13,6 +13,13 @@ import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { flattenNodes, getNodeDetails } from '#src/analysis/node-queries.js';
 import { auditNode } from '#src/analysis/a11y-rules.js';
 
+/**
+ * Register the audit_accessibility MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/indexer.js').Indexer} _indexer
+ * @param {string} capturesDir
+ * @see #src/analysis/a11y-rules.js
+ */
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'audit_accessibility',

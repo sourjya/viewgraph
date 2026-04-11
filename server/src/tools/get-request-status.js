@@ -8,6 +8,12 @@
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 
+/**
+ * Register the get_request_status MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/request-queue.js').RequestQueue} queue
+ * @see #src/request-queue.js
+ */
 export function register(server, queue) {
   server.tool(
     'get_request_status',

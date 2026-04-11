@@ -13,6 +13,13 @@ import { parseSummary } from '#src/parsers/viewgraph-v2.js';
 
 const MAX_INLINE_SIZE = 100 * 1024;
 
+/**
+ * Register the get_latest_capture MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/indexer.js').Indexer} indexer
+ * @param {string} capturesDir
+ * @see #src/parsers/viewgraph-v2.js
+ */
 export function register(server, indexer, capturesDir) {
   server.tool(
     'get_latest_capture',

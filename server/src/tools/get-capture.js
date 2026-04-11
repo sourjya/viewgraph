@@ -10,6 +10,13 @@ import { readFile } from 'fs/promises';
 import { PROJECT_NAME, PROJECT_PREFIX } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 
+/**
+ * Register the get_capture MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/indexer.js').Indexer} _indexer
+ * @param {string} capturesDir
+ * @see #src/utils/validate-path.js
+ */
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'get_capture',

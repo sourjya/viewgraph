@@ -15,6 +15,13 @@ import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { analyzeLayout } from '#src/analysis/layout-analysis.js';
 
+/**
+ * Register the audit_layout MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/indexer.js').Indexer} _indexer
+ * @param {string} capturesDir
+ * @see #src/analysis/layout-analysis.js
+ */
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'audit_layout',

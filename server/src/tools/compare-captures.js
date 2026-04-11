@@ -12,11 +12,18 @@ import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { diffCaptures } from '#src/analysis/capture-diff.js';
 
+/**
+ * Register the compare_captures MCP tool.
+ * @param {import('@modelcontextprotocol/sdk/server/mcp.js').McpServer} server
+ * @param {import('#src/indexer.js').Indexer} _indexer
+ * @param {string} capturesDir
+ * @see #src/analysis/capture-diff.js
+ */
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'compare_captures',
     `Diff two ${PROJECT_NAME} captures to detect changes: added/removed elements, ` +
-    'layout shifts, style changes, and testid changes. Use for visual regression.',
+    'layout shifts, and testid changes. Use for visual regression.',
     {
       file_a: z.string().describe('First capture filename (before)'),
       file_b: z.string().describe('Second capture filename (after)'),
