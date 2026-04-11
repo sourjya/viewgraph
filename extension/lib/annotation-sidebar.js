@@ -48,6 +48,7 @@ import { collectBreakpoints } from './breakpoint-collector.js';
 import { collectStackingContexts } from './stacking-collector.js';
 import { collectFocusChain } from './focus-collector.js';
 import { collectScrollContainers } from './scroll-collector.js';
+import { collectLandmarks } from './landmark-collector.js';
 import { checkRendered } from './visibility-collector.js';
 import { startWatcher, stopWatcher, isWatcherEnabled } from './continuous-capture.js';
 
@@ -362,7 +363,7 @@ export function create() {
   copyBtn.addEventListener('mouseleave', () => { copyBtn.style.background = 'transparent'; });
   copyBtn.addEventListener('click', () => {
     const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString(), viewport: { width: window.innerWidth, height: window.innerHeight }, browser: navigator.userAgent.match(/Chrome\/[\d.]+|Firefox\/[\d.]+/)?.[0] || 'Unknown' };
-    const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers() };
+    const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks() };
     const md = formatMarkdown(getAnnotations(), meta, { enrichment });
     navigator.clipboard.writeText(md).then(() => {
       copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
@@ -875,6 +876,25 @@ export function create() {
         scrollBody.appendChild(row);
       }
       inspectContent.appendChild(scrollSection);
+    }
+
+    // ARIA landmarks (only shown when issues detected)
+    const lm = collectLandmarks();
+    if (lm.issues.length > 0) {
+      const { section: lmSection, body: lmBody } = createSection('Landmarks', `\u26a0 ${lm.issues.length}`, '#f59e0b');
+      for (const issue of lm.issues) {
+        const row = document.createElement('div');
+        Object.assign(row.style, { padding: '3px 0', fontSize: '10px', color: '#f59e0b' });
+        row.textContent = issue.message;
+        lmBody.appendChild(row);
+      }
+      if (lm.landmarks.length > 0) {
+        const info = document.createElement('div');
+        info.textContent = lm.landmarks.map((l) => l.label ? `${l.role}(${l.label})` : l.role).join(' > ');
+        Object.assign(info.style, { color: '#444', fontSize: '9px', marginTop: '4px', fontStyle: 'italic' });
+        lmBody.appendChild(info);
+      }
+      inspectContent.appendChild(lmSection);
     }
 
     // Visual separator between diagnostics and capture sections

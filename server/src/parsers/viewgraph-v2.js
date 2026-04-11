@@ -97,6 +97,7 @@ export function parseCapture(jsonString) {
       stacking: raw.stacking ?? null,
       focus: raw.focus ?? null,
       scroll: raw.scroll ?? null,
+      landmarks: raw.landmarks ?? null,
     },
   };
 }
@@ -140,6 +141,7 @@ export function parseSummary(jsonString) {
       stackingIssues: raw.stacking?.issues?.length ?? 0,
       focusIssues: raw.focus?.issues?.length ?? 0,
       scrollContainers: raw.scroll?.containers?.length ?? 0,
+      landmarkIssues: raw.landmarks?.issues?.length ?? 0,
     },
   };
 }
