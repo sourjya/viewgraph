@@ -63,6 +63,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### CLI Tools
 
 ### Resolution Push (M10.3)
+
+### Keyboard Shortcuts
+- New `keyboard-shortcuts.js`: keyboard shortcut manager for annotate mode
+- Escape: deselect / close panel
+- Ctrl+Enter: send to agent
+- Ctrl+Shift+C: copy markdown
+- 1/2/3: set severity (critical/major/minor)
+- Delete: remove annotation
+- Ignores shortcuts when typing in inputs
+- 7 new extension tests
+
+### Resolution Push (M10.3)
 - Sidebar now polls `/annotations/resolved` every 5 seconds while open
 - Annotations resolved by the agent update in real-time in the sidebar
 - Polling starts on sidebar open, stops on sidebar close/destroy
