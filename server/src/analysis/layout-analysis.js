@@ -11,7 +11,7 @@
  * @see server/src/tools/audit-layout.js - MCP tool that calls analyzeLayout
  */
 
-import { flattenNodes, getNodeDetails } from '#src/analysis/node-queries.js';
+import { flattenNodes } from '#src/analysis/node-queries.js';
 
 // ---------------------------------------------------------------------------
 // Helpers

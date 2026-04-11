@@ -15,31 +15,6 @@
 
 const ATTR = 'data-vg-annotate';
 
-/**
- * CSS properties that create a new stacking context.
- * @see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout/Stacking_context
- */
-const STACKING_TRIGGERS = [
-  // position + z-index (not auto)
-  (cs) => cs.position !== 'static' && cs.zIndex !== 'auto',
-  // opacity < 1
-  (cs) => parseFloat(cs.opacity) < 1,
-  // transform
-  (cs) => cs.transform !== 'none',
-  // filter
-  (cs) => cs.filter !== 'none' && cs.filter !== '',
-  // will-change with stacking properties
-  (cs) => /opacity|transform|filter|z-index/.test(cs.willChange || ''),
-  // isolation
-  (cs) => cs.isolation === 'isolate',
-  // mix-blend-mode
-  (cs) => cs.mixBlendMode !== 'normal',
-  // contain with layout or paint
-  (cs) => /layout|paint|strict|content/.test(cs.contain || ''),
-  // position fixed or sticky always create stacking context
-  (cs) => cs.position === 'fixed' || cs.position === 'sticky',
-];
-
 /** Build a compact selector for an element. */
 function selector(el) {
   const tag = el.tagName.toLowerCase();

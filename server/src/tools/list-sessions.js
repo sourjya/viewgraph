@@ -14,7 +14,6 @@
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
-import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 
 /**
  * Register the list_sessions MCP tool.

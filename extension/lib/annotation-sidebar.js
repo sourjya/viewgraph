@@ -73,8 +73,8 @@ import { collectLandmarks } from './landmark-collector.js';
 import { collectComponents } from './component-collector.js';
 import { checkRendered } from './visibility-collector.js';
 import { startWatcher, stopWatcher, isWatcherEnabled } from './continuous-capture.js';
-import { isRecording, startSession, stopSession, addStep, getState, setName, restore as restoreSession } from './session-manager.js';
-import { connect as wsConnect, disconnect as wsDisconnect, sendAnnotationCreate, sendAnnotationUpdate, sendAnnotationDelete } from './ws-client.js';
+import { isRecording, startSession, stopSession, addStep, getState } from './session-manager.js';
+import { connect as wsConnect, disconnect as wsDisconnect } from './ws-client.js';
 
 const ATTR = 'data-vg-annotate';
 let sidebarEl = null;
