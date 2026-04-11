@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>T13: Script Errors</title>
+  <style>
+    body { margin: 20px; font-family: system-ui; background: #111; color: #eee; }
+  </style>
+</head>
+<body>
+  <h1>T13: Script Errors</h1>
+  <p>Page throws errors. Tests: content script isolation, console collector cap.</p>
+  <button data-testid="still-works">This button should still be capturable</button>
+  <input type="text" aria-label="Still works" data-testid="still-input">
+
+  <script>
+    // Uncaught error
+    throw new Error('Intentional uncaught error');
+  </script>
+  <script>
+    // Unhandled promise rejection
+    Promise.reject(new Error('Intentional unhandled rejection'));
+  </script>
+  <script>
+    // Console error spam (60 errors - exceeds 50 cap)
+    for (let i = 0; i < 60; i++) {
+      console.error(`Spam error ${i}: something went wrong in module ${i}`);
+    }
+    // Console warning spam
+    for (let i = 0; i < 60; i++) {
+      console.warn(`Spam warning ${i}: deprecated API usage`);
+    }
+  </script>
+  <script>
+    // TypeError
+    null.foo;
+  </script>
+  <script>
+    // ReferenceError
+    undefinedVariable.bar;
+  </script>
+</body>
+</html>

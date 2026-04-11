@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html><!-- Missing lang attribute -->
+<head>
+  <meta charset="UTF-8">
+  <title>T10: Broken Accessibility</title>
+  <style>
+    body { margin: 20px; font-family: system-ui; background: #111; color: #eee; }
+    .section { margin: 12px 0; padding: 10px; border: 1px solid #333; border-radius: 4px; }
+    .label { color: #dc2626; font-size: 12px; margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <h1>T10: Every A11y Anti-Pattern</h1>
+
+  <div class="section">
+    <div class="label">Images without alt</div>
+    <img src="logo.png">
+    <img src="icon.svg" alt=""><!-- empty alt is valid for decorative -->
+  </div>
+
+  <div class="section">
+    <div class="label">Buttons without accessible names</div>
+    <button></button>
+    <button aria-label=""></button>
+    <div role="button"></div>
+  </div>
+
+  <div class="section">
+    <div class="label">Inputs without labels</div>
+    <input type="text" placeholder="No label">
+    <input type="email" id="email-no-label">
+    <select><option>Choose</option></select>
+    <textarea></textarea>
+  </div>
+
+  <div class="section">
+    <div class="label">Nested interactive elements</div>
+    <button>Outer <a href="#">Inner link</a></button>
+    <a href="#"><button>Button inside link</button></a>
+  </div>
+
+  <div class="section">
+    <div class="label">Duplicate IDs</div>
+    <div id="duplicate">First</div>
+    <div id="duplicate">Second</div>
+  </div>
+
+  <div class="section">
+    <div class="label">Invalid ARIA</div>
+    <div role="banana">Invalid role</div>
+    <div aria-level="abc">Invalid aria-level</div>
+    <div role="checkbox">Checkbox without aria-checked</div>
+  </div>
+
+  <div class="section">
+    <div class="label">aria-hidden on focusable</div>
+    <button aria-hidden="true">Focusable but hidden from a11y</button>
+    <a href="#" aria-hidden="true">Link hidden from a11y</a>
+  </div>
+
+  <div class="section">
+    <div class="label">Positive tabindex everywhere</div>
+    <button tabindex="5">Tab 5</button>
+    <button tabindex="1">Tab 1</button>
+    <button tabindex="99">Tab 99</button>
+    <button tabindex="3">Tab 3</button>
+  </div>
+
+  <div class="section">
+    <div class="label">Low contrast text</div>
+    <p style="color: #333; background: #222;">Dark on dark</p>
+    <p style="color: #ccc; background: #ddd;">Light on light</p>
+  </div>
+
+  <div class="section">
+    <div class="label">Form without label or aria-label</div>
+    <form>
+      <input type="text" required value=""><!-- required + empty = validation error -->
+      <input type="email" aria-invalid="true">
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <div class="section">
+    <div class="label">Missing landmarks</div>
+    <!-- No <main>, no <nav>, no <header> - just divs -->
+    <div>Navigation pretending to be a div</div>
+    <div>Main content pretending to be a div</div>
+  </div>
+</body>
+</html>

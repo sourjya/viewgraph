@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>T4: Invisible Elements</title>
+  <style>
+    body { margin: 20px; font-family: system-ui; background: #111; color: #eee; }
+    .section { margin: 16px 0; padding: 12px; border: 1px solid #333; border-radius: 4px; }
+    .label { color: #f59e0b; font-size: 12px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <h1>T4: Invisible Elements</h1>
+  <p>Every hiding technique. Tests: isRendered flag, salience scoring, bbox handling.</p>
+
+  <div class="section">
+    <div class="label">display: none</div>
+    <button style="display: none" data-testid="hidden-display">Hidden by display:none</button>
+  </div>
+
+  <div class="section">
+    <div class="label">visibility: hidden</div>
+    <button style="visibility: hidden" data-testid="hidden-visibility">Hidden by visibility</button>
+  </div>
+
+  <div class="section">
+    <div class="label">opacity: 0</div>
+    <button style="opacity: 0" data-testid="hidden-opacity">Hidden by opacity</button>
+  </div>
+
+  <div class="section">
+    <div class="label">clip-path: inset(100%)</div>
+    <button style="clip-path: inset(100%)" data-testid="hidden-clip">Hidden by clip-path</button>
+  </div>
+
+  <div class="section">
+    <div class="label">Off-screen (left: -9999px)</div>
+    <button style="position: absolute; left: -9999px" data-testid="hidden-offscreen">Off-screen</button>
+  </div>
+
+  <div class="section">
+    <div class="label">Zero size (width:0; height:0; overflow:hidden)</div>
+    <div style="width: 0; height: 0; overflow: hidden">
+      <button data-testid="hidden-zero-size">Zero size container</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="label">display: contents (no box, children visible)</div>
+    <div style="display: contents">
+      <button data-testid="contents-child">Child of display:contents</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="label">Hidden ancestor (parent is display:none)</div>
+    <div style="display: none">
+      <button data-testid="hidden-ancestor">Hidden by ancestor</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="label">aria-hidden="true" (visible but hidden from a11y tree)</div>
+    <button aria-hidden="true" data-testid="aria-hidden">Aria hidden</button>
+  </div>
+
+  <div class="section">
+    <div class="label">Visible control (should be captured normally)</div>
+    <button data-testid="visible-control">I am visible</button>
+  </div>
+</body>
+</html>
