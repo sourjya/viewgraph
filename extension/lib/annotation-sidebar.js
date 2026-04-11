@@ -40,6 +40,27 @@ async function syncResolved() {
     if (changed) refresh();
   } catch { /* server offline - no sync */ }
 }
+
+/** Polling interval for resolution sync (5 seconds). */
+const RESOLUTION_POLL_MS = 5000;
+let resolutionPollTimer = null;
+
+/**
+ * Start periodic polling for resolved annotations.
+ * Polls every 5 seconds while the sidebar is open.
+ */
+function startResolutionPolling() {
+  stopResolutionPolling();
+  resolutionPollTimer = setInterval(syncResolved, RESOLUTION_POLL_MS);
+}
+
+/** Stop periodic resolution polling. */
+function stopResolutionPolling() {
+  if (resolutionPollTimer) {
+    clearInterval(resolutionPollTimer);
+    resolutionPollTimer = null;
+  }
+}
 import { formatMarkdown } from './export-markdown.js';
 import { discoverServer, authHeaders, getAgentName } from './constants.js';
 import { collectNetworkState } from './network-collector.js';
@@ -1238,6 +1259,7 @@ export function create() {
 
   refresh();
   syncResolved();
+  startResolutionPolling();
   startRequestPolling();
 }
 
@@ -1717,6 +1739,7 @@ export function refresh() {
 /** Remove the sidebar from the DOM. */
 export function destroy() {
   stopRequestPolling();
+  stopResolutionPolling();
   if (hostEl) { hostEl.remove(); hostEl = null; }
   if (sidebarEl) { sidebarEl = null; }
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }
