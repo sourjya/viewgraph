@@ -5,7 +5,8 @@
   "type": "module",
   "main": "server/index.js",
   "bin": {
-    "viewgraph-init": "scripts/viewgraph-init.js"
+    "viewgraph-init": "scripts/viewgraph-init.js",
+    "viewgraph-status": "scripts/viewgraph-status.js"
   },
   "files": [
     "server/index.js",
@@ -22,6 +23,7 @@
     "pack": "npm pack --pack-destination dist",
     "dev:server": "npm run dev --workspace=server",
     "dev:ext": "npm run dev --workspace=extension",
+    "status": "node scripts/viewgraph-status.js",
     "build:ext": "npm run build --workspace=extension",
     "test": "npm run test --workspaces --if-present",
     "test:server": "npm run test --workspace=server",

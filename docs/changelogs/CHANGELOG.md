@@ -21,6 +21,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Scroll Container Detection (M13.4)
 
 ### ARIA Landmarks (M13.6)
+
+### ViewGraph Status Command
+- New `scripts/viewgraph-status.js`: one-command health check for entire setup
+- Checks: captures directory, auth token, MCP config (auto-detects agent), server health, Power assets, gitignore
+- Color-coded output: green checkmarks, red failures, yellow warnings
+- Available via `npm run status` or `node scripts/viewgraph-status.js`
+
+### ARIA Landmarks (M13.6)
 - New `landmark-collector.js`: identifies semantic landmark regions (nav, main, aside, header, footer, role=*)
 - Respects HTML5 scoping: header/footer inside article/section are NOT banner/contentinfo
 - Detects missing main landmark and duplicate unlabeled landmarks of same role
