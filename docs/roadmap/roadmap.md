@@ -38,6 +38,7 @@
 | Dead Code Elimination | Complete | 16 unused exports/imports/functions removed |
 | Redundancy Centralization | Complete | selector(), ATTR, readAndParse() helpers extracted |
 | M16: Sidebar UX Polish | Planned | 10 tasks: bug fix, adaptive footer, keyboard nav, interaction polish |
+| M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
 
 **Current totals:** 923 tests (324 server + 599 extension), 34 MCP tools, 14 enrichment collectors
 
@@ -638,6 +639,28 @@ to specific ViewGraph features, tools, workflows, and remaining gaps.
 | 16.8 | Inspect tab empty state | Show green "No issues detected" when all diagnostic sections are clean. |
 | 16.9 | Report button feedback | Change "Saving..." to "Saved!" with checkmark, matching Send/Copy pattern. |
 | 16.10 | Collapsed strip active state | Highlight active mode icon in strip (indigo background) when mode is set. |
+
+---
+
+## Milestone 17: Telemetry (Future)
+
+**Goal:** Anonymous usage analytics to understand feature adoption, error rates, and usage patterns. Privacy-by-design: no page content, URLs, or project data ever collected.
+
+**Spec:** [`.kiro/specs/telemetry/`](../../.kiro/specs/telemetry/)
+
+| # | Task | Details |
+|---|---|---|
+| 17.1 | TELEMETRY.md | Document every event, parameter, and exclusion at repo root |
+| 17.2 | Extension telemetry client | `telemetry.js` - track, flush, enable/disable, install ID, chrome.alarms timer |
+| 17.3 | Server telemetry client | `telemetry.js` - same interface, in-memory backend, env var control |
+| 17.4 | Options page consent UI | Usage Analytics toggle, description, TELEMETRY.md link, local log viewer |
+| 17.5 | Sidebar settings toggle | Quick-access telemetry toggle in settings overlay |
+| 17.6 | Extension session/annotation events | session_start, session_end, annotation_created |
+| 17.7 | Extension export/navigation events | export_used, tab_switched, mode_switched, keyboard_shortcut_used |
+| 17.8 | Extension infrastructure events | auto_capture_triggered, collector_error, server_connection |
+| 17.9 | Server tool/capture events | server_start, tool_called, tool_error, capture_received |
+| 17.10 | Disclosure notices | Init script output, README sections, Web Store privacy declaration |
+| 17.11 | Analytics endpoint | HTTPS receiver, append-only storage, no IP logging, 90-day retention |
 
 ---
 

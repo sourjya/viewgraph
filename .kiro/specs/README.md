@@ -15,6 +15,7 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | - | Unified Review Panel | [`unified-review-panel/`](./unified-review-panel/) | Complete |
 | - | Inspect Tab Redesign | [`inspect-tab-redesign/`](./inspect-tab-redesign/) | Complete |
 | - | SingleFile Fidelity | [`singlefile-fidelity/`](./singlefile-fidelity/) | Not Started |
+| M17 | Telemetry | [`telemetry/`](./telemetry/) | Specced |
 
 ## Architecture Decisions
 

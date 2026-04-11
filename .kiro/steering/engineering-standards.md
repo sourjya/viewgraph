@@ -238,6 +238,17 @@ No code may be written without a task list. This is non-negotiable.
 - Use .env.example for configuration templates
 - Use appropriate linters for the project's languages
 
+## Themed Dialogs -- MANDATORY
+
+**All confirmation dialogs, alerts, and informational popups must use the application's themed dialog components. No exceptions.**
+
+### Rules
+
+1. **Never use native browser dialogs** -- `window.alert()`, `window.confirm()`, and `window.prompt()` are forbidden. They cannot be styled, break the visual experience, and behave inconsistently across browsers.
+2. **Use the application's dialog/modal system** -- every dialog must render through the project's themed component (e.g., `ConfirmDialog`, `AlertDialog`, `Modal`) so it inherits the design system's colors, typography, spacing, and animations.
+3. **Consistent UX across all interactions** -- destructive actions get a themed confirmation dialog with clear action labels (not "OK/Cancel"). Informational messages use themed toast/snackbar notifications. Error messages use themed error dialogs with context.
+4. **Accessible by default** -- themed dialogs must trap focus, support Escape to close, and include proper ARIA roles (`role="dialog"`, `aria-modal="true"`).
+
 ## Error Handling Standards -- MANDATORY
 
 **Errors must be explicit, contextual, and never silently swallowed.**
