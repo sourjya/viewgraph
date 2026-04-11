@@ -12,6 +12,11 @@ These rules fill gaps not already covered by `engineering-standards.md` or `code
 - Every new dependency must have a functional justification tied to a concrete requirement, test need, or architectural concern.
 - Do not add libraries speculatively. If the standard library or an existing dependency can do the job, use it.
 - Keep dependency manifests lean and auditable.
+- **Justify every new dependency** -- the commit message or task notes must explain why this dependency is needed and why existing deps or stdlib can't do the job.
+- **Check for overlap** -- before adding a new package, verify no existing dependency already provides the same functionality.
+- **Prefer small, focused packages** over large frameworks when only one feature is needed.
+- **Pin versions explicitly** -- never use floating version ranges in production dependencies. Lock files must be committed.
+- **Audit before adding** -- check the package's maintenance status, download count, last update date, and known vulnerabilities before adding it to the project.
 
 ## Design Principles
 

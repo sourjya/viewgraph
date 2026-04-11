@@ -29,6 +29,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Element-Level Diagnostic Hints
 
 ### Source Linking (M15.1)
+
+### Component Tree Mapping (R1/M12.3)
+- New `component-collector.js`: detects React/Vue/Svelte and extracts component names from DOM nodes
+- React: reads `__reactFiber$` keys, walks fiber tree for function/class component names and displayName
+- Vue: reads `__vueParentComponent` (Vue 3) and `__vue__` (Vue 2) for component names
+- Svelte: reads `__svelte_meta` for component file names
+- Component data included in capture JSON as `components` section (framework + component list)
+- Server parser extracts components; `get_page_summary` includes `framework` and `componentCount`
+- Agent can now jump from "div.sc-bdfBwQ" to "ProductCard" instantly
+- 13 new extension tests (5 detection + 5 React + 2 Vue + 1 dedup)
+
+### Source Linking (M15.1)
 - New `source-linker.js`: searches project codebase for DOM element identifiers
 - Search strategy by confidence: data-testid (high) > aria-label (high) > id (medium) > class (low) > text (low)
 - Searches .jsx, .tsx, .vue, .svelte, .html, .js, .ts, .css files only
