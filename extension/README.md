@@ -11,7 +11,7 @@ Built with [WXT](https://wxt.dev/) for cross-browser Manifest V3 support.
 - **DOM Capture** - full page DOM traversal with salience scoring, spatial clustering, style extraction
 - **Unified Annotate** - click elements or shift+drag regions to annotate with comments and severity
 - **Two-Tab Sidebar** - Review tab for annotations/export, Inspect tab for page diagnostics
-- **Inspect Tab** - live viewport breakpoint, network requests (failed highlighted), console errors/warnings, visibility warnings
+- **Inspect Tab** - live viewport breakpoint, network requests (failed highlighted), console errors/warnings, capture history with auto-diff, visibility warnings
 - **Page Notes** - page-level comments labeled P1, P2, etc. with separate numbering
 - **Multi-Export** - Send to Agent (MCP push with full capture), Copy Markdown (with environment data), Download Report (ZIP with screenshots + network.json + console.json)
 - **Agent Request Cards** - when the agent calls `request_capture`, a card appears in the sidebar with purpose icon (capture/inspect/verify), Accept and Decline buttons
@@ -44,11 +44,12 @@ See [UX Design](../docs/architecture/ux-analysis.md) for design decisions and us
 - [Extension Core](../.kiro/specs/extension-core/) - DOM traversal, serialization, popup UI
 - [Unified Annotate Mode](../.kiro/specs/unified-annotate-mode/) - merged inspect + review
 - [Multi-Export](../.kiro/specs/multi-export/) - markdown, ZIP, MCP push
+- [Inspect Tab Redesign](../.kiro/specs/inspect-tab-redesign/) - captures UX simplification
 
 ## Testing
 
 ```bash
-npm test               # unit tests (365 tests)
+npm test               # unit tests (388 tests)
 npm run test:watch     # watch mode
 ```
 
@@ -93,5 +94,5 @@ lib/
   html-snapshot.js       HTML snapshot serializer for fidelity measurement
   url-checks.js          Injectable page detection (chrome://, about:, etc.)
 public/                  Static assets (icons)
-tests/                   Extension tests (365 tests)
+tests/                   Extension tests (388 tests)
 ```

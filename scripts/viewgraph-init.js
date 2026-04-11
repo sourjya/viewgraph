@@ -130,12 +130,17 @@ writeFileSync(path.join(CWD, '.viewgraph', '.agent'), agent ? agent.name : 'Agen
 const gitignorePath = path.join(CWD, '.gitignore');
 if (existsSync(gitignorePath)) {
   const content = readFileSync(gitignorePath, 'utf-8');
-  if (!content.includes('.viewgraph/captures')) {
-    appendFileSync(gitignorePath, '\n# ViewGraph captures\n.viewgraph/captures/\n');
+  if (!content.includes('.viewgraph')) {
+    appendFileSync(gitignorePath, '\n# ViewGraph - captures, tokens, local config\n.viewgraph/\n');
     console.log('  Updated .gitignore');
+  } else if (content.includes('.viewgraph/captures') && !content.match(/^\.viewgraph\/?\s*$/m)) {
+    // Upgrade: old installs only ignored captures/ - widen to entire dir
+    const updated = content.replace(/# ViewGraph captures\n\.viewgraph\/captures\/?\n?/, '# ViewGraph - captures, tokens, local config\n.viewgraph/\n');
+    writeFileSync(gitignorePath, updated);
+    console.log('  Upgraded .gitignore (.viewgraph/captures → .viewgraph/)');
   }
 } else {
-  writeFileSync(gitignorePath, '# ViewGraph captures\n.viewgraph/captures/\n');
+  writeFileSync(gitignorePath, '# ViewGraph - captures, tokens, local config\n.viewgraph/\n');
   console.log('  Created .gitignore');
 }
 

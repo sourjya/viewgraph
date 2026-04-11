@@ -824,150 +824,125 @@ export function create() {
       inspectContent.appendChild(visSection);
     }
 
+    // Visual separator between diagnostics and capture sections
+    const capSep = document.createElement('hr');
+    Object.assign(capSep.style, { border: 'none', borderTop: '1px solid #333', margin: '8px 0 4px' });
+    inspectContent.appendChild(capSep);
+
+    // Auto-capture toggle (grouped with captures below)
+    inspectContent.appendChild(autoRow);
+
     // Captures + Baseline section - fetches from server asynchronously
     fetchCapturesSection(inspectContent);
-
-    // Auto-capture toggle at bottom (it's a setting, not a primary action)
-    inspectContent.appendChild(autoRow);
   }
 
   /**
-   * Fetch capture history and baseline data from the server, then render
-   * the captures list, set-baseline button, and diff summary.
-   * Runs async after the synchronous Inspect sections are rendered.
+   * Fetch capture count from the server and render a single status line.
+   * Surfaces warnings only when something looks wrong (empty capture, stale data).
    */
   async function fetchCapturesSection(container) {
     const serverUrl = await discoverServer();
     if (!serverUrl) return;
     const pageUrl = location.href;
 
-    // Fetch captures list for this URL from the indexer
     let captures = [];
     try {
       const res = await fetch(`${serverUrl}/health`);
       if (!res.ok) return;
-      // Use list endpoint filtered by current URL
       const listRes = await fetch(`${serverUrl}/captures?url=${encodeURIComponent(pageUrl)}`);
       if (listRes.ok) captures = (await listRes.json()).captures || [];
     } catch { return; }
 
-    // Fetch baselines
-    let baselines = [];
-    try {
-      const res = await fetch(`${serverUrl}/baselines?url=${encodeURIComponent(pageUrl)}`);
-      if (res.ok) baselines = (await res.json()).baselines || [];
-    } catch { /* server may not support baselines yet */ }
-    const baselineKeys = new Set(baselines.map((b) => b.key));
-
     if (captures.length === 0) return;
 
-    const { section: capSection, body: capBody } = createSection('Captures', `${captures.length}`, '#6366f1');
-    for (let i = 0; i < Math.min(captures.length, 10); i++) {
-      const cap = captures[i];
-      const prev = captures[i + 1]; // next in list = previous in time (sorted newest first)
-      const row = document.createElement('div');
-      Object.assign(row.style, { display: 'flex', alignItems: 'center', gap: '6px', padding: '3px 0' });
+    const now = Date.now();
+    const latest = captures[0];
+    const d = latest.timestamp ? new Date(latest.timestamp) : null;
 
-      // Timestamp
-      const ts = document.createElement('span');
-      const d = cap.timestamp ? new Date(cap.timestamp) : null;
-      ts.textContent = d ? `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}` : cap.filename.slice(0, 20);
-      Object.assign(ts.style, { color: '#9ca3af', fontSize: '11px', flexShrink: '0' });
-
-      // Node count with diff vs previous
-      const nc = document.createElement('span');
-      const count = cap.nodeCount || 0;
-      if (prev && prev.nodeCount) {
-        const delta = count - prev.nodeCount;
-        if (delta === 0) {
-          nc.textContent = `${count} nodes`;
-          Object.assign(nc.style, { color: '#555', fontSize: '10px', flex: '1' });
-        } else {
-          const sign = delta > 0 ? '+' : '';
-          nc.textContent = `${count} nodes (${sign}${delta})`;
-          Object.assign(nc.style, { color: delta > 0 ? '#4ade80' : '#f87171', fontSize: '10px', flex: '1' });
-        }
-      } else {
-        nc.textContent = `${count} nodes`;
-        Object.assign(nc.style, { color: '#666', fontSize: '10px', flex: '1' });
-      }
-
-      row.append(ts, nc);
-
-      // Baseline indicator
-      const starBtn = document.createElement('button');
-      const isBaseline = baselines.some((b) => b.url && pageUrl.includes(b.url.replace(/^https?:\/\//, '')));
-      starBtn.textContent = isBaseline ? '\u2605 Baseline' : '\u2606';
-      starBtn.title = isBaseline ? 'Current baseline' : 'Set as baseline';
-      Object.assign(starBtn.style, {
-        border: 'none', background: 'transparent', cursor: 'pointer',
-        color: isBaseline ? '#f59e0b' : '#555', fontSize: '14px', padding: '0 2px',
-      });
-      starBtn.addEventListener('click', async () => {
-        try {
-          const res = await fetch(`${serverUrl}/baselines`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', ...authHeaders() },
-            body: JSON.stringify({ filename: cap.filename }),
-          });
-          if (res.ok) {
-            starBtn.textContent = '\u2605';
-            starBtn.style.color = '#f59e0b';
-          }
-        } catch { /* ignore */ }
-      });
-      row.appendChild(starBtn);
-      capBody.appendChild(row);
+    // Build relative time string
+    let timeStr = '';
+    if (d) {
+      const diffMin = Math.floor((now - d.getTime()) / 60000);
+      if (diffMin < 1) timeStr = 'latest just now';
+      else if (diffMin < 60) timeStr = `latest ${diffMin}m ago`;
+      else if (diffMin < 1440) timeStr = `latest ${Math.floor(diffMin / 60)}h ago`;
+      else timeStr = `latest ${Math.floor(diffMin / 1440)}d ago`;
     }
-    container.appendChild(capSection);
 
-    // Diff vs baseline
-    try {
-      const diffRes = await fetch(`${serverUrl}/baselines/compare?url=${encodeURIComponent(pageUrl)}`);
-      if (!diffRes.ok) return;
-      const diffData = await diffRes.json();
-      if (!diffData.hasBaseline) return;
-      const diff = diffData.diff;
-      if (!diff) return;
-      const total = (diff.added || 0) + (diff.removed || 0) + (diff.moved || 0) + (diff.testidChanges || 0);
-      if (total === 0) return;
+    // Status row - single line
+    const row = document.createElement('div');
+    row.setAttribute(ATTR, 'capture-status');
+    Object.assign(row.style, {
+      display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0',
+    });
 
-      const { section: diffSection, body: diffBody } = createSection('Diff vs Baseline', `${total}`, total > 0 ? '#dc2626' : '#333');
-      // Each diff category: summary line + expandable element list
-      const categories = [
-        { count: diff.added, label: 'elements added', color: '#4ade80', prefix: '+', items: diff.addedElements },
-        { count: diff.removed, label: 'elements removed', color: '#f87171', prefix: '-', items: diff.removedElements },
-        { count: diff.moved, label: 'layout shifts', color: '#f59e0b', prefix: '~', items: diff.movedElements },
-        { count: diff.testidChanges, label: 'testid changes', color: '#60a5fa', prefix: '', items: diff.testidDetails },
-      ];
-      for (const cat of categories) {
-        if (!cat.count) continue;
-        const row = document.createElement('div');
-        Object.assign(row.style, { padding: '2px 0', color: cat.color, cursor: cat.items?.length ? 'pointer' : 'default' });
-        const summary = document.createElement('span');
-        summary.textContent = `${cat.prefix}${cat.count} ${cat.label}`;
-        Object.assign(summary.style, { fontWeight: '600' });
-        row.appendChild(summary);
+    const label = document.createElement('span');
+    label.textContent = 'SNAPSHOTS';
+    Object.assign(label.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px' });
 
-        // Expandable detail list
-        if (cat.items?.length) {
-          const detail = document.createElement('div');
-          Object.assign(detail.style, { display: 'none', paddingLeft: '12px', marginTop: '2px' });
-          for (const el of cat.items) {
-            const line = document.createElement('div');
-            line.textContent = el.tag ? `${el.tag}${el.text ? ' - ' + el.text : ''}` : JSON.stringify(el);
-            Object.assign(line.style, { color: '#9ca3af', fontSize: '10px', padding: '1px 0' });
-            detail.appendChild(line);
-          }
-          row.appendChild(detail);
-          row.addEventListener('click', () => {
-            detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
-          });
-        }
-        diffBody.appendChild(row);
-      }
-      container.appendChild(diffSection);
-    } catch { /* no diff available */ }
+    const info = document.createElement('span');
+    info.textContent = `${captures.length} - ${timeStr}`;
+    info.setAttribute(ATTR, 'capture-info');
+    Object.assign(info.style, { color: '#666', fontSize: '11px', flex: '1' });
+
+    // Freshness dot: green if < 5min, grey otherwise
+    const dot = document.createElement('span');
+    const isRecent = d && (now - d.getTime()) < 300000;
+    Object.assign(dot.style, {
+      width: '6px', height: '6px', borderRadius: '50%', flexShrink: '0',
+      background: isRecent ? '#4ade80' : '#444',
+    });
+
+    row.append(label, info, dot);
+    container.appendChild(row);
+
+    // Capture ID row: filename + copy button, and page title
+    const idRow = document.createElement('div');
+    idRow.setAttribute(ATTR, 'capture-id-row');
+    Object.assign(idRow.style, { display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 0' });
+    const idText = document.createElement('span');
+    idText.textContent = latest.filename.replace(/\.json$/, '');
+    idText.setAttribute(ATTR, 'capture-id');
+    Object.assign(idText.style, { color: '#6366f1', fontSize: '9px', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1' });
+    const copyBtn = document.createElement('button');
+    copyBtn.setAttribute(ATTR, 'copy-id');
+    copyBtn.textContent = '\u2398';
+    copyBtn.title = 'Copy capture ID';
+    Object.assign(copyBtn.style, {
+      border: 'none', background: '#1a1a2e', color: '#666', fontSize: '11px',
+      padding: '0 4px', borderRadius: '3px', cursor: 'pointer', flexShrink: '0',
+      lineHeight: '1', transition: 'color 0.15s',
+    });
+    copyBtn.addEventListener('mouseenter', () => { copyBtn.style.color = '#a5b4fc'; });
+    copyBtn.addEventListener('mouseleave', () => { copyBtn.style.color = '#666'; });
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(latest.filename).then(() => {
+        copyBtn.textContent = '\u2713';
+        copyBtn.style.color = '#4ade80';
+        setTimeout(() => { copyBtn.textContent = '\u2398'; copyBtn.style.color = '#666'; }, 1500);
+      }).catch(() => { /* clipboard not available */ });
+    });
+    idRow.append(idText, copyBtn);
+    container.appendChild(idRow);
+    // Page title (if available)
+    if (latest.title) {
+      const titleEl = document.createElement('div');
+      titleEl.setAttribute(ATTR, 'capture-title');
+      titleEl.textContent = latest.title;
+      Object.assign(titleEl.style, { color: '#555', fontSize: '10px', padding: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
+      container.appendChild(titleEl);
+    }
+
+    // Warning if latest capture is empty
+    if ((latest.nodeCount || 0) === 0) {
+      const warn = document.createElement('div');
+      warn.setAttribute(ATTR, 'capture-warning');
+      warn.textContent = '\u26a0 Latest capture is empty - page may not have loaded';
+      Object.assign(warn.style, {
+        color: '#f59e0b', fontSize: '10px', fontWeight: '600', padding: '2px 0',
+      });
+      container.appendChild(warn);
+    }
   }
 
   /** Switch between Review and Inspect tabs. */

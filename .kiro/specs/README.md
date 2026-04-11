@@ -13,6 +13,7 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | M7c | Multi-Export Annotations | [`multi-export/`](./multi-export/) | Complete |
 | M8b | Kiro Power Package | [`kiro-power/`](./kiro-power/) | Not Started |
 | - | Unified Review Panel | [`unified-review-panel/`](./unified-review-panel/) | Specced |
+| - | Inspect Tab Redesign | [`inspect-tab-redesign/`](./inspect-tab-redesign/) | Complete |
 | - | SingleFile Fidelity | [`singlefile-fidelity/`](./singlefile-fidelity/) | Not Started |
 
 ## Architecture Decisions

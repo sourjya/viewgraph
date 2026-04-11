@@ -380,6 +380,25 @@ annotation workflow and resolution format. Post-fix hook auto-requests verificat
 
 ---
 
+## Cross-Cutting: Inspect Tab Redesign
+
+**Goal:** Redesign the Inspect tab captures section for intuitive UX - replace raw node counts
+and cryptic baseline stars with meaningful labels, drift detection, and click-to-compare.
+
+**Spec:** [`.kiro/specs/inspect-tab-redesign/`](../../.kiro/specs/inspect-tab-redesign/)
+**Status:** Complete
+
+Spans M11 (Inspect tab) and M15.2 (baselines UX). Key changes:
+- Capture rows show `Latest`, `Changed`, `Pinned` labels instead of node counts
+- Drift warning when latest capture differs from pinned baseline
+- Click two rows to compare with inline diff summary
+- Right-click to pin a capture as baseline
+- Visual separator between diagnostics and capture sections
+- Server endpoint `GET /captures/compare?a=&b=` for arbitrary capture diffing
+- Init script ignores entire `.viewgraph/` directory (was only ignoring captures/)
+
+---
+
 ## Milestone 9: Advanced Tools + Polish (Days 34+)
 
 **Goal:** Power features and production hardening.

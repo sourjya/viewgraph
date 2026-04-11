@@ -108,6 +108,8 @@ on localhost for extension communication.
 |---|---|
 | `GET /health` | Server status, captures dir, writability |
 | `GET /info` | Project info for auto-detection (capturesDir, projectRoot) |
+| `GET /captures` | List captures, optional URL filter |
+| `GET /captures/compare` | Diff two captures by filename (a, b params) |
 | `GET /requests/pending` | Pending capture requests for extension polling |
 | `POST /requests/:id/ack` | Acknowledge a capture request |
 | `POST /requests/:id/decline` | Decline a capture request (optional reason in body) |
