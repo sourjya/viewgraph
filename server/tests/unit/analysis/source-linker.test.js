@@ -125,4 +125,24 @@ describe('findSource', () => {
     const results = await findSource(projectRoot, { testid: 'email-input' });
     expect(results[0].context).toContain('data-testid');
   });
+
+  it('(+) finds source by component name (function)', async () => {
+    const results = await findSource(projectRoot, { component: 'LoginForm' });
+    expect(results.length).toBeGreaterThan(0);
+    expect(results[0].file).toContain('LoginForm.tsx');
+    expect(results[0].confidence).toBe('high');
+    expect(results[0].line).toBe(1);
+  });
+
+  it('(+) finds source by component name (const)', async () => {
+    const results = await findSource(projectRoot, { component: 'Header' });
+    expect(results.length).toBeGreaterThan(0);
+    expect(results[0].file).toContain('Header.tsx');
+    expect(results[0].confidence).toBe('high');
+  });
+
+  it('(-) no match for nonexistent component', async () => {
+    const results = await findSource(projectRoot, { component: 'NonexistentWidget' });
+    expect(results.length).toBe(0);
+  });
 });
