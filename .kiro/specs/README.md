@@ -11,7 +11,7 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | M7 | Deployment Automation | [`deployment-automation/`](./deployment-automation/) | Complete |
 | M7b | Unified Annotate Mode | [`unified-annotate-mode/`](./unified-annotate-mode/) | Complete |
 | M7c | Multi-Export Annotations | [`multi-export/`](./multi-export/) | Complete |
-| M8b | Kiro Power Package | [`kiro-power/`](./kiro-power/) | Not Started |
+| M8b | Kiro Power Package | [`kiro-power/`](./kiro-power/) | Complete |
 | - | Unified Review Panel | [`unified-review-panel/`](./unified-review-panel/) | Specced |
 | - | Inspect Tab Redesign | [`inspect-tab-redesign/`](./inspect-tab-redesign/) | Complete |
 | - | SingleFile Fidelity | [`singlefile-fidelity/`](./singlefile-fidelity/) | Not Started |

@@ -16,7 +16,7 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 |---|---|---|
 | [`server/`](./server/) | MCP server - reads capture files, exposes 19 query/analysis/request tools | M1+M2+M3+M15.2 Complete |
 | [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, unified annotate, multi-export, enrichment | M4+M5+M6+M7b+M7c+M11+M12 Complete |
-| [`power/`](./power/) | Kiro Power assets - steering docs, hooks, workflow guidance | M8b Complete |
+| [`power/`](./power/) | Kiro Power assets - POWER.md, steering docs, hooks, MCP config | M8b Complete |
 
 ## How It Works
 

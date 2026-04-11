@@ -181,15 +181,15 @@ if (agent?.name === 'Kiro') {
     }
   }
 
-  // Copy hooks if source exists
+  // Copy hooks if source exists (both .kiro.hook JSON and legacy .sh scripts)
   if (existsSync(srcHooks)) {
     ensureDir(hooksDir);
-    for (const file of ['vg-context.sh', 'vg-post-fix.sh', 'vg-fix-annotations.sh', 'vg-check-testids.sh']) {
+    for (const file of readdirSync(srcHooks)) {
       const src = path.join(srcHooks, file);
       const dest = path.join(hooksDir, file);
       if (existsSync(src) && !existsSync(dest)) {
         writeFileSync(dest, readFileSync(src, 'utf-8'));
-        chmodSync(dest, 0o755);
+        if (file.endsWith('.sh')) chmodSync(dest, 0o755);
         console.log(`  Installed hook: ${file}`);
       }
     }

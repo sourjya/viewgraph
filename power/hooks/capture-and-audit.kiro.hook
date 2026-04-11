@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Capture and Audit Page",
+  "description": "Captures the current page, runs a11y + layout + testid audits, summarizes issues by severity",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Use get_latest_capture to find the most recent capture. Run audit_accessibility, audit_layout, and find_missing_testids on it. Summarize all issues grouped by severity (critical > major > minor). For the top 3 most impactful issues, suggest specific code fixes."
+  }
+}

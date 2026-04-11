@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Fix ViewGraph Annotations",
+  "description": "Pulls unresolved annotations, implements fixes in sequence, marks each resolved",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Call get_unresolved to find all open annotations. For each annotation, use get_annotated_capture to get full DOM context. Implement the fix described in the annotation comment. After fixing, call resolve_annotation with action 'fixed', a summary of what changed, and the files modified. Work through annotations by severity: critical first, then major, then minor."
+  }
+}
