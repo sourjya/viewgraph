@@ -13,6 +13,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Kiro Power Package (M8b)
 
 ### MCP Server Audit Fixes
+
+### Z-Index Stacking Context Resolution (M13.1)
+- New `stacking-collector.js`: walks DOM to identify stacking context boundaries (position+z-index, opacity, transform, filter, will-change, isolation, mix-blend-mode, contain, fixed/sticky)
+- Detects z-index conflicts between overlapping sibling stacking contexts
+- Stacking data included in capture JSON as `stacking` section (backward compatible)
+- Inspect tab: STACKING section appears only when conflicts detected, shows issue messages and context count
+- Server parser extracts stacking section; `get_page_summary` includes `stackingIssues` count
+- 17 new extension tests (12 detection + 5 conflict)
+
+### MCP Server Audit Fixes
 - Security: `get_fidelity_report` now uses `validateCapturePath()` instead of raw `path.join()` (path traversal fix)
 - Security: `get_unresolved` output now includes `_notice` field for prompt injection defense (matches `get_annotations`)
 - Renamed `get_annotated_capture` to `get_annotation_context` for clarity (too similar to `get_annotations`)

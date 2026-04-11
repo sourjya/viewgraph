@@ -94,6 +94,7 @@ export function parseCapture(jsonString) {
       network: raw.network ?? null,
       console: raw.console ?? null,
       breakpoints: raw.breakpoints ?? null,
+      stacking: raw.stacking ?? null,
     },
   };
 }
@@ -134,6 +135,7 @@ export function parseSummary(jsonString) {
       networkSummary: raw.network?.summary ?? null,
       consoleSummary: raw.console?.summary ?? null,
       breakpoints: raw.breakpoints ?? null,
+      stackingIssues: raw.stacking?.issues?.length ?? 0,
     },
   };
 }
