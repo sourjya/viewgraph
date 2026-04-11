@@ -19,6 +19,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Focus Management Chain (M13.2)
 
 ### Scroll Container Detection (M13.4)
+
+### ARIA Landmarks (M13.6)
+- New `landmark-collector.js`: identifies semantic landmark regions (nav, main, aside, header, footer, role=*)
+- Respects HTML5 scoping: header/footer inside article/section are NOT banner/contentinfo
+- Detects missing main landmark and duplicate unlabeled landmarks of same role
+- Landmarks data included in capture JSON as `landmarks` section
+- Inspect tab: LANDMARKS section appears only when issues detected, shows landmark chain
+- Server parser extracts landmarks; `get_page_summary` includes `landmarkIssues` count
+- 16 new extension tests (11 detection + 5 issues)
+
+### Scroll Container Detection (M13.4)
 - New `scroll-collector.js`: identifies scrollable elements (overflow:auto/scroll with scrollable content)
 - Calculates nesting depth for each container (how many scroll ancestors)
 - Flags nested scroll containers as issues (root cause of "wrong thing scrolls" bugs)
