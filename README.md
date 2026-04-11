@@ -14,7 +14,7 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 
 | Component | Description | Status |
 |---|---|---|
-| [`server/`](./server/) | MCP server - reads capture files, exposes 33 query/analysis/request tools | M1+M2+M3+M15.2 Complete |
+| [`server/`](./server/) | MCP server - reads capture files, exposes 34 query/analysis/request tools | M1+M2+M3+M15.2 Complete |
 | [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, unified annotate, multi-export, enrichment | M4+M5+M6+M7b+M7c+M11+M12 Complete |
 | [`power/`](./power/) | Kiro Power assets - POWER.md, steering docs, hooks, MCP config | M8b Complete |
 
@@ -226,9 +226,9 @@ npm run dev:ext        # start extension dev server (Chrome HMR)
 ## Testing
 
 ```bash
-npm test               # all tests (905 tests)
+npm test               # all tests (919 tests)
 npm run test:server    # server only (324 tests)
-npm run test:ext       # extension only (581 tests)
+npm run test:ext       # extension only (595 tests)
 ```
 
 ## MCP Tools

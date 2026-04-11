@@ -30,7 +30,7 @@
 | Keyboard Shortcuts | Complete | Power user shortcuts for annotate mode |
 | M14.3: WebSocket Collab | Complete | Real-time annotation sync via WebSocket |
 
-**Current totals:** 905 tests (324 server + 581 extension), 33 MCP tools, 13 enrichment collectors
+**Current totals:** 919 tests (324 server + 595 extension), 34 MCP tools, 13 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and
