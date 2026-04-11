@@ -226,7 +226,7 @@ npm run dev:ext        # start extension dev server (Chrome HMR)
 ## Testing
 
 ```bash
-npm test               # all tests (550 tests)
+npm test               # all tests (568 tests)
 npm run test:server    # server only (251 tests)
 npm run test:ext       # extension only (388 tests)
 ```
