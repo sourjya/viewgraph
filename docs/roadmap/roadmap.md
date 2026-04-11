@@ -26,8 +26,10 @@
 | M13.8: Intersection State | Complete | Viewport visibility tracking |
 | M14.4: Subtree Capture | Complete | Focused DOM subtree with full styles |
 | CLI: Status/Doctor | Complete | Health check and diagnostic tools |
+| M10.3: Resolution Push | Complete | Periodic polling for resolved annotations |
+| Keyboard Shortcuts | Complete | Power user shortcuts for annotate mode |
 
-**Current totals:** 568 tests, 33 MCP tools, 13 enrichment collectors
+**Current totals:** 575 tests, 33 MCP tools, 13 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and
