@@ -11,6 +11,7 @@
  * Runs as a MV3 service worker - no persistent state. Uses chrome.storage
  * for anything that must survive termination.
  */
+/* global defineBackground */
 
 import { SERVER_BASE_URL as SERVER_URL, discoverServer, authHeaders } from '../lib/constants.js';
 import { isInjectable, getBlockedReason } from '../lib/url-checks.js';

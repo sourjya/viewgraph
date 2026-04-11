@@ -28,8 +28,8 @@ const SKIP_DIRS = new Set(['node_modules', 'dist', 'build', '.git', '.next', '.n
 /** Maximum files to search (safety limit). */
 const MAX_FILES = 5000;
 
-/** Maximum file size to read (skip large bundles). */
-const MAX_FILE_SIZE = 200 * 1024;
+/** Maximum file size to read (skip large bundles). TODO: enforce in readFile loop. */
+const _MAX_FILE_SIZE = 200 * 1024;
 
 /**
  * Find source file locations for a DOM element.

@@ -393,7 +393,7 @@ function onMouseMove(e) {
   }
 }
 
-function onMouseUp(e) {
+function onMouseUp(_e) {
   if (!dragStart || !selectionBox) return;
   const rect = selectionBox.getBoundingClientRect();
   selectionBox.remove();

@@ -45,7 +45,6 @@ function generateAlias(el, tag, nid) {
   const testid = el.getAttribute('data-testid');
   if (testid) return `${tag}:${testid}`;
   if (el.id) return `${tag}:${el.id}`;
-  const role = el.getAttribute('role') || el.tagName.toLowerCase();
   const name = el.getAttribute('aria-label') || el.textContent?.trim().slice(0, 30);
   if (name) return `${tag}:${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '')}`;
   return `${tag}:n${nid}`;

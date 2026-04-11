@@ -35,7 +35,7 @@ export function flashElement(el, options = {}) {
   `;
   document.body.appendChild(overlay);
   // Force reflow then add animation class
-  overlay.offsetHeight; // eslint-disable-line no-unused-expressions
+  overlay.offsetHeight; // Force reflow before animation
   overlay.style.animation = `vg-flash ${FLASH_DURATION_MS}ms ease-out forwards`;
   setTimeout(() => overlay.remove(), FLASH_DURATION_MS + 50);
 }

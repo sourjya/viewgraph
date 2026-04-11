@@ -73,7 +73,7 @@ import { collectLandmarks } from './landmark-collector.js';
 import { collectComponents } from './component-collector.js';
 import { checkRendered } from './visibility-collector.js';
 import { startWatcher, stopWatcher, isWatcherEnabled } from './continuous-capture.js';
-import { isRecording, startSession, stopSession, addStep, getState } from './session-manager.js';
+import { isRecording, startSession, stopSession, getState } from './session-manager.js';
 import { connect as wsConnect, disconnect as wsDisconnect } from './ws-client.js';
 
 import { ATTR } from './selector.js';
@@ -81,7 +81,7 @@ let sidebarEl = null;
 let hostEl = null;
 let badgeEl = null;
 let collapsed = false;
-let hasCaptured = false;
+let _hasCaptured = false;
 let pendingRequests = [];
 let activeFilter = 'open'; // 'all' | 'open' | 'resolved'
 let pollTimer = null;
@@ -168,8 +168,7 @@ export function create() {
   });
   toggle.addEventListener('click', () => toggleCollapse());
 
-  // Connection status dot in header + tracked state for Send button
-  let mcpConnected = false;
+  // Connection status dot in header
   const statusDot = document.createElement('span');
   statusDot.setAttribute(ATTR, 'status-dot');
   Object.assign(statusDot.style, {
@@ -192,12 +191,10 @@ export function create() {
   discoverServer()
     .then((url) => {
       if (url) {
-        mcpConnected = true;
         statusDot.style.background = '#4ade80';
         statusDot.title = `MCP server: ${url}`;
         statusBanner.style.display = 'none';
       } else {
-        mcpConnected = false;
         statusDot.style.background = '#f87171';
         statusDot.title = 'MCP server offline';
         statusBanner.textContent = 'No project connected. Copy MD and Report available.';
@@ -370,7 +367,7 @@ export function create() {
   sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = '#6366f1'; });
   sendBtn.addEventListener('click', () => {
     // Read session note from input if recording
-    const noteInput = sidebar?.shadowRoot?.querySelector(`[${ATTR}="session-note"]`);
+    const noteInput = hostEl?.shadowRoot?.querySelector(`[${ATTR}="session-note"]`);
     const sessionNote = noteInput?.value?.trim() || undefined;
     if (noteInput) noteInput.value = '';
     chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true, sessionNote }, () => {});
@@ -408,7 +405,7 @@ export function create() {
   dlBtn.addEventListener('mouseleave', () => { dlBtn.style.background = 'transparent'; });
   dlBtn.addEventListener('click', () => {
     chrome.runtime.sendMessage({ type: 'download-report' });
-    dlBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Saving...';
+    dlBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Saved!';
     dlBtn.style.background = '#059669';
     setTimeout(() => { dlBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Report'; dlBtn.style.background = 'transparent'; }, 2000);
   });
@@ -502,8 +499,6 @@ export function create() {
   function renderProjectInfo(data) {
     autoInfo.innerHTML = '';
     autoInfo.style.fontStyle = 'normal';
-    const valStyle = 'color:#93c5fd;font-family:SF Mono,Cascadia Code,monospace;font-size:10px;word-break:break-all';
-    const lblStyle = 'color:#666;font-size:10px;margin-bottom:1px';
     const items = [
       { label: 'Root', value: data.projectRoot },
       { label: 'Captures', value: data.capturesDir },
@@ -626,8 +621,6 @@ export function create() {
   Object.assign(primaryTabs.style, {
     display: 'flex', borderBottom: '1px solid #333', flexShrink: '0',
   });
-
-  let activeTab = 'review';
 
   // Review tab content wrapper - holds mode bar, filter tabs, list, footer
   const reviewContent = document.createElement('div');
@@ -951,6 +944,21 @@ export function create() {
     }
     inspectContent.appendChild(lmSection);
 
+    // "All clear" indicator when no diagnostic issues found
+    const hasIssues = failedReqs.length > 0 || errCount > 0 || warnCount > 0
+      || hiddenEls.length > 0 || stacking.issues.length > 0
+      || focus.issues.length > 0 || scroll.issues.length > 0 || lmHasIssues;
+    if (!hasIssues) {
+      const allClear = document.createElement('div');
+      allClear.setAttribute(ATTR, 'all-clear');
+      allClear.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><polyline points="20 6 9 17 4 12"/></svg>No issues detected';
+      Object.assign(allClear.style, {
+        color: '#4ade80', fontSize: '12px', fontWeight: '600',
+        padding: '8px 0', textAlign: 'center',
+      });
+      inspectContent.appendChild(allClear);
+    }
+
     // Visual separator between diagnostics and capture sections
     const capSep = document.createElement('hr');
     Object.assign(capSep.style, { border: 'none', borderTop: '1px solid #333', margin: '8px 0 4px' });
@@ -1171,7 +1179,6 @@ export function create() {
 
   /** Switch between Review and Inspect tabs. */
   function switchTab(tab) {
-    activeTab = tab;
     reviewContent.style.display = tab === 'review' ? 'flex' : 'none';
     inspectContent.style.display = tab === 'inspect' ? 'flex' : 'none';
     if (tab === 'inspect') refreshInspect();
@@ -1242,16 +1249,18 @@ export function create() {
   badgeEl.appendChild(stripDivider);
 
   // Mode icons in collapsed strip - doubled size for easy tap targets
+  const stripButtons = {};
   for (const [key, icon] of Object.entries(MODE_ICONS)) {
     const btn = document.createElement('button');
     btn.innerHTML = icon.replace(/width="16" height="16"/, 'width="32" height="32"');
     btn.title = MODE_HINTS[key];
+    btn.dataset.mode = key;
     Object.assign(btn.style, {
       border: 'none', background: 'transparent', color: '#9ca3af',
       cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex',
     });
-    btn.addEventListener('mouseenter', () => { btn.style.background = '#2a2a4a'; });
-    btn.addEventListener('mouseleave', () => { btn.style.background = 'transparent'; });
+    btn.addEventListener('mouseenter', () => { if (getCaptureMode() !== key) btn.style.background = '#2a2a4a'; });
+    btn.addEventListener('mouseleave', () => { if (getCaptureMode() !== key) btn.style.background = 'transparent'; });
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (key === 'page') {
@@ -1262,10 +1271,22 @@ export function create() {
         return;
       }
       const mode = CAPTURE_MODES[key.toUpperCase()];
-      setCaptureMode(captureMode === mode ? null : mode);
+      setCaptureMode(getCaptureMode() === mode ? null : mode);
       updateModeButtons();
+      updateStripButtons();
     });
+    stripButtons[key] = btn;
     badgeEl.appendChild(btn);
+  }
+
+  /** Sync collapsed strip mode button active states. */
+  function updateStripButtons() {
+    const current = getCaptureMode();
+    for (const [key, btn] of Object.entries(stripButtons)) {
+      const isActive = current === key;
+      btn.style.background = isActive ? '#6366f1' : 'transparent';
+      btn.style.color = isActive ? '#fff' : '#9ca3af';
+    }
   }
 
   document.documentElement.appendChild(badgeEl);
@@ -1596,13 +1617,6 @@ export function refresh() {
   });
   tabBar.appendChild(trashBtn);
 
-  /** Severity/category chip colors for list entries. */
-  const CHIP_COLORS = {
-    critical: '#dc2626', major: '#f59e0b', minor: '#6b7280',
-    visual: '#6366f1', functional: '#0ea5e9', content: '#8b5cf6',
-    a11y: '#10b981', performance: '#f97316',
-  };
-
   // Filtered items
   const visible = activeFilter === 'all' ? anns : activeFilter === 'open' ? open : resolved;
   for (const ann of visible) {
@@ -1778,7 +1792,7 @@ export function destroy() {
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }
   bellBtn = null;
   collapsed = false;
-  hasCaptured = false;
+  _hasCaptured = false;
   pendingRequests = [];
   activeFilter = 'open';
 }

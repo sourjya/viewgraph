@@ -29,7 +29,6 @@ export function validateCapture(capture) {
   const warnings = [];
   if (!capture) return { ok: false, warnings: ['No capture data'] };
   const nodes = capture.nodes || [];
-  const meta = capture?.metadata || {};
 
   if (nodes.length === 0) {
     warnings.push('Empty capture - 0 elements detected. Is the page fully loaded?');

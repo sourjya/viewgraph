@@ -156,7 +156,7 @@ function buildLocators(el) {
   if (el.testid) locators.push({ strategy: 'testId', value: el.testid, rank: rank++ });
   if (el.htmlId) locators.push({ strategy: 'id', value: el.htmlId, rank: rank++ });
   if (el.role && el.ariaLabel) locators.push({ strategy: 'role', value: el.role, name: el.ariaLabel, rank: rank++ });
-  locators.push({ strategy: 'css', value: el.selector, rank: rank++ });
+  locators.push({ strategy: 'css', value: el.selector, rank });
   return locators;
 }
 
