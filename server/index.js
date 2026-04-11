@@ -57,6 +57,7 @@ import { register as registerVisualizeFlow } from '#src/tools/visualize-flow.js'
 import { register as registerGenerateSpec } from '#src/tools/generate-spec.js';
 import { register as registerAnalyzePatterns } from '#src/tools/analyze-patterns.js';
 import { register as registerAnalyzeJourney } from '#src/tools/analyze-journey.js';
+import { register as registerGetCaptureStats } from '#src/tools/get-capture-stats.js';
 import { createRequestQueue } from '#src/request-queue.js';
 import { createHttpReceiver } from '#src/http-receiver.js';
 
@@ -114,6 +115,7 @@ registerVisualizeFlow(server, indexer, CAPTURES_DIR);
 registerGenerateSpec(server, indexer, CAPTURES_DIR);
 registerAnalyzePatterns(server, indexer, CAPTURES_DIR);
 registerAnalyzeJourney(server, indexer, CAPTURES_DIR);
+registerGetCaptureStats(server, indexer, CAPTURES_DIR);
 
 // ---------------------------------------------------------------------------
 // File indexing  -  parse metadata from a capture file and add to index

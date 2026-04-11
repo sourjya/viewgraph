@@ -59,6 +59,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Element Flash on Select (M10.1)
 
 ### CSS Animation State (M12.5)
+
+### CLI Tools
+- New `viewgraph-status.js`: health check showing server, captures, agent, auth status
+- New `viewgraph-doctor.js`: diagnostic tool checking Node.js, npm, deps, builds, ports
+- Both registered as npm bin commands
+
+### Capture Stats Tool
+- New MCP tool: `get_capture_stats` - aggregate stats across all captures
+- Shows total count, unique URLs, date range, annotation counts, average elements
+
+### CSS Animation State (M12.5)
 - New `animation-collector.js`: detects active CSS animations/transitions via Web Animations API
 - Reports animation name, play state, progress, and duration per element
 - Included in capture as `animations` enrichment section
