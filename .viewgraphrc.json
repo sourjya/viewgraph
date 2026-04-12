@@ -1,5 +1,9 @@
 {
   "allowedDirs": [
-    "/home/sourjya/coding/home-management/.viewgraph/captures"
+    "/home/sourjya/coding/home-management/.viewgraph/captures",
+    "/home/sourjya/coding/viewgraph/.viewgraph/captures",
+    "/home/sourjya/demos/app-one/.viewgraph/captures",
+    "/tmp/vg-demo-test/.viewgraph/captures",
+    "/home/sourjya/demos/app-two/.viewgraph/captures"
   ]
 }

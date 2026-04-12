@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Check TestID Coverage",
+  "description": "When UI files are edited, checks if interactive elements are missing data-testid",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["**/*.html", "**/*.jsx", "**/*.tsx", "**/*.vue", "**/*.svelte", "**/*.css"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A UI file was edited. Use get_latest_capture to check if a recent capture exists. If so, run find_missing_testids. If any interactive elements lack data-testid, locate them in the source code using the selector and add the suggested testid attribute."
+  }
+}

@@ -229,4 +229,5 @@ const server = spawn('node', [SERVER_ENTRY], {
   env: { ...process.env, VIEWGRAPH_CAPTURES_DIR: absCapturesDir },
 });
 server.unref();
-console.log(`Server started (PID ${server.pid}). Extension popup should show green dot.`);
+const port = process.env.VIEWGRAPH_HTTP_PORT || 9876;
+console.log(`Server started (PID ${server.pid}, port ${port}). Extension popup should show green dot.`);
