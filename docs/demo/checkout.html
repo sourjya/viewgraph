@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<!--
+  ViewGraph Demo - TaskFlow Checkout (Upgrade Plan)
+
+  A 3-step checkout flow with 4 planted bugs for demonstrating
+  multi-step journey recording, regression detection, and flow analysis.
+
+  PLANTED BUGS:
+  1. Step indicator loses active state on step 2 (CSS class missing)
+  2. Card number input accepts letters (no pattern/inputmode)
+  3. Order total element missing on step 2 (regression - removed from DOM)
+  4. Submit button visible before terms checkbox is checked (should be hidden)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow - Upgrade Plan</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .checkout-card { max-width: 640px; margin: 0 auto; }
+
+    .plan-summary {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px; background: rgba(99, 102, 241, 0.1);
+      border-radius: 8px; margin-bottom: 24px;
+    }
+    .plan-name { font-size: 16px; font-weight: 600; color: #f1f5f9; }
+    .plan-price { font-size: 20px; font-weight: 700; color: #818cf8; }
+    .plan-period { font-size: 13px; color: #64748b; }
+
+    .step-content { display: none; }
+    .step-content.active { display: block; }
+
+    .billing-row {
+      display: flex; justify-content: space-between;
+      padding: 8px 0; font-size: 14px;
+    }
+    .billing-row .label { color: #94a3b8; }
+    .billing-row .value { color: #e2e8f0; font-weight: 500; }
+    .billing-total {
+      border-top: 1px solid #334155;
+      margin-top: 8px; padding-top: 12px;
+      font-size: 16px; font-weight: 700;
+    }
+    .billing-total .value { color: #818cf8; }
+
+    .nav-buttons { display: flex; justify-content: space-between; margin-top: 24px; }
+
+    .terms-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 16px; font-size: 13px; color: #94a3b8;
+    }
+    .terms-row a { color: #818cf8; text-decoration: none; }
+
+    .success-icon {
+      width: 64px; height: 64px; margin: 0 auto 16px;
+      background: #059669; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .success-icon svg { width: 32px; height: 32px; stroke: white; fill: none; stroke-width: 2.5; }
+    .success-text { text-align: center; }
+    .success-text h2 { font-size: 20px; font-weight: 700; color: #f1f5f9; margin-bottom: 8px; }
+    .success-text p { color: #94a3b8; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <nav class="top-nav">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </span>
+        TaskFlow
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="#">Projects</a>
+        <a href="#">Team</a>
+        <a href="settings.html">Settings</a>
+      </div>
+    </nav>
+
+    <main class="content">
+      <h1 class="page-title">Upgrade Plan</h1>
+
+      <!-- BUG 1: step 2 is missing the "active" class - indicator won't highlight -->
+      <div class="steps" data-testid="step-indicator">
+        <div class="step active" id="step-ind-1"><span class="step-num">1</span> Review</div>
+        <div class="step-line"></div>
+        <!-- BUG: should have class="step active" when on step 2, but it's just "step" -->
+        <div class="step" id="step-ind-2"><span class="step-num">2</span> Payment</div>
+        <div class="step-line"></div>
+        <div class="step" id="step-ind-3"><span class="step-num">3</span> Confirm</div>
+      </div>
+
+      <div class="card checkout-card">
+        <!-- Step 1: Review -->
+        <div class="step-content active" id="step-1">
+          <div class="plan-summary">
+            <div>
+              <div class="plan-name">Pro Plan</div>
+              <div class="plan-period">Billed monthly</div>
+            </div>
+            <div class="plan-price" data-testid="plan-price">$29/mo</div>
+          </div>
+
+          <div class="billing-row"><span class="label">Pro Plan (monthly)</span><span class="value">$29.00</span></div>
+          <div class="billing-row"><span class="label">Tax</span><span class="value">$2.61</span></div>
+          <div class="billing-row billing-total">
+            <span class="label">Total</span>
+            <span class="value" data-testid="order-total">$31.61</span>
+          </div>
+
+          <div class="nav-buttons">
+            <a href="dashboard.html" class="btn btn-secondary">Cancel</a>
+            <button class="btn btn-primary" data-testid="next-to-payment" onclick="goToStep(2)">Continue to Payment</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Payment -->
+        <div class="step-content" id="step-2">
+          <form aria-label="Payment details">
+            <div class="form-group">
+              <label for="card-name">Name on card</label>
+              <input type="text" id="card-name" placeholder="Alex Kim" data-testid="card-name">
+            </div>
+            <div class="form-group">
+              <label for="card-number">Card number</label>
+              <!-- BUG 2: accepts letters - missing inputmode="numeric" and pattern -->
+              <input type="text" id="card-number" placeholder="4242 4242 4242 4242" data-testid="card-number">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="card-expiry">Expiry</label>
+                <input type="text" id="card-expiry" placeholder="MM/YY" data-testid="card-expiry">
+              </div>
+              <div class="form-group">
+                <label for="card-cvc">CVC</label>
+                <input type="text" id="card-cvc" placeholder="123" data-testid="card-cvc">
+              </div>
+            </div>
+          </form>
+
+          <!-- BUG 3: order total is MISSING on step 2 (regression from step 1) -->
+          <!-- The total should be visible here but the element is removed -->
+
+          <div class="terms-row">
+            <input type="checkbox" id="terms" data-testid="terms-checkbox">
+            <label for="terms">I agree to the <a href="#">Terms of Service</a></label>
+          </div>
+
+          <div class="nav-buttons">
+            <button class="btn btn-secondary" data-testid="back-to-review" onclick="goToStep(1)">Back</button>
+            <!-- BUG 4: submit visible even when terms unchecked (should be hidden/disabled) -->
+            <button class="btn btn-primary" data-testid="submit-payment" onclick="goToStep(3)">Pay $31.61</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Confirmation -->
+        <div class="step-content" id="step-3">
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="success-text">
+            <h2>Payment successful!</h2>
+            <p>Your Pro Plan is now active. You'll receive a confirmation email shortly.</p>
+          </div>
+          <div class="nav-buttons" style="justify-content: center; margin-top: 32px;">
+            <a href="dashboard.html" class="btn btn-primary" data-testid="go-to-dashboard">Go to Dashboard</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function goToStep(n) {
+      document.querySelectorAll('.step-content').forEach(s => s.classList.remove('active'));
+      document.getElementById('step-' + n).classList.add('active');
+      // Note: step indicator update is intentionally buggy for step 2 (BUG 1)
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active', 'done'));
+      for (let i = 1; i < n; i++) {
+        document.getElementById('step-ind-' + i).classList.add('done');
+      }
+      // BUG 1: this line should add 'active' to step n but doesn't for step 2
+      if (n !== 2) {
+        document.getElementById('step-ind-' + n).classList.add('active');
+      }
+      window.scrollTo(0, 0);
+    }
+  </script>
+</body>
+</html>

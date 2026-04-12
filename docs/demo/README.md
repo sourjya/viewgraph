@@ -1,117 +1,171 @@
-# ViewGraph Demo - Find and Fix UI Bugs
+# ViewGraph Demo - TaskFlow App
 
-A self-contained demo that walks you through the full ViewGraph workflow:
-annotate bugs in the browser, send to Kiro, and watch them get fixed.
+A multi-page demo app with **23 planted UI bugs** across 4 pages. Annotate issues in the browser, send to your AI agent, and watch them get fixed.
 
-**Time:** 5 minutes
-**Prerequisites:** ViewGraph extension installed, MCP server running (see [Getting Started](../../README.md#getting-started) if first time)
+## Pages
 
-## Setup
+| Page | Bugs | What it demonstrates |
+|---|---|---|
+| [Login](./index.html) | 8 | Basic annotation + a11y audit |
+| [Dashboard](./dashboard.html) | 6 | Layout audit, consistency, stacking |
+| [Settings](./settings.html) | 5 | Deep a11y, focus chain, keyboard access |
+| [Checkout](./checkout.html) | 4 | Multi-step flow, regression, journey |
 
-### 1. Start the MCP server
+## Quick Start (5 minutes)
 
-From the ViewGraph project root:
+### Prerequisites
 
-```bash
-npm run dev:server
-```
+- ViewGraph extension installed ([setup guide](../../README.md#getting-started))
+- MCP server running: `npm run dev:server` from the ViewGraph directory
 
-You should see:
+### Demo 1: See Bug, Fix Bug (90 seconds)
 
-```
-[viewgraph] ViewGraph MCP Server v0.1.0
-[viewgraph] Captures dir: /path/to/viewgraph/.viewgraph/captures
-[viewgraph] HTTP secret: <token>
-```
+1. Open `docs/demo/index.html` in Chrome
+2. Click the **ViewGraph** icon - sidebar opens
+3. Click the **password field** - notice it shows plain text. Comment: "type should be password"
+4. Click the **heading** - it's huge. Comment: "reduce to 28px"
+5. Click **Send to Agent**
+6. Tell your agent: "Fix the annotations on the demo page"
+7. Reload - password is masked, heading is smaller
 
-### 2. Configure the extension
+### Demo 2: Instant Accessibility Audit (60 seconds)
 
-Open the ViewGraph extension options and set:
-- **Server URL:** `http://localhost:9876`
-- **Secret:** the token from step 1 (or leave blank if `VIEWGRAPH_HTTP_SECRET` is not set)
+1. Open the login page
+2. Tell your agent: `@vg-audit`
+3. Agent captures the page, finds 4 a11y issues automatically
+4. "Fix all of these" - agent fixes all 4
+5. Reload - all fixed
 
-### 3. Verify connection
+### Demo 3: Generate Tests from a Page (2 minutes)
 
-Click the ViewGraph icon in Chrome. The footer should show a green dot with "MCP connected".
+1. Open `docs/demo/dashboard.html`
+2. Capture with ViewGraph
+3. Tell your agent: `@vg-tests`
+4. Agent generates a Playwright test file with correct locators for every interactive element
+5. Run the tests - all pass
 
-## The Demo
+### Demo 4: QA Handoff (90 seconds)
 
-### Step 1: Open the buggy page
+1. Open `docs/demo/settings.html`
+2. Click ViewGraph icon, annotate 3 broken form controls
+3. Click **Copy MD** - paste into a text editor
+4. See: element details, computed styles, viewport, network status
 
-Open `docs/demo/index.html` in Chrome:
+## Full Walkthroughs
 
-```
-file:///path/to/viewgraph/docs/demo/index.html
-```
-
-You'll see a "TaskFlow" login page. It looks decent at first glance, but has 8 planted bugs.
-
-### Step 2: Run automated audits
-
-In Kiro, ask:
-
-```
-Capture the demo page and run an accessibility audit
-```
-
-Kiro will use `audit_accessibility` and `find_missing_testids` to find several issues automatically:
-- Missing alt text on the logo
-- Empty aria-label on the login button
-- Missing form label
-- Missing data-testid on the email input
-
-### Step 3: Annotate visual issues
-
-Click **Annotate** in the ViewGraph popup. Now find the bugs that automated tools miss:
-
-1. **Click the heading** "Welcome back" - it's too large (42px). Add comment: "Font size too large for a login card - reduce to 28px"
-
-2. **Click the password field** - type something and notice it's visible (type="text"). Add comment: "Password field shows plain text - change to type=password"
-
-3. **Click the card** - notice the top-right corner has no border-radius. Add comment: "Top-right corner missing border-radius - should be 16px"
-
-4. **Click the "Create one" link** in the footer - it's nearly invisible. Add comment: "Link color fails contrast - change to #818cf8"
-
-### Step 4: Send to Kiro
-
-Click **Send** in the sidebar. All annotations bundle with the full DOM capture and push to Kiro via MCP.
-
-### Step 5: Ask Kiro to fix
-
-In Kiro, say:
+### Walkthrough 1: Annotation + Agent Fix (Login + Dashboard)
 
 ```
-Look at the annotations on the demo page and fix all the issues in docs/demo/index.html
+1. Open login page, annotate 3 visual bugs (password, heading, border-radius)
+2. Open dashboard, annotate the dropdown overlap (Shift+drag region)
+3. Add a page note: "Nav links need aria-current"
+4. Send to Agent
+5. Agent reads annotations via get_annotations
+6. Agent calls find_source for each element
+7. Agent fixes all issues across both files
+8. Agent resolves each annotation - green checkmarks in sidebar
 ```
 
-Kiro has the full DOM context from the capture plus your comments. It will:
-- Read the annotations via `get_annotations`
-- Understand each issue from your comments + the element details
-- Edit `docs/demo/index.html` to fix all 8 bugs
+### Walkthrough 2: Regression Detection (Checkout)
 
-### Step 6: Verify
+```
+1. Open checkout step 1, capture, set as baseline
+2. Navigate to step 2 - notice the order total is missing
+3. Agent: compare_captures between step 1 and step 2
+4. Agent finds: "order-total element present in step 1, missing in step 2"
+5. Agent fixes checkout.html to show total on step 2
+```
 
-Reload the page in Chrome. All issues should be fixed. Run the audit again to confirm.
+### Walkthrough 3: Multi-Step Journey (Checkout)
 
-## The 8 Planted Bugs
+```
+1. Click "Record Flow" in sidebar
+2. Navigate: step 1 -> step 2 -> step 3
+3. Add step notes at each page
+4. Stop recording
+5. Agent: analyze_journey - finds step indicator bug on step 2
+6. Agent: visualize_flow - generates Mermaid state diagram
+7. Agent fixes the step indicator JS
+```
 
-| # | Bug | Type | How to find |
+### Walkthrough 4: Design Consistency (All Pages)
+
+```
+1. Capture login, dashboard, and settings pages
+2. Agent: check_consistency across all 3 captures
+3. Agent finds: button padding is 12px on login but 8px on dashboard
+4. Agent fixes dashboard to match
+```
+
+### Walkthrough 5: Deep A11y Remediation (Settings)
+
+```
+1. Agent: "@vg-a11y" on settings page
+2. Finds 5 issues: div toggles, unlabeled swatches, disabled button, required fields, icon button
+3. Agent fixes each:
+   - Replaces div toggles with real <input type="checkbox"> + toggle styling
+   - Adds aria-label to each color swatch
+   - Adds aria-describedby to disabled save button
+   - Adds required attribute + visual asterisk
+   - Adds aria-label="Upload avatar" to icon button
+4. Re-audit: 0 issues
+```
+
+## Bug Matrix
+
+### Login (index.html) - 8 bugs
+
+| # | Bug | Type | Found by |
 |---|---|---|---|
-| 1 | Logo `<img>` missing `alt` text | Accessibility | `audit_accessibility` |
-| 2 | Password field `type="text"` | Security/UX | Manual annotation |
-| 3 | Login button empty `aria-label=""` | Accessibility | `audit_accessibility` |
+| 1 | Logo `<img>` missing `alt` text | A11y | `audit_accessibility` |
+| 2 | Password field `type="text"` | Security | Manual annotation |
+| 3 | Login button empty `aria-label=""` | A11y | `audit_accessibility` |
 | 4 | Email input missing `data-testid` | Testing | `find_missing_testids` |
-| 5 | Card `border-radius: 16px 0 16px 16px` | Visual | Manual annotation |
-| 6 | Footer link color `#475569` fails contrast | Accessibility | Manual annotation |
-| 7 | `<form>` missing `aria-label` | Accessibility | `audit_accessibility` |
+| 5 | Card `border-radius` top-right is 0 | Visual | Manual annotation |
+| 6 | Footer link color fails contrast | A11y | `audit_accessibility` (contrast) |
+| 7 | `<form>` missing `aria-label` | A11y | `audit_accessibility` |
 | 8 | Heading `font-size: 42px` too large | Visual | Manual annotation |
 
-## Alternative: Tester Workflow (No Kiro)
+### Dashboard (dashboard.html) - 6 bugs
 
-Don't have Kiro set up? You can still use the demo:
+| # | Bug | Type | Found by |
+|---|---|---|---|
+| 9 | Nav links missing `aria-current` on active page | A11y | `audit_accessibility` |
+| 10 | Data table missing `<caption>` | A11y | `audit_accessibility` |
+| 11 | Dropdown z-index overlaps stat cards | Layout | `audit_layout` (stacking) |
+| 12 | Content area is `<div>` not `<main>` | A11y | `audit_accessibility` (landmarks) |
+| 13 | Button padding inconsistent with login page | Consistency | `check_consistency` |
+| 14 | "Last updated" text hidden by `overflow:hidden` | Layout | `audit_layout` (overflow) |
 
-1. Open the page, click **Annotate**, find the bugs
-2. Click **Copy MD** - paste the markdown report into a GitHub issue
-3. Click **Report** - download a ZIP with markdown + screenshots
+### Settings (settings.html) - 5 bugs
 
-The extension works standalone for anyone who needs to document UI issues.
+| # | Bug | Type | Found by |
+|---|---|---|---|
+| 15 | Toggle switches are `<div>` not keyboard-accessible | A11y | `audit_accessibility` (focus) |
+| 16 | Color swatches have no accessible name | A11y | `audit_accessibility` |
+| 17 | Disabled save button has no `aria-describedby` | A11y | `audit_accessibility` |
+| 18 | Required fields not marked (`required` attribute) | A11y | `audit_accessibility` |
+| 19 | Upload button is icon-only with no `aria-label` | A11y | `audit_accessibility` |
+
+### Checkout (checkout.html) - 4 bugs
+
+| # | Bug | Type | Found by |
+|---|---|---|---|
+| 20 | Step indicator loses active state on step 2 | Functional | Manual annotation / `analyze_journey` |
+| 21 | Card number input accepts letters | Functional | Manual annotation |
+| 22 | Order total missing on step 2 (regression) | Regression | `compare_captures` |
+| 23 | Submit button visible before terms checked | Functional | Manual annotation |
+
+## Tools Exercised
+
+Every MCP tool category is covered by at least one demo:
+
+| Category | Tools used | Demo |
+|---|---|---|
+| Core | `list_captures`, `get_capture`, `get_latest_capture`, `get_page_summary` | All demos |
+| Analysis | `audit_accessibility`, `audit_layout`, `find_missing_testids`, `get_interactive_elements` | Demos 2, 5 |
+| Annotations | `get_annotations`, `resolve_annotation`, `get_unresolved` | Demo 1, Walkthrough 1 |
+| Comparison | `compare_captures`, `compare_baseline`, `check_consistency` | Walkthroughs 2, 4 |
+| Sessions | `list_sessions`, `get_session`, `analyze_journey`, `visualize_flow` | Walkthrough 3 |
+| Source | `find_source`, `find_missing_testids` | All fix workflows |
+| Bidirectional | `request_capture`, `get_request_status` | Walkthrough 1 (verify step) |

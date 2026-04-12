@@ -1,0 +1,189 @@
+/*
+ * TaskFlow Demo - Shared Styles
+ *
+ * Base styles for the ViewGraph demo app. Each page imports this
+ * and adds page-specific styles inline.
+ *
+ * Design: dark theme, indigo accent (#6366f1), Inter font stack.
+ */
+
+/* ---- Reset & base ---- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* ---- Layout ---- */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ---- Top nav ---- */
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+}
+.top-nav .logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #f1f5f9;
+  font-weight: 700;
+  font-size: 16px;
+}
+.top-nav .logo-icon {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.top-nav .logo-icon svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2; }
+.nav-links { display: flex; gap: 4px; }
+.nav-links a {
+  padding: 6px 14px;
+  border-radius: 6px;
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background 0.15s, color 0.15s;
+}
+.nav-links a:hover { background: #334155; color: #e2e8f0; }
+.nav-links a.active { background: #6366f1; color: white; }
+
+/* ---- Content area ---- */
+.content { flex: 1; padding: 24px; max-width: 1100px; margin: 0 auto; width: 100%; }
+.page-title { font-size: 22px; font-weight: 700; color: #f1f5f9; margin-bottom: 20px; }
+
+/* ---- Cards ---- */
+.card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* ---- Buttons ---- */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn:hover { opacity: 0.9; }
+.btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
+.btn-secondary { background: transparent; border: 1px solid #334155; color: #94a3b8; }
+.btn-secondary:hover { border-color: #6366f1; color: #e2e8f0; }
+.btn-danger { background: #ef4444; color: white; }
+
+/* ---- Form elements ---- */
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+input[type="text"], input[type="email"], input[type="password"],
+input[type="number"], input[type="tel"], select, textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+input::placeholder, textarea::placeholder { color: #475569; }
+
+/* ---- Table ---- */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #334155;
+}
+.data-table td {
+  padding: 10px 14px;
+  font-size: 14px;
+  border-bottom: 1px solid #1e293b;
+}
+.data-table tr:hover { background: rgba(99, 102, 241, 0.05); }
+
+/* ---- Badges ---- */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-green { background: #065f46; color: #6ee7b7; }
+.badge-yellow { background: #713f12; color: #fde047; }
+.badge-red { background: #7f1d1d; color: #fca5a5; }
+.badge-blue { background: #1e3a5f; color: #93c5fd; }
+
+/* ---- Toggle switch ---- */
+.toggle { position: relative; display: inline-block; width: 44px; height: 24px; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0;
+  background: #334155;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  left: 3px; bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.toggle input:checked + .toggle-slider { background: #6366f1; }
+.toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+/* ---- Step indicator ---- */
+.steps { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+.step {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: #64748b;
+}
+.step-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  background: #334155; color: #94a3b8;
+}
+.step.active .step-num { background: #6366f1; color: white; }
+.step.done .step-num { background: #059669; color: white; }
+.step-line { width: 40px; height: 2px; background: #334155; }
+.step.done + .step-line { background: #059669; }
