@@ -188,7 +188,7 @@ export function create() {
     flexShrink: '0',
   });
 
-  discoverServer()
+  discoverServer(window.location.href)
     .then((url) => {
       if (url) {
         statusDot.style.background = '#4ade80';

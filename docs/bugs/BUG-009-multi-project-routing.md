@@ -2,7 +2,7 @@
 
 **ID:** BUG-009
 **Severity:** Critical
-**Status:** OPEN
+**Status:** FIXED
 **Date:** 2026-04-12
 
 ## Description
@@ -53,3 +53,31 @@ For `localhost` URLs, the init script should store a URL pattern in the server c
 ## Workaround
 
 For now, run only one ViewGraph server at a time. Kill existing servers before running `viewgraph-init` in a different project.
+
+## Fix Applied
+
+### constants.js - rewritten
+
+- Replaced single-server cache with a **server registry** (Map of all running servers)
+- `refreshRegistry()` probes all 4 ports in parallel, stores capturesDir + projectRoot per server
+- `discoverServer(pageUrl, targetDir)` now accepts the page URL and matches against projectRoots
+- For `file://` URLs: longest projectRoot prefix match wins
+- `getAllServers()` returns all running servers for the background script
+- Registry TTL reduced from 30s to 15s for faster detection of new servers
+
+### background.js - three functions fixed
+
+- `fetchServerInfo()`: stores ALL server mappings (array), not just one
+- `lookupCapturesDir(pageUrl)`: matches file:// URLs against all projectRoots by longest prefix
+- `pushToServer(capture, capturesDir)`: passes `capture.metadata.url` to `discoverServer()` for correct routing
+
+### annotation-sidebar.js
+
+- Status dot discovery passes `window.location.href` to show the correct server for the current page
+
+### Files changed
+
+- `extension/lib/constants.js`
+- `extension/entrypoints/background.js`
+- `extension/lib/annotation-sidebar.js`
+- `docs/bugs/BUG-009-multi-project-routing.md`
