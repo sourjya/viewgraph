@@ -10,6 +10,35 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ## [Unreleased]
 
+### New Features
+
+#### Playwright Capture Bridge (2026-04-12)
+- New `@viewgraph/playwright` package in `packages/playwright/`
+- Playwright test fixture: `import { test } from '@viewgraph/playwright/fixture'`
+- `viewgraph.capture(label)` - capture DOM state during E2E tests
+- `viewgraph.snapshot()` - capture HTML snapshot
+- `viewgraph.annotate(selector, comment)` - programmatic annotations from test assertions
+- `viewgraph.captureWithAnnotations(label)` - capture with annotations attached
+- Reuses extension's traverser/serializer via bundle injection (same pattern as bulk capture experiment)
+- Captures written to `.viewgraph/captures/` for MCP server consumption
+
+#### React Fiber Source Linking (2026-04-12)
+- component-collector.js now extracts `_debugSource` from React fibers (dev builds)
+- Returns `{ name, source }` where source is `"file:line"` from JSX transform
+- source-linker.js: new `exact` confidence level for fiber-derived source paths
+- find_source tool: looks up component source from latest capture before falling back to grep
+- Zero-grep source linking for React dev builds - exact file:line from the framework itself
+
+#### Prompt Templates (2026-04-12)
+- 7 new prompt templates in `power/prompts/` (8 total with existing vg-help)
+- `@vg-audit` - full audit: a11y + layout + testids
+- `@vg-review` - fix all annotations from latest capture
+- `@vg-capture` - request fresh capture, summarize result
+- `@vg-diff` - compare two most recent captures
+- `@vg-testids` - find and add missing data-testid attributes
+- `@vg-a11y` - deep a11y audit with automatic source fixes
+- `@vg-tests` - generate Playwright E2E tests from capture
+
 ### Capture Accuracy Experiment
 
 #### Bulk Capture Experiment (2026-04-12)

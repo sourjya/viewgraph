@@ -1,0 +1,27 @@
+{
+  "name": "@viewgraph/playwright",
+  "version": "0.1.0",
+  "description": "ViewGraph capture fixture for Playwright - capture structured DOM snapshots during E2E tests",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./fixture": "./fixture.js"
+  },
+  "files": [
+    "index.js",
+    "fixture.js",
+    "bundle.js",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@playwright/test": ">=1.40.0"
+  },
+  "keywords": ["viewgraph", "playwright", "testing", "dom-capture", "mcp", "accessibility"],
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourjya/viewgraph.git",
+    "directory": "packages/playwright"
+  }
+}

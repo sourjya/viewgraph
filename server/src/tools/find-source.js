@@ -45,8 +45,28 @@ export function register(server, _indexer, capturesDir) {
         return { content: [{ type: 'text', text: 'Error: Provide at least one of: testid, aria_label, selector, text, component' }], isError: true };
       }
 
+      // Look up fiber-derived source path from capture component data.
+      // If the capture has a components section with a source field for
+      // this element, we can skip grepping entirely.
+      let componentSource = null;
+      if ((component || selector) && _indexer) {
+        const latest = _indexer.getLatest();
+        if (latest) {
+          try {
+            const { readFile } = await import('fs/promises');
+            const raw = await readFile(path.join(capturesDir, latest.filename), 'utf-8');
+            const capture = JSON.parse(raw);
+            const comps = capture.components?.components || [];
+            const match = comps.find((c) =>
+              (component && c.component === component) ||
+              (selector && c.selector === selector));
+            if (match?.source) componentSource = match.source;
+          } catch { /* capture read failed, fall back to grep */ }
+        }
+      }
+
       const results = await findSource(projectRoot, {
-        testid, ariaLabel: aria_label, selector, text, component,
+        testid, ariaLabel: aria_label, selector, text, component, componentSource,
       });
 
       if (results.length === 0) {

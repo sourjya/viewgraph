@@ -72,26 +72,45 @@ function getReactFiber(el) {
 /**
  * Extract React component name from a fiber.
  * Walks up the fiber tree to find the nearest function/class component.
+ * Also extracts _debugSource (file + line) when available in dev builds.
  * @param {object} fiber
- * @returns {string|null}
+ * @returns {{ name: string|null, source: string|null }}
  */
 function getReactComponentName(fiber) {
   let current = fiber;
-  // Walk up to find a function/class component (type is a function, not a string)
   while (current) {
     if (current.type && typeof current.type === 'function') {
-      return current.type.displayName || current.type.name || null;
+      const name = current.type.displayName || current.type.name || null;
+      const source = extractDebugSource(current);
+      return { name, source };
     }
-    // Also check memoized/forwarded components
     if (current.type?.$$typeof) {
       const inner = current.type.render || current.type.type;
       if (inner && typeof inner === 'function') {
-        return inner.displayName || inner.name || null;
+        const name = inner.displayName || inner.name || null;
+        const source = extractDebugSource(current);
+        return { name, source };
       }
     }
     current = current.return;
   }
-  return null;
+  return { name: null, source: null };
+}
+
+/**
+ * Extract source file path from a React fiber's _debugSource.
+ * Only available in development builds (React sets this from JSX transform).
+ * Returns "filename:line" or null.
+ * @param {object} fiber
+ * @returns {string|null}
+ */
+function extractDebugSource(fiber) {
+  const ds = fiber._debugSource;
+  if (!ds) return null;
+  const file = ds.fileName || ds.file || null;
+  if (!file) return null;
+  const line = ds.lineNumber || ds.line || null;
+  return line ? `${file}:${line}` : file;
 }
 
 /**
@@ -130,8 +149,8 @@ function getSvelteComponentName(el) {
 
 /** Build a compact selector for an element. */
 /**
- * Collect component names from the live DOM.
- * @returns {{ framework: string, components: Array<{ selector: string, component: string }> }}
+ * Collect component names and source paths from the live DOM.
+ * @returns {{ framework: string, components: Array<{ selector: string, component: string, source: string|null }> }}
  */
 export function collectComponents() {
   const framework = detectFramework();
@@ -148,9 +167,14 @@ export function collectComponents() {
     if (node.closest(`[${ATTR}]`)) { node = walker.nextNode(); continue; }
 
     let name = null;
+    let source = null;
     if (framework === 'react') {
       const fiber = getReactFiber(node);
-      if (fiber) name = getReactComponentName(fiber);
+      if (fiber) {
+        const result = getReactComponentName(fiber);
+        name = result.name;
+        source = result.source;
+      }
     } else if (framework === 'vue') {
       name = getVueComponentName(node);
     } else if (framework === 'svelte') {
@@ -159,7 +183,7 @@ export function collectComponents() {
 
     if (name && !seen.has(name + ':' + buildSelector(node))) {
       seen.add(name + ':' + buildSelector(node));
-      components.push({ selector: buildSelector(node), component: name });
+      components.push({ selector: buildSelector(node), component: name, source: source || null });
     }
     node = walker.nextNode();
   }
