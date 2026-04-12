@@ -51,6 +51,6 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 
 | Doc | Description |
 |---|---|
-| [Extension UX and Intelligence](../../docs/ideas/extension-ux-and-intelligence.md) | Annotation UI patterns, memory/intelligence features |
-| [Product Positioning](../../docs/roadmap/product-positioning.md) | GTM strategy, messaging, audience |
-| [Problem-Feature Mapping](../../docs/roadmap/problem-feature-mapping.md) | 7 core USPs mapped to features and gaps |
+| [Extension UX and Intelligence](../../docs/architecture/extension-ux-and-intelligence.md) | Annotation UI patterns, memory/intelligence features |
+| [Product Positioning](../../docs/architecture/product-positioning.md) | GTM strategy, messaging, audience |
+| [Problem-Feature Mapping](../../docs/architecture/problem-feature-mapping.md) | 7 core USPs mapped to features and gaps |

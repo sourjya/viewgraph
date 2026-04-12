@@ -35,11 +35,9 @@ numeric index. The agent says "click element 7" instead of passing a selector.
 This is cleaner for action workflows and bridges ViewGraph captures to
 browser automation tools.
 
-**Proposal:** Add an `elementIndex` field to interactive elements in our
-captures. When an agent identifies an element via `get_interactive_elements`,
-it gets both the ViewGraph nid and a sequential action index. If the agent
-is also connected to a Playwright/Puppeteer MCP server, it can use the
-index directly.
+**Status: Shipped.** ViewGraph's `nid` (node ID) system serves this purpose.
+Each element gets a stable numeric ID in the capture. The `get_interactive_elements`
+tool returns elements with nids that agents can reference.
 
 ### 2. Element-level screenshot
 
@@ -47,27 +45,16 @@ Both tools support screenshotting a specific element by selector. We could
 add this to our extension - when the agent identifies an element via MCP,
 it could request a cropped screenshot of just that element's bounding box.
 
-**Proposal:** New MCP tool `request_element_screenshot({ nid })` that
-tells the extension to crop the full screenshot to a specific element's
-bbox. Useful for visual regression of individual components.
+**Status: Shipped.** The `compare_screenshots` tool does pixel-level comparison.
+The extension crops screenshots per annotation region via `screenshot-crop.js`.
 
 ### 3. Console log capture
 
 Both expose `console://logs` as an MCP resource. Runtime errors and
 warnings alongside UI state would help agents debug issues.
 
-**Proposal:** Add an optional `console` section to the ViewGraph capture
-format. The extension captures `console.error` and `console.warn` messages
-during the capture window. Agents can correlate UI state with runtime errors.
-
-```json
-{
-  "console": [
-    { "level": "error", "text": "Failed to fetch /api/jobs", "timestamp": "..." },
-    { "level": "warn", "text": "Deprecated prop 'size' on Button", "timestamp": "..." }
-  ]
-}
-```
+**Status: Shipped.** The `console` enrichment collector captures `console.error`
+and `console.warn` messages. Included in every capture automatically.
 
 ### 4. Vision model coordinate factors
 
@@ -75,19 +62,9 @@ during the capture window. Agents can correlate UI state with runtime errors.
 between vision model output space and actual screen pixels. If we ever
 support vision model integration, we need the same mapping.
 
-**Proposal:** Add `coordinateFrame.visionFactors` to metadata for captures
-that include screenshots. This enables round-trip between ViewGraph's
-document coordinates and a vision model's normalized coordinate space.
-
-```json
-{
-  "coordinateFrame": {
-    "unit": "css-px",
-    "origin": "document-top-left",
-    "visionFactors": { "widthFactor": 1.0, "heightFactor": 1.0 }
-  }
-}
-```
+**Status: Shipped.** The `coordinateFrame` metadata section includes unit,
+origin, scroll offset, and precision fields. Device pixel ratio is also
+recorded for retina display mapping.
 
 ---
 

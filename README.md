@@ -52,7 +52,7 @@ cd viewgraph
 npm install
 ```
 
-This installs dependencies for both the server and extension via npm workspaces. You only need Node.js here - your actual project can use any language.
+This installs dependencies for both the server and extension via npm workspaces. You only need [Node.js](https://nodejs.org/) here - your actual project can use any language.
 
 ### Step 2: Build and load the browser extension
 
@@ -272,6 +272,65 @@ These tools are called by your AI agent, not by you directly. The agent discover
 | Sidebar shows no green dot | Server isn't running. Run `npm run dev:server` from the ViewGraph directory, or re-run the init script from your project. |
 | "Send to Agent" does nothing | Check the sidebar connection status. The server must be running and the auth token must match. |
 | Captures not appearing in agent | Verify `.viewgraph/captures/` exists in your project and the MCP config points to the right path. Run `node scripts/viewgraph-status.js` from the ViewGraph directory for a full health check. |
+
+## Capture Accuracy
+
+ViewGraph's capture accuracy is measured automatically against 150 diverse real-world websites using a [bulk capture experiment](./scripts/experiments/bulk-capture/). The experiment runs ViewGraph's DOM traverser via Puppeteer, then compares the output against live DOM ground truth across 7 dimensions.
+
+**Latest results** (Set A - Breadth, 48 sites across 12 categories, 4 rendering types, 6 writing systems):
+
+| Dimension | Median | What it measures |
+|---|---|---|
+| **Composite** | **92.1%** | Weighted combination of all dimensions |
+| Selector accuracy | 99.7% | VG's CSS selectors resolve to real DOM elements |
+| Testid recall | 100.0% | All `data-testid` elements captured |
+| Interactive recall | 97.9% | Buttons, links, inputs captured |
+| Bbox accuracy | 100.0% | Bounding boxes preserved through serialization |
+| Semantic recall | 88.2% | Landmark elements (nav, main, header) captured |
+| Text match | 53.1% | `visibleText` matches element text (see note) |
+
+Text match is lower by design - VG truncates text to 200 characters to keep captures within LLM context windows, and `innerText` on parent elements includes all descendant text.
+
+Sites that block headless browsers (bot detection) or reject script injection (strict CSP) are excluded from accuracy calculations. In our test pool, ~20% of sites fall into this category - these are flagged in the [per-run reports](./scripts/experiments/bulk-capture/results/).
+
+Three experiment sets test different hypotheses:
+
+| Set | Focus | Sites | Composite |
+|---|---|---|---|
+| [A - Breadth](./scripts/experiments/bulk-capture/) | Max diversity across all axes | 48 | 92.1% |
+| [B - Depth](./scripts/experiments/bulk-capture/) | Hardest patterns (SPAs, RTL, shadow DOM) | 50 | 79.0%* |
+| [C - Real-world](./scripts/experiments/bulk-capture/) | Traffic-weighted, typical usage | 50 | 79.2%* |
+
+*Sets B and C were run before measurement fixes and include bot-blocked sites in the denominator. Re-running with current methodology would produce higher scores.
+
+Full methodology, per-site breakdowns, and run history: [`scripts/experiments/bulk-capture/`](./scripts/experiments/bulk-capture/)
+
+### Methodology
+
+Accuracy is measured by injecting ViewGraph's capture modules (traverser, salience scorer, serializer) into real websites via Puppeteer and comparing the output against live DOM ground truth collected in the same browser session. For each site, a ground-truth collector walks the DOM and counts all visible elements, interactive elements, `data-testid` elements, semantic landmarks, and text content. The VG capture runs immediately after, and a measurement function matches every VG element back to the live DOM by selector to verify correctness. Bounding boxes are validated by comparing the serialized output against the traverser's original values to confirm the serialization pipeline preserves spatial data. Each run is recorded in a [timestamped index](./scripts/experiments/bulk-capture/results/) so accuracy can be tracked across code changes. Sites are tagged across 5 diversity axes (category, complexity, rendering type, writing system, accessibility maturity) so results can be sliced by any dimension.
+
+No competitor in this space publishes equivalent accuracy metrics against real-world websites. Browser automation MCP servers (Playwright MCP, Browser Use) operate on accessibility trees or screenshots rather than structured DOM, so there is no directly comparable recall/precision measurement. ViewGraph is the only tool that produces structured, agent-consumable DOM captures and measures their fidelity against ground truth.
+
+## How ViewGraph Compares
+
+ViewGraph occupies a unique position: the UI context layer for AI coding agents. It bridges what humans see in the browser and what agents need to fix code. Here is how it compares to adjacent tools:
+
+| Capability | ViewGraph | Playwright MCP | Chromatic | Replay.io | axe MCP |
+|---|---|---|---|---|---|
+| Structured DOM capture | Full snapshot with styles, bbox, selectors | Accessibility tree only | Component screenshots | Runtime recording | Violations only |
+| Human annotations | Click/drag + comments + severity | No | Component review | No | No |
+| MCP tools for agents | 34 tools | Browser automation | Component metadata | Runtime debugging | A11y scanning |
+| Accessibility audit | WCAG + contrast + axe-core | Needs axe-playwright | WCAG violations | No | Industry standard |
+| Layout analysis | Overflow, overlap, viewport | No | No | No | No |
+| Source file linking | testid/label/selector grep | No | No | Source maps | No |
+| Structural regression | Baseline comparison | No | Visual diff | No | No |
+| Works with any web app | Any URL, any backend | Any URL | Storybook required | Any URL | Any URL |
+| No code required | Browser extension | Test scripts needed | Stories needed | Recording setup | Extension + MCP |
+| Standalone (no AI) | Copy MD / ZIP export | No | Visual review | Debugging UI | Extension |
+
+ViewGraph is the only tool that combines human annotations + structured DOM + MCP in a single workflow that works on any web app with zero project setup. Browser automation tools (Playwright MCP, Browser Use) control headless browsers - they are the "hands" while ViewGraph is the "eyes." Visual regression tools (Chromatic, Percy) compare pixels but require Storybook or CI integration. Runtime debuggers (Replay.io) capture execution traces but have no review workflow.
+
+For the full competitive analysis covering 16 tools across 5 categories, see [Competitive Analysis](./docs/architecture/competitive-analysis-browser-mcp.md) and [Product Analysis](./docs/architecture/product-analysis.md).
 
 ## Development
 

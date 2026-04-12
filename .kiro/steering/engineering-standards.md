@@ -38,7 +38,6 @@ inclusion: always
 │   ├── package.json           (server dependencies)
 │   └── tests/                 (server tests)
 ├── docs/                      (all documentation)
-│   ├── technical-design.md
 │   ├── architecture/
 │   ├── decisions/
 │   ├── changelogs/

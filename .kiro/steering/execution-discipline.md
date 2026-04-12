@@ -67,7 +67,7 @@ All documentation must be placed in the appropriate `docs/` subdirectory based o
 ### Placement Rules
 
 **DO NOT**:
-- Create documentation files in `docs/` root (except meta-documents like technical-design.md)
+- Create documentation files in `docs/` root
 - Mix document types (e.g., ADRs in architecture/, runbooks in decisions/)
 - Create new subdirectories without documenting their purpose
 

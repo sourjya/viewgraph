@@ -219,7 +219,7 @@ and click to capture a subtree.
 **Spec:** `.kiro/specs/extension-review-mode/`
 **Status:** Complete
 
-**UX Reference:** [`docs/ideas/extension-ux-and-intelligence.md`](../ideas/extension-ux-and-intelligence.md) - floating toolbar, comment box, highlight overlay patterns
+**UX Reference:** [`docs/architecture/extension-ux-and-intelligence.md`](../architecture/extension-ux-and-intelligence.md) - floating toolbar, comment box, highlight overlay patterns
 
 | # | Task | Details |
 |---|---|---|
@@ -444,7 +444,7 @@ Spans M11 (Inspect tab) and M15.2 (baselines UX). Key changes:
 
 **Spec:** `.kiro/specs/advanced-tools/`
 
-**Intelligence Reference:** [`docs/ideas/extension-ux-and-intelligence.md`](../ideas/extension-ux-and-intelligence.md) - recurring issue detection, regression watchlist, style profiles, agent mistake tracking
+**Intelligence Reference:** [`docs/architecture/extension-ux-and-intelligence.md`](../architecture/extension-ux-and-intelligence.md) - recurring issue detection, regression watchlist, style profiles, agent mistake tracking
 
 | # | Task | Details |
 |---|---|---|
@@ -684,7 +684,7 @@ to specific ViewGraph features, tools, workflows, and remaining gaps.
 
 **Depends on:** Feature set stabilization (R1-R6 complete or deferred).
 
-**Reference:** [`docs/roadmap/product-positioning.md`](./product-positioning.md), [`docs/architecture/product-analysis.md`](../architecture/product-analysis.md)
+**Reference:** [`docs/architecture/product-positioning.md`](../architecture/product-positioning.md), [`docs/architecture/product-analysis.md`](../architecture/product-analysis.md)
 
 ---
 
