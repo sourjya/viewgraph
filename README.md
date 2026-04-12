@@ -94,6 +94,14 @@ The init script does the following automatically:
 
 **How to verify it worked:** The extension sidebar shows a green dot when connected to the server. Click the ViewGraph toolbar icon on any page to check.
 
+**Using a dev server or remote URL?** Add `--url` so the extension routes captures to the right project:
+
+```bash
+npx viewgraph-init --url localhost:3000
+```
+
+For multiple projects, multiple URLs, or editing patterns later, see the [Multi-Project Setup Guide](./docs/runbooks/multi-project-setup.md).
+
 ### Step 4: Capture and annotate
 
 1. Navigate to your app in the browser
