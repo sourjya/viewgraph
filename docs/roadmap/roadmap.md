@@ -669,6 +669,19 @@ to specific ViewGraph features, tools, workflows, and remaining gaps.
 
 ---
 
+
+## Milestone 17b: Multi-Project Routing Cleanup (Pre-Beta)
+
+**Goal:** Single source of truth for URL-to-project mappings. Extension settings page shows read-only server info.
+
+| Task | Description |
+|---|---|
+| 17b.1 | [BUG-009](../bugs/BUG-009-multi-project-routing.md) Multi-project server routing - **FIXED** (server registry, URL-based matching, auto port selection) |
+| 17b.2 | [BUG-010](../bugs/BUG-010-extension-settings-stale-overrides.md) Remove manual override editor from extension options page. Replace with read-only display of connected servers + URL patterns from `/info`. Add help text pointing to `--url` flag and `config.json`. |
+| 17b.3 | Sidebar settings overlay: show current server's projectRoot and URL patterns (read-only) so user can verify routing without opening options page |
+
+**Depends on:** BUG-009 fix (done).
+
 ## Milestone 18: Go-To-Market Preparation (Future)
 
 **Goal:** Positioning, content, and documentation site for public launch.
