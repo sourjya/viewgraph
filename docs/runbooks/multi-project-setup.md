@@ -61,15 +61,22 @@ Edit the array, save. The server reads this file on each `/info` request, so cha
 
 ### Pattern matching rules
 
-Patterns use simple substring matching against the full page URL:
+Patterns use simple substring matching against the full page URL. The extension normalizes URLs before matching, so these equivalences are handled automatically:
+
+| You type | Also matches |
+|---|---|
+| `localhost:3000` | `127.0.0.1:3000`, `0.0.0.0:3000`, `[::1]:3000` |
+| `localhost:3000` | `myapp.local:3000`, `lvh.me:3000`, `host.docker.internal:3000` (port fallback) |
+
+Full matching examples:
 
 | Pattern | Matches | Doesn't match |
 |---|---|---|
-| `localhost:3000` | `http://localhost:3000/login` | `http://localhost:3001/login` |
+| `localhost:3000` | `http://localhost:3000/login`, `http://127.0.0.1:3000/login`, `http://myapp.local:3000/` | `http://localhost:3001/login` |
 | `staging.myapp.com` | `https://staging.myapp.com/dashboard` | `https://myapp.com/dashboard` |
 | `myapp.com` | `https://myapp.com/login`, `https://staging.myapp.com/login` | `http://localhost:3000` |
 
-More specific patterns are checked first. If `staging.myapp.com` and `myapp.com` are on different projects, the staging URL matches the staging project because it's checked against each server's patterns.
+The extension also normalizes Windows file paths (`C:\Users\...` to `C:/Users/...`) so `file://` URL matching works across operating systems.
 
 ## Multi-Project Example
 
@@ -135,3 +142,5 @@ In the extension sidebar, the green dot tooltip shows which server the current p
 | Both projects on same port | Init killed the first server | This is fixed - init auto-finds a free port (9876-9879). If you see the same port, kill all servers and re-init both. |
 | File URLs work but localhost doesn't | No URL pattern configured | File URLs match by path automatically. Localhost needs `--url localhost:PORT`. |
 | Config changes not taking effect | Extension caches server registry for 15 seconds | Wait 15 seconds, or close and reopen the sidebar |
+| 127.0.0.1 works but localhost doesn't (or vice versa) | N/A - handled automatically | The extension normalizes `127.0.0.1`, `0.0.0.0`, and `[::1]` to `localhost` before matching. |
+| Custom hostname (myapp.local) not matching | Port fallback handles this | If `--url localhost:3000` is set, any hostname on port 3000 matches automatically. |

@@ -81,3 +81,12 @@ For now, run only one ViewGraph server at a time. Kill existing servers before r
 - `extension/entrypoints/background.js`
 - `extension/lib/annotation-sidebar.js`
 - `docs/bugs/BUG-009-multi-project-routing.md`
+
+### Follow-up fixes (2026-04-12)
+
+- All 8 `discoverServer()` calls in sidebar now pass `window.location.href`
+- URL normalization: `127.0.0.1`, `0.0.0.0`, `[::1]` normalized to `localhost`
+- Windows file path normalization: backslash to forward slash in projectRoot comparison
+- Port-only fallback: pattern `localhost:3000` matches any hostname on `:3000` (covers `myapp.local`, `lvh.me`, `host.docker.internal`)
+- 39 unit tests covering all routing modes and edge cases
+- Multi-project setup guide: `docs/runbooks/multi-project-setup.md`
