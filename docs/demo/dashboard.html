@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<!--
+  ViewGraph Demo - TaskFlow Dashboard
+
+  A data dashboard with 6 planted bugs for demonstrating layout audit,
+  consistency checking, and stacking context analysis.
+
+  PLANTED BUGS:
+  1. Nav links missing aria-current on active page
+  2. Data table missing <caption> element
+  3. Dropdown menu z-index overlaps with stat card (stacking bug)
+  4. Missing <main> landmark - content is just a <div>
+  5. Button padding inconsistent with login page (10px vs 12px)
+  6. "Last updated" text hidden by overflow:hidden on parent
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow - Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card { position: relative; }
+    .stat-value { font-size: 32px; font-weight: 700; color: #f1f5f9; }
+    .stat-label { font-size: 13px; color: #94a3b8; margin-top: 4px; }
+    .stat-change { font-size: 12px; margin-top: 8px; }
+    .stat-change.up { color: #6ee7b7; }
+    .stat-change.down { color: #fca5a5; }
+
+    .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .table-header h2 { font-size: 16px; font-weight: 600; color: #f1f5f9; }
+
+    /* BUG 3: dropdown z-index too low - overlaps behind stat cards */
+    .dropdown { position: relative; display: inline-block; }
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 4px;
+      min-width: 160px;
+      /* BUG: z-index: 1 is too low - stat-card has position:relative */
+      z-index: 1;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .dropdown.open .dropdown-menu { display: block; }
+    .dropdown-item {
+      display: block;
+      width: 100%;
+      padding: 8px 12px;
+      background: none;
+      border: none;
+      color: #e2e8f0;
+      font-size: 13px;
+      text-align: left;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .dropdown-item:hover { background: #334155; }
+
+    /* BUG 6: overflow hidden clips the "last updated" text */
+    .table-footer {
+      overflow: hidden;
+      height: 0;
+      padding: 8px 0;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: #334155;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <nav class="top-nav">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </span>
+        TaskFlow
+      </a>
+      <!-- BUG 1: active link missing aria-current="page" -->
+      <div class="nav-links">
+        <a href="dashboard.html" class="active">Dashboard</a>
+        <a href="#">Projects</a>
+        <a href="#">Team</a>
+        <a href="settings.html">Settings</a>
+      </div>
+    </nav>
+
+    <!-- BUG 4: missing <main> landmark - should be <main> not <div> -->
+    <div class="content">
+      <h1 class="page-title">Dashboard</h1>
+
+      <div class="stats-row">
+        <div class="card stat-card">
+          <div class="stat-label">Active Projects</div>
+          <div class="stat-value">12</div>
+          <div class="stat-change up">+2 this week</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label">Open Tasks</div>
+          <div class="stat-value">47</div>
+          <div class="stat-change down">-5 this week</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label">Team Members</div>
+          <div class="stat-value">8</div>
+          <div class="stat-change up">+1 this month</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-header">
+          <h2>Recent Tasks</h2>
+          <div class="dropdown">
+            <!-- BUG 5: padding 10px instead of 12px (inconsistent with login btn) -->
+            <button class="btn btn-secondary" data-testid="filter-btn" onclick="this.parentElement.classList.toggle('open')" style="padding: 8px 16px;">
+              Filter
+            </button>
+            <div class="dropdown-menu">
+              <button class="dropdown-item" data-testid="filter-all">All tasks</button>
+              <button class="dropdown-item" data-testid="filter-active">Active</button>
+              <button class="dropdown-item" data-testid="filter-done">Completed</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- BUG 2: table missing <caption> for accessibility -->
+        <table class="data-table" data-testid="tasks-table">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Assignee</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Due</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Redesign landing page</td>
+              <td><span class="avatar">AK</span> Alex Kim</td>
+              <td><span class="badge badge-yellow">In Progress</span></td>
+              <td><span class="badge badge-red">High</span></td>
+              <td>Apr 15</td>
+            </tr>
+            <tr>
+              <td>Fix checkout validation</td>
+              <td><span class="avatar">MJ</span> Maria Jones</td>
+              <td><span class="badge badge-green">Done</span></td>
+              <td><span class="badge badge-red">High</span></td>
+              <td>Apr 12</td>
+            </tr>
+            <tr>
+              <td>Add dark mode toggle</td>
+              <td><span class="avatar">TS</span> Tom Smith</td>
+              <td><span class="badge badge-yellow">In Progress</span></td>
+              <td><span class="badge badge-blue">Medium</span></td>
+              <td>Apr 18</td>
+            </tr>
+            <tr>
+              <td>Update API documentation</td>
+              <td><span class="avatar">LP</span> Lisa Park</td>
+              <td><span class="badge badge-green">Done</span></td>
+              <td><span class="badge badge-blue">Medium</span></td>
+              <td>Apr 10</td>
+            </tr>
+            <tr>
+              <td>Migrate to PostgreSQL</td>
+              <td><span class="avatar">AK</span> Alex Kim</td>
+              <td><span class="badge badge-red">Blocked</span></td>
+              <td><span class="badge badge-red">High</span></td>
+              <td>Apr 20</td>
+            </tr>
+            <tr>
+              <td>Set up CI pipeline</td>
+              <td><span class="avatar">MJ</span> Maria Jones</td>
+              <td><span class="badge badge-yellow">In Progress</span></td>
+              <td><span class="badge badge-blue">Medium</span></td>
+              <td>Apr 22</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- BUG 6: this text is invisible due to overflow:hidden + height:0 on parent -->
+        <div class="table-footer">
+          Last updated: 2 minutes ago - Showing 6 of 47 tasks
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

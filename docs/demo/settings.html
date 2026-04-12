@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<!--
+  ViewGraph Demo - TaskFlow Settings
+
+  A settings form with 5 planted accessibility bugs for demonstrating
+  deep a11y audit, focus chain analysis, and WCAG remediation.
+
+  PLANTED BUGS:
+  1. Toggle switches not keyboard-accessible (div, not input)
+  2. Color picker has no accessible name
+  3. Save button disabled with no explanation (aria-disabled but no aria-describedby)
+  4. Required fields not marked (no required attribute or visual indicator)
+  5. Avatar upload button has no accessible name (icon-only, no aria-label)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow - Settings</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .settings-grid { display: grid; grid-template-columns: 240px 1fr; gap: 24px; }
+    .settings-nav { display: flex; flex-direction: column; gap: 2px; }
+    .settings-nav a {
+      padding: 8px 14px;
+      border-radius: 6px;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .settings-nav a:hover { background: #334155; color: #e2e8f0; }
+    .settings-nav a.active { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+
+    .section-title { font-size: 16px; font-weight: 600; color: #f1f5f9; margin-bottom: 16px; }
+    .section-desc { font-size: 13px; color: #64748b; margin-bottom: 20px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .avatar-upload {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 24px;
+    }
+    .avatar-large {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 700; color: white;
+    }
+
+    .toggle-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #1e293b;
+    }
+    .toggle-label { font-size: 14px; color: #e2e8f0; }
+    .toggle-desc { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+    /* BUG 1: fake toggle - div with onclick, not a real input. Not keyboard accessible. */
+    .fake-toggle {
+      width: 44px; height: 24px;
+      background: #334155;
+      border-radius: 12px;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s;
+    }
+    .fake-toggle::before {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      left: 3px; top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .fake-toggle.on { background: #6366f1; }
+    .fake-toggle.on::before { transform: translateX(20px); }
+
+    .color-options { display: flex; gap: 8px; margin-top: 8px; }
+    .color-swatch {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+    }
+    .color-swatch.selected { border-color: white; }
+
+    .form-actions {
+      display: flex; gap: 12px; justify-content: flex-end;
+      margin-top: 24px; padding-top: 20px;
+      border-top: 1px solid #334155;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <nav class="top-nav">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </span>
+        TaskFlow
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="#">Projects</a>
+        <a href="#">Team</a>
+        <a href="settings.html" class="active" aria-current="page">Settings</a>
+      </div>
+    </nav>
+
+    <main class="content">
+      <h1 class="page-title">Settings</h1>
+
+      <div class="settings-grid">
+        <nav class="settings-nav" aria-label="Settings sections">
+          <a href="#" class="active">Profile</a>
+          <a href="#">Notifications</a>
+          <a href="#">Appearance</a>
+          <a href="#">Security</a>
+          <a href="#">Billing</a>
+        </nav>
+
+        <div>
+          <!-- Profile section -->
+          <div class="card" style="margin-bottom: 24px;">
+            <h2 class="section-title">Profile</h2>
+            <p class="section-desc">Manage your public profile information.</p>
+
+            <div class="avatar-upload">
+              <div class="avatar-large">AK</div>
+              <!-- BUG 5: icon-only button with no accessible name -->
+              <button class="btn btn-secondary" data-testid="avatar-upload">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+              </button>
+            </div>
+
+            <form aria-label="Profile settings">
+              <div class="form-row">
+                <div class="form-group">
+                  <!-- BUG 4: required field not marked - no required attribute, no visual indicator -->
+                  <label for="display-name">Display name</label>
+                  <input type="text" id="display-name" value="Alex Kim" data-testid="display-name">
+                </div>
+                <div class="form-group">
+                  <label for="email-settings">Email</label>
+                  <input type="email" id="email-settings" value="alex@taskflow.io" data-testid="settings-email">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="bio">Bio</label>
+                <textarea id="bio" rows="3" placeholder="Tell us about yourself" data-testid="bio" style="width:100%;padding:10px 14px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#e2e8f0;font-size:14px;resize:vertical;"></textarea>
+              </div>
+            </form>
+          </div>
+
+          <!-- Notifications section -->
+          <div class="card" style="margin-bottom: 24px;">
+            <h2 class="section-title">Notifications</h2>
+            <p class="section-desc">Choose what you want to be notified about.</p>
+
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-label">Email notifications</div>
+                <div class="toggle-desc">Receive email for task assignments and mentions</div>
+              </div>
+              <!-- BUG 1: div-based toggle, not keyboard accessible -->
+              <div class="fake-toggle on" onclick="this.classList.toggle('on')" data-testid="toggle-email"></div>
+            </div>
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-label">Push notifications</div>
+                <div class="toggle-desc">Browser push for urgent updates</div>
+              </div>
+              <div class="fake-toggle" onclick="this.classList.toggle('on')" data-testid="toggle-push"></div>
+            </div>
+            <div class="toggle-row">
+              <div>
+                <div class="toggle-label">Weekly digest</div>
+                <div class="toggle-desc">Summary of activity every Monday</div>
+              </div>
+              <div class="fake-toggle on" onclick="this.classList.toggle('on')" data-testid="toggle-digest"></div>
+            </div>
+          </div>
+
+          <!-- Appearance section -->
+          <div class="card">
+            <h2 class="section-title">Appearance</h2>
+            <p class="section-desc">Customize how TaskFlow looks for you.</p>
+
+            <div class="form-group">
+              <label>Theme color</label>
+              <!-- BUG 2: color swatches have no accessible name - no aria-label, no title -->
+              <div class="color-options">
+                <div class="color-swatch selected" style="background: #6366f1;" onclick="selectColor(this)" data-testid="color-indigo"></div>
+                <div class="color-swatch" style="background: #8b5cf6;" onclick="selectColor(this)" data-testid="color-violet"></div>
+                <div class="color-swatch" style="background: #06b6d4;" onclick="selectColor(this)" data-testid="color-cyan"></div>
+                <div class="color-swatch" style="background: #10b981;" onclick="selectColor(this)" data-testid="color-emerald"></div>
+                <div class="color-swatch" style="background: #f59e0b;" onclick="selectColor(this)" data-testid="color-amber"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BUG 3: save button disabled with no explanation -->
+          <div class="form-actions">
+            <button class="btn btn-secondary" data-testid="cancel-btn">Cancel</button>
+            <button class="btn btn-primary" data-testid="save-btn" aria-disabled="true" style="opacity: 0.5; cursor: not-allowed;">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function selectColor(el) {
+      document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+  </script>
+</body>
+</html>
