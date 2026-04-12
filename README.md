@@ -163,6 +163,16 @@ The extension works standalone. No MCP server required.
 
 A tester annotates and exports to markdown. A developer annotates and sends to Kiro. Same tool, same workflow, same format - the only difference is where the notes go.
 
+### For test automation teams
+
+Capture structured DOM snapshots during Playwright E2E tests, or generate tests from browser captures:
+
+- **Generate tests from captures:** Capture a page with the extension, ask your agent `@vg-tests` - it generates a complete Playwright test file with correct locators for every interactive element. 20-30 minutes of manual inspection reduced to one prompt.
+- **Capture during tests:** Add `await viewgraph.capture('checkout-page')` to existing tests. The agent can then diff captures between runs, audit accessibility, and detect structural regressions.
+- **Annotate from tests:** `await viewgraph.annotate('#email', 'Missing aria-label')` flags issues for the agent to fix with full DOM context.
+
+See [`@viewgraph/playwright`](./packages/playwright/) for setup, API, and examples.
+
 ## Kiro Power: Hooks and Prompts
 
 When you run `viewgraph-init.js` in a Kiro project, ViewGraph installs hooks, prompts, and steering docs that automate common workflows. These work in both Kiro IDE and Kiro CLI.
