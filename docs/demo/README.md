@@ -1,15 +1,15 @@
 # ViewGraph Demo - TaskFlow App
 
-A multi-page demo app with **23 planted UI bugs** across 4 pages. Annotate issues in the browser, send to your AI agent, and watch them get fixed.
+A multi-page demo app with **25 planted UI bugs** across 4 pages. Annotate issues in the browser, send to your AI agent, and watch them get fixed.
 
 ## Pages
 
 | Page | Bugs | What it demonstrates |
 |---|---|---|
 | [Login](./index.html) | 8 | Basic annotation + a11y audit |
-| [Dashboard](./dashboard.html) | 6 | Layout audit, consistency, stacking |
+| [Dashboard](./dashboard.html) | 7 | Layout audit, consistency, stacking |
 | [Settings](./settings.html) | 5 | Deep a11y, focus chain, keyboard access |
-| [Checkout](./checkout.html) | 4 | Multi-step flow, regression, journey |
+| [Checkout](./checkout.html) | 5 | Multi-step flow, regression, journey |
 
 ## Quick Start (5 minutes)
 
@@ -121,10 +121,10 @@ A multi-page demo app with **23 planted UI bugs** across 4 pages. Annotate issue
 | 2 | Password field `type="text"` | Security | Manual annotation |
 | 3 | Login button empty `aria-label=""` | A11y | `audit_accessibility` |
 | 4 | Email input missing `data-testid` | Testing | `find_missing_testids` |
-| 5 | Card `border-radius` top-right is 0 | Visual | Manual annotation |
+| 5 | Card `border-radius` two sharp corners | Visual | Manual annotation |
 | 6 | Footer link color fails contrast | A11y | `audit_accessibility` (contrast) |
 | 7 | `<form>` missing `aria-label` | A11y | `audit_accessibility` |
-| 8 | Heading `font-size: 42px` too large | Visual | Manual annotation |
+| 8 | Heading `font-size: 56px` absurdly large | Visual | Manual annotation |
 
 ### Dashboard (dashboard.html) - 6 bugs
 
@@ -132,10 +132,11 @@ A multi-page demo app with **23 planted UI bugs** across 4 pages. Annotate issue
 |---|---|---|---|
 | 9 | Nav links missing `aria-current` on active page | A11y | `audit_accessibility` |
 | 10 | Data table missing `<caption>` | A11y | `audit_accessibility` |
-| 11 | Dropdown z-index overlaps stat cards | Layout | `audit_layout` (stacking) |
+| 11 | Dropdown renders behind stat cards (z-index) | Layout | `audit_layout` (stacking) |
 | 12 | Content area is `<div>` not `<main>` | A11y | `audit_accessibility` (landmarks) |
 | 13 | Button padding inconsistent with login page | Consistency | `check_consistency` |
-| 14 | "Last updated" text hidden by `overflow:hidden` | Layout | `audit_layout` (overflow) |
+| 14 | "Last updated" text clipped by `overflow:hidden` | Layout | `audit_layout` (overflow) |
+| 15 | Third stat card has wrong background/border color | Visual | Manual annotation |
 
 ### Settings (settings.html) - 5 bugs
 
@@ -151,10 +152,11 @@ A multi-page demo app with **23 planted UI bugs** across 4 pages. Annotate issue
 
 | # | Bug | Type | Found by |
 |---|---|---|---|
-| 20 | Step indicator loses active state on step 2 | Functional | Manual annotation / `analyze_journey` |
+| 20 | Step 2 indicator shows red error state instead of active | Functional | Manual annotation / `analyze_journey` |
 | 21 | Card number input accepts letters | Functional | Manual annotation |
 | 22 | Order total missing on step 2 (regression) | Regression | `compare_captures` |
-| 23 | Submit button visible before terms checked | Functional | Manual annotation |
+| 23 | Submit button is red/danger color before terms checked | Functional | Manual annotation |
+| 24 | Plan summary box misaligned (40px left margin) | Visual | Manual annotation / `audit_layout` |
 
 ## Tools Exercised
 

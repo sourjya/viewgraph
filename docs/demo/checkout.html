@@ -91,7 +91,7 @@
         <div class="step active" id="step-ind-1"><span class="step-num">1</span> Review</div>
         <div class="step-line"></div>
         <!-- BUG: should have class="step active" when on step 2, but it's just "step" -->
-        <div class="step" id="step-ind-2"><span class="step-num">2</span> Payment</div>
+        <div class="step" id="step-ind-2"><span class="step-num" style="background: #7f1d1d; color: #fca5a5;">2</span> Payment</div>
         <div class="step-line"></div>
         <div class="step" id="step-ind-3"><span class="step-num">3</span> Confirm</div>
       </div>
@@ -99,7 +99,7 @@
       <div class="card checkout-card">
         <!-- Step 1: Review -->
         <div class="step-content active" id="step-1">
-          <div class="plan-summary">
+          <div class="plan-summary" style="margin-left: 40px;">
             <div>
               <div class="plan-name">Pro Plan</div>
               <div class="plan-period">Billed monthly</div>
@@ -154,8 +154,8 @@
 
           <div class="nav-buttons">
             <button class="btn btn-secondary" data-testid="back-to-review" onclick="goToStep(1)">Back</button>
-            <!-- BUG 4: submit visible even when terms unchecked (should be hidden/disabled) -->
-            <button class="btn btn-primary" data-testid="submit-payment" onclick="goToStep(3)">Pay $31.61</button>
+            <!-- BUG 4: submit is bright red warning color when terms unchecked - should be hidden -->
+            <button class="btn" data-testid="submit-payment" onclick="goToStep(3)" style="background: #ef4444; color: white;">Pay $31.61</button>
           </div>
         </div>
 

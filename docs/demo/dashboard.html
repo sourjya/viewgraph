@@ -31,7 +31,7 @@
     .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .table-header h2 { font-size: 16px; font-weight: 600; color: #f1f5f9; }
 
-    /* BUG 3: dropdown z-index too low - overlaps behind stat cards */
+    /* BUG 3: dropdown z-index too low - renders BEHIND stat cards */
     .dropdown { position: relative; display: inline-block; }
     .dropdown-menu {
       display: none;
@@ -43,7 +43,7 @@
       border-radius: 8px;
       padding: 4px;
       min-width: 160px;
-      /* BUG: z-index: 1 is too low - stat-card has position:relative */
+      /* BUG: z-index: 1 is too low - stat-card has position:relative which creates a stacking context */
       z-index: 1;
       box-shadow: 0 8px 24px rgba(0,0,0,0.3);
     }
@@ -62,10 +62,10 @@
     }
     .dropdown-item:hover { background: #334155; }
 
-    /* BUG 6: overflow hidden clips the "last updated" text */
+    /* BUG 6: overflow hidden clips the "last updated" text - shows half a line */
     .table-footer {
       overflow: hidden;
-      height: 0;
+      height: 14px;
       padding: 8px 0;
       font-size: 12px;
       color: #64748b;
@@ -119,9 +119,10 @@
           <div class="stat-value">47</div>
           <div class="stat-change down">-5 this week</div>
         </div>
-        <div class="card stat-card">
+        <!-- BUG 7 (new): third stat card has wrong background - visually broken -->
+        <div class="card stat-card" style="background: #0f172a; border-color: #ef4444;">
           <div class="stat-label">Team Members</div>
-          <div class="stat-value">8</div>
+          <div class="stat-value" style="color: #ef4444;">8</div>
           <div class="stat-change up">+1 this month</div>
         </div>
       </div>
@@ -129,7 +130,8 @@
       <div class="card">
         <div class="table-header">
           <h2>Recent Tasks</h2>
-          <div class="dropdown">
+          <!-- BUG 3: dropdown is open by default and renders behind the stat cards -->
+          <div class="dropdown open">
             <!-- BUG 5: padding 10px instead of 12px (inconsistent with login btn) -->
             <button class="btn btn-secondary" data-testid="filter-btn" onclick="this.parentElement.classList.toggle('open')" style="padding: 8px 16px;">
               Filter

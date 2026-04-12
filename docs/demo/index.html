@@ -41,8 +41,8 @@
     /* ---- Card ---- */
     .card {
       background: #1e293b;
-      /* BUG 5: mismatched border-radius - top-right is 0 */
-      border-radius: 16px 0px 16px 16px;
+      /* BUG 5: mismatched border-radius - two sharp corners look broken */
+      border-radius: 16px 0px 0px 16px;
       border: 1px solid #334155;
       padding: 40px;
       width: 100%;
@@ -71,8 +71,8 @@
 
     /* ---- Heading ---- */
     h1 {
-      /* BUG 8: font-size too large - 42px is excessive for a login card */
-      font-size: 42px;
+      /* BUG 8: font-size absurdly large - 56px overflows the card on mobile */
+      font-size: 56px;
       font-weight: 700;
       color: #f1f5f9;
       text-align: center;
