@@ -257,6 +257,112 @@ describe('targetDir override', () => {
 });
 
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Fix 1: 127.0.0.1 / 0.0.0.0 / [::1] normalized to localhost
+// ---------------------------------------------------------------------------
+
+describe('localhost normalization', () => {
+  beforeEach(() => {
+    addServer(9876, '/home/user/app', ['localhost:3000']);
+  });
+
+  it('(+) 127.0.0.1:3000 matches localhost:3000 pattern', async () => {
+    const url = await discoverServer('http://127.0.0.1:3000/login');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) 0.0.0.0:3000 matches localhost:3000 pattern', async () => {
+    const url = await discoverServer('http://0.0.0.0:3000/login');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) [::1]:3000 (IPv6 loopback) matches localhost:3000 pattern', async () => {
+    const url = await discoverServer('http://[::1]:3000/login');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) https://127.0.0.1:3000 also normalizes', async () => {
+    const url = await discoverServer('https://127.0.0.1:3000/login');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Fix 2: Windows file paths (backslash normalization)
+// ---------------------------------------------------------------------------
+
+describe('Windows file path normalization', () => {
+  beforeEach(() => {
+    resetServerCache();
+    serversByPort = {};
+    // Simulate a Windows server with backslash projectRoot
+    serversByPort['9876'] = {
+      capturesDir: 'C:\\Users\\dev\\myapp\\.viewgraph\\captures',
+      projectRoot: 'C:\\Users\\dev\\myapp',
+      urlPatterns: [],
+      agent: 'Kiro',
+    };
+  });
+
+  it('(+) file:// URL with forward slashes matches backslash projectRoot', async () => {
+    const url = await discoverServer('file:///C:/Users/dev/myapp/index.html');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) nested path matches', async () => {
+    const url = await discoverServer('file:///C:/Users/dev/myapp/src/pages/login.html');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Fix 3: Port-only fallback matching
+// ---------------------------------------------------------------------------
+
+describe('port-only fallback matching', () => {
+  beforeEach(() => {
+    addServer(9876, '/home/user/app', ['localhost:3000']);
+  });
+
+  it('(+) custom hostname on same port matches via port fallback', async () => {
+    const url = await discoverServer('http://myapp.local:3000/login');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) lvh.me on same port matches', async () => {
+    const url = await discoverServer('http://app.lvh.me:3000/dashboard');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) Docker host.docker.internal on same port matches', async () => {
+    const url = await discoverServer('http://host.docker.internal:3000/');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(-) different port does NOT match via port fallback', async () => {
+    resetServerCache();
+    serversByPort = {};
+    addServer(9876, '/home/user/app-one', ['localhost:3000']);
+    addServer(9877, '/home/user/app-two', ['localhost:3001']);
+
+    const url = await discoverServer('http://myapp.local:3001/login');
+    expect(url).toBe('http://127.0.0.1:9877');
+  });
+
+  it('(-) remote URL without port does not trigger port fallback', async () => {
+    resetServerCache();
+    serversByPort = {};
+    addServer(9876, '/home/user/app', ['localhost:3000']);
+    addServer(9877, '/home/user/other', ['staging.myapp.com']);
+
+    // https://staging.myapp.com has no explicit port (443 implicit)
+    // Should match by pattern, not port fallback
+    const url = await discoverServer('https://staging.myapp.com/login');
+    expect(url).toBe('http://127.0.0.1:9877');
+  });
+});
+
 // Edge cases
 // ---------------------------------------------------------------------------
 

@@ -114,6 +114,33 @@ export async function getAllServers() {
 }
 
 /**
+ * Normalize a URL for consistent matching.
+ * - Replaces 127.0.0.1 and 0.0.0.0 with localhost
+ * - Replaces [::1] (IPv6 loopback) with localhost
+ * - Normalizes Windows file paths (backslash to forward slash)
+ * @param {string|null} url
+ * @returns {string|null}
+ */
+function normalizeUrl(url) {
+  if (!url) return null;
+  return url
+    .replace(/\/\/127\.0\.0\.1([:\/])/g, '//localhost$1')
+    .replace(/\/\/0\.0\.0\.0([:\/])/g, '//localhost$1')
+    .replace(/\/\/\[::1\]([:\/])/g, '//localhost$1')
+    .replace(/\\/g, '/');
+}
+
+/**
+ * Extract the port number from a URL string.
+ * @param {string} url
+ * @returns {string|null} Port string or null
+ */
+function extractPort(url) {
+  const m = url.match(/:(\d{2,5})(\/|$)/);
+  return m ? m[1] : null;
+}
+
+/**
  * Find the best server for a given page URL.
  *
  * Matching strategy:
@@ -130,6 +157,9 @@ export async function discoverServer(pageUrl = null, targetDir = null) {
   const reg = await refreshRegistry();
   if (reg.size === 0) return null;
 
+  // Normalize the page URL for consistent matching
+  const normalizedUrl = normalizeUrl(pageUrl);
+
   // Explicit capturesDir match (from manual project mappings)
   if (targetDir) {
     for (const entry of reg.values()) {
@@ -138,25 +168,32 @@ export async function discoverServer(pageUrl = null, targetDir = null) {
   }
 
   // Mode 1: file:// URLs - match against projectRoot (longest prefix wins)
-  if (pageUrl?.startsWith('file://')) {
-    const filePath = decodeURIComponent(pageUrl.replace('file://', ''));
+  if (normalizedUrl?.startsWith('file://')) {
+    const filePath = decodeURIComponent(normalizedUrl.replace('file://', ''));
     let bestMatch = null;
     let bestLen = 0;
     for (const entry of reg.values()) {
-      if (entry.projectRoot && filePath.startsWith(entry.projectRoot) && entry.projectRoot.length > bestLen) {
+      // Normalize projectRoot: backslash to forward slash for Windows compat
+      const normRoot = entry.projectRoot?.replace(/\\/g, '/');
+      if (normRoot && filePath.startsWith(normRoot) && normRoot.length > bestLen) {
         bestMatch = entry.url;
-        bestLen = entry.projectRoot.length;
+        bestLen = normRoot.length;
       }
     }
     if (bestMatch) return bestMatch;
   }
 
   // Mode 2 & 3: localhost / remote URLs - match against urlPatterns
-  // urlPatterns are set via: npx viewgraph-init --url localhost:3000 --url staging.myapp.com
-  if (pageUrl) {
+  if (normalizedUrl) {
+    // Extract port from URL for port-only fallback matching
+    const urlPort = extractPort(normalizedUrl);
+
     for (const entry of reg.values()) {
       for (const pattern of entry.urlPatterns || []) {
-        if (pageUrl.includes(pattern)) return entry.url;
+        // Direct substring match
+        if (normalizedUrl.includes(pattern)) return entry.url;
+        // Port-only fallback: pattern "localhost:3000" matches any host on :3000
+        if (urlPort && pattern.includes(':') && pattern.endsWith(':' + urlPort)) return entry.url;
       }
     }
   }
