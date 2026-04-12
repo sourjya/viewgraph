@@ -12,6 +12,13 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ### New Features
 
+#### Demo App - TaskFlow (2026-04-12)
+- 4 demo pages: login (8 bugs), dashboard (7 bugs), settings (5 bugs), checkout (5 bugs)
+- 25 planted UI bugs covering all MCP tool categories
+- Shared styles.css for consistent TaskFlow branding
+- Visually stark bugs: 56px heading, broken corners, red submit button, clipped text, wrong card colors
+- Demo strategy doc with 4 quick demos, 5 walkthroughs, end-to-end showcase plan
+
 #### Playwright Capture Bridge (2026-04-12)
 - New `@viewgraph/playwright` package in `packages/playwright/`
 - Playwright test fixture: `import { test } from '@viewgraph/playwright/fixture'`
@@ -40,6 +47,29 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - `@vg-testids` - find and add missing data-testid attributes
 - `@vg-a11y` - deep a11y audit with automatic source fixes
 - `@vg-tests` - generate Playwright E2E tests from capture
+
+
+### Bug Fixes
+
+#### BUG-009: Multi-Project Server Routing (2026-04-12) - CRITICAL
+- Rewrote extension server discovery: single-server cache replaced with multi-server registry
+- `discoverServer(pageUrl)` now matches page URL against each server's projectRoot and urlPatterns
+- `fetchServerInfo()` stores ALL server mappings, not just one
+- All 8 `discoverServer()` calls in sidebar now pass `window.location.href`
+- URL normalization: `127.0.0.1`, `0.0.0.0`, `[::1]` normalized to `localhost`
+- WSL file URL support: strips `wsl.localhost/DistroName` prefix (Chrome and Firefox 5-slash format)
+- Windows path normalization: backslash to forward slash in projectRoot comparison
+- Port-only fallback: pattern `localhost:3000` matches any hostname on `:3000`
+- Init script: auto-finds free port (9876-9879), only kills own project's server
+- Init script: `--url` flag writes URL patterns to `.viewgraph/config.json`
+- Server `/info` endpoint now returns `urlPatterns` from config
+- 46 unit tests covering file/localhost/remote/WSL/Windows/edge cases
+- Multi-project setup guide: `docs/runbooks/multi-project-setup.md`
+
+#### viewgraph-init Output Polish (2026-04-12)
+- Consistent 2-space indentation throughout init output
+- Server port shown in startup message
+- Probe timeout bumped to 1000ms for WSL port forwarding latency
 
 ### Capture Accuracy Experiment
 
