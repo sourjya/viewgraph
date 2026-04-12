@@ -289,6 +289,43 @@ describe('localhost normalization', () => {
 });
 
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// WSL file:// URL handling
+// ---------------------------------------------------------------------------
+
+describe('WSL file URL routing', () => {
+  beforeEach(() => {
+    addServer(9876, '/home/sourjya/demos/app-one');
+    addServer(9877, '/home/sourjya/demos/app-two');
+  });
+
+  it('(+) wsl.localhost URL routes to correct server', async () => {
+    const url = await discoverServer('file://wsl.localhost/Ubuntu/home/sourjya/demos/app-one/index.html');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) wsl.localhost URL routes app-two correctly', async () => {
+    const url = await discoverServer('file://wsl.localhost/Ubuntu/home/sourjya/demos/app-two/index.html');
+    expect(url).toBe('http://127.0.0.1:9877');
+  });
+
+  it('(+) wsl$ URL format also works', async () => {
+    const url = await discoverServer('file://wsl$/Ubuntu/home/sourjya/demos/app-one/index.html');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) different distro name still works', async () => {
+    const url = await discoverServer('file://wsl.localhost/Debian/home/sourjya/demos/app-two/index.html');
+    expect(url).toBe('http://127.0.0.1:9877');
+  });
+
+  it('(+) nested WSL path matches', async () => {
+    const url = await discoverServer('file://wsl.localhost/Ubuntu/home/sourjya/demos/app-one/src/pages/login.html');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+});
+
 // Fix 2: Windows file paths (backslash normalization)
 // ---------------------------------------------------------------------------
 

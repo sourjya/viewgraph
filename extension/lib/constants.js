@@ -131,6 +131,32 @@ function normalizeUrl(url) {
 }
 
 /**
+ * Extract the filesystem path from a file:// URL.
+ * Handles WSL, Windows, Linux, and macOS formats:
+ *   file:///home/user/project/index.html          -> /home/user/project/index.html
+ *   file:///C:/Users/user/project/index.html      -> C:/Users/user/project/index.html
+ *   file://wsl.localhost/Ubuntu/home/user/...     -> /home/user/...
+ *   file://wsl$/Ubuntu/home/user/...              -> /home/user/...
+ * @param {string} fileUrl - Normalized file:// URL
+ * @returns {string} Filesystem path
+ */
+function extractFilePath(fileUrl) {
+  let path = decodeURIComponent(fileUrl.replace('file://', ''));
+
+  // WSL: file://wsl.localhost/DistroName/home/... or file://wsl$/DistroName/home/...
+  // Strip the host + distro prefix to get the Linux path
+  const wslMatch = path.match(/^wsl[\.\$]localhost\/[^/]+(\/.*)/i)
+    || path.match(/^wsl\$\/[^/]+(\/.*)/i);
+  if (wslMatch) return wslMatch[1];
+
+  // Standard: file:///path -> /path (the leading / is part of the path)
+  // Windows: file:///C:/... -> strip leading / to get C:/...
+  if (/^\/[A-Za-z]:\//.test(path)) return path.slice(1);
+
+  return path;
+}
+
+/**
  * Extract the port number from a URL string.
  * @param {string} url
  * @returns {string|null} Port string or null
@@ -169,7 +195,7 @@ export async function discoverServer(pageUrl = null, targetDir = null) {
 
   // Mode 1: file:// URLs - match against projectRoot (longest prefix wins)
   if (normalizedUrl?.startsWith('file://')) {
-    const filePath = decodeURIComponent(normalizedUrl.replace('file://', ''));
+    const filePath = extractFilePath(normalizedUrl);
     let bestMatch = null;
     let bestLen = 0;
     for (const entry of reg.values()) {
