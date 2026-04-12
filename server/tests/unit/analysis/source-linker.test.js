@@ -146,3 +146,74 @@ describe('findSource', () => {
     expect(results.length).toBe(0);
   });
 });
+
+  // ---------------------------------------------------------------------------
+  // Exact confidence (componentSource from React fiber)
+  // ---------------------------------------------------------------------------
+
+  it('(+) returns exact confidence for componentSource', async () => {
+    const results = await findSource(projectRoot, {
+      component: 'LoginForm',
+      componentSource: 'src/components/LoginForm.tsx:1',
+    });
+    expect(results[0].confidence).toBe('exact');
+    expect(results[0].file).toBe('src/components/LoginForm.tsx');
+    expect(results[0].line).toBe(1);
+    expect(results[0].match).toContain('fiber source');
+  });
+
+  it('(+) exact result comes before high confidence grep results', async () => {
+    const results = await findSource(projectRoot, {
+      component: 'LoginForm',
+      componentSource: 'src/components/LoginForm.tsx:1',
+    });
+    // First result should be exact (fiber), followed by high (grep)
+    expect(results[0].confidence).toBe('exact');
+    if (results.length > 1) {
+      expect(['exact', 'high', 'medium', 'low']).toContain(results[1].confidence);
+    }
+  });
+
+  it('(+) componentSource with absolute path gets normalized', async () => {
+    const absPath = path.join(projectRoot, 'src', 'components', 'LoginForm.tsx');
+    const results = await findSource(projectRoot, {
+      componentSource: `${absPath}:42`,
+    });
+    expect(results[0].confidence).toBe('exact');
+    expect(results[0].file).toBe('src/components/LoginForm.tsx');
+    expect(results[0].line).toBe(42);
+  });
+
+  it('(+) componentSource with relative ./ prefix gets cleaned', async () => {
+    const results = await findSource(projectRoot, {
+      componentSource: './src/components/Header.tsx:2',
+    });
+    expect(results[0].confidence).toBe('exact');
+    expect(results[0].file).toBe('src/components/Header.tsx');
+  });
+
+  it('(-) componentSource without line defaults to line 1', async () => {
+    const results = await findSource(projectRoot, {
+      componentSource: 'src/components/LoginForm.tsx',
+    });
+    expect(results[0].confidence).toBe('exact');
+    expect(results[0].line).toBe(1);
+  });
+
+  it('(+) componentSource still runs grep for additional references', async () => {
+    const results = await findSource(projectRoot, {
+      component: 'LoginForm',
+      componentSource: 'src/components/LoginForm.tsx:1',
+    });
+    // Should have exact + grep results (function definition, import, etc.)
+    expect(results.length).toBeGreaterThan(1);
+  });
+
+  it('(edge) componentSource alone with no other query fields', async () => {
+    const results = await findSource(projectRoot, {
+      componentSource: 'src/components/Header.tsx:1',
+    });
+    // Should return the exact result even without testid/selector/text
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    expect(results[0].confidence).toBe('exact');
+  });

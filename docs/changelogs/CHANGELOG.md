@@ -21,6 +21,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - `viewgraph.captureWithAnnotations(label)` - capture with annotations attached
 - Reuses extension's traverser/serializer via bundle injection (same pattern as bulk capture experiment)
 - Captures written to `.viewgraph/captures/` for MCP server consumption
+- 8 new tests for bundle builder (syntax validation, module stripping, caching)
 
 #### React Fiber Source Linking (2026-04-12)
 - component-collector.js now extracts `_debugSource` from React fibers (dev builds)
@@ -28,6 +29,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - source-linker.js: new `exact` confidence level for fiber-derived source paths
 - find_source tool: looks up component source from latest capture before falling back to grep
 - Zero-grep source linking for React dev builds - exact file:line from the framework itself
+- 9 new tests for fiber source extraction, 7 new tests for exact confidence path
 
 #### Prompt Templates (2026-04-12)
 - 7 new prompt templates in `power/prompts/` (8 total with existing vg-help)
