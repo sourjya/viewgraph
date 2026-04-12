@@ -186,6 +186,7 @@ In Kiro CLI, type `@vg` then Tab to see all shortcuts:
 | `@vg-diff` | Compare two most recent captures |
 | `@vg-testids` | Find and add missing data-testid attributes |
 | `@vg-a11y` | Deep a11y audit with automatic source fixes |
+| `@vg-tests` | Generate Playwright E2E tests from capture |
 
 ### Other agents
 

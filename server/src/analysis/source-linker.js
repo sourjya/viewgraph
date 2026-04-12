@@ -34,11 +34,33 @@ const _MAX_FILE_SIZE = 200 * 1024;
 /**
  * Find source file locations for a DOM element.
  * @param {string} projectRoot - Absolute path to the project root
- * @param {{ testid?: string, ariaLabel?: string, selector?: string, text?: string, component?: string }} query
+ * @param {{ testid?: string, ariaLabel?: string, selector?: string, text?: string, component?: string, componentSource?: string }} query
  * @returns {Promise<Array<{ file: string, line: number, match: string, confidence: string }>>}
  */
 export async function findSource(projectRoot, query) {
   const results = [];
+
+  // Fast path: if the capture included a fiber-derived source path,
+  // return it directly without grepping. This is the highest confidence
+  // result possible - it comes from React's _debugSource at capture time.
+  if (query.componentSource) {
+    const parts = query.componentSource.split(':');
+    const file = parts.slice(0, -1).join(':') || parts[0];
+    const line = parseInt(parts[parts.length - 1], 10) || 1;
+    // Normalize: strip leading ./ or absolute prefix if it matches projectRoot
+    const relFile = file.startsWith(projectRoot)
+      ? path.relative(projectRoot, file)
+      : file.replace(/^\.\//, '');
+    results.push({
+      file: relFile,
+      line,
+      match: `fiber source (${query.component || 'component'})`,
+      confidence: 'exact',
+      context: `React _debugSource from capture`,
+    });
+    // Still run grep to find additional references (imports, tests, etc.)
+  }
+
   const files = await collectSourceFiles(projectRoot);
 
   // Build search terms ordered by confidence
@@ -94,7 +116,7 @@ export async function findSource(projectRoot, query) {
 
   // Sort: high confidence first, then by file path
   results.sort((a, b) => {
-    const order = { high: 0, medium: 1, low: 2 };
+    const order = { exact: -1, high: 0, medium: 1, low: 2 };
     return (order[a.confidence] - order[b.confidence]) || a.file.localeCompare(b.file);
   });
 
