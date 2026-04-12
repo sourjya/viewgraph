@@ -132,27 +132,43 @@ function normalizeUrl(url) {
 
 /**
  * Extract the filesystem path from a file:// URL.
- * Handles WSL, Windows, Linux, and macOS formats:
- *   file:///home/user/project/index.html          -> /home/user/project/index.html
- *   file:///C:/Users/user/project/index.html      -> C:/Users/user/project/index.html
- *   file://wsl.localhost/Ubuntu/home/user/...     -> /home/user/...
- *   file://wsl$/Ubuntu/home/user/...              -> /home/user/...
+ *
+ * File URLs vary by platform:
+ *   Linux/macOS:  file:///home/user/project/index.html
+ *   Windows:      file:///C:/Users/user/project/index.html
+ *   WSL via Chrome on Windows: file://wsl.localhost/Ubuntu/home/user/...
+ *                            or file://wsl$/Ubuntu/home/user/...
+ *
+ * The WSL case is special: Chrome on Windows accesses WSL filesystems
+ * through a UNC-style path (\\wsl.localhost\DistroName\...). The distro
+ * name can be anything - Ubuntu, Debian, AmazonWSL, kali-linux, etc.
+ * The server inside WSL reports projectRoot as /home/user/project, so
+ * we must strip the wsl.localhost/DistroName prefix to get the Linux
+ * path that matches.
+ *
+ * For non-WSL users (direct Windows, macOS, Linux), this function is
+ * a simple passthrough - it just strips the file:// protocol prefix.
+ *
  * @param {string} fileUrl - Normalized file:// URL
  * @returns {string} Filesystem path
  */
 function extractFilePath(fileUrl) {
   let path = decodeURIComponent(fileUrl.replace('file://', ''));
 
-  // WSL: file://wsl.localhost/DistroName/home/... or file://wsl$/DistroName/home/...
-  // Strip the host + distro prefix to get the Linux path
+  // WSL detection: Chrome on Windows shows WSL paths as
+  // file://wsl.localhost/<DistroName>/home/... or file://wsl$/<DistroName>/home/...
+  // where <DistroName> is any installed WSL distribution (Ubuntu, Debian,
+  // AmazonWSL, kali-linux, openSUSE-Leap-15.4, etc.)
+  // We strip everything up to and including the distro name to get the
+  // Linux-native path that matches the server's projectRoot.
   const wslMatch = path.match(/^wsl[\.\$]localhost\/[^/]+(\/.*)/i)
     || path.match(/^wsl\$\/[^/]+(\/.*)/i);
   if (wslMatch) return wslMatch[1];
 
-  // Standard: file:///path -> /path (the leading / is part of the path)
-  // Windows: file:///C:/... -> strip leading / to get C:/...
+  // Windows (non-WSL): file:///C:/Users/... -> C:/Users/...
   if (/^\/[A-Za-z]:\//.test(path)) return path.slice(1);
 
+  // Linux/macOS: file:///home/user/... -> /home/user/... (no change needed)
   return path;
 }
 
