@@ -20,7 +20,7 @@ import { groupRequests, smartPath } from './network-grouper.js';
  */
 async function syncResolved() {
   try {
-    const serverUrl = await discoverServer();
+    const serverUrl = await discoverServer(window.location.href);
     if (!serverUrl) return;
     const pageUrl = encodeURIComponent(location.href);
     const res = await fetch(`${serverUrl}/annotations/resolved?url=${pageUrl}`, { signal: AbortSignal.timeout(3000) });
@@ -95,7 +95,7 @@ let bellBtn = null;
  */
 async function pollRequests() {
   try {
-    const serverUrl = await discoverServer();
+    const serverUrl = await discoverServer(window.location.href);
     if (!serverUrl) return;
     const res = await fetch(`${serverUrl}/requests/pending`, { signal: AbortSignal.timeout(3000) });
     if (!res.ok) return;
@@ -464,7 +464,7 @@ export function create() {
   Object.assign(autoInfo.style, { color: '#555', fontSize: '11px', fontStyle: 'italic' });
 
   // Fetch server status and /info - try direct fetch first, fall back to background
-  discoverServer().then(async (url) => {
+  discoverServer(window.location.href).then(async (url) => {
     if (!url) {
       serverLine.innerHTML = '<span style="color:#f87171">\u25cf</span> MCP server offline';
       autoInfo.textContent = 'No server detected - start the MCP server';
@@ -1060,7 +1060,7 @@ export function create() {
    * Surfaces warnings only when something looks wrong (empty capture, stale data).
    */
   async function fetchCapturesSection(container) {
-    const serverUrl = await discoverServer();
+    const serverUrl = await discoverServer(window.location.href);
     if (!serverUrl) return;
     const pageUrl = location.href;
 
@@ -1298,7 +1298,7 @@ export function create() {
 
   // Connect WebSocket for real-time annotation sync
   (async () => {
-    const serverUrl = await discoverServer();
+    const serverUrl = await discoverServer(window.location.href);
     if (!serverUrl) return;
     const hdrs = authHeaders();
     const token = hdrs?.Authorization?.replace('Bearer ', '') || '';
@@ -1435,7 +1435,7 @@ export function refresh() {
         capBtn.innerHTML = '\u23f3';
         (async () => {
           try {
-            const serverUrl = await discoverServer();
+            const serverUrl = await discoverServer(window.location.href);
             if (serverUrl) await fetch(`${serverUrl}/requests/${req.id}/ack`, { method: 'POST', headers: authHeaders() });
           } catch { /* best effort */ }
           // Use capture with keepSidebar to get full DOM without tearing down sidebar
@@ -1469,7 +1469,7 @@ export function refresh() {
       decBtn.addEventListener('click', () => {
         (async () => {
           try {
-            const serverUrl = await discoverServer();
+            const serverUrl = await discoverServer(window.location.href);
             if (serverUrl) {
               await fetch(`${serverUrl}/requests/${req.id}/decline`, {
                 method: 'POST',
