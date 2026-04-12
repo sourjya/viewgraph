@@ -13,7 +13,7 @@
  */
 /* global defineBackground */
 
-import { SERVER_BASE_URL as SERVER_URL, discoverServer, authHeaders } from '../lib/constants.js';
+import { SERVER_BASE_URL as SERVER_URL, discoverServer, authHeaders, getAllServers } from '../lib/constants.js';
 import { isInjectable, getBlockedReason } from '../lib/url-checks.js';
 
 const PROJECT_MAPPINGS_KEY = 'vg-project-mappings';
@@ -21,24 +21,33 @@ const AUTO_MAPPING_KEY = 'vg-auto-mapping';
 const OVERRIDE_KEY = 'vg-override-enabled';
 
 /**
- * Fetch /info from the connected server and store the auto-detected
- * project mapping. Called on startup and after successful server discovery.
+ * Fetch /info from ALL running servers and store the mappings.
+ * Called on startup and periodically. Replaces the old single-server
+ * fetchServerInfo() that only cached one mapping.
+ *
+ * @see docs/bugs/BUG-009-multi-project-routing.md
  */
 async function fetchServerInfo() {
   try {
-    const serverUrl = await discoverServer();
-    if (!serverUrl) return;
-    const res = await fetch(`${serverUrl}/info`, { signal: AbortSignal.timeout(2000) });
-    if (!res.ok) return;
-    const info = await res.json();
-    await chrome.storage.local.set({ [AUTO_MAPPING_KEY]: { capturesDir: info.capturesDir, projectRoot: info.projectRoot, serverUrl, detectedAt: Date.now() } });
-  } catch { /* server not responding */ }
+    const servers = await getAllServers();
+    if (servers.length === 0) return;
+    // Store all server mappings for lookupCapturesDir
+    const mappings = servers.map((s) => ({
+      capturesDir: s.capturesDir,
+      projectRoot: s.projectRoot,
+      serverUrl: s.url,
+      detectedAt: Date.now(),
+    }));
+    await chrome.storage.local.set({ [AUTO_MAPPING_KEY]: mappings });
+  } catch { /* servers not responding */ }
 }
 
 /**
  * Look up the capturesDir for a given page URL.
- * Priority: manual overrides (if enabled) > auto-detected from server /info.
- * Returns null if no mapping found (server uses its default).
+ * Matches the page URL against all known server projectRoots.
+ * Priority: manual overrides > file:// path match > first available.
+ *
+ * @see docs/bugs/BUG-009-multi-project-routing.md
  */
 async function lookupCapturesDir(pageUrl) {
   // Check if manual overrides are enabled
@@ -50,9 +59,26 @@ async function lookupCapturesDir(pageUrl) {
       if (pattern === '*' || pageUrl.includes(pattern)) return dir;
     }
   }
-  // Fall back to auto-detected mapping
-  const { [AUTO_MAPPING_KEY]: auto } = await chrome.storage.local.get(AUTO_MAPPING_KEY);
-  return auto?.capturesDir || null;
+  // Match against all auto-detected server mappings
+  const { [AUTO_MAPPING_KEY]: autoMappings } = await chrome.storage.local.get(AUTO_MAPPING_KEY);
+  const mappings = Array.isArray(autoMappings) ? autoMappings : (autoMappings ? [autoMappings] : []);
+
+  // For file:// URLs, match by projectRoot prefix (longest wins)
+  if (pageUrl?.startsWith('file://')) {
+    const filePath = decodeURIComponent(pageUrl.replace('file://', ''));
+    let bestMatch = null;
+    let bestLen = 0;
+    for (const m of mappings) {
+      if (m.projectRoot && filePath.startsWith(m.projectRoot) && m.projectRoot.length > bestLen) {
+        bestMatch = m.capturesDir;
+        bestLen = m.projectRoot.length;
+      }
+    }
+    if (bestMatch) return bestMatch;
+  }
+
+  // Fallback: return first available
+  return mappings[0]?.capturesDir || null;
 }
 
 /**
@@ -63,14 +89,16 @@ async function lookupCapturesDir(pageUrl) {
 // Auth headers provided by constants.js via getServerToken() after discoverServer()
 
 /**
- * Push a capture to the MCP server. Fails silently if server is not running.
+ * Push a capture to the MCP server. Routes to the correct server
+ * based on the capture's URL and capturesDir.
  * @param {object} capture - ViewGraph JSON capture
  * @param {string|null} capturesDir - Override captures directory from project mapping
  * @returns {Promise<{ filename: string } | null>}
  */
 async function pushToServer(capture, capturesDir = null) {
   try {
-    const serverUrl = await discoverServer(capturesDir) || SERVER_URL;
+    const pageUrl = capture.metadata?.url || null;
+    const serverUrl = await discoverServer(pageUrl, capturesDir) || SERVER_URL;
     console.log('[viewgraph] pushToServer: url', serverUrl, 'capturesDir', capturesDir);
     const auth = authHeaders();
     const headers = { 'content-type': 'application/json', ...auth };
