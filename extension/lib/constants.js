@@ -70,7 +70,7 @@ async function refreshRegistry() {
   for (let p = DEFAULT_HTTP_PORT; p < DEFAULT_HTTP_PORT + PORT_SCAN_RANGE; p++) {
     const url = `http://127.0.0.1:${p}`;
     probes.push(
-      fetch(`${url}/info`, { signal: AbortSignal.timeout(500) })
+      fetch(`${url}/info`, { signal: AbortSignal.timeout(1000) })
         .then((res) => res.ok ? res.json() : null)
         .then((info) => {
           if (info) {
