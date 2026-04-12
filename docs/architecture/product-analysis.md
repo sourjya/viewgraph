@@ -1,6 +1,6 @@
 # ViewGraph - Product Analysis
 
-**Date:** 2026-04-11
+**Date:** 2026-04-12 (revised)
 **Scope:** User journeys, pain points solved, competitor comparison
 
 ---
@@ -211,17 +211,21 @@ node /path/to/viewgraph/scripts/viewgraph-status.js
 | Capability | ViewGraph | Playwright MCP | Chromatic | Replay.io | axe MCP | Figma MCP | Storybook MCP |
 |---|---|---|---|---|---|---|---|
 | **Live DOM capture** | Yes - full structured snapshot | Partial - a11y tree only | No - component screenshots | Yes - runtime recording | No - a11y violations only | No - design files | No - component stories |
-| **Human annotations** | Yes - click/drag + comments | No | Yes - component review | No | No | Partial - design comments | No |
-| **AI agent context via MCP** | Yes - 23 tools | Yes - browser automation | Yes - component metadata | Yes - runtime debugging | Yes - a11y scanning | Yes - design tokens | Yes - component API |
-| **Accessibility audit** | Yes - WCAG + contrast | Partial - needs axe-playwright | Yes - WCAG violations | No | Yes - industry standard | No | Yes - axe-core addon |
+| **Human annotations** | Yes - click/drag + comments + severity | No | Yes - component review | No | No | Partial - design comments | No |
+| **Annotation lifecycle** | Yes - resolve, track, diff, patterns, specs | No | No | No | No | No | No |
+| **AI agent context via MCP** | Yes - 34 tools | Yes - browser automation | Yes - component metadata | Yes - runtime debugging | Yes - a11y scanning | Yes - design tokens | Yes - component API |
+| **Accessibility audit** | Yes - WCAG + contrast + axe-core (100+ rules) | Partial - needs axe-playwright | Yes - WCAG violations | No | Yes - industry standard | No | Yes - axe-core addon |
 | **Layout analysis** | Yes - overflow/overlap/viewport | No | No | No | No | No | No |
-| **Source file linking** | Yes - testid/label/selector grep | No | No | Yes - source maps | No | Yes - Code Connect | Yes - component mapping |
+| **Source file linking** | Yes - testid/label/selector/component grep | No | No | Yes - source maps | No | Yes - Code Connect | Yes - component mapping |
 | **Structural regression** | Yes - baseline comparison | No | Yes - visual diff | No | No | No | Yes - visual diff |
-| **Multi-step flows** | Yes - session recording | Yes - test scripts | No | Yes - session recording | No | No | No |
+| **Pixel-level comparison** | Yes - PNG diff with threshold | No | Yes - full pipeline | No | No | No | Yes - visual diff |
+| **Multi-step flows** | Yes - session recording + journey analysis | Yes - test scripts | No | Yes - session recording | No | No | No |
+| **Design consistency** | Yes - cross-page style drift detection | No | Yes - within Storybook | No | No | Yes - design tokens | Yes - within Storybook |
 | **Works with any web app** | Yes - any URL, any backend | Yes - any URL | No - Storybook required | Yes - any URL | Yes - any URL | No - Figma files | No - Storybook required |
 | **No code required** | Yes - browser extension | No - needs test scripts | No - needs Storybook stories | No - needs recording setup | Partial - extension + MCP | No - needs Figma files | No - needs stories |
 | **Standalone (no AI)** | Yes - Copy MD / ZIP export | No | Yes - visual review | Yes - debugging UI | Yes - extension | Yes - Dev Mode | Yes - component explorer |
-| **Free** | Yes - fully open source | Yes - Apache 2.0 | Free tier (5K snapshots) | Design partner (free) | axe-core free; MCP paid | Paid plans | Free (OSS) |
+| **Measured accuracy** | Yes - 92.1% composite, 7 dimensions | No | No | No | No | No | No |
+| **Free** | Yes - fully open source (AGPL) | Yes - Apache 2.0 | Free tier (5K snapshots) | Design partner (free) | axe-core free; MCP paid | Paid plans | Free (OSS) |
 
 ### Where ViewGraph Wins
 
@@ -229,15 +233,23 @@ node /path/to/viewgraph/scripts/viewgraph-status.js
 
 2. **Works with any web app, zero setup in the target project.** Playwright needs test scripts. Chromatic needs Storybook. Figma needs design files. ViewGraph works on any URL with just a browser extension.
 
-3. **Richest capture context.** 7 enrichment collectors (network, console, breakpoints, stacking, focus, scroll, landmarks) plus full DOM structure. No other tool provides this breadth of context in a single capture.
+3. **Richest capture context.** 14 enrichment collectors (network, console, breakpoints, media queries, stacking, focus, scroll, landmarks, components, axe, event listeners, performance, animations, intersection) plus full DOM structure. No other tool provides this breadth of context in a single capture.
 
 4. **Bidirectional agent communication.** Agent can request captures, receive results, resolve annotations, and the extension reflects changes in real-time. Most MCP tools are read-only.
 
 5. **Dual audience.** Same tool works for developers (Send to Agent) and testers (Copy MD / ZIP). No other tool serves both workflows from the same interface.
 
+6. **Annotation intelligence.** 7 tools for tracking annotation lifecycle: resolve, check status against newer captures, diff across deploys, detect recurring issues, analyze patterns, and generate implementation specs. No competitor tracks human feedback through to resolution.
+
+7. **Multi-step journey analysis.** Session recording with structural diffs between steps, a11y regression detection across navigation, and Mermaid state machine visualization. Replay.io records runtime; ViewGraph analyzes structural changes.
+
+8. **Measured accuracy.** 92.1% composite accuracy across 48 diverse real-world websites, measured automatically via a [bulk capture experiment](../../scripts/experiments/bulk-capture/). No competitor publishes equivalent accuracy metrics against real-world sites.
+
+9. **Design system consistency checking.** `check_consistency` compares the same component across different pages to detect style drift (different padding, font size, colors). Chromatic does this within Storybook; ViewGraph does it across any live pages.
+
 ### Where ViewGraph is Weaker
 
-1. **No pixel-level visual comparison.** Percy and Chromatic compare rendered screenshots pixel-by-pixel. ViewGraph compares DOM structure. It catches "button missing" but not "button is 2px too far left" (unless the developer annotates it).
+1. **Pixel-level visual comparison is basic.** `compare_screenshots` does pixel-by-pixel PNG diffing, but it lacks Percy/Chromatic's CI integration, baseline management, and cross-browser screenshot matrix. It catches regressions between two captures but doesn't scale to automated visual testing pipelines.
 
 2. **No runtime debugging.** Replay.io captures every DOM change, network request, and state update during execution. ViewGraph captures a point-in-time snapshot. It can't show "the dropdown flickered for 50ms before disappearing."
 
@@ -245,9 +257,7 @@ node /path/to/viewgraph/scripts/viewgraph-status.js
 
 4. **No cross-browser testing.** BrowserStack/LambdaTest run tests on 3,000+ browser/OS combinations. ViewGraph captures from the developer's current browser only.
 
-5. **No automated test generation.** Playwright/Cypress generate test scripts. Meticulous records user sessions into tests. ViewGraph captures state but doesn't generate executable tests.
-
-6. **Accessibility depth.** axe-core has 100+ WCAG rules with zero false positives. ViewGraph's a11y audit covers the most common issues (alt text, labels, contrast, form inputs) but isn't as comprehensive.
+5. **No automated test generation.** Playwright/Cypress generate test scripts. Meticulous records user sessions into tests. ViewGraph captures state but doesn't generate executable tests (it generates specs and tasks via `generate_spec`, but not runnable test code).
 
 ### Competitive Positioning
 
@@ -273,18 +283,18 @@ ViewGraph doesn't compete with these tools - it complements them. The positionin
                Lighthouse
 ```
 
-ViewGraph is the only tool in the "structured output + human annotated" quadrant. This is its moat.
+ViewGraph is the only tool in the "structured output + human annotated" quadrant. This is its moat. The annotation intelligence layer (7 tools for lifecycle tracking) and measured accuracy (92.1% composite) widen that moat further - competitors would need to build both the capture engine and the feedback loop.
 
 ### Strategic Gaps to Close
 
-| Gap | Impact | Effort | Priority |
+| Gap | Impact | Effort | Status |
 |---|---|---|---|
-| Component tree mapping (React/Vue names on DOM nodes) | High - agents can jump to component files | Medium | P0 |
-| Cross-page consistency checker | Medium - design system enforcement | Medium | P1 |
-| Deeper WCAG coverage (more axe-core rules) | Medium - compete with axe on depth | Low | P1 |
-| Visual screenshot comparison (pixel diff) | Medium - catch sub-pixel regressions | High | P2 |
-| Framework-specific source linking (React fiber walk) | High - more accurate than grep | High | P2 |
-| Playwright integration (capture during test runs) | High - bridge testing and review | Medium | P1 |
+| Component tree mapping (React/Vue names on DOM nodes) | High | Medium | **Shipped** - component-collector.js detects React, Vue, Svelte |
+| Cross-page consistency checker | Medium | Medium | **Shipped** - check_consistency MCP tool |
+| Deeper WCAG coverage (more axe-core rules) | Medium | Low | **Shipped** - axe-collector.js runs full axe-core |
+| Visual screenshot comparison (pixel diff) | Medium | High | **Shipped** - compare_screenshots MCP tool |
+| Framework-specific source linking (React fiber walk) | High | High | Partial - grep-based find_source works; fiber walk not yet |
+| Playwright integration (capture during test runs) | High | Medium | Not started |
 
 ---
 
@@ -294,6 +304,6 @@ ViewGraph occupies a unique position: the UI context layer for AI coding agents.
 
 The closest peers are Playwright MCP (structured but no annotations), Chromatic (annotations but Storybook-dependent), and Replay.io (runtime context but no review workflow). ViewGraph complements all of them.
 
-The product is strongest for the "developer + AI agent" workflow where the human annotates and the agent fixes. The tester workflow (Copy MD / ZIP) is a secondary but valuable use case that requires no AI agent at all.
+The product is strongest for the "developer + AI agent" workflow where the human annotates and the agent fixes. The annotation intelligence layer (resolve, track, diff, detect patterns, generate specs) creates a closed feedback loop that no competitor offers. The tester workflow (Copy MD / ZIP) is a secondary but valuable use case that requires no AI agent at all.
 
-**Current state:** 23 MCP tools, 486 tests, 7 enrichment collectors, 3 Kiro hooks, 6 CLI shortcuts. Works with Kiro, Claude Code, Cursor, Windsurf, Cline, and any MCP-compatible agent.
+**Current state:** 34 MCP tools, 923 tests, 14 enrichment collectors, 3 Kiro hooks, 6 CLI shortcuts. Works with Kiro, Claude Code, Cursor, Windsurf, Cline, and any MCP-compatible agent. Capture accuracy measured at 92.1% composite across 48 diverse real-world websites (see [bulk capture experiment](../../scripts/experiments/bulk-capture/)).

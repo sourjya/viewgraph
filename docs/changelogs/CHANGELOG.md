@@ -10,6 +10,48 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ## [Unreleased]
 
+### Capture Accuracy Experiment
+
+#### Bulk Capture Experiment (2026-04-12)
+- New experiment framework: `scripts/experiments/bulk-capture/`
+- 150 curated websites across 12 categories, tagged on 5 diversity axes (category, complexity, rendering, script, a11y)
+- 3 experiment sets: A (breadth, 48 sites), B (depth, 50 sites), C (real-world, 50 sites)
+- Puppeteer-based capture runner injects VG traverser/serializer into live pages
+- 7-dimension accuracy measurement: selector accuracy, testid recall, interactive recall, bbox accuracy, text accuracy, semantic recall, element recall
+- Ground-truth DOM collector runs in-page alongside VG capture for authoritative comparison
+- Bot detection: identifies Cloudflare, Akamai, PerimeterX, DataDome, captcha pages
+- Browser stealth: realistic UA, navigator.webdriver patch, plugin/language spoofing
+- Excluded-site filtering: bot-blocked, CSP-blocked, nav-failed sites excluded from accuracy calculations
+- Test run index (`results/index.json`) tracks all runs with timestamps for cross-run comparison
+- Latest results: 92.1% composite accuracy (Set A), 99.7% selector accuracy, 100% testid recall, 97.9% interactive recall
+
+### Documentation
+
+#### README Updates (2026-04-12)
+- Added "Capture Accuracy" section with results table, methodology paragraph, experiment set comparison
+- Added "How ViewGraph Compares" section with 10-row comparison matrix vs Playwright MCP, Chromatic, Replay.io, axe MCP
+- Linked Node.js to nodejs.org in Getting Started
+
+#### Product Analysis Refresh (2026-04-12)
+- Updated tool count (23 -> 34), test count (486 -> 923), enrichment collectors (7 -> 14)
+- Added 4 new competitive advantages: annotation intelligence, journey analysis, measured accuracy, design consistency
+- Reclassified pixel comparison from weakness to partial strength (compare_screenshots shipped)
+- Removed a11y depth as weakness (axe-core integrated)
+- Expanded feature comparison matrix from 12 to 17 rows
+- Updated strategic gaps: 4 of 6 marked as shipped
+
+#### Competitive Analysis Refresh (2026-04-12)
+- Updated all 4 feature proposals to "Shipped" status with implementation details
+- Moved from `docs/ideas/` to `docs/architecture/`
+
+#### Docs Reorganization (2026-04-12)
+- Eliminated `docs/ideas/` - moved 4 files to `docs/architecture/` and `docs/decisions/`
+- Moved `product-positioning.md` and `problem-feature-mapping.md` from `docs/roadmap/` to `docs/architecture/`
+- Moved `sidebar-ux-fixes.md` from `docs/roadmap/` to `docs/bugs/`
+- Created `docs/audits/` for timestamped review reports (3 files moved from `docs/architecture/`)
+- Merged `output-format-research.md` into `viewgraph-format-research.md` (single format research doc)
+- Updated all cross-references (8 links across 5 files)
+
 ### CI/CD
 
 #### GitHub Actions Pipeline (2026-04-12)

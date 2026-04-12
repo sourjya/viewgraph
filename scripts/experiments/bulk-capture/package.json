@@ -1,0 +1,14 @@
+{
+  "name": "viewgraph-bulk-capture-experiment",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Bulk capture experiment - runs ViewGraph capture pipeline against 150 diverse websites",
+  "scripts": {
+    "start": "node run.js",
+    "analyze": "node run.js --analyze-only"
+  },
+  "dependencies": {
+    "puppeteer": "^24.0.0"
+  }
+}

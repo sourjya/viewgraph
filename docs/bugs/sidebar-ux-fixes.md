@@ -1,6 +1,6 @@
 # Sidebar UX Fixes - Implementation Plan
 
-**Source:** [Sidebar UX Review 2026-04-12](../architecture/sidebar-ux-review-2026-04-12.md)
+**Source:** [Sidebar UX Review 2026-04-12](../audits/sidebar-ux-review-2026-04-12.md)
 **Milestone:** M16 (Sidebar UX Polish)
 **Estimated effort:** 2-3 days
 
