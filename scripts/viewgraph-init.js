@@ -211,7 +211,7 @@ if (agent?.name === 'Kiro') {
   }
 }
 
-console.log('\nDone. Starting ViewGraph server...\n');
+console.log('\nStarting ViewGraph server...\n');
 
 // 7. Kill any existing ViewGraph server, then start fresh (detached)
 import { spawn, execSync } from 'child_process';
@@ -230,4 +230,6 @@ const server = spawn('node', [SERVER_ENTRY], {
 });
 server.unref();
 const port = process.env.VIEWGRAPH_HTTP_PORT || 9876;
-console.log(`Server started (PID ${server.pid}, port ${port}). Extension popup should show green dot.`);
+console.log(`  Started (PID ${server.pid}, port ${port})`);
+console.log('  Extension popup should show green dot.\n');
+console.log('Done.\n');
