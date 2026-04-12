@@ -213,23 +213,62 @@ if (agent?.name === 'Kiro') {
 
 console.log('\nStarting ViewGraph server...\n');
 
-// 7. Kill any existing ViewGraph server, then start fresh (detached)
+// 7. Start a ViewGraph server for this project (detached)
+// Only kill an existing server if it's using the SAME captures dir.
+// If the default port is taken by another project's server, auto-increment.
 import { spawn, execSync } from 'child_process';
+import { createConnection } from 'net';
+
+/**
+ * Check if a port is in use by attempting a TCP connection.
+ * @param {number} p - Port to check
+ * @returns {Promise<boolean>} true if port is in use
+ */
+function isPortTaken(p) {
+  return new Promise((resolve) => {
+    const sock = createConnection({ port: p, host: '127.0.0.1' });
+    sock.once('connect', () => { sock.destroy(); resolve(true); });
+    sock.once('error', () => resolve(false));
+  });
+}
+
+/**
+ * Find a free port starting from the default.
+ * Scans 9876-9879 (matches the extension's PORT_SCAN_RANGE of 4).
+ * @returns {Promise<number>}
+ */
+async function findFreePort() {
+  const base = parseInt(process.env.VIEWGRAPH_HTTP_PORT || '9876', 10);
+  for (let p = base; p < base + 4; p++) {
+    if (!(await isPortTaken(p))) return p;
+  }
+  return base; // fallback - server will fail with EADDRINUSE and log it
+}
+
+// Only kill a server that's serving THIS project's captures dir
 try {
   const pids = execSync(`pgrep -f "${SERVER_ENTRY.replace(/\//g, '\\/')}"`, { encoding: 'utf-8' }).trim().split('\n').filter(Boolean);
   for (const pid of pids) {
-    process.kill(Number(pid), 'SIGTERM');
-    console.log(`  Stopped existing server (PID ${pid})`);
+    // Check if this server is using our captures dir by reading /proc/pid/environ or cmdline
+    try {
+      const environ = execSync(`cat /proc/${pid}/environ 2>/dev/null | tr '\\0' '\\n' | grep VIEWGRAPH_CAPTURES_DIR || true`, { encoding: 'utf-8' });
+      if (environ.includes(absCapturesDir)) {
+        process.kill(Number(pid), 'SIGTERM');
+        console.log(`  Stopped existing server (PID ${pid})`);
+      }
+    } catch {
+      // Can't read environ (macOS, permissions) - skip, don't kill blindly
+    }
   }
 } catch { /* no existing server */ }
 
+const port = await findFreePort();
 const server = spawn('node', [SERVER_ENTRY], {
   stdio: 'ignore',
   detached: true,
-  env: { ...process.env, VIEWGRAPH_CAPTURES_DIR: absCapturesDir },
+  env: { ...process.env, VIEWGRAPH_CAPTURES_DIR: absCapturesDir, VIEWGRAPH_HTTP_PORT: String(port) },
 });
 server.unref();
-const port = process.env.VIEWGRAPH_HTTP_PORT || 9876;
 console.log(`  Started (PID ${server.pid}, port ${port})`);
 console.log('  Extension popup should show green dot.\n');
 console.log('Done.\n');

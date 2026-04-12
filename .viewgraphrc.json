@@ -5,6 +5,8 @@
     "/home/sourjya/demos/app-one/.viewgraph/captures",
     "/tmp/vg-demo-test/.viewgraph/captures",
     "/home/sourjya/demos/app-two/.viewgraph/captures",
-    "/tmp/vg-fmt-test/.viewgraph/captures"
+    "/tmp/vg-fmt-test/.viewgraph/captures",
+    "/tmp/vg-test-a/.viewgraph/captures",
+    "/tmp/vg-test-b/.viewgraph/captures"
   ]
 }
