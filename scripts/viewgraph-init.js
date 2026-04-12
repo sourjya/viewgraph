@@ -126,6 +126,28 @@ if (agent) {
 // Persist detected agent name for server /info endpoint
 writeFileSync(path.join(CWD, '.viewgraph', '.agent'), agent ? agent.name : 'Agent');
 
+// 3b. Parse --url flags and write URL patterns to config.json
+// Usage: npx viewgraph-init --url localhost:3000 --url staging.myapp.com
+const urlPatterns = [];
+for (let i = 2; i < process.argv.length; i++) {
+  if (process.argv[i] === '--url' && process.argv[i + 1]) {
+    urlPatterns.push(process.argv[++i]);
+  }
+}
+const configPath = path.join(CWD, '.viewgraph', 'config.json');
+let config = {};
+try { config = JSON.parse(readFileSync(configPath, 'utf-8')); } catch { /* no existing config */ }
+if (urlPatterns.length > 0) {
+  config.urlPatterns = [...new Set([...(config.urlPatterns || []), ...urlPatterns])];
+  writeFileSync(configPath, JSON.stringify(config, null, 2));
+  console.log(`  URL patterns: ${config.urlPatterns.join(', ')}`);
+} else if (!config.urlPatterns && existsSync(configPath)) {
+  // Config exists but no patterns - leave it alone
+} else if (!existsSync(configPath)) {
+  // Create empty config for future use
+  writeFileSync(configPath, JSON.stringify({ urlPatterns: [] }, null, 2));
+}
+
 // 4. Add .viewgraph to .gitignore if not already there
 const gitignorePath = path.join(CWD, '.gitignore');
 if (existsSync(gitignorePath)) {

@@ -78,6 +78,7 @@ async function refreshRegistry() {
               url,
               capturesDir: info.capturesDir || null,
               projectRoot: info.projectRoot || null,
+              urlPatterns: info.urlPatterns || [],
               agent: info.agent || null,
               token: null,
             });
@@ -136,7 +137,7 @@ export async function discoverServer(pageUrl = null, targetDir = null) {
     }
   }
 
-  // file:// URL matching - compare against projectRoot
+  // Mode 1: file:// URLs - match against projectRoot (longest prefix wins)
   if (pageUrl?.startsWith('file://')) {
     const filePath = decodeURIComponent(pageUrl.replace('file://', ''));
     let bestMatch = null;
@@ -150,18 +151,18 @@ export async function discoverServer(pageUrl = null, targetDir = null) {
     if (bestMatch) return bestMatch;
   }
 
-  // localhost URL matching - check if any projectRoot is in the URL path
-  // or if the server was started from a project that serves on this port
-  if (pageUrl && (pageUrl.includes('localhost') || pageUrl.includes('127.0.0.1'))) {
-    // For localhost, we can't match by path. If there's only one server, use it.
-    if (reg.size === 1) return [...reg.values()][0].url;
-    // Multiple servers: return the one whose capturesDir was explicitly set
-    if (targetDir) {
-      for (const entry of reg.values()) {
-        if (entry.capturesDir === targetDir) return entry.url;
+  // Mode 2 & 3: localhost / remote URLs - match against urlPatterns
+  // urlPatterns are set via: npx viewgraph-init --url localhost:3000 --url staging.myapp.com
+  if (pageUrl) {
+    for (const entry of reg.values()) {
+      for (const pattern of entry.urlPatterns || []) {
+        if (pageUrl.includes(pattern)) return entry.url;
       }
     }
   }
+
+  // Single server: no ambiguity, just use it
+  if (reg.size === 1) return [...reg.values()][0].url;
 
   // Fallback: return first available server
   return [...reg.values()][0].url;

@@ -35,6 +35,7 @@ async function fetchServerInfo() {
     const mappings = servers.map((s) => ({
       capturesDir: s.capturesDir,
       projectRoot: s.projectRoot,
+      urlPatterns: s.urlPatterns || [],
       serverUrl: s.url,
       detectedAt: Date.now(),
     }));
@@ -75,6 +76,15 @@ async function lookupCapturesDir(pageUrl) {
       }
     }
     if (bestMatch) return bestMatch;
+  }
+
+  // For localhost/remote URLs, match by urlPatterns
+  if (pageUrl) {
+    for (const m of mappings) {
+      for (const pattern of m.urlPatterns || []) {
+        if (pageUrl.includes(pattern)) return m.capturesDir;
+      }
+    }
   }
 
   // Fallback: return first available

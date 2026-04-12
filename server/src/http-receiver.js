@@ -130,7 +130,12 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         : path.dirname(absCaptures);
       let agent;
       try { agent = readFileSync(path.resolve(projectRoot, '.viewgraph', '.agent'), 'utf-8').trim(); } catch { /* not set */ }
-      return json(res, 200, { capturesDir: absCaptures, projectRoot, agent });
+      let urlPatterns = [];
+      try {
+        const cfg = JSON.parse(readFileSync(path.resolve(projectRoot, '.viewgraph', 'config.json'), 'utf-8'));
+        urlPatterns = cfg.urlPatterns || [];
+      } catch { /* no config */ }
+      return json(res, 200, { capturesDir: absCaptures, projectRoot, agent, urlPatterns });
     }
 
     // GET /requests/pending
