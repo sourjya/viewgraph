@@ -91,3 +91,10 @@ servers connected:
 The element index and locator data from ViewGraph feeds directly into
 Playwright's action commands. This makes ViewGraph the "eyes" and
 Playwright the "hands."
+
+**Status: Shipped.** The `@viewgraph/playwright` package provides a
+Playwright test fixture that captures ViewGraph DOM snapshots during
+E2E test runs. Usage: `await viewgraph.capture('after-login')`. Captures
+land in `.viewgraph/captures/` where the MCP server picks them up.
+The `@vg-tests` prompt template guides agents to generate Playwright
+tests from existing captures, completing the bidirectional bridge.

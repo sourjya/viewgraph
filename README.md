@@ -16,7 +16,8 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 |---|---|
 | [`server/`](./server/) | MCP server - 34 query/analysis/request tools, WebSocket collab, baselines |
 | [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, annotate, 14 enrichment collectors, multi-export |
-| [`power/`](./power/) | Kiro Power assets - 3 hooks, 7 prompts, 3 steering docs, MCP config |
+| [`packages/playwright/`](./packages/playwright/) | Playwright fixture - capture structured DOM snapshots during E2E tests |
+| [`power/`](./power/) | Kiro Power assets - 3 hooks, 8 prompts, 3 steering docs, MCP config |
 
 ## How It Works
 
@@ -323,7 +324,7 @@ ViewGraph occupies a unique position: the UI context layer for AI coding agents.
 | MCP tools for agents | 34 tools | Browser automation | Component metadata | Runtime debugging | A11y scanning |
 | Accessibility audit | WCAG + contrast + axe-core | Needs axe-playwright | WCAG violations | No | Industry standard |
 | Layout analysis | Overflow, overlap, viewport | No | No | No | No |
-| Source file linking | testid/label/selector grep | No | No | Source maps | No |
+| Source file linking | testid/label/selector grep + React fiber | No | No | Source maps | No |
 | Structural regression | Baseline comparison | No | Visual diff | No | No |
 | Works with any web app | Any URL, any backend | Any URL | Storybook required | Any URL | Any URL |
 | No code required | Browser extension | Test scripts needed | Stories needed | Recording setup | Extension + MCP |
@@ -341,9 +342,9 @@ All commands run from the ViewGraph root directory:
 npm run dev:server     # start MCP server with file watcher
 npm run dev:ext        # start extension dev server (Chrome HMR)
 npm run dev:ext:ff     # start extension dev server (Firefox HMR)
-npm test               # all tests (923 tests)
-npm run test:server    # server only (324 tests)
-npm run test:ext       # extension only (599 tests)
+npm test               # all tests (973 tests)
+npm run test:server    # server only (331 tests)
+npm run test:ext       # extension only (607 tests)
 ```
 
 ## Project Structure
@@ -358,6 +359,8 @@ server/          MCP server (Node.js, @modelcontextprotocol/sdk)
 extension/       Browser extension (WXT, Manifest V3)
   lib/           42 modules (annotate, collectors, export, session, ws-client, etc.)
   entrypoints/   background, content, popup, options
+packages/
+  playwright/    Playwright fixture (@viewgraph/playwright)
 power/           Kiro Power assets (steering docs, hooks, prompts)
 docs/            Documentation, architecture, decisions, changelogs
 scripts/         Git scripts, build scripts, init, status, doctor

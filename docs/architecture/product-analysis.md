@@ -257,7 +257,7 @@ node /path/to/viewgraph/scripts/viewgraph-status.js
 
 4. **No cross-browser testing.** BrowserStack/LambdaTest run tests on 3,000+ browser/OS combinations. ViewGraph captures from the developer's current browser only.
 
-5. **No automated test generation.** Playwright/Cypress generate test scripts. Meticulous records user sessions into tests. ViewGraph captures state but doesn't generate executable tests (it generates specs and tasks via `generate_spec`, but not runnable test code).
+5. **No automated test generation.** Playwright/Cypress generate test scripts. Meticulous records user sessions into tests. ViewGraph captures state but doesn't generate executable tests (it generates specs and tasks via `generate_spec`, but not runnable test code). The `@vg-tests` prompt template guides agents to generate Playwright tests from captures, and `@viewgraph/playwright` enables capturing during test runs, but this is agent-assisted rather than fully automated.
 
 ### Competitive Positioning
 
@@ -293,8 +293,8 @@ ViewGraph is the only tool in the "structured output + human annotated" quadrant
 | Cross-page consistency checker | Medium | Medium | **Shipped** - check_consistency MCP tool |
 | Deeper WCAG coverage (more axe-core rules) | Medium | Low | **Shipped** - axe-collector.js runs full axe-core |
 | Visual screenshot comparison (pixel diff) | Medium | High | **Shipped** - compare_screenshots MCP tool |
-| Framework-specific source linking (React fiber walk) | High | High | Partial - grep-based find_source works; fiber walk not yet |
-| Playwright integration (capture during test runs) | High | Medium | Not started |
+| Framework-specific source linking (React fiber walk) | High | High | **Shipped** - _debugSource extraction from React fibers, exact confidence in find_source |
+| Playwright integration (capture during test runs) | High | Medium | **Shipped** - @viewgraph/playwright fixture with capture/annotate/snapshot |
 
 ---
 
@@ -306,4 +306,4 @@ The closest peers are Playwright MCP (structured but no annotations), Chromatic 
 
 The product is strongest for the "developer + AI agent" workflow where the human annotates and the agent fixes. The annotation intelligence layer (resolve, track, diff, detect patterns, generate specs) creates a closed feedback loop that no competitor offers. The tester workflow (Copy MD / ZIP) is a secondary but valuable use case that requires no AI agent at all.
 
-**Current state:** 34 MCP tools, 923 tests, 14 enrichment collectors, 3 Kiro hooks, 6 CLI shortcuts. Works with Kiro, Claude Code, Cursor, Windsurf, Cline, and any MCP-compatible agent. Capture accuracy measured at 92.1% composite across 48 diverse real-world websites (see [bulk capture experiment](../../scripts/experiments/bulk-capture/)).
+**Current state:** 34 MCP tools, 973 tests, 14 enrichment collectors, 3 Kiro hooks, 8 CLI prompt shortcuts, @viewgraph/playwright fixture. Works with Kiro, Claude Code, Cursor, Windsurf, Cline, and any MCP-compatible agent. Capture accuracy measured at 92.1% composite across 48 diverse real-world websites (see [bulk capture experiment](../../scripts/experiments/bulk-capture/)). All 6 strategic gaps from the original analysis are now shipped.
