@@ -1,0 +1,313 @@
+/**
+ * Multi-Project Server Routing - Unit Tests
+ *
+ * Tests the server registry and URL-based routing in constants.js.
+ * Mocks fetch() to simulate multiple ViewGraph servers on different ports,
+ * each with different projectRoot and urlPatterns.
+ *
+ * Covers BUG-009: multi-project routing broken.
+ *
+ * @see lib/constants.js - discoverServer(), refreshRegistry()
+ * @see docs/bugs/BUG-009-multi-project-routing.md
+ */
+
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { discoverServer, getAllServers, resetServerCache } from '#lib/constants.js';
+
+// ---------------------------------------------------------------------------
+// Mock setup
+// ---------------------------------------------------------------------------
+
+/** Simulated server responses keyed by port. */
+let serversByPort = {};
+
+beforeEach(() => {
+  resetServerCache();
+  serversByPort = {};
+
+  // Mock chrome.storage for token fetch
+  globalThis.chrome = {
+    storage: {
+      local: {
+        get: vi.fn(() => Promise.resolve({})),
+      },
+    },
+  };
+
+  // Mock fetch to return server info based on port
+  globalThis.fetch = vi.fn((url, _opts) => {
+    const portMatch = url.match(/:(\d+)\//);
+    if (!portMatch) return Promise.reject(new Error('bad url'));
+    const port = portMatch[1];
+    const server = serversByPort[port];
+    if (!server) return Promise.reject(new Error('ECONNREFUSED'));
+    return Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(server),
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Register a fake server on a port. */
+function addServer(port, projectRoot, urlPatterns = []) {
+  serversByPort[String(port)] = {
+    capturesDir: `${projectRoot}/.viewgraph/captures`,
+    projectRoot,
+    urlPatterns,
+    agent: 'Kiro',
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Single server (baseline)
+// ---------------------------------------------------------------------------
+
+describe('single server', () => {
+  beforeEach(() => {
+    addServer(9876, '/home/user/app-one');
+  });
+
+  it('(+) discovers the server', async () => {
+    const url = await discoverServer();
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) returns server for any page URL when only one server', async () => {
+    const url = await discoverServer('http://localhost:9999/anything');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) getAllServers returns one entry', async () => {
+    const servers = await getAllServers();
+    expect(servers).toHaveLength(1);
+    expect(servers[0].projectRoot).toBe('/home/user/app-one');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Two servers - file:// URL routing
+// ---------------------------------------------------------------------------
+
+describe('file:// URL routing with two servers', () => {
+  beforeEach(() => {
+    addServer(9876, '/home/user/app-one');
+    addServer(9877, '/home/user/app-two');
+  });
+
+  it('(+) routes file URL to correct server by projectRoot', async () => {
+    const url1 = await discoverServer('file:///home/user/app-one/index.html');
+    expect(url1).toBe('http://127.0.0.1:9876');
+
+    resetServerCache();
+    const url2 = await discoverServer('file:///home/user/app-two/dashboard.html');
+    expect(url2).toBe('http://127.0.0.1:9877');
+  });
+
+  it('(+) routes nested file paths correctly', async () => {
+    const url = await discoverServer('file:///home/user/app-one/src/pages/login.html');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) longest prefix wins when paths overlap', async () => {
+    resetServerCache();
+    serversByPort = {};
+    addServer(9876, '/home/user/projects');
+    addServer(9877, '/home/user/projects/frontend');
+
+    const url = await discoverServer('file:///home/user/projects/frontend/index.html');
+    expect(url).toBe('http://127.0.0.1:9877');
+  });
+
+  it('(-) unmatched file path falls back to first server', async () => {
+    const url = await discoverServer('file:///home/user/other-project/index.html');
+    expect(url).toBeTruthy();
+  });
+
+  it('(edge) URL-encoded file path still matches', async () => {
+    const url = await discoverServer('file:///home/user/app-one/my%20page.html');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Two servers - localhost URL routing via urlPatterns
+// ---------------------------------------------------------------------------
+
+describe('localhost URL routing with urlPatterns', () => {
+  beforeEach(() => {
+    addServer(9876, '/home/user/app-one', ['localhost:3000']);
+    addServer(9877, '/home/user/app-two', ['localhost:3001']);
+  });
+
+  it('(+) routes localhost:3000 to app-one', async () => {
+    const url = await discoverServer('http://localhost:3000/login');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) routes localhost:3001 to app-two', async () => {
+    const url = await discoverServer('http://localhost:3001/dashboard');
+    expect(url).toBe('http://127.0.0.1:9877');
+  });
+
+  it('(-) unmatched localhost port falls back', async () => {
+    const url = await discoverServer('http://localhost:9999/unknown');
+    expect(url).toBeTruthy();
+  });
+
+  it('(+) pattern matches anywhere in URL', async () => {
+    const url = await discoverServer('http://localhost:3000/api/v1/users?page=2');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Two servers - remote URL routing via urlPatterns
+// ---------------------------------------------------------------------------
+
+describe('remote URL routing with urlPatterns', () => {
+  beforeEach(() => {
+    addServer(9876, '/home/user/frontend', ['app.mysite.com']);
+    addServer(9877, '/home/user/admin', ['admin.mysite.com']);
+  });
+
+  it('(+) routes remote URL to correct server', async () => {
+    const url1 = await discoverServer('https://app.mysite.com/dashboard');
+    expect(url1).toBe('http://127.0.0.1:9876');
+
+    resetServerCache();
+    const url2 = await discoverServer('https://admin.mysite.com/users');
+    expect(url2).toBe('http://127.0.0.1:9877');
+  });
+
+  it('(edge) subdomain matches broader pattern when scanned first', async () => {
+    resetServerCache();
+    serversByPort = {};
+    addServer(9876, '/home/user/frontend', ['mysite.com']);
+    addServer(9877, '/home/user/staging', ['staging.mysite.com']);
+
+    // "staging.mysite.com" contains "mysite.com" so port 9876 matches first.
+    // Use more specific patterns to avoid ambiguity (e.g., "app.mysite.com"
+    // instead of bare "mysite.com").
+    const url = await discoverServer('https://staging.mysite.com/login');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(-) unmatched remote URL falls back', async () => {
+    const url = await discoverServer('https://other-site.com/page');
+    expect(url).toBeTruthy();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Mixed modes
+// ---------------------------------------------------------------------------
+
+describe('mixed file + localhost + remote', () => {
+  beforeEach(() => {
+    addServer(9876, '/home/user/app-one', ['localhost:3000', 'staging.app.com']);
+    addServer(9877, '/home/user/app-two', ['localhost:3001']);
+  });
+
+  it('(+) file URL uses projectRoot, ignores urlPatterns', async () => {
+    const url = await discoverServer('file:///home/user/app-two/index.html');
+    expect(url).toBe('http://127.0.0.1:9877');
+  });
+
+  it('(+) localhost uses urlPatterns, ignores projectRoot', async () => {
+    const url = await discoverServer('http://localhost:3000/page');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) remote uses urlPatterns', async () => {
+    const url = await discoverServer('https://staging.app.com/dashboard');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) multiple patterns on same server all work', async () => {
+    const url1 = await discoverServer('http://localhost:3000/a');
+    const url2 = await discoverServer('https://staging.app.com/b');
+    expect(url1).toBe('http://127.0.0.1:9876');
+    expect(url2).toBe('http://127.0.0.1:9876');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Explicit targetDir override
+// ---------------------------------------------------------------------------
+
+describe('targetDir override', () => {
+  beforeEach(() => {
+    addServer(9876, '/home/user/app-one');
+    addServer(9877, '/home/user/app-two');
+  });
+
+  it('(+) targetDir matches capturesDir exactly', async () => {
+    const url = await discoverServer(null, '/home/user/app-two/.viewgraph/captures');
+    expect(url).toBe('http://127.0.0.1:9877');
+  });
+
+  it('(-) wrong targetDir falls back', async () => {
+    const url = await discoverServer(null, '/nonexistent/.viewgraph/captures');
+    expect(url).toBeTruthy();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Edge cases
+// ---------------------------------------------------------------------------
+
+describe('edge cases', () => {
+  it('(-) no servers running returns null', async () => {
+    const url = await discoverServer('file:///home/user/app/index.html');
+    expect(url).toBeNull();
+  });
+
+  it('(edge) null pageUrl with servers returns first server', async () => {
+    addServer(9876, '/home/user/app-one');
+    const url = await discoverServer(null);
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(edge) empty string pageUrl returns first server', async () => {
+    addServer(9876, '/home/user/app-one');
+    const url = await discoverServer('');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(edge) server with no projectRoot still works', async () => {
+    serversByPort['9876'] = { capturesDir: '/tmp/captures', projectRoot: null, urlPatterns: ['localhost:5000'], agent: null };
+    const url = await discoverServer('http://localhost:5000/page');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(edge) server with empty urlPatterns array', async () => {
+    addServer(9876, '/home/user/app', []);
+    const url = await discoverServer('http://localhost:3000/page');
+    // No pattern match, but single server so falls back
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) registry caches and reuses', async () => {
+    addServer(9876, '/home/user/app');
+    await discoverServer('file:///home/user/app/index.html');
+    const callCount = fetch.mock.calls.length;
+
+    // Second call should use cache, not re-fetch
+    await discoverServer('file:///home/user/app/other.html');
+    expect(fetch.mock.calls.length).toBe(callCount);
+  });
+
+  it('(+) resetServerCache clears the cache', async () => {
+    addServer(9876, '/home/user/app');
+    await discoverServer();
+    const callCount = fetch.mock.calls.length;
+
+    resetServerCache();
+    await discoverServer();
+    expect(fetch.mock.calls.length).toBeGreaterThan(callCount);
+  });
+});
