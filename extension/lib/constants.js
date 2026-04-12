@@ -155,6 +155,12 @@ function normalizeUrl(url) {
 function extractFilePath(fileUrl) {
   let path = decodeURIComponent(fileUrl.replace('file://', ''));
 
+  // Strip leading slashes that vary by browser:
+  // Chrome: file://wsl.localhost/...  -> wsl.localhost/...
+  // Firefox: file://///wsl.localhost/... -> ///wsl.localhost/...
+  // Normalize to no leading slashes before the host/path
+  path = path.replace(/^\/+(?=wsl)/i, '');
+
   // WSL detection: Chrome on Windows shows WSL paths as
   // file://wsl.localhost/<DistroName>/home/... or file://wsl$/<DistroName>/home/...
   // where <DistroName> is any installed WSL distribution (Ubuntu, Debian,

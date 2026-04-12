@@ -324,6 +324,16 @@ describe('WSL file URL routing', () => {
     const url = await discoverServer('file://wsl.localhost/Ubuntu/home/sourjya/demos/app-one/src/pages/login.html');
     expect(url).toBe('http://127.0.0.1:9876');
   });
+
+  it('(+) Firefox WSL format with 5 slashes', async () => {
+    const url = await discoverServer('file://///wsl.localhost/Ubuntu/home/sourjya/demos/app-one/dashboard.html');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) Firefox WSL routes app-two correctly', async () => {
+    const url = await discoverServer('file://///wsl.localhost/Ubuntu/home/sourjya/demos/app-two/index.html');
+    expect(url).toBe('http://127.0.0.1:9877');
+  });
 });
 
 // Fix 2: Windows file paths (backslash normalization)
