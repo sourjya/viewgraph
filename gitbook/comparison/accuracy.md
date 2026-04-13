@@ -1,6 +1,6 @@
 # Capture Accuracy
 
-ViewGraph's capture accuracy is measured automatically against diverse real-world websites using a bulk capture experiment.
+ViewGraph's capture accuracy is measured automatically against diverse real-world websites using a [bulk capture experiment](https://github.com/sourjya/viewgraph/tree/main/scripts/experiments/bulk-capture).
 
 ## Latest Results
 
