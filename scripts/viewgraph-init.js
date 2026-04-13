@@ -217,8 +217,8 @@ if (agent?.name === 'Kiro') {
     }
   }
 
-  // Copy prompts if source exists
-  const srcPrompts = path.join(VIEWGRAPH_ROOT, '.kiro', 'prompts');
+  // Copy prompts from power/ directory (distributable assets)
+  const srcPrompts = path.join(VIEWGRAPH_ROOT, 'power', 'prompts');
   const promptsDir = path.join(CWD, '.kiro', 'prompts');
   if (existsSync(srcPrompts)) {
     ensureDir(promptsDir);
