@@ -21,6 +21,24 @@ After annotating the issues and sending to the agent:
 
 ---
 
+## Screenshots vs Structured Captures
+
+The most common workaround for "the agent can't see my UI" is pasting a screenshot into the IDE. Here's why that doesn't work well:
+
+| | Screenshot (pasted into IDE) | ViewGraph capture |
+|---|---|---|
+| **Token cost** | 100,000+ tokens (base64 PNG) | 500-2,000 tokens (summary or interactive elements) |
+| **CSS selectors** | None - agent has to guess | Exact selector for every element |
+| **Computed styles** | None - agent sees pixels, not values | `font-size: 56px`, `border-radius: 0`, `color: #475569` |
+| **Accessibility state** | Invisible in pixels | ARIA roles, labels, missing alt text flagged |
+| **Source file linking** | Impossible | `find_source` maps element to file:line |
+| **Actionable by agent** | "I see a big heading" (vague) | "h1 has font-size 56px, selector `h1`, file `index.html:38`" (precise) |
+| **Works across pages** | One screenshot per page | Structural diff, baseline comparison, consistency check |
+
+A screenshot costs 50-200x more tokens than a ViewGraph capture and gives the agent almost nothing it can act on. The agent can describe what it sees in the image, but it can't generate a CSS fix from pixels alone. ViewGraph gives it the exact values, selectors, and source locations it needs.
+
+---
+
 ## Common Problems
 
 ### The agent can't see what I see
