@@ -66,7 +66,7 @@ The entire codebase is open source under AGPL-3.0. You can inspect every line:
 
 The project has undergone two internal security audits:
 
-**Security Audit (April 2026):**
+**[Security Audit (April 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/audits/security-audit-2026-04-12.md):**
 - HTTP server endpoint review (15 endpoints)
 - Input validation on all POST endpoints
 - Path traversal prevention on file writes
@@ -74,7 +74,7 @@ The project has undergone two internal security audits:
 - XSS prevention in extension UI (Shadow DOM isolation)
 - WebSocket connection handling
 
-**Code Quality Audit (April 2026):**
+**[Code Quality Audit (April 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/audits/code-quality-audit-2026-04-12.md):**
 - ESLint clean (0 errors)
 - No hardcoded secrets in source
 - No eval() or Function constructor in application code
