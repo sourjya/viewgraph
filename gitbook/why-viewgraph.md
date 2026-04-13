@@ -2,13 +2,13 @@
 
 ViewGraph strengthens UI-heavy workflows across development, testing, QA, review, and release. Here are the 27 problems it solves, organized by workstream.
 
-![A broken login page - the kind of bugs ViewGraph helps fix](../.gitbook/assets/demo-login-broken.png)
+![A broken login page - the kind of bugs ViewGraph helps fix](.gitbook/assets/demo-login-broken.png)
 
 After annotating the issues and sending to the agent:
 
-![Kiro fixing the annotated bugs](../.gitbook/assets/demo-login-fixed-by-kiro.png)
+![Kiro fixing the annotated bugs](.gitbook/assets/demo-login-fixed-by-kiro.png)
 
-![The fixed login page](../.gitbook/assets/demo-login-fixed.png)
+![The fixed login page](.gitbook/assets/demo-login-fixed.png)
 
 ## At a Glance
 
