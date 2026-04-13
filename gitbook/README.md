@@ -4,6 +4,10 @@
 
 ViewGraph is the UI context layer for AI coding agents. A browser extension captures structured DOM snapshots from any web page - elements, styles, selectors, accessibility state, network errors - and a local MCP server exposes them to your AI assistant through the [Model Context Protocol](https://modelcontextprotocol.io/). The agent sees what you see in the browser, and can fix what you point at.
 
+{% embed url="https://www.youtube.com/watch?v=ociXQLaY2z4" %}
+See a UI bug, fix it in seconds with AI
+{% endembed %}
+
 ## The Problem
 
 AI coding agents can read your source code. They cannot see your rendered UI. This gap means:
