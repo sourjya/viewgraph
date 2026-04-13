@@ -684,6 +684,23 @@ to specific ViewGraph features, tools, workflows, and remaining gaps.
 
 ## Milestone 18: Go-To-Market Preparation (Future)
 
+## Milestone 17c: Native Messaging Transport (Post-Beta)
+
+**Goal:** Replace localhost HTTP with Chrome/Firefox native messaging for extension-to-server communication. Eliminates the entire class of localhost HTTP security concerns.
+
+| Task | Description |
+|---|---|
+| 17c.1 | Build native messaging host binary (Node.js wrapper that spawns the MCP server) |
+| 17c.2 | Create Chrome native messaging manifest with `allowed_origins` locked to ViewGraph extension ID |
+| 17c.3 | Create Firefox native messaging manifest with `allowed_extensions: ["viewgraph@chaoslabz.com"]` |
+| 17c.4 | Migrate extension background script from `fetch()` to `chrome.runtime.sendNativeMessage()` |
+| 17c.5 | Keep localhost HTTP as fallback for development/debugging (opt-in via config) |
+| 17c.6 | Update init script to install native messaging host manifest |
+
+**Depends on:** Chrome Web Store and Firefox Add-ons approval (need stable extension IDs).
+**Reference:** [ADR-010](../decisions/ADR-010-remove-http-auth-beta.md)
+
+
 **Goal:** Positioning, content, and documentation site for public launch.
 
 | # | Task | Details |
