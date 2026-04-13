@@ -235,3 +235,7 @@ test.describe('Login Page', () => {
 ```
 
 Every locator comes from the capture data. The agent didn't guess - it used the exact testids, roles, and names from the live DOM.
+
+---
+
+[Full documentation](https://chaoslabz.gitbook.io/viewgraph) - [GitHub](https://github.com/sourjya/viewgraph) - [Quick Start](https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start)

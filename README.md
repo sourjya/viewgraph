@@ -4,6 +4,12 @@
 
 <p align="center"><strong>The UI context layer for agentic coding.</strong></p>
 
+<p align="center">
+  <a href="https://chaoslabz.gitbook.io/viewgraph">Documentation</a> -
+  <a href="https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start">Quick Start</a> -
+  <a href="https://github.com/sourjya/viewgraph">GitHub</a>
+</p>
+
 Browser extension + MCP server for AI-powered UI capture, auditing, and annotation.
 
 ViewGraph captures structured DOM snapshots from any web page and exposes them to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/). Agents can query page structure, audit accessibility, find missing test IDs, compare captures, track regressions, and act on human annotations - all through 34 MCP tools.
@@ -387,6 +393,9 @@ scripts/         Git scripts, build scripts, init, status, doctor
 
 ## Documentation
 
+- [User Guide](https://chaoslabz.gitbook.io/viewgraph) - getting started, tutorials, feature guides
+- [Quick Start](https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start) - zero to first fix in 5 minutes
+- [Multi-Project Setup](https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project) - URL patterns, routing
 - [Roadmap](./docs/roadmap/roadmap.md) - milestone plan and completion status
 - [Security Assessment](./docs/architecture/security-assessment.md) - threat model and mitigations
 - [Spec Index](./.kiro/specs/README.md) - Kiro specs, ADRs, architecture docs

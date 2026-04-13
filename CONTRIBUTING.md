@@ -101,3 +101,9 @@ docs: update README with accuracy section
 ## License
 
 By contributing, you agree that your contributions will be licensed under the AGPL-3.0 license.
+
+## Resources
+
+- [Documentation](https://chaoslabz.gitbook.io/viewgraph)
+- [Issue Tracker](https://github.com/sourjya/viewgraph/issues)
+- [Quick Start](https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start)
