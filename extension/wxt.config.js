@@ -27,5 +27,12 @@ export default defineConfig({
         128: 'icon-128.png',
       },
     },
+    // Firefox requires an explicit add-on ID for MV3
+    browser_specific_settings: {
+      gecko: {
+        id: 'viewgraph@chaoslabz.com',
+        strict_min_version: '109.0',
+      },
+    },
   },
 });
