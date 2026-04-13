@@ -19,9 +19,10 @@ Or [build from source](installation.md#from-source-for-development) if you prefe
 
 ## 2. Initialize in your project
 
-Open a terminal in **your project's root directory**:
+Open a terminal in **your project** (the app you're building, not a new folder):
 
 ```bash
+cd ~/my-project
 npm install viewgraph
 npx viewgraph-init
 ```

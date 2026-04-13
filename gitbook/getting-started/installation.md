@@ -1,27 +1,12 @@
 # Installation
 
-Detailed setup guide for all platforms, browsers, and AI agents.
+Two ways to set up ViewGraph depending on your goal.
 
-## Requirements
+## For Users: Add ViewGraph to Your Project
 
-| Requirement | Minimum Version | Notes |
-|---|---|---|
-| Node.js | 18.0.0+ (LTS) | Runs the server and builds the extension |
-| npm | 9.0.0+ | Workspaces support required |
-| Chrome | 116+ | Manifest V3 extension |
-| Firefox | 109+ | Manifest V3 extension |
+This is the path for developers who want to use ViewGraph with their AI agent. You install it in **your project**, not in a separate folder.
 
-## Step 1: Install ViewGraph
-
-```bash
-npm install viewgraph
-```
-
-This installs the MCP server, init script, and Power assets. You only need [Node.js](https://nodejs.org/) 18+ - your project can use any language.
-
-## Step 2: Install the browser extension
-
-### From the Chrome Web Store (recommended)
+### Step 1: Install the browser extension
 
 <!-- TODO: Replace with actual CWS link when published -->
 Install [ViewGraph Capture](https://chrome.google.com/webstore) from the Chrome Web Store. Works in Chrome, Edge, Brave, and Opera.
@@ -30,42 +15,48 @@ Install [ViewGraph Capture](https://chrome.google.com/webstore) from the Chrome 
 Or from [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/) for Firefox.
 -->
 
-### From source (for development)
+Or [build from source](#for-developers-build-from-source) if you prefer.
 
-If you want to modify the extension or use Firefox:
+### Step 2: Install the npm package in your project
 
-**Chrome:**
 ```bash
-npm run build:ext
+cd ~/my-project          # your project, not a new folder
+npm install viewgraph
 ```
-1. Open `chrome://extensions/`
-2. Enable **Developer mode** (toggle in top-right corner)
-3. Click **Load unpacked**
-4. Select: `<your-viewgraph-path>/extension/.output/chrome-mv3`
 
-**Firefox:**
-```bash
-npm run build:ext -- --browser firefox
-```
-1. Open `about:debugging#/runtime/this-firefox`
-2. Click **Load Temporary Add-on**
-3. Select any file inside: `<your-viewgraph-path>/extension/.output/firefox-mv3`
+This adds the MCP server and init script to your project's `node_modules`.
 
-The ViewGraph icon appears in your browser toolbar.
-
-## Step 3: Initialize in your project
-
-Open a terminal in your project's root directory and run:
+### Step 3: Initialize
 
 ```bash
 npx viewgraph-init
 ```
 
-The init script automatically:
-- Creates `.viewgraph/captures/` for storing capture files
-- Generates an auth token at `.viewgraph/.token`
-- Detects your AI agent and writes the appropriate MCP config
-- Starts the MCP server as a background process
+This creates `.viewgraph/captures/` in your project, detects your AI agent, writes the MCP config, and starts the server.
+
+**Using a dev server?** Add `--url` so captures route correctly:
+
+```bash
+npx viewgraph-init --url localhost:3000
+```
+
+### Step 4: Verify
+
+1. Click the ViewGraph icon on any page
+2. The sidebar should show a **green dot** with "Connected"
+3. Hover over elements - blue highlight should follow your cursor
+
+![Green connection dot in sidebar](../.gitbook/assets/green-dot.png)
+
+If the dot is red, the server isn't running. Run `npx viewgraph-init` again from your project folder.
+
+### Requirements
+
+| Requirement | Minimum Version |
+|---|---|
+| [Node.js](https://nodejs.org/) | 18.0.0+ (LTS) |
+| npm | 9.0.0+ |
+| Chrome | 116+ (or Firefox 109+) |
 
 ### Agent detection
 
@@ -80,41 +71,66 @@ The init script detects your agent by looking for config directories:
 
 For Kiro, the init script also installs Power assets: 3 hooks, 8 prompt shortcuts, and 3 steering docs.
 
-### Dev server URL
+---
 
-If your app runs on a dev server, add `--url` so the extension routes captures to the right project:
+## For Developers: Build from Source
 
-```bash
-npx viewgraph-init --url localhost:3000
-```
+This is the path for contributors or anyone who wants to build the browser extension themselves.
 
-Multiple URLs:
+### Step 1: Clone the repo
 
 ```bash
-npx viewgraph-init --url localhost:3000 --url staging.myapp.com
+git clone https://github.com/sourjya/viewgraph.git
+cd viewgraph
+npm install
 ```
 
-See [Multi-Project Setup](multi-project.md) for details.
+### Step 2: Build the extension
 
-## Step 4: Verify
+```bash
+npm run build                        # Chrome + Firefox + Playwright bundle
+npm run build:ext:chrome             # Chrome only
+npm run build:ext:firefox            # Firefox only
+```
 
-1. Click the ViewGraph icon on any page
-2. The sidebar should show a **green dot** with "Connected"
-3. Hover over elements - blue highlight should follow your cursor
+### Step 3: Load in browser
 
-![Green connection dot in sidebar](../.gitbook/assets/green-dot.png)
+**Chrome:**
+1. Open `chrome://extensions/`
+2. Enable **Developer mode** (top-right toggle)
+3. Click **Load unpacked**
+4. Select `extension/.output/chrome-mv3`
 
-If the dot is red, the server isn't running. Run `npx viewgraph-init` again from your project folder.
+**Firefox:**
+1. Open `about:debugging#/runtime/this-firefox`
+2. Click **Load Temporary Add-on**
+3. Select any file inside `extension/.output/firefox-mv3`
+
+### Step 4: Run the server
+
+```bash
+npm run dev:server
+```
+
+### Step 5: Initialize in a test project
+
+Open a separate terminal in any project folder:
+
+```bash
+cd ~/some-project
+npx viewgraph-init
+```
+
+This points to the server you started in step 4.
+
+---
 
 ## Starting the server in later sessions
 
-The init script starts the server automatically. For subsequent sessions:
+The init script starts the server automatically on first run. For subsequent sessions, either:
 
-```bash
-npm run dev:server       # from the ViewGraph directory
-```
-
-Or re-run `npx viewgraph-init` from your project - it restarts the server cleanly.
+- Re-run `npx viewgraph-init` from your project (restarts cleanly)
+- Or run `npm run dev:server` from the ViewGraph repo (if building from source)
 
 ## Troubleshooting
 
