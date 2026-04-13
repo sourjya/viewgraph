@@ -232,8 +232,7 @@ export default defineBackground(() => {
     if (message.type === 'inspect-capture') {
       (async () => {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        const dir = tab?.url ? await lookupCapturesDir(tab.url) : null;
-        const result = await pushToServer(message.capture, dir);
+        const result = await pushToServer(message.capture);
         sendResponse({ ok: true, pushed: !!result, filename: result?.filename });
       })();
       return true;
@@ -242,8 +241,7 @@ export default defineBackground(() => {
     // Handle auto-capture from HMR detection
     if (message.type === 'auto-capture') {
       (async () => {
-        const dir = sender.tab?.url ? await lookupCapturesDir(sender.tab.url) : null;
-        const result = await pushToServer(message.capture, dir);
+        const result = await pushToServer(message.capture);
         console.log(`[viewgraph] auto-capture #${message.captureNumber} (${message.hmrSource}): pushed=${!!result}`);
         sendResponse({ ok: true, pushed: !!result, filename: result?.filename });
       })();
@@ -263,8 +261,7 @@ export default defineBackground(() => {
         console.log('[viewgraph] send-review: content script result', result?.ok);
         if (!result?.ok) { sendResponse({ ok: false, error: result?.error }); return; }
 
-        const dir = tab.url ? await lookupCapturesDir(tab.url) : null;
-        const pushResult = await pushToServer(result.capture, dir);
+        const pushResult = await pushToServer(result.capture);
         sendResponse({ ok: true, pushed: !!pushResult, filename: pushResult?.filename });
       })();
       return true;
@@ -326,8 +323,7 @@ export default defineBackground(() => {
         }
 
         // Push to MCP server
-        const dir = tab.url ? await lookupCapturesDir(tab.url) : null;
-        const pushResult = await pushToServer(capture, dir);
+        const pushResult = await pushToServer(capture);
         const filename = pushResult?.filename || `viewgraph-capture-${Date.now()}.json`;
 
         // Push HTML snapshot if available
