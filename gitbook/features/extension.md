@@ -41,6 +41,8 @@ For annotating and exporting:
 ### Inspect Tab
 
 For understanding page state:
+
+![Inspect tab showing network and console diagnostics](../.gitbook/assets/inspect-tab.png)
 - Viewport breakpoint indicator
 - Network requests (failed requests highlighted in red)
 - Console errors and warnings
