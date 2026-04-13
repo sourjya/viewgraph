@@ -26,6 +26,7 @@
     "extension"
   ],
   "scripts": {
+    "publish:all": "npm publish --access public && cd packages/playwright && npm publish --access public",
     "prepublishOnly": "cp README.md README.github.md && cp npm-readme.md README.md",
     "postpublish": "mv README.github.md README.md",
     "build": "npm run build:ext:chrome && npm run build:ext:firefox && npm run build:playwright",
@@ -46,7 +47,7 @@
     "lint": "eslint ."
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "keywords": ["mcp", "viewgraph", "ui-review", "accessibility", "dom-capture", "kiro", "claude", "cursor"],
   "license": "AGPL-3.0",
