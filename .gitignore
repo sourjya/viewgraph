@@ -31,3 +31,7 @@ docs/artifacts/
 
 # ViewGraph captures (local dev artifacts, not committed)
 .viewgraph/
+
+# Local config files with machine-specific paths
+.viewgraphrc.json
+.kiro/settings/
