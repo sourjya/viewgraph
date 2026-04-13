@@ -157,6 +157,8 @@ Open [`docs/demo/index.html`](./docs/demo/) in your browser - a styled login pag
 
 ## Workflows
 
+ViewGraph supports three broad workstreams. For the full list of 27 problems it solves, see [Why ViewGraph?](https://chaoslabz.gitbook.io/viewgraph/why-viewgraph).
+
 ### For developers with AI agents
 
 1. Open your app in the browser, click the **ViewGraph** icon

@@ -30,6 +30,8 @@ The agent receives the element's exact CSS selector, computed styles, accessibil
 
 No screenshots with arrows. No copy-pasting selectors from DevTools. No "the button is somewhere on the settings page."
 
+For the full list of 27 problems ViewGraph solves across development, testing, QA, and release workflows, see [Why ViewGraph?](why-viewgraph.md).
+
 | Pain point | Without ViewGraph | With ViewGraph |
 |---|---|---|
 | Agent can't see UI | 3-5 round-trips guessing CSS | One annotation, one fix |

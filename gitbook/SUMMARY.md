@@ -1,6 +1,7 @@
 # Table of contents
 
 * [What is ViewGraph?](README.md)
+* [Why ViewGraph?](why-viewgraph.md)
 
 ## Getting Started
 
