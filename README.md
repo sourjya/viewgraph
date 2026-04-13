@@ -4,6 +4,8 @@
 
 <p align="center"><strong>The UI context layer for agentic coding.</strong></p>
 
+<p align="center"><em>Built with Kiro, for Kiro - and every MCP-compatible agent.</em></p>
+
 <p align="center">
   <a href="https://chaoslabz.gitbook.io/viewgraph">Documentation</a> -
   <a href="https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start">Quick Start</a> -

@@ -2,6 +2,8 @@
 
 <figure><img src=".gitbook/assets/viewgraph-logo.png" alt="ViewGraph" width="420"></figure>
 
+> *Built with Kiro, for Kiro - and every MCP-compatible agent.*
+
 ViewGraph is the UI context layer for AI coding agents. A browser extension captures structured DOM snapshots from any web page - elements, styles, selectors, accessibility state, network errors - and a local MCP server exposes them to your AI assistant through the [Model Context Protocol](https://modelcontextprotocol.io/). The agent sees what you see in the browser, and can fix what you point at. Think of it as giving your coding agent a pair of eyes.
 
 {% embed url="https://www.youtube.com/watch?v=ociXQLaY2z4" %}
