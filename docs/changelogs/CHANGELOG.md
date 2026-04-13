@@ -92,6 +92,11 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - Added "Capture Accuracy" section with results table, methodology paragraph, experiment set comparison
 - Added "How ViewGraph Compares" section with 10-row comparison matrix vs Playwright MCP, Chromatic, Replay.io, axe MCP
 - Linked Node.js to nodejs.org in Getting Started
+- Added GitBook docs site links (chaoslabz.gitbook.io/viewgraph) to header, Documentation section
+- Updated init command from `node /path/to/...` to `npx viewgraph-init`
+- Added "For test automation teams" workflow section with Playwright examples
+- Updated test counts to 984 (331 server + 653 extension)
+- Added packages/playwright/ to Components table and Project Structure
 
 #### Product Analysis Refresh (2026-04-12)
 - Updated tool count (23 -> 34), test count (486 -> 923), enrichment collectors (7 -> 14)
@@ -104,6 +109,25 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 #### Competitive Analysis Refresh (2026-04-12)
 - Updated all 4 feature proposals to "Shipped" status with implementation details
 - Moved from `docs/ideas/` to `docs/architecture/`
+
+
+#### GitBook Documentation Site (2026-04-13)
+- Created `gitbook/` directory with 5 pages: overview, quick start, installation, multi-project, SUMMARY
+- Connected to GitBook at chaoslabz.gitbook.io/viewgraph via GitHub sync
+- 8 screenshots added to getting-started pages
+- Docs site linked from README, server README, extension README, Playwright README, CONTRIBUTING
+
+#### Security Prep for Public Repo (2026-04-13)
+- Removed `.kiro/settings/mcp.json` and `.viewgraphrc.json` from git tracking (contained local paths)
+- Added both to `.gitignore`
+- Verified: no API keys, tokens, or credentials in git history
+- CONTRIBUTING.md added with setup, testing, branch naming, commit format
+
+#### Sub-Project README Updates (2026-04-13)
+- server/README.md: added docs links, updated init command to `npx viewgraph-init`
+- extension/README.md: added docs links
+- power/README.md: added docs links
+- packages/playwright/README.md: added docs footer links
 
 #### Docs Reorganization (2026-04-12)
 - Eliminated `docs/ideas/` - moved 4 files to `docs/architecture/` and `docs/decisions/`

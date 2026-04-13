@@ -88,7 +88,7 @@ The ViewGraph icon appears in your browser toolbar.
 Open a terminal in **your project's root directory** (not the ViewGraph directory) and run:
 
 ```bash
-node /path/to/viewgraph/scripts/viewgraph-init.js
+npx viewgraph-init
 ```
 
 The init script does the following automatically:

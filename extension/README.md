@@ -5,6 +5,8 @@ and sending feedback to AI coding assistants.
 
 Built with [WXT](https://wxt.dev/) for cross-browser Manifest V3 support.
 
+**[Documentation](https://chaoslabz.gitbook.io/viewgraph)** - **[Quick Start](https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start)** - **[GitHub](https://github.com/sourjya/viewgraph)**
+
 ## End-User Features
 
 These are the features you interact with directly:

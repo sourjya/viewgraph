@@ -4,15 +4,17 @@ MCP server that reads ViewGraph capture files from disk and exposes 34 query/ana
 
 Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline, Aider.
 
+**[Documentation](https://chaoslabz.gitbook.io/viewgraph)** - **[Quick Start](https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start)** - **[GitHub](https://github.com/sourjya/viewgraph)**
+
 ## Quick Start
 
 Most users don't need to configure the server manually. Run the init script from your project root and it handles everything:
 
 ```bash
-node /path/to/viewgraph/scripts/viewgraph-init.js
+npx viewgraph-init
 ```
 
-This writes the MCP config, creates the captures directory, generates an auth token, and starts the server. See the [root README](../README.md) for the full setup guide.
+This writes the MCP config, creates the captures directory, generates an auth token, and starts the server. See the [documentation](https://chaoslabz.gitbook.io/viewgraph/getting-started/installation) for the full setup guide.
 
 ## Tools (34)
 

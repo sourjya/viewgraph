@@ -3,6 +3,8 @@
 Kiro-specific assets that get installed into your project by `viewgraph-init.js`.
 These enhance the AI agent's ability to work with ViewGraph captures.
 
+**[Documentation](https://chaoslabz.gitbook.io/viewgraph)** - **[GitHub](https://github.com/sourjya/viewgraph)**
+
 You don't need to install these manually - the init script handles it. This README documents what gets installed and how it works.
 
 ## What Gets Installed
