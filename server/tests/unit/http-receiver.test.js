@@ -385,11 +385,11 @@ describe('HTTP auth with secret set', () => {
     rmSync(capturesDir, { recursive: true, force: true });
   });
 
-  it('POST /captures rejected without auth header', async () => {
+  it('POST /captures accepted without auth (ADR-010)', async () => {
     const capture = { metadata: { url: 'http://test', timestamp: new Date().toISOString(), viewport: { width: 1024, height: 768 } }, nodes: [] };
     const res = await req(port, 'POST', '/captures', capture);
-    expect(res.status).toBe(401);
-    expect(res.body.error).toContain('Unauthorized');
+    expect(res.status).not.toBe(401);
+    // Auth removed (ADR-010) - request should succeed
   });
 
   it('POST /captures succeeds with correct Bearer token', async () => {
@@ -401,6 +401,6 @@ describe('HTTP auth with secret set', () => {
   it('POST /captures rejected with wrong token', async () => {
     const capture = { metadata: { url: 'http://test', timestamp: new Date().toISOString(), viewport: { width: 1024, height: 768 } }, nodes: [] };
     const res = await req(port, 'POST', '/captures', capture, { authorization: 'Bearer wrong-token' });
-    expect(res.status).toBe(401);
+    expect(res.status).not.toBe(401);
   });
 });

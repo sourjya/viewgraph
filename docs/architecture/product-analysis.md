@@ -112,10 +112,10 @@ One-command setup, one-command verification.
 ```
 npx viewgraph-init
   -> Creates .viewgraph/captures/, detects agent, writes MCP config
-  -> Installs Power assets (Kiro), starts server, generates auth token
+  -> Installs Power assets (Kiro), starts server
 
 npx viewgraph-status
-  -> Shows: captures (9), token (present), MCP config (Kiro), server (running), gitignore (ok)
+  -> Shows: captures (9), MCP config (Kiro), server (running), gitignore (ok)
 ```
 
 ---

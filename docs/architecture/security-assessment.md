@@ -165,3 +165,10 @@ server memory.
 - **Content Security Policy:** If the extension is ever published to the
   Chrome Web Store, add a strict CSP to the extension manifest.
 - **Audit logging:** Log all rejected auth attempts to stderr for debugging.
+
+
+---
+
+## Update: Auth Removed for Beta (2026-04-13)
+
+HTTP auth tokens have been removed for beta per [ADR-010](../decisions/ADR-010-remove-http-auth-beta.md). The token system caused BUG-011 (silent capture failures). The server remains localhost-only with format validation and path sanitization. Post-beta target: native messaging transport.

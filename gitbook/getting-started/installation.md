@@ -141,6 +141,6 @@ The init script starts the server automatically on first run. For subsequent ses
 |---|---|
 | Extension icon doesn't appear | Check `chrome://extensions/` - is it enabled? |
 | Sidebar shows red dot | Server isn't running. Run `npx viewgraph-init` from your project. |
-| "Send to Agent" does nothing | Check sidebar connection status. Server must be running and auth token must match. |
+| "Send to Agent" does nothing | Check sidebar connection status. Server must be running. Re-run `npx viewgraph-init` from your project. |
 | Captures not appearing in agent | Verify `.viewgraph/captures/` exists. Run `npx viewgraph-status` for a health check. |
 | Wrong project shown in sidebar | Add `--url` pattern. See [Multi-Project Setup](multi-project.md). |

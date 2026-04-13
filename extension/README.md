@@ -30,7 +30,7 @@ These run automatically during capture:
 - **Auto-Capture on HMR** - detects Vite/webpack hot-reload and auto-captures after DOM settles
 - **Journey Recording** - auto-captures on SPA navigation, groups into named sessions
 - **WebSocket Collaboration** - real-time annotation sync with MCP server
-- **Zero-Config Auth** - reads auth token from server automatically
+- **Zero-Config Connection** - discovers local server automatically, no configuration needed
 - **Server Discovery** - auto-discovers MCP server on ports 9876-9879
 - **Capture Validation** - quality checks before export (empty pages, missing data)
 

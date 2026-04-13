@@ -14,7 +14,7 @@ Most users don't need to configure the server manually. Run the init script from
 npx viewgraph-init
 ```
 
-This writes the MCP config, creates the captures directory, generates an auth token, and starts the server. See the [documentation](https://chaoslabz.gitbook.io/viewgraph/getting-started/installation) for the full setup guide.
+This writes the MCP config, creates the captures directory, and starts the server. See the [documentation](https://chaoslabz.gitbook.io/viewgraph/getting-started/installation) for the full setup guide.
 
 ## Tools (34)
 

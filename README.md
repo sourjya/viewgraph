@@ -97,7 +97,6 @@ npx viewgraph-init
 The init script does the following automatically:
 - Detects your AI agent (Kiro, Claude Code, Cursor, etc.) and writes the appropriate MCP config file
 - Creates `.viewgraph/captures/` for storing capture files
-- Generates an auth token at `.viewgraph/.token` for secure extension-to-server communication
 - Installs Kiro Power assets (hooks, prompts, steering docs) if using Kiro
 - Starts the MCP server as a background process
 
@@ -299,7 +298,7 @@ These tools are called by your AI agent, not by you directly. The agent discover
 |---|---|
 | Extension icon doesn't appear | Check your browser's extension management page - is it enabled? |
 | Sidebar shows no green dot | Server isn't running. Run `npm run dev:server` from the ViewGraph directory, or re-run the init script from your project. |
-| "Send to Agent" does nothing | Check the sidebar connection status. The server must be running and the auth token must match. |
+| "Send to Agent" does nothing | Check the sidebar connection status. The server must be running. Re-run `npx viewgraph-init` from your project. |
 | Captures not appearing in agent | Verify `.viewgraph/captures/` exists in your project and the MCP config points to the right path. Run `node scripts/viewgraph-status.js` from the ViewGraph directory for a full health check. |
 
 ## Capture Accuracy

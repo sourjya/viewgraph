@@ -53,16 +53,16 @@ describe('HTTP receiver auth', () => {
     expect(res.status).toBe(200);
   });
 
-  it('POST /captures rejects without auth', async () => {
+  it('POST /captures accepts without auth (ADR-010)', async () => {
     const capture = { metadata: { format: 'viewgraph-v2', url: 'http://localhost', timestamp: '2026-04-08T10:00:00Z' } };
     const res = await req(port, 'POST', '/captures', { body: capture });
-    expect(res.status).toBe(401);
+    expect(res.status).not.toBe(401);
   });
 
-  it('POST /captures rejects wrong token', async () => {
+  it('POST /captures accepts with wrong token (ADR-010, auth disabled)', async () => {
     const capture = { metadata: { format: 'viewgraph-v2', url: 'http://localhost', timestamp: '2026-04-08T10:00:00Z' } };
     const res = await req(port, 'POST', '/captures', { body: capture, secret: 'wrong-token' });
-    expect(res.status).toBe(401);
+    expect(res.status).not.toBe(401);
   });
 
   it('POST /captures succeeds with correct token', async () => {
@@ -74,10 +74,10 @@ describe('HTTP receiver auth', () => {
     expect(res.status).toBe(201);
   });
 
-  it('POST /requests/:id/ack rejects without auth', async () => {
+  it('POST /requests/:id/ack accepts without auth (ADR-010)', async () => {
     const r = queue.create('http://localhost');
     const res = await req(port, 'POST', `/requests/${r.id}/ack`);
-    expect(res.status).toBe(401);
+    expect(res.status).not.toBe(401);
   });
 
   it('POST /requests/:id/ack succeeds with correct token', async () => {
@@ -86,13 +86,13 @@ describe('HTTP receiver auth', () => {
     expect(res.status).toBe(200);
   });
 
-  it('POST /snapshots rejects without auth', async () => {
+  it('POST /snapshots accepts without auth (ADR-010)', async () => {
     const res = await fetch(`http://127.0.0.1:${port}/snapshots`, {
       method: 'POST',
       headers: { 'content-type': 'text/html', 'x-capture-filename': 'test' },
       body: '<html></html>',
     });
-    expect(res.status).toBe(401);
+    expect(res.status).not.toBe(401);
   });
 });
 

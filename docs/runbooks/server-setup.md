@@ -12,7 +12,7 @@ npm install viewgraph
 npx viewgraph-init
 ```
 
-This creates `.viewgraph/captures/`, detects your AI agent, writes the MCP config, generates an auth token, and starts the server. You're done.
+This creates `.viewgraph/captures/`, detects your AI agent, writes the MCP config, and starts the server. You're done.
 
 **Using a dev server?** Add `--url`:
 

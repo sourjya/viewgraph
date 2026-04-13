@@ -124,6 +124,30 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - CONTRIBUTING.md added with setup, testing, branch naming, commit format
 
 
+
+#### ADR-010: Auth Removal for Beta (2026-04-13)
+- Removed HTTP auth tokens from server, extension, and init script
+- Full threat model analysis: localhost HTTP risks, token lifecycle failures, attack vectors
+- Three-tier security roadmap: no auth (beta) -> paired sessions (compromise) -> native messaging (target)
+- Prompt injection risk documented with agent-side mitigations
+- Roadmap M17c: native messaging transport post-beta
+- BUG-011 root cause: three separate sources of truth for auth token never synchronized
+
+#### Multi-Project Routing Fixes (2026-04-13)
+- Removed stale `lookupCapturesDir` from all capture paths - `discoverServer(pageUrl)` handles routing
+- WSL file URL support: Chrome (`file://wsl.localhost/`) and Firefox (`file://///wsl.localhost/`)
+- URL normalization: 127.0.0.1, 0.0.0.0, [::1] -> localhost
+- Windows path normalization: backslash to forward slash
+- Port-only fallback matching for custom hostnames
+- 46 routing tests covering all modes and edge cases
+
+#### Init Script Improvements (2026-04-13)
+- Prompts now read from `power/prompts/` (was incorrectly reading from `.kiro/prompts/`)
+- `vg-tests.md` and `vg-help.md` now install correctly
+- `vg-tests` prompt tightened: no project scaffolding, require capture first
+- Server port shown in output, consistent indentation
+- Auto-finds free port (9876-9879) for multi-project support
+
 #### npm Publishing (2026-04-13)
 - Published `@viewgraph/playwright@0.1.0` to npm
 - Published `viewgraph@0.1.0` to npm (MCP server + init script + Power assets)
