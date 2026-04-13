@@ -13,7 +13,7 @@
  */
 /* global defineBackground */
 
-import { SERVER_BASE_URL as SERVER_URL, discoverServer, authHeaders, getAllServers } from '../lib/constants.js';
+import { SERVER_BASE_URL as SERVER_URL, discoverServer, getAllServers } from '../lib/constants.js';
 import { isInjectable, getBlockedReason } from '../lib/url-checks.js';
 
 const PROJECT_MAPPINGS_KEY = 'vg-project-mappings';
@@ -110,8 +110,7 @@ async function pushToServer(capture, capturesDir = null) {
     const pageUrl = capture.metadata?.url || null;
     const serverUrl = await discoverServer(pageUrl, capturesDir) || SERVER_URL;
     console.log('[viewgraph] pushToServer: url', serverUrl);
-    const auth = authHeaders(serverUrl);
-    const headers = { 'content-type': 'application/json', ...auth };
+    const headers = { 'content-type': 'application/json' };
     if (capturesDir) headers['x-captures-dir'] = capturesDir;
     const res = await fetch(`${serverUrl}/captures`, {
       method: 'POST',
@@ -138,10 +137,9 @@ async function pushToServer(capture, capturesDir = null) {
  */
 async function pushSnapshot(html, filenameStem) {
   try {
-    const auth = authHeaders();
     await fetch(`${SERVER_URL}/snapshots`, {
       method: 'POST',
-      headers: { 'content-type': 'text/html', 'x-capture-filename': filenameStem, ...auth },
+      headers: { 'content-type': 'text/html', 'x-capture-filename': filenameStem },
       body: html,
     });
   } catch {

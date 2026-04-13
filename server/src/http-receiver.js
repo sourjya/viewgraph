@@ -91,12 +91,10 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
    * Verify the shared secret on mutating requests. Returns true if
    * authorized, false (and sends 401) if not.
    */
-  function checkAuth(req, res) {
-    if (!secret) return true;
-    const header = req.headers.authorization || '';
-    if (header === `Bearer ${secret}`) return true;
-    json(res, 401, { error: 'Unauthorized - invalid or missing Bearer token' });
-    return false;
+  function checkAuth(_req, _res) {
+    // Auth removed for beta - see ADR-010-remove-http-auth-beta.md
+    // Server is localhost-only. Format validation + path sanitization provide defense.
+    return true;
   }
 
   async function handleRequest(req, res) {
@@ -135,7 +133,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         const cfg = JSON.parse(readFileSync(path.resolve(projectRoot, '.viewgraph', 'config.json'), 'utf-8'));
         urlPatterns = cfg.urlPatterns || [];
       } catch { /* no config */ }
-      return json(res, 200, { capturesDir: absCaptures, projectRoot, agent, urlPatterns, token: secret || null });
+      return json(res, 200, { capturesDir: absCaptures, projectRoot, agent, urlPatterns });
     }
 
     // GET /requests/pending

@@ -286,18 +286,10 @@ try {
 
 const port = await findFreePort();
 
-// Generate auth token and pass to server via env var.
-// The server will write this same token to .viewgraph/.token so the
-// extension can read it. This ensures the token in memory matches the
-// token on disk, even across multiple init runs (BUG-011 fix).
-const crypto = await import('crypto');
-const authToken = crypto.randomUUID();
-writeFileSync(path.join(CWD, '.viewgraph', '.token'), authToken, { mode: 0o600 });
-
 const server = spawn('node', [SERVER_ENTRY], {
   stdio: 'ignore',
   detached: true,
-  env: { ...process.env, VIEWGRAPH_CAPTURES_DIR: absCapturesDir, VIEWGRAPH_HTTP_PORT: String(port), VIEWGRAPH_HTTP_SECRET: authToken },
+  env: { ...process.env, VIEWGRAPH_CAPTURES_DIR: absCapturesDir, VIEWGRAPH_HTTP_PORT: String(port) },
 });
 server.unref();
 console.log(`  Started (PID ${server.pid}, port ${port})`);

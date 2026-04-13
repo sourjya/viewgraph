@@ -37,17 +37,8 @@ export function resetServerCache() {
   _registryExpiry = 0;
 }
 
-/** Get the cached auth token for a specific server URL. */
-export function getServerToken(serverUrl) {
-  if (!serverUrl) {
-    // Return first available token for backward compat
-    for (const entry of _serverRegistry.values()) {
-      if (entry.token) return entry.token;
-    }
-    return null;
-  }
-  return _serverRegistry.get(serverUrl)?.token || null;
-}
+/** Get the cached auth token. No longer used - auth removed for beta (ADR-010). */
+export function getServerToken() { return null; }
 
 /** Get the detected agent name. Defaults to "Agent". */
 export function getAgentName() {
@@ -80,7 +71,6 @@ async function refreshRegistry() {
               projectRoot: info.projectRoot || null,
               urlPatterns: info.urlPatterns || [],
               agent: info.agent || null,
-              token: info.token || null,
             });
           }
         })
@@ -245,11 +235,9 @@ export async function discoverServer(pageUrl = null, targetDir = null) {
 }
 
 /**
- * Build Authorization headers for POST requests to the server.
- * @param {string} [serverUrl] - Specific server URL to get token for
+ * Build Authorization headers. No-op for beta - auth removed (ADR-010).
  * @returns {object}
  */
-export function authHeaders(serverUrl) {
-  const token = getServerToken(serverUrl);
-  return token ? { Authorization: `Bearer ${token}` } : {};
+export function authHeaders() {
+  return {};
 }
