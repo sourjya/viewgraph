@@ -1,0 +1,116 @@
+# Security
+
+ViewGraph is designed to be safe for developers, testers, and teams working on production applications. Here's how it handles common security concerns.
+
+## No Data Leaves Your Machine
+
+ViewGraph operates entirely on localhost. The architecture:
+
+```
+Browser extension --> localhost:9876 --> .viewgraph/captures/ on your disk
+```
+
+- The extension communicates **only** with a server running on `127.0.0.1`
+- No cloud services, no external APIs, no telemetry, no analytics
+- Captures are plain JSON files stored in your project directory
+- You control what gets captured and where it goes
+
+## Read-Only Observer
+
+The extension **never modifies** the pages you visit:
+
+- No form submissions
+- No network requests on behalf of the site
+- No cookie access or manipulation
+- No DOM modifications (the sidebar runs in an isolated Shadow DOM)
+- No script injection into the page's execution context
+
+It reads the DOM structure, computed styles, and element attributes. That's it.
+
+## Minimal Permissions
+
+The extension requests only what it needs:
+
+| Permission | Why | What it can't do |
+|---|---|---|
+| `activeTab` | Access the current tab's DOM when you click the icon | Can't access other tabs, can't run in background |
+| `storage` | Save your preferences locally | Data stays in browser, not synced externally |
+| `scripting` | Inject the capture script on your click | Only runs when you explicitly activate it |
+
+No `<all_urls>` host permission for background access. No `webRequest` for intercepting traffic. No `cookies` permission.
+
+## What Gets Captured
+
+Every capture includes only what's visible in the rendered DOM:
+
+| Captured | NOT captured |
+|---|---|
+| Element tags, attributes, selectors | Passwords or input values |
+| Computed CSS styles | Cookies or session tokens |
+| Bounding boxes and layout | Request/response bodies |
+| ARIA roles and labels | localStorage or IndexedDB |
+| Console errors (messages only) | Source code or server-side data |
+| Network request status (pass/fail) | Authentication headers |
+| Component names (React/Vue/Svelte) | Environment variables |
+
+## Open Source
+
+The entire codebase is open source under AGPL-3.0. You can inspect every line:
+
+- [Extension source](https://github.com/sourjya/viewgraph/tree/main/extension)
+- [Server source](https://github.com/sourjya/viewgraph/tree/main/server)
+- [Security assessment](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/security-assessment.md)
+- [Security audit](https://github.com/sourjya/viewgraph/blob/main/docs/audits/security-audit-2026-04-12.md)
+
+## Security Audits Performed
+
+The project has undergone two internal security audits:
+
+**Security Audit (April 2026):**
+- HTTP server endpoint review (15 endpoints)
+- Input validation on all POST endpoints
+- Path traversal prevention on file writes
+- Payload size limits (5MB captures, 10MB snapshots)
+- XSS prevention in extension UI (Shadow DOM isolation)
+- WebSocket connection handling
+
+**Code Quality Audit (April 2026):**
+- ESLint clean (0 errors)
+- No hardcoded secrets in source
+- No eval() or Function constructor in application code
+- All user input sanitized before file operations
+
+## Localhost Server Security
+
+The MCP server binds to `127.0.0.1` only - it is not accessible from the network. Additional protections:
+
+- **Capture format validation** - rejects malformed JSON before writing
+- **Filename sanitization** - strips `..`, path traversal characters, and non-alphanumeric chars
+- **Directory scoping** - only writes to configured `.viewgraph/captures/` directories
+- **Payload limits** - 5MB max for captures, 10MB for snapshots
+
+Auth tokens were evaluated and removed for beta (see [ADR-010](https://github.com/sourjya/viewgraph/blob/main/docs/decisions/ADR-010-remove-http-auth-beta.md)). Post-beta, native messaging will replace localhost HTTP entirely, providing cryptographic caller identity.
+
+## Safe for Production Sites
+
+You can safely use ViewGraph on production, staging, or any environment:
+
+- It only reads the DOM - never writes, submits, or navigates
+- It doesn't interfere with the site's JavaScript execution
+- It doesn't modify network requests or responses
+- The capture happens in a single pass - no persistent monitoring
+- Closing the sidebar stops all ViewGraph activity on the page
+
+## Common Concerns
+
+**"Will it slow down my site?"**
+No. The DOM traversal runs once when you click Send. It takes 50-200ms depending on page size. No continuous monitoring.
+
+**"Can it access my other tabs?"**
+No. The `activeTab` permission only grants access to the tab you explicitly click the ViewGraph icon on.
+
+**"Does it phone home?"**
+No. Zero network requests to external servers. Verify by checking the extension's network activity in DevTools.
+
+**"Is it safe to install on my work machine?"**
+Yes. It's a read-only DOM inspector with no external dependencies. The extension is submitted to Chrome Web Store and Firefox Add-ons with full source disclosure.
