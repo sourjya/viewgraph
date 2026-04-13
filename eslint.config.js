@@ -35,8 +35,19 @@ export default [
       },
     },
   },
-  // Ignore build outputs and generated files
+  // Playwright package has page.evaluate() callbacks with browser globals
   {
-    ignores: ['**/node_modules/**', '**/.output/**', '**/dist/**', '**/logs/**', '**/.wxt/**'],
+    files: ['packages/playwright/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
+  // Ignore build outputs, generated files, and experiment scripts
+  // Experiment scripts contain page.evaluate() callbacks with browser globals
+  // that ESLint can't understand in a Node.js context
+  {
+    ignores: ['**/node_modules/**', '**/.output/**', '**/dist/**', '**/logs/**', '**/.wxt/**', 'scripts/experiments/**', 'packages/playwright/bundle-prebuilt.js'],
   },
 ];

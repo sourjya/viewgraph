@@ -124,9 +124,9 @@ export async function getAllServers() {
 function normalizeUrl(url) {
   if (!url) return null;
   return url
-    .replace(/\/\/127\.0\.0\.1([:\/])/g, '//localhost$1')
-    .replace(/\/\/0\.0\.0\.0([:\/])/g, '//localhost$1')
-    .replace(/\/\/\[::1\]([:\/])/g, '//localhost$1')
+    .replace(/\/\/127\.0\.0\.1([:/])/g, '//localhost$1')
+    .replace(/\/\/0\.0\.0\.0([:/])/g, '//localhost$1')
+    .replace(/\/\/\[::1\]([:/])/g, '//localhost$1')
     .replace(/\\/g, '/');
 }
 
@@ -167,7 +167,7 @@ function extractFilePath(fileUrl) {
   // AmazonWSL, kali-linux, openSUSE-Leap-15.4, etc.)
   // We strip everything up to and including the distro name to get the
   // Linux-native path that matches the server's projectRoot.
-  const wslMatch = path.match(/^wsl[\.\$]localhost\/[^/]+(\/.*)/i)
+  const wslMatch = path.match(/^wsl[.$]localhost\/[^/]+(\/.*)/i)
     || path.match(/^wsl\$\/[^/]+(\/.*)/i);
   if (wslMatch) return wslMatch[1];
 

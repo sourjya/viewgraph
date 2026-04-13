@@ -76,7 +76,7 @@ async function main() {
   // 6. Server health check
   if (serverRunning) {
     try {
-      const token = existsSync(TOKEN_FILE) ? readFileSync(TOKEN_FILE, 'utf-8').trim() : null;
+      const _token = existsSync(TOKEN_FILE) ? readFileSync(TOKEN_FILE, 'utf-8').trim() : null;
       const port = 9876;
       const res = await fetch(`http://127.0.0.1:${port}/health`, { signal: AbortSignal.timeout(2000) });
       if (res.ok) {
