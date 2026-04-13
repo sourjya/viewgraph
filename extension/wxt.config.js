@@ -32,11 +32,10 @@ export default defineConfig({
       gecko: {
         id: 'viewgraph@chaoslabz.com',
         strict_min_version: '109.0',
+        data_collection_permissions: {
+          description: 'ViewGraph does not collect or transmit any user data. All captured DOM data stays on the local machine and is sent only to a localhost server.',
+        },
       },
-    },
-    // Firefox MV3 requires explicit data collection disclosure
-    data_collection_permissions: {
-      description: 'ViewGraph does not collect or transmit any user data. All captured DOM data stays on the local machine and is sent only to a localhost server.',
     },
   },
 });
