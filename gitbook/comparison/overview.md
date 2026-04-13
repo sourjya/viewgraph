@@ -40,3 +40,45 @@ Runtime debuggers (Replay.io) capture execution traces but have no review workfl
 4. **Measured accuracy.** 92.1% composite accuracy across 48 diverse real-world websites. No competitor publishes equivalent metrics.
 
 5. **14 enrichment collectors** in every capture: network requests, console errors, breakpoints, media queries, stacking contexts, focus chain, scroll containers, landmarks, components, axe-core, event listeners, performance, animations, intersection state.
+
+## Token Efficiency
+
+LLM context windows are finite and expensive. ViewGraph's capture format is designed to minimize token consumption while maximizing the information agents can act on.
+
+### The problem with raw DOM
+
+Dumping a full DOM tree into an LLM context is wasteful. A typical page has 500-2000 elements, but only 20-50 are relevant to any given task. Raw HTML includes repeated attribute names, structural characters, and deeply nested elements that consume tokens with zero semantic value. Research shows JSON is 20-50% more token-expensive than necessary for repeated structures.
+
+### How ViewGraph reduces tokens
+
+**Salience filtering** - the biggest win. Every element is scored and classified into high/med/low tiers. Only high-salience elements (interactive, testid-bearing, ARIA-labeled, semantic) get full style data. Medium gets layout and visual only. Low gets no styles. This eliminates 60-80% of style tokens.
+
+**Progressive disclosure** - agents don't receive the full capture upfront. The MCP tools serve data on demand:
+
+| Tool | Tokens | What it returns |
+|---|---|---|
+| `get_page_summary` | ~500 | Page title, viewport, element counts, key elements |
+| `get_interactive_elements` | ~2,000 | Only buttons, links, inputs with selectors |
+| `get_elements_by_role` | ~1,000 | Filtered by role (e.g., just headings) |
+| `get_capture` | ~20,000+ | Full capture (only when needed) |
+
+An agent solving a button bug calls `get_interactive_elements` (2K tokens) instead of `get_capture` (20K+ tokens). 90% token savings for the same result.
+
+**Text truncation** - `visibleText` is capped at 200 characters per element. Parent elements that would include all descendant text via `innerText` are truncated, preventing a single `<body>` element from consuming thousands of tokens.
+
+**Field filtering** - captures include only non-default CSS values. A `display: block` on a `<div>` is omitted (it's the default). Research shows field filtering alone saves 30-60% of tokens.
+
+### Compared to alternatives
+
+| Approach | Typical tokens for a 500-element page | Actionable? |
+|---|---|---|
+| Raw HTML dump | 50,000-100,000 | Low - agent drowns in noise |
+| Accessibility tree | 5,000-15,000 | Medium - no styles, no layout |
+| Screenshot (base64) | 100,000+ | Low - no selectors, no structure |
+| ViewGraph summary | 500 | High - key elements, counts, orientation |
+| ViewGraph interactive | 2,000 | High - every actionable element with locators |
+| ViewGraph full capture | 20,000-40,000 | High - complete structure with salience filtering |
+
+ViewGraph gives agents the most actionable context per token. The salience model ensures that the 20% of elements that matter get 80% of the detail budget.
+
+For the full format research including benchmarks and design rationale, see the [format research doc](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/viewgraph-format-research.md).
