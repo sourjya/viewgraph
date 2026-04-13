@@ -2,7 +2,7 @@
 
 <figure><img src=".gitbook/assets/viewgraph-logo.png" alt="ViewGraph" width="420"></figure>
 
-ViewGraph is the UI context layer for AI coding agents. It captures structured DOM snapshots from any web page and exposes them to your AI assistant through the [Model Context Protocol](https://modelcontextprotocol.io/).
+ViewGraph is the UI context layer for AI coding agents. A browser extension captures structured DOM snapshots from any web page - elements, styles, selectors, accessibility state, network errors - and a local MCP server exposes them to your AI assistant through the [Model Context Protocol](https://modelcontextprotocol.io/). The agent sees what you see in the browser, and can fix what you point at.
 
 ## The Problem
 
