@@ -1,6 +1,6 @@
 # Browser Extension
 
-The ViewGraph extension runs in Chrome, Edge, Brave, Opera, and Firefox. It captures structured DOM snapshots and provides an annotation workflow for reporting UI issues.
+The ViewGraph extension runs in Chrome and Firefox. Other Chromium-based browsers (Edge, Brave, Opera) can load the extension but are not officially tested.
 
 ## Annotate Mode
 
