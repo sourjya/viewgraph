@@ -50,21 +50,39 @@ let _cached = null;
 
 /**
  * Build the injectable script string from extension modules.
+ * When running from the repo, reads source files directly.
+ * When installed from npm, falls back to the pre-built bundle.
  * Cached after first call.
  * @returns {Promise<string>}
  */
 export async function buildBundle() {
   if (_cached) return _cached;
 
-  const parts = ['(function() {', '"use strict";'];
-  for (const file of MODULE_FILES) {
-    const source = await readFile(join(EXT_LIB, file), 'utf-8');
-    parts.push(`\n// --- ${file} ---`);
-    parts.push(stripModuleSyntax(source));
+  // Try reading from extension source files (repo context)
+  try {
+    const parts = ['(function() {', '"use strict";'];
+    for (const file of MODULE_FILES) {
+      const source = await readFile(join(EXT_LIB, file), 'utf-8');
+      parts.push(`\n// --- ${file} ---`);
+      parts.push(stripModuleSyntax(source));
+    }
+    parts.push('\nwindow.__vg = { checkRendered, traverseDOM, scoreElement, classifyTier, scoreAll, serialize, captureSnapshot };');
+    parts.push('})();');
+    _cached = parts.join('\n');
+    return _cached;
+  } catch {
+    // Extension sources not available (npm install context) - use pre-built
   }
-  parts.push('\nwindow.__vg = { checkRendered, traverseDOM, scoreElement, classifyTier, scoreAll, serialize, captureSnapshot };');
-  parts.push('})();');
 
-  _cached = parts.join('\n');
-  return _cached;
+  // Fall back to pre-built bundle
+  try {
+    const { PREBUILT_BUNDLE } = await import('./bundle-prebuilt.js');
+    _cached = PREBUILT_BUNDLE;
+    return _cached;
+  } catch {
+    throw new Error(
+      '@viewgraph/playwright: bundle not found. If running from the repo, ensure extension/lib/ exists. ' +
+      'If installed from npm, the package may be corrupted - try reinstalling.',
+    );
+  }
 }

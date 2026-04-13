@@ -8,10 +8,15 @@
     ".": "./index.js",
     "./fixture": "./fixture.js"
   },
+  "scripts": {
+    "prebuild": "node build-bundle.js",
+    "prepublishOnly": "node build-bundle.js"
+  },
   "files": [
     "index.js",
     "fixture.js",
     "bundle.js",
+    "bundle-prebuilt.js",
     "README.md"
   ],
   "peerDependencies": {
