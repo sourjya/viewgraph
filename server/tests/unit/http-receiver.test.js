@@ -335,10 +335,10 @@ describe('config capturesDir resolution', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Auth: disabled when no secret, enforced when secret set
+// Auth removed for beta (ADR-010) - verify no auth required
 // ---------------------------------------------------------------------------
 
-describe('HTTP auth with no secret (localhost-only)', () => {
+describe('HTTP no-auth (ADR-010)', () => {
   let queue, receiver, port, capturesDir;
 
   beforeEach(async () => {
@@ -346,7 +346,7 @@ describe('HTTP auth with no secret (localhost-only)', () => {
     capturesDir = path.join(rootDir, 'captures');
     mkdirSync(capturesDir, { recursive: true });
     queue = createRequestQueue({ maxSize: 10, ttlMs: 60000 });
-    receiver = createHttpReceiver({ queue, capturesDir, port: 0, secret: null });
+    receiver = createHttpReceiver({ queue, capturesDir, port: 0 });
     port = await receiver.start();
   });
 
@@ -355,52 +355,20 @@ describe('HTTP auth with no secret (localhost-only)', () => {
     rmSync(capturesDir, { recursive: true, force: true });
   });
 
-  it('POST /captures succeeds without auth header when secret is null', async () => {
+  it('(+) POST /captures succeeds without any auth header', async () => {
     const capture = { metadata: { url: 'http://test', timestamp: new Date().toISOString(), viewport: { width: 1024, height: 768 } }, nodes: [] };
     const res = await req(port, 'POST', '/captures', capture);
     expect(res.status).toBe(201);
   });
 
-  it('GET /health succeeds without auth', async () => {
+  it('(+) GET /health succeeds without auth', async () => {
     const res = await req(port, 'GET', '/health');
     expect(res.status).toBe(200);
   });
-});
 
-describe('HTTP auth with secret set', () => {
-  let queue, receiver, port, capturesDir;
-  const SECRET = 'test-secret-token';
-
-  beforeEach(async () => {
-    const rootDir = path.join(os.tmpdir(), `vg-auth-${Date.now()}`);
-    capturesDir = path.join(rootDir, 'captures');
-    mkdirSync(capturesDir, { recursive: true });
-    queue = createRequestQueue({ maxSize: 10, ttlMs: 60000 });
-    receiver = createHttpReceiver({ queue, capturesDir, port: 0, secret: SECRET });
-    port = await receiver.start();
-  });
-
-  afterEach(async () => {
-    await receiver.stop();
-    rmSync(capturesDir, { recursive: true, force: true });
-  });
-
-  it('POST /captures accepted without auth (ADR-010)', async () => {
+  it('(+) POST /captures with random Authorization header still succeeds', async () => {
     const capture = { metadata: { url: 'http://test', timestamp: new Date().toISOString(), viewport: { width: 1024, height: 768 } }, nodes: [] };
-    const res = await req(port, 'POST', '/captures', capture);
-    expect(res.status).not.toBe(401);
-    // Auth removed (ADR-010) - request should succeed
-  });
-
-  it('POST /captures succeeds with correct Bearer token', async () => {
-    const capture = { metadata: { url: 'http://test', timestamp: new Date().toISOString(), viewport: { width: 1024, height: 768 } }, nodes: [] };
-    const res = await req(port, 'POST', '/captures', capture, { authorization: `Bearer ${SECRET}` });
+    const res = await req(port, 'POST', '/captures', capture, { authorization: 'Bearer random-garbage' });
     expect(res.status).toBe(201);
-  });
-
-  it('POST /captures rejected with wrong token', async () => {
-    const capture = { metadata: { url: 'http://test', timestamp: new Date().toISOString(), viewport: { width: 1024, height: 768 } }, nodes: [] };
-    const res = await req(port, 'POST', '/captures', capture, { authorization: 'Bearer wrong-token' });
-    expect(res.status).not.toBe(401);
   });
 });

@@ -15,7 +15,6 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { readFile } from 'fs/promises';
 import { existsSync, mkdirSync } from 'fs';
 import path from 'path';
-import crypto from 'crypto';
 import { promises as fs } from 'fs';
 
 import {
@@ -167,25 +166,11 @@ async function main() {
     }
   }
 
-  // HTTP authentication: auto-generate a token at startup for zero-config
-  // security. The extension reads it from /info on connect. An explicit
-  // VIEWGRAPH_HTTP_SECRET env var overrides the auto-generated token.
-  const httpSecret = process.env.VIEWGRAPH_HTTP_SECRET || crypto.randomUUID();
-  const tokenPath = path.join(path.dirname(CAPTURES_DIR), '.token');
-  try {
-    await fs.mkdir(path.dirname(tokenPath), { recursive: true });
-    await fs.writeFile(tokenPath, httpSecret, { mode: 0o600 });
-  } catch (err) {
-    console.error(`${LOG_PREFIX} Warning: could not write token file: ${err.message}`);
-  }
-  if (process.env.VIEWGRAPH_HTTP_SECRET) {
-    console.error(`${LOG_PREFIX} HTTP auth enabled (secret from env)`);
-  } else {
-    console.error(`${LOG_PREFIX} HTTP auth enabled (auto-generated token)`);
-  }
+  // Auth removed for beta - see ADR-010-remove-http-auth-beta.md
+  // Server binds to localhost only. Format validation provides defense.
 
   // Start HTTP receiver for extension communication
-  httpReceiver = createHttpReceiver({ queue: requestQueue, capturesDir: CAPTURES_DIR, allowedDirs: ALLOWED_DIRS, port: HTTP_PORT ?? 9876, secret: httpSecret, indexer });
+  httpReceiver = createHttpReceiver({ queue: requestQueue, capturesDir: CAPTURES_DIR, allowedDirs: ALLOWED_DIRS, port: HTTP_PORT ?? 9876, indexer });
   await httpReceiver.start();
 
   watcher = createWatcher(CAPTURES_DIR, {

@@ -18,7 +18,6 @@ let reconnectTimer = null;
 let reconnectDelay = 1000;
 let handlers = {};
 let serverUrl = '';
-let authToken = '';
 
 const MAX_RECONNECT_DELAY = 30000;
 
@@ -28,7 +27,6 @@ const MAX_RECONNECT_DELAY = 30000;
  */
 export function connect(options) {
   serverUrl = options.url;
-  authToken = options.token;
   handlers = {
     onMessage: options.onMessage,
     onConnect: options.onConnect,
@@ -49,7 +47,6 @@ function doConnect() {
   ws.onopen = () => {
     reconnectDelay = 1000;
     // Send auth token
-    ws.send(JSON.stringify({ type: 'auth', token: authToken }));
   };
 
   ws.onmessage = (event) => {

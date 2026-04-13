@@ -78,12 +78,12 @@ function json(res, status, data) {
 
 /**
  * Create an HTTP receiver.
- * @param {{ queue: object, capturesDir: string, port?: number, secret?: string }} options
+ * @param {{ queue: object, capturesDir: string, port?: number }} options
  * @param {string} [options.secret] - Shared secret token. When set, all POST
  *   requests must include an `Authorization: Bearer <secret>` header. GET
  *   endpoints (/health, /requests/pending) remain open so monitoring works.
  */
-export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port = 9876, secret = null, indexer = null }) {
+export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port = 9876, indexer = null }) {
   let server;
   let wsServer;
 
@@ -91,11 +91,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
    * Verify the shared secret on mutating requests. Returns true if
    * authorized, false (and sends 401) if not.
    */
-  function checkAuth(_req, _res) {
-    // Auth removed for beta - see ADR-010-remove-http-auth-beta.md
-    // Server is localhost-only. Format validation + path sanitization provide defense.
-    return true;
-  }
+
 
   async function handleRequest(req, res) {
     const { method, url } = req;
@@ -148,7 +144,6 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
 
     // POST /requests/create - create a capture request (used by agents via HTTP)
     if (method === 'POST' && url === '/requests/create') {
-      if (!checkAuth(req, res)) return;
       let body;
       try { body = JSON.parse(await readBody(req)); } catch { return json(res, 400, { error: 'Invalid JSON' }); }
       const created = queue.create(body.url, { guidance: body.guidance, purpose: body.purpose });
@@ -158,7 +153,6 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
     // POST /requests/:id/ack
     const ackMatch = method === 'POST' && url.match(/^\/requests\/([^/]+)\/ack$/);
     if (ackMatch) {
-      if (!checkAuth(req, res)) return;
       const acked = queue.acknowledge(ackMatch[1]);
       if (!acked) return json(res, 404, { error: 'Request not found' });
       return json(res, 200, { id: acked.id, status: acked.status });
@@ -167,7 +161,6 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
     // POST /requests/:id/decline - user declines a capture request
     const declineMatch = method === 'POST' && url.match(/^\/requests\/([^/]+)\/decline$/);
     if (declineMatch) {
-      if (!checkAuth(req, res)) return;
       const body = await readBody(req);
       let reason;
       try { reason = body ? JSON.parse(body).reason : undefined; } catch { /* optional body */ }
@@ -178,7 +171,6 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
 
     // POST /captures
     if (method === 'POST' && url === '/captures') {
-      if (!checkAuth(req, res)) return;
       let body;
       try { body = await readBody(req); } catch {
         return json(res, 413, { error: 'Payload too large (max 5MB)' });
@@ -219,7 +211,6 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
 
     // POST /snapshots - receive HTML snapshot from extension
     if (method === 'POST' && url === '/snapshots') {
-      if (!checkAuth(req, res)) return;
       const filenameStem = req.headers['x-capture-filename'];
       if (!filenameStem) return json(res, 400, { error: 'Missing X-Capture-Filename header' });
 
@@ -331,7 +322,6 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
 
     // POST /baselines - promote a capture to baseline
     if (method === 'POST' && url === '/baselines') {
-      if (!checkAuth(req, res)) return;
       const body = await readBody(req);
       if (!body) return json(res, 400, { error: 'Missing body' });
       let parsed;
@@ -369,10 +359,8 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
           // Prevent slow-loris: timeout idle connections after 30s, requests after 10s
           server.timeout = 30000;
           server.requestTimeout = 10000;
-          // Attach WebSocket server for real-time annotation sync (only when auth is configured)
-          if (secret) {
-            wsServer = createWebSocketServer(server, { authToken: secret });
-          }
+          // WebSocket server for real-time annotation sync
+          wsServer = createWebSocketServer(server);
           process.stderr.write(`${LOG_PREFIX} HTTP receiver listening on 127.0.0.1:${actualPort}\n`);
           resolve(actualPort);
         });

@@ -31,7 +31,7 @@ const PING_INTERVAL_MS = 30000;
 /**
  * Create a WebSocket handler that attaches to an HTTP server.
  * @param {import('http').Server} httpServer
- * @param {{ authToken?: string, onAnnotation?: function, onCapture?: function }} options
+ * @param {{ onAnnotation?: function, onCapture?: function }} options
  * @returns {{ broadcast: function, getClientCount: function, close: function }}
  */
 export function createWebSocketServer(httpServer, options = {}) {
@@ -52,34 +52,15 @@ export function createWebSocketServer(httpServer, options = {}) {
   });
 
   wss.on('connection', (ws) => {
-    let authenticated = !options.authToken; // No token = open access
+    // Auth removed for beta (ADR-010) - all connections accepted immediately
     ws.isAlive = true;
+    clients.add(ws);
 
-    // Close unauthenticated connections after 5 seconds
-    const authTimeout = !authenticated ? setTimeout(() => {
-      if (!authenticated) { ws.close(4001, 'Auth timeout'); }
-    }, 5000) : null;
-
-    ws.on('pong', () => { if (authenticated) ws.isAlive = true; });
+    ws.on('pong', () => { ws.isAlive = true; });
 
     ws.on('message', (data) => {
       let msg;
       try { msg = JSON.parse(data); } catch { return; }
-
-      // Auth check - first message must be auth
-      if (!authenticated) {
-        if (msg.type === 'auth' && msg.token === options.authToken) {
-          authenticated = true;
-          clearTimeout(authTimeout);
-          clients.add(ws);
-          ws.send(JSON.stringify({ type: 'auth:ok' }));
-          process.stderr.write(`${LOG_PREFIX} WebSocket client authenticated (${clients.size} total)\n`);
-        } else {
-          ws.send(JSON.stringify({ type: 'auth:fail' }));
-          ws.close(4001, 'Unauthorized');
-        }
-        return;
-      }
 
       // Route messages
       if (msg.type === 'annotation:create' || msg.type === 'annotation:update' || msg.type === 'annotation:delete') {

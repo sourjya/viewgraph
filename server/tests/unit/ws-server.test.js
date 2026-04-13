@@ -30,7 +30,7 @@ function connectClient(token) {
     openClients.push(ws);
     ws.on('open', () => {
       if (token !== undefined) {
-        ws.send(JSON.stringify({ type: 'auth', token }));
+        // Auth removed (ADR-010) - no auth message needed
       }
       resolve(ws);
     });
@@ -57,20 +57,17 @@ afterEach(async () => {
 });
 
 describe('WebSocket server', () => {
-  it('(+) accepts connection and authenticates', async () => {
-    await setup({ authToken: 'test-token' });
-    const ws = await connectClient('test-token');
-    const msg = await waitForMessage(ws);
-    expect(msg.type).toBe('auth:ok');
+  it('(+) accepts connection without auth (ADR-010)', async () => {
+    await setup({});
+    const ws = await connectClient();
     expect(wsServer.getClientCount()).toBe(1);
     ws.close();
   });
 
-  it('(-) rejects bad auth token', async () => {
-    await setup({ authToken: 'test-token' });
-    const ws = await connectClient('wrong-token');
-    const msg = await waitForMessage(ws);
-    expect(msg.type).toBe('auth:fail');
+  it('(+) accepts any connection without auth (ADR-010)', async () => {
+    await setup({});
+    const ws = await connectClient();
+    expect(wsServer.getClientCount()).toBe(1);
     ws.close();
   });
 
@@ -85,11 +82,9 @@ describe('WebSocket server', () => {
   });
 
   it('(+) broadcasts to other clients', async () => {
-    await setup({ authToken: 'tok' });
-    const ws1 = await connectClient('tok');
-    await waitForMessage(ws1); // auth:ok
-    const ws2 = await connectClient('tok');
-    await waitForMessage(ws2); // auth:ok
+    await setup({});
+    const ws1 = await connectClient();
+    const ws2 = await connectClient();
 
     const msgPromise = waitForMessage(ws2);
     ws1.send(JSON.stringify({ type: 'annotation:create', annotation: { id: 'a1' } }));
@@ -101,10 +96,8 @@ describe('WebSocket server', () => {
   });
 
   it('(+) broadcast() sends to all clients', async () => {
-    await setup({ authToken: 'tok' });
-    const ws1 = await connectClient('tok');
-    await waitForMessage(ws1);
-
+    await setup({});
+    const ws1 = await connectClient();
     const msgPromise = waitForMessage(ws1);
     wsServer.broadcast({ type: 'annotation:resolved', uuid: 'u1' });
     const received = await msgPromise;
@@ -114,10 +107,9 @@ describe('WebSocket server', () => {
   });
 
   it('(+) getClientCount tracks connections', async () => {
-    await setup({ authToken: 'tok' });
+    await setup({});
     expect(wsServer.getClientCount()).toBe(0);
-    const ws1 = await connectClient('tok');
-    await waitForMessage(ws1);
+    const ws1 = await connectClient();
     expect(wsServer.getClientCount()).toBe(1);
     // Close and wait for server to notice
     await new Promise((resolve) => {

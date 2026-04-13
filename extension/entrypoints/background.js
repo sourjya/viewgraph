@@ -96,7 +96,6 @@ async function lookupCapturesDir(pageUrl) {
  * The user configures this in the extension options page after starting
  * the MCP server (which logs the token to stderr).
  */
-// Auth headers provided by constants.js via getServerToken() after discoverServer()
 
 /**
  * Push a capture to the MCP server. Routes to the correct server

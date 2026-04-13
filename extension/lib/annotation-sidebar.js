@@ -62,7 +62,7 @@ function stopResolutionPolling() {
   }
 }
 import { formatMarkdown } from './export-markdown.js';
-import { discoverServer, authHeaders, getAgentName } from './constants.js';
+import { discoverServer, getAgentName } from './constants.js';
 import { collectNetworkState } from './network-collector.js';
 import { getConsoleState } from './console-collector.js';
 import { collectBreakpoints } from './breakpoint-collector.js';
@@ -1300,8 +1300,7 @@ export function create() {
   (async () => {
     const serverUrl = await discoverServer(window.location.href);
     if (!serverUrl) return;
-    const hdrs = authHeaders();
-    const token = hdrs?.Authorization?.replace('Bearer ', '') || '';
+    const token = '';
     wsConnect({
       url: serverUrl,
       token,
@@ -1436,7 +1435,7 @@ export function refresh() {
         (async () => {
           try {
             const serverUrl = await discoverServer(window.location.href);
-            if (serverUrl) await fetch(`${serverUrl}/requests/${req.id}/ack`, { method: 'POST', headers: authHeaders() });
+            if (serverUrl) await fetch(`${serverUrl}/requests/${req.id}/ack`, { method: 'POST', headers: {} });
           } catch { /* best effort */ }
           // Use capture with keepSidebar to get full DOM without tearing down sidebar
           chrome.runtime.sendMessage({ type: 'capture', includeSnapshot: false, keepSidebar: true }, () => {
@@ -1473,7 +1472,7 @@ export function refresh() {
             if (serverUrl) {
               await fetch(`${serverUrl}/requests/${req.id}/decline`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', ...authHeaders() },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ reason: 'User declined from extension' }),
               });
             }
