@@ -80,7 +80,7 @@ async function refreshRegistry() {
               projectRoot: info.projectRoot || null,
               urlPatterns: info.urlPatterns || [],
               agent: info.agent || null,
-              token: null,
+              token: info.token || null,
             });
           }
         })
@@ -89,15 +89,6 @@ async function refreshRegistry() {
   }
 
   await Promise.all(probes);
-
-  // Fetch tokens for each server
-  try {
-    const result = await chrome.storage.local.get('vg-auth-token');
-    const token = result['vg-auth-token'] || null;
-    for (const entry of newRegistry.values()) {
-      entry.token = token;
-    }
-  } catch { /* no token */ }
 
   _serverRegistry = newRegistry;
   _registryExpiry = Date.now() + REGISTRY_TTL;

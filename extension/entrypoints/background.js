@@ -109,8 +109,8 @@ async function pushToServer(capture, capturesDir = null) {
   try {
     const pageUrl = capture.metadata?.url || null;
     const serverUrl = await discoverServer(pageUrl, capturesDir) || SERVER_URL;
-    console.log('[viewgraph] pushToServer: url', serverUrl, 'capturesDir', capturesDir);
-    const auth = authHeaders();
+    console.log('[viewgraph] pushToServer: url', serverUrl);
+    const auth = authHeaders(serverUrl);
     const headers = { 'content-type': 'application/json', ...auth };
     if (capturesDir) headers['x-captures-dir'] = capturesDir;
     const res = await fetch(`${serverUrl}/captures`, {

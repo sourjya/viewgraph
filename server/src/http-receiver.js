@@ -135,7 +135,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         const cfg = JSON.parse(readFileSync(path.resolve(projectRoot, '.viewgraph', 'config.json'), 'utf-8'));
         urlPatterns = cfg.urlPatterns || [];
       } catch { /* no config */ }
-      return json(res, 200, { capturesDir: absCaptures, projectRoot, agent, urlPatterns });
+      return json(res, 200, { capturesDir: absCaptures, projectRoot, agent, urlPatterns, token: secret || null });
     }
 
     // GET /requests/pending
