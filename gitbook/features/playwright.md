@@ -58,6 +58,8 @@ test('form validation', async ({ page, viewgraph }) => {
 npm install @viewgraph/playwright
 ```
 
+[![npm](https://img.shields.io/npm/v/@viewgraph/playwright)](https://www.npmjs.com/package/@viewgraph/playwright)
+
 ## API
 
 ### Fixture

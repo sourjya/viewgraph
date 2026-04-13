@@ -119,6 +119,8 @@ The agent receives the annotation + the element's full DOM context + the page st
 npm install @viewgraph/playwright
 ```
 
+[![npm](https://img.shields.io/npm/v/@viewgraph/playwright)](https://www.npmjs.com/package/@viewgraph/playwright)
+
 ## Usage with Fixture
 
 ```js

@@ -399,6 +399,7 @@ scripts/         Git scripts, build scripts, init, status, doctor
 - [User Guide](https://chaoslabz.gitbook.io/viewgraph) - getting started, tutorials, feature guides
 - [Quick Start](https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start) - zero to first fix in 5 minutes
 - [Multi-Project Setup](https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project) - URL patterns, routing
+- [@viewgraph/playwright](https://www.npmjs.com/package/@viewgraph/playwright) - Playwright fixture on npm
 - [Roadmap](./docs/roadmap/roadmap.md) - milestone plan and completion status
 - [Security Assessment](./docs/architecture/security-assessment.md) - threat model and mitigations
 - [Spec Index](./.kiro/specs/README.md) - Kiro specs, ADRs, architecture docs
