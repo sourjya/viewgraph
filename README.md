@@ -179,7 +179,7 @@ The extension works standalone. No MCP server required.
 
 ### For teams
 
-A tester annotates and exports to markdown. A developer annotates and sends to Kiro. Same tool, same workflow, same format - the only difference is where the notes go.
+A tester annotates and exports to markdown. A developer annotates and sends to Kiro. A reviewer compares captures against baselines. Same tool, same workflow, same format - the only difference is where the output goes. See [Why ViewGraph?](https://chaoslabz.gitbook.io/viewgraph/why-viewgraph) for the full list of review, release, and platform workflows.
 
 ### For test automation teams
 
