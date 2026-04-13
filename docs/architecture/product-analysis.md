@@ -110,11 +110,11 @@ Agent: request_capture(url, guidance: "Verify the modal closes after submit")
 One-command setup, one-command verification.
 
 ```
-node /path/to/viewgraph/scripts/viewgraph-init.js
+npx viewgraph-init
   -> Creates .viewgraph/captures/, detects agent, writes MCP config
   -> Installs Power assets (Kiro), starts server, generates auth token
 
-node /path/to/viewgraph/scripts/viewgraph-status.js
+npx viewgraph-status
   -> Shows: captures (9), token (present), MCP config (Kiro), server (running), gitignore (ok)
 ```
 

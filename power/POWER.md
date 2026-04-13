@@ -62,7 +62,7 @@ Ask the user: "Is the ViewGraph browser extension installed? If not, build it fr
 Run the init script from the user's project root to create the captures directory, write MCP config, and start the server:
 
 ```bash
-node <viewgraph-path>/scripts/viewgraph-init.js
+npx viewgraph-init
 ```
 
 This creates `.viewgraph/captures/`, writes MCP config for the detected agent, installs steering docs and hooks, and starts a detached server.

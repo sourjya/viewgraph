@@ -1,61 +1,54 @@
 # ViewGraph MCP Server - Setup Runbook
 
-How to install, configure, and register the ViewGraph MCP server in any project.
+How to install and configure the ViewGraph MCP server.
 
-## Prerequisites
+## Quick Setup (recommended)
 
-- Node.js 18+ (LTS)
-- npm
-- A project directory where you want captures stored
-
-## 1. Install
+For most users, the init script handles everything:
 
 ```bash
-cd viewgraph
-npm install
+cd ~/my-project
+npm install viewgraph
+npx viewgraph-init
 ```
 
-This installs dependencies for both the server and extension workspaces.
+This creates `.viewgraph/captures/`, detects your AI agent, writes the MCP config, generates an auth token, and starts the server. You're done.
 
-## 2. Configure environment
+**Using a dev server?** Add `--url`:
 
-The server reads configuration from environment variables. Defaults work for local development.
+```bash
+npx viewgraph-init --url localhost:3000
+```
+
+## Manual Setup (advanced)
+
+If you need to configure the server manually (custom ports, multiple captures dirs, etc.):
+
+### Environment Variables
 
 | Variable | Default | Description |
 |---|---|---|
 | `VIEWGRAPH_CAPTURES_DIR` | `.viewgraph/captures` | Where capture JSON files are stored |
-| `VIEWGRAPH_HTTP_PORT` | `9876` | HTTP receiver port for extension pushes |
-| `VIEWGRAPH_HTTP_SECRET` | (auto-generated) | Shared secret for authenticated pushes |
+| `VIEWGRAPH_HTTP_PORT` | `9876` | HTTP receiver port for extension communication |
+| `VIEWGRAPH_MAX_CAPTURES` | `100` | Max captures to index |
 
-To override, create a `.env` file in the server directory:
-
-```bash
-cp server/.env.example server/.env
-# Edit as needed
-```
-
-## 3. Start the server
+### Start the server manually
 
 ```bash
-npm run dev:server
+VIEWGRAPH_CAPTURES_DIR=./my-captures VIEWGRAPH_HTTP_PORT=9877 node node_modules/viewgraph/server/index.js
 ```
 
-The server starts two transports:
-- **stdio** - JSON-RPC for MCP communication with your AI agent
-- **HTTP** on `localhost:9876` - receives captures pushed from the browser extension
+### MCP Configuration
 
-On startup, the server logs a shared secret token to stderr. Copy this to the extension options page if you want authenticated pushes.
+The init script writes this automatically. If you need to edit it manually:
 
-## 4. Register with Kiro
-
-Add the server to your project's MCP configuration:
-
+**Kiro** (`.kiro/settings/mcp.json`):
 ```json
 {
   "mcpServers": {
     "viewgraph": {
       "command": "node",
-      "args": ["<path-to-viewgraph>/server/index.js"],
+      "args": ["node_modules/viewgraph/server/index.js"],
       "env": {
         "VIEWGRAPH_CAPTURES_DIR": ".viewgraph/captures"
       }
@@ -64,46 +57,26 @@ Add the server to your project's MCP configuration:
 }
 ```
 
-For Kiro CLI, this goes in `.kiro/settings/mcp.json` in your project root.
+**Claude Code** (`.claude/mcp.json`), **Cursor** (`.cursor/mcp.json`): same format.
 
-## 5. Verify
+## Verify
 
-Start the server and check that your agent can see the tools:
-
-```
-> list_captures
+```bash
+npx viewgraph-status
 ```
 
-If no captures exist yet, you'll get an empty list. Capture a page with the extension to populate it.
+Or check the server directly:
 
-## 6. Captures directory
-
-Captures are saved as `.viewgraph.json` files in the configured captures directory. The directory is created automatically on first capture.
-
-Structure:
-```
-.viewgraph/
-  captures/
-    viewgraph-localhost-2026-04-08T120612.json
-    viewgraph-localhost-2026-04-08T120612.html   (if HTML snapshot enabled)
-    viewgraph-localhost-2026-04-08T120612.png    (if screenshot enabled)
+```bash
+curl http://127.0.0.1:9876/health
 ```
 
-## 7. Troubleshooting
+## Troubleshooting
 
-**Server won't start:**
-- Check Node.js version: `node --version` (must be 18+)
-- Check port availability: `lsof -i :9876`
-
-**Extension can't push:**
-- Verify server is running and HTTP port is accessible
-- Check shared secret matches between server and extension options
-- Look at server stderr for error messages
-
-**No captures appearing:**
-- Check `VIEWGRAPH_CAPTURES_DIR` path is writable
-- Verify the extension is connected (check extension popup for status)
-
-**MCP tools not showing:**
-- Verify `mcp.json` path is correct
-- Restart your AI agent after adding the MCP configuration
+| Problem | Solution |
+|---|---|
+| Server won't start | Check Node.js version: `node --version` (must be 18+) |
+| Port already in use | Another server is running. Use `npx viewgraph-init` which auto-finds a free port (9876-9879) |
+| Extension can't connect | Verify server is running. Check sidebar for green/red dot. |
+| No captures appearing | Check `.viewgraph/captures/` exists and is writable |
+| MCP tools not showing | Restart your AI agent after running `npx viewgraph-init` |

@@ -9,7 +9,7 @@ Publish `viewgraph-init` as a standalone npm package so users can run `npx viewg
 Today, setting up ViewGraph requires:
 1. Clone the ViewGraph repo
 2. `npm install` in the repo
-3. Run `node /path/to/viewgraph/scripts/viewgraph-init.js` from your project
+3. Run `npx viewgraph-init` from your project
 
 Step 3 requires knowing the absolute path to the ViewGraph repo. This is friction for new users and makes it impossible to recommend ViewGraph in a single command.
 

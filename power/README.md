@@ -73,7 +73,7 @@ These fire automatically during agent workflows:
 Run from your project root:
 
 ```bash
-node /path/to/viewgraph/scripts/viewgraph-init.js
+npx viewgraph-init
 ```
 
 The init script copies assets only if they don't already exist, so it won't overwrite your customizations. To force-update, delete the files first and re-run.
