@@ -62,6 +62,10 @@ Copies a structured bug report to clipboard:
 - Environment (breakpoint, failed requests, console errors)
 - Each annotation with element details and severity
 
+![Copy Markdown button in sidebar](../.gitbook/assets/export-markdown.png)
+
+![Rendered markdown report](../.gitbook/assets/markdown-view.png)
+
 ### Download Report (ZIP)
 
 Downloads a ZIP archive:
