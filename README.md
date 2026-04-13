@@ -8,7 +8,7 @@
   <a href="https://chaoslabz.gitbook.io/viewgraph">Documentation</a> -
   <a href="https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start">Quick Start</a> -
   <a href="https://github.com/sourjya/viewgraph">GitHub</a> -
-  <a href="https://www.npmjs.com/package/viewgraph">npm</a>
+  <a href="https://www.npmjs.com/package/@viewgraph/core">npm</a>
 </p>
 
 Browser extension + MCP server for AI-powered UI capture, auditing, and annotation.
@@ -55,7 +55,7 @@ Build for your browser of choice: `npm run build:ext` (Chrome, default) or `npm 
 ### Step 1: Install ViewGraph
 
 ```bash
-npm install viewgraph
+npm install @viewgraph/core
 ```
 
 <!-- TODO: Uncomment when store listings are approved

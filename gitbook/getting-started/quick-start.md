@@ -23,7 +23,7 @@ Open a terminal in **your project** (the app you're building, not a new folder):
 
 ```bash
 cd ~/my-project
-npm install viewgraph
+npm install @viewgraph/core
 npx viewgraph-init
 ```
 

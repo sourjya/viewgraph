@@ -18,7 +18,7 @@ No. ViewGraph runs alongside your project as a standalone tool. It reads the DOM
 
 ### How do I install it?
 ```bash
-npm install viewgraph
+npm install @viewgraph/core
 npx viewgraph-init
 ```
 Then install the browser extension from the Chrome Web Store or Firefox Add-ons. See [Installation](../getting-started/installation.md) for details.

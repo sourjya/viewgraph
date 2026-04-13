@@ -103,7 +103,7 @@ gets messy for teams or many projects. But it's the simplest onboarding.
 
 ```
 First time:
-  1. npm install viewgraph -D
+  1. npm install @viewgraph/core -D
   2. npx viewgraph init
      -> creates .viewgraphrc.json with devUrls auto-detected from package.json scripts
      -> writes MCP config for detected agent (Kiro, Cursor, Claude Code, etc.)

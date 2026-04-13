@@ -8,7 +8,7 @@ For most users, the init script handles everything:
 
 ```bash
 cd ~/my-project
-npm install viewgraph
+npm install @viewgraph/core
 npx viewgraph-init
 ```
 

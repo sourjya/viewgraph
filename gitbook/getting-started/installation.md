@@ -21,11 +21,11 @@ Or [build from source](#for-developers-build-from-source) if you prefer.
 
 ```bash
 cd ~/my-project          # your project, not a new folder
-npm install viewgraph
+npm install @viewgraph/core
 ```
 
 <!-- TODO: Replace with actual link when published -->
-Package: [viewgraph on npm](https://www.npmjs.com/package/viewgraph)
+Package: [viewgraph on npm](https://www.npmjs.com/package/@viewgraph/core)
 
 This adds the MCP server and init script to your project's `node_modules`.
 

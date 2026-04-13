@@ -45,7 +45,7 @@ Split the Inspect tab into diagnostics (read-only) and capture controls (actions
 Chrome Web Store and Firefox Add-ons listings are submitted and pending review. Once approved, installation becomes one click instead of "Load unpacked."
 
 ### npm Package for Main Tool
-`npm install viewgraph` will install the MCP server and init script directly. No cloning the repo needed.
+`npm install @viewgraph/core` will install the MCP server and init script directly. No cloning the repo needed.
 
 ## Future
 
