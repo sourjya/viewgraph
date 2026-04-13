@@ -65,6 +65,8 @@ See a bug, click it, describe it, send to agent, agent fixes it. The core loop t
 
 Works with **Kiro**, **Claude Code**, **Cursor**, **Windsurf**, **Cline**, **Aider**, and any MCP-compatible agent.
 
+See [Why ViewGraph?](why-viewgraph.md) for the full list of development, testing, and release problems it solves.
+
 ### Testers and QA reviewers
 
 Same annotation workflow, no AI agent needed. Click elements, add comments, export as:
