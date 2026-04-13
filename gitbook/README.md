@@ -6,21 +6,15 @@ ViewGraph is the UI context layer for AI coding agents. A browser extension capt
 
 ## The Problem
 
-AI coding agents can read your source code. They cannot see your rendered UI. This gap creates real pain:
+AI coding agents can read your source code. They cannot see your rendered UI. This gap means:
 
-**"The agent can't see what I see."** You say "the button is behind the modal." The agent guesses which CSS properties are wrong. It changes `z-index`, breaks something else, you correct it, it tries again. Three round-trips for a one-line fix.
+- The agent **guesses** CSS fixes instead of seeing the actual layout
+- Bug reports land as **vague screenshots** instead of structured evidence
+- Accessibility audits produce violations but **no path to the source file**
+- Visual regressions **slip through** because tests check behavior, not structure
+- QA handoffs require **back-and-forth** to clarify what's actually broken
 
-**"I can't explain the bug precisely enough."** You write "the layout is broken on mobile." The agent doesn't know which element, what breakpoint, what the current styles are, or what they should be. It makes assumptions. Most are wrong.
-
-**"Accessibility audits are disconnected from fixes."** You run axe or Lighthouse, get a list of violations, manually find each element in code, fix it, re-run. The audit tool and the code editor are separate worlds. Each fix takes 30 minutes.
-
-**"I don't know which file renders this element."** In a large React/Vue/Svelte app, finding which component renders a specific DOM element requires mental mapping or React DevTools. Your AI agent has no way to do this at all.
-
-**"QA handoffs are vague."** Testers write "the button color is wrong" in Jira with a full-page screenshot. You have to figure out which button, what the current color is, what it should be, and what CSS to change.
-
-**"Visual regressions slip through."** A CSS change on one page breaks layout on another. No one notices until production. Your tests check behavior but not structure.
-
-**"I can't debug z-index, focus, or scroll issues from code."** "Dropdown behind modal" bugs, "can't tab to submit" bugs, and "wrong thing scrolls" bugs are caused by browser-computed state that's invisible in source code.
+These problems cost teams hours per bug across development, testing, QA, and release. ViewGraph solves [27 of them](why-viewgraph.md).
 
 ## How ViewGraph Solves This
 
@@ -31,16 +25,6 @@ The agent receives the element's exact CSS selector, computed styles, accessibil
 No screenshots with arrows. No copy-pasting selectors from DevTools. No "the button is somewhere on the settings page."
 
 For the full list of 27 problems ViewGraph solves across development, testing, QA, and release workflows, see [Why ViewGraph?](why-viewgraph.md).
-
-| Pain point | Without ViewGraph | With ViewGraph |
-|---|---|---|
-| Agent can't see UI | 3-5 round-trips guessing CSS | One annotation, one fix |
-| Vague bug descriptions | "Layout broken on mobile" | Element selector + computed styles + breakpoint |
-| A11y audit to fix | 30 min per issue (find element, find file, fix, re-run) | 2 min (agent has element + source file + fix context) |
-| Finding source file | Mental mapping or React DevTools | `find_source` with testid/selector/React fiber |
-| QA handoff | Screenshot with arrow | Structured report with element details, styles, network state |
-| Regression detection | Manual visual comparison | `compare_baseline` catches missing elements, layout shifts |
-| Z-index/focus/scroll bugs | Hours of DevTools debugging | Stacking, focus chain, and scroll data in every capture |
 
 ![ViewGraph sidebar with annotations](.gitbook/assets/sidebar-annotations.png)
 
