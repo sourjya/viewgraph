@@ -1,5 +1,5 @@
 {
-  "name": "viewgraph",
+  "name": "@viewgraph/core",
   "version": "0.1.0",
   "description": "MCP server for AI-powered UI capture, auditing, and annotation",
   "type": "module",
