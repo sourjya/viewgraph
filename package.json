@@ -18,6 +18,7 @@
     "scripts/viewgraph-doctor.js",
     "power/",
     "COPYING",
+    "npm-readme.md",
     "README.md"
   ],
   "workspaces": [
@@ -25,6 +26,8 @@
     "extension"
   ],
   "scripts": {
+    "prepublishOnly": "cp README.md README.github.md && cp npm-readme.md README.md",
+    "postpublish": "mv README.github.md README.md",
     "build": "npm run build:ext:chrome && npm run build:ext:firefox && npm run build:playwright",
     "build:ext": "npm run build:ext:chrome",
     "build:ext:chrome": "npm run build --workspace=extension",
