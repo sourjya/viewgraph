@@ -23,3 +23,4 @@
 ## Reference
 
 * [Prompt Shortcuts](reference/prompt-shortcuts.md)
+* [License (AGPL-3.0)](reference/license.md)
