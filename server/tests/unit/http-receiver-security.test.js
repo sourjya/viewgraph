@@ -104,14 +104,13 @@ describe('HTTP receiver - no auth (ADR-010)', () => {
 
   // ── Path traversal prevention ──
 
-  it('(-) capture with traversal URL writes safely to captures dir', async () => {
+  it('(-) capture with traversal URL produces safe filename', async () => {
     const capture = validCapture();
     capture.metadata.url = 'http://../../etc/passwd';
     const res = await req(port, 'POST', '/captures', { body: capture });
     expect(res.status).toBe(201);
-    // File must be inside captures dir, not escaped via ../
-    const filePath = path.join(capturesDir, res.body.filename);
-    expect(filePath.startsWith(capturesDir)).toBe(true);
+    expect(res.body.filename).not.toContain('..');
+    expect(res.body.filename).toMatch(/^viewgraph-[a-zA-Z0-9.-]+-\d{4}-\d{2}-\d{2}-\d{6}\.json$/);
   });
 
   it('(+) snapshot with path traversal in filename is sanitized', async () => {

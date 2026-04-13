@@ -44,6 +44,8 @@ function generateFilename(metadata) {
   const url = metadata.url || 'unknown';
   let hostname;
   try { hostname = new URL(url).hostname; } catch { hostname = 'unknown'; }
+  // Sanitize hostname: strip path traversal chars and anything not alphanumeric/dash/dot
+  hostname = hostname.replace(/\.\./g, '').replace(/[^a-zA-Z0-9.-]/g, '') || 'unknown';
   const ts = (metadata.timestamp || new Date().toISOString())
     .replace(/[:.]/g, '').replace('T', '-').slice(0, 17);
   return `viewgraph-${hostname}-${ts}.json`;
