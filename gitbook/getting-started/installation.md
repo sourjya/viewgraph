@@ -11,15 +11,13 @@ Detailed setup guide for all platforms, browsers, and AI agents.
 | Chrome | 116+ | Manifest V3 extension |
 | Firefox | 109+ | Manifest V3 extension |
 
-## Step 1: Clone and install
+## Step 1: Install ViewGraph
 
 ```bash
-git clone https://github.com/sourjya/viewgraph.git
-cd viewgraph
-npm install
+npm install viewgraph
 ```
 
-This installs dependencies for both the server and extension via npm workspaces.
+This installs the MCP server, init script, and Power assets. You only need [Node.js](https://nodejs.org/) 18+ - your project can use any language.
 
 ## Step 2: Install the browser extension
 
@@ -27,6 +25,10 @@ This installs dependencies for both the server and extension via npm workspaces.
 
 <!-- TODO: Replace with actual CWS link when published -->
 Install [ViewGraph Capture](https://chrome.google.com/webstore) from the Chrome Web Store. Works in Chrome, Edge, Brave, and Opera.
+
+<!-- TODO: Uncomment when AMO listing is approved
+Or from [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/) for Firefox.
+-->
 
 ### From source (for development)
 

@@ -14,7 +14,11 @@
     "server/src/",
     "server/package.json",
     "scripts/viewgraph-init.js",
-    "power/"
+    "scripts/viewgraph-status.js",
+    "scripts/viewgraph-doctor.js",
+    "power/",
+    "COPYING",
+    "README.md"
   ],
   "workspaces": [
     "server",
@@ -43,6 +47,9 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "chokidar": "^5.0.0",
+    "pixelmatch": "^7.1.0",
+    "pngjs": "^7.0.0",
+    "ws": "^8.20.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

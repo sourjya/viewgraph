@@ -123,6 +123,15 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - Verified: no API keys, tokens, or credentials in git history
 - CONTRIBUTING.md added with setup, testing, branch naming, commit format
 
+
+#### npm Publishing (2026-04-13)
+- Published `@viewgraph/playwright@0.1.0` to npm
+- Published `viewgraph@0.1.0` to npm (MCP server + init script + Power assets)
+- Added missing server deps to root package.json (pixelmatch, pngjs, ws)
+- Added status/doctor scripts and COPYING to files list
+- Updated README install from `git clone` to `npm install viewgraph`
+- Added npm, Chrome Web Store, and Firefox Add-ons links (placeholder where pending review)
+
 #### Sub-Project README Updates (2026-04-13)
 - server/README.md: added docs links, updated init command to `npx viewgraph-init`
 - extension/README.md: added docs links

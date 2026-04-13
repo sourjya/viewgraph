@@ -129,5 +129,9 @@ ViewGraph is AGPL-3.0 licensed. Full source, issues, and contributions on [GitHu
 {% hint style="info" %}
 **GitHub:** [github.com/sourjya/viewgraph](https://github.com/sourjya/viewgraph) - star the repo, report issues, contribute
 
+**npm:** [viewgraph](https://www.npmjs.com/package/viewgraph) - `npm install viewgraph`
+
+**Playwright:** [@viewgraph/playwright](https://www.npmjs.com/package/@viewgraph/playwright) - `npm install @viewgraph/playwright`
+
 **Docs:** [chaoslabz.gitbook.io/viewgraph](https://chaoslabz.gitbook.io/viewgraph)
 {% endhint %}

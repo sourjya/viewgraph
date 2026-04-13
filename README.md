@@ -7,7 +7,8 @@
 <p align="center">
   <a href="https://chaoslabz.gitbook.io/viewgraph">Documentation</a> -
   <a href="https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start">Quick Start</a> -
-  <a href="https://github.com/sourjya/viewgraph">GitHub</a>
+  <a href="https://github.com/sourjya/viewgraph">GitHub</a> -
+  <a href="https://www.npmjs.com/package/viewgraph">npm</a>
 </p>
 
 Browser extension + MCP server for AI-powered UI capture, auditing, and annotation.
@@ -51,15 +52,17 @@ The extension captures the DOM from Chrome or Firefox. The server reads those ca
 
 Build for your browser of choice: `npm run build:ext` (Chrome, default) or `npm run build:ext -- --browser firefox`. See [extension/README.md](./extension/) for details.
 
-### Step 1: Clone and install ViewGraph
+### Step 1: Install ViewGraph
 
 ```bash
-git clone https://github.com/sourjya/viewgraph.git
-cd viewgraph
-npm install
+npm install viewgraph
 ```
 
-This installs dependencies for both the server and extension via npm workspaces. You only need [Node.js](https://nodejs.org/) here - your actual project can use any language.
+<!-- TODO: Uncomment when store listings are approved
+Or install the browser extension directly:
+- [Chrome Web Store](https://chrome.google.com/webstore/detail/viewgraph-capture/PLACEHOLDER)
+- [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
+-->
 
 ### Step 2: Build and load the browser extension
 
@@ -85,7 +88,7 @@ The ViewGraph icon appears in your browser toolbar.
 
 ### Step 3: Initialize ViewGraph in your project
 
-Open a terminal in **your project's root directory** (not the ViewGraph directory) and run:
+Open a terminal in **your project's root directory** and run:
 
 ```bash
 npx viewgraph-init
