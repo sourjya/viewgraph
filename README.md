@@ -368,8 +368,8 @@ All commands run from the ViewGraph root directory:
 npm run dev:server     # start MCP server with file watcher
 npm run dev:ext        # start extension dev server (Chrome HMR)
 npm run dev:ext:ff     # start extension dev server (Firefox HMR)
-npm test               # all tests (984 tests)
-npm run test:server    # server only (331 tests)
+npm test               # all tests (982 tests)
+npm run test:server    # server only (329 tests)
 npm run test:ext       # extension only (653 tests)
 ```
 

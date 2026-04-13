@@ -133,6 +133,16 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - Roadmap M17c: native messaging transport post-beta
 - BUG-011 root cause: three separate sources of truth for auth token never synchronized
 
+#### Post-Auth Codebase Audit (2026-04-13)
+- Removed dead auth code: server token generation, checkAuth(), WS auth handshake, extension authHeaders()
+- Cleaned 10 source files: server/index.js, http-receiver.js, ws-server.js, ws-client.js, annotation-sidebar.js, background.js, constants.js
+- Rewrote http-receiver-security.test.js: 10 tests for no-auth path, format validation, path traversal, payload limits
+- Updated ws-server.test.js: removed auth handshake expectations, clients added to set immediately
+- Updated ws-client.test.js: removed auth message send, fixed message index offsets
+- Updated http-receiver.test.js: removed secret parameter from all test setups
+- Net: -213 lines removed, +136 lines added (77 lines of dead code eliminated)
+- All tests passing: 329 server + 653 extension = 982 total
+
 #### Multi-Project Routing Fixes (2026-04-13)
 - Removed stale `lookupCapturesDir` from all capture paths - `discoverServer(pageUrl)` handles routing
 - WSL file URL support: Chrome (`file://wsl.localhost/`) and Firefox (`file://///wsl.localhost/`)
