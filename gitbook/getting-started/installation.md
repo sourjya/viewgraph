@@ -25,7 +25,7 @@ npm install @viewgraph/core
 ```
 
 <!-- TODO: Replace with actual link when published -->
-Package: [viewgraph on npm](https://www.npmjs.com/package/@viewgraph/core)
+Package: [@viewgraph/core on npm](https://www.npmjs.com/package/@viewgraph/core)
 
 This adds the MCP server and init script to your project's `node_modules`.
 
