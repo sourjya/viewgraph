@@ -2,7 +2,7 @@
 
 ViewGraph occupies a unique position: the UI context layer for AI coding agents. It bridges what humans see in the browser and what agents need to fix code.
 
-![ViewGraph annotation workflow](/.gitbook/assets/sidebar-annotations.png)
+![ViewGraph annotation workflow](../.gitbook/assets/sidebar-annotations.png)
 
 ## Comparison Matrix
 

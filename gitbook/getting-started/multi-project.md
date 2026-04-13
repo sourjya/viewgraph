@@ -74,7 +74,7 @@ Now in Chrome:
 - `http://localhost:3001/users` - captures go to `admin/.viewgraph/captures/`
 - `file:///home/user/projects/frontend/index.html` - matches by file path automatically
 
-![Two projects showing different project roots](/.gitbook/assets/two-projects.png)
+![Two projects showing different project roots](../.gitbook/assets/two-projects.png)
 
 ## Verifying
 

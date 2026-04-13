@@ -2,7 +2,7 @@
 
 ViewGraph exposes 34 tools to your AI agent via the Model Context Protocol. The agent discovers them automatically - you don't call them directly.
 
-![ViewGraph sidebar with annotations](/.gitbook/assets/sidebar-annotations.png)
+![ViewGraph sidebar with annotations](../.gitbook/assets/sidebar-annotations.png)
 
 ## Core (4 tools)
 

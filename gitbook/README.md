@@ -1,6 +1,6 @@
 # What is ViewGraph?
 
-<figure><img src="/.gitbook/assets/viewgraph-logo.png" alt="ViewGraph" width="420"></figure>
+<figure><img src=".gitbook/assets/viewgraph-logo.png" alt="ViewGraph" width="420"></figure>
 
 ViewGraph is the UI context layer for AI coding agents. It captures structured DOM snapshots from any web page and exposes them to your AI assistant through the [Model Context Protocol](https://modelcontextprotocol.io/).
 
@@ -40,7 +40,7 @@ No screenshots with arrows. No copy-pasting selectors from DevTools. No "the but
 | Regression detection | Manual visual comparison | `compare_baseline` catches missing elements, layout shifts |
 | Z-index/focus/scroll bugs | Hours of DevTools debugging | Stacking, focus chain, and scroll data in every capture |
 
-![ViewGraph sidebar with annotations](/.gitbook/assets/sidebar-annotations.png)
+![ViewGraph sidebar with annotations](.gitbook/assets/sidebar-annotations.png)
 
 ## How It Works
 
