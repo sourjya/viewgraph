@@ -17,12 +17,6 @@
   </a>
 </p>
 
-<p align="center">
-  <a href="https://www.youtube.com/watch?v=ociXQLaY2z4">
-    <img src="https://img.youtube.com/vi/ociXQLaY2z4/maxresdefault.jpg" alt="ViewGraph Demo" width="600">
-  </a>
-</p>
-
 Browser extension + MCP server for AI-powered UI capture, auditing, and annotation.
 
 ViewGraph captures structured DOM snapshots from any web page and exposes them to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/). Agents can query page structure, audit accessibility, find missing test IDs, compare captures, track regressions, and act on human annotations - all through 34 MCP tools.
