@@ -21,36 +21,37 @@ npm install
 
 This installs dependencies for both the server and extension via npm workspaces.
 
-## Step 2: Build the extension
+## Step 2: Install the browser extension
 
-**Chrome (default):**
+### From the Chrome Web Store (recommended)
+
+<!-- TODO: Replace with actual CWS link when published -->
+Install [ViewGraph Capture](https://chrome.google.com/webstore) from the Chrome Web Store. Works in Chrome, Edge, Brave, and Opera.
+
+### From source (for development)
+
+If you want to modify the extension or use Firefox:
+
+**Chrome:**
 ```bash
 npm run build:ext
 ```
-
-**Firefox:**
-```bash
-npm run build:ext -- --browser firefox
-```
-
-## Step 3: Load the extension
-
-### Chrome / Edge / Brave / Opera
-
 1. Open `chrome://extensions/`
 2. Enable **Developer mode** (toggle in top-right corner)
 3. Click **Load unpacked**
 4. Select: `<your-viewgraph-path>/extension/.output/chrome-mv3`
 
-### Firefox
-
+**Firefox:**
+```bash
+npm run build:ext -- --browser firefox
+```
 1. Open `about:debugging#/runtime/this-firefox`
 2. Click **Load Temporary Add-on**
 3. Select any file inside: `<your-viewgraph-path>/extension/.output/firefox-mv3`
 
 The ViewGraph icon appears in your browser toolbar.
 
-## Step 4: Initialize in your project
+## Step 3: Initialize in your project
 
 Open a terminal in your project's root directory and run:
 
@@ -93,7 +94,7 @@ npx viewgraph-init --url localhost:3000 --url staging.myapp.com
 
 See [Multi-Project Setup](multi-project.md) for details.
 
-## Step 5: Verify
+## Step 4: Verify
 
 1. Click the ViewGraph icon on any page
 2. The sidebar should show a **green dot** with "Connected"

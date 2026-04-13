@@ -8,29 +8,14 @@ Go from zero to your first AI-assisted bug fix in 5 minutes.
 - Chrome 116+ or Firefox 109+
 - An MCP-compatible AI agent (Kiro, Claude Code, Cursor, Windsurf, Cline, or Aider)
 
-## 1. Clone and install
+## 1. Install the extension
 
-```bash
-git clone https://github.com/sourjya/viewgraph.git
-cd viewgraph
-npm install
-```
+<!-- TODO: Replace with actual CWS link when published -->
+Install [ViewGraph Capture](https://chrome.google.com/webstore) from the Chrome Web Store.
 
-## 2. Build and load the extension
+Or [build from source](installation.md#from-source-for-development) if you prefer.
 
-```bash
-npm run build:ext
-```
-
-In Chrome:
-1. Open `chrome://extensions/`
-2. Enable **Developer mode** (top-right toggle)
-3. Click **Load unpacked**
-4. Select `extension/.output/chrome-mv3`
-
-The ViewGraph icon appears in your toolbar.
-
-## 3. Initialize in your project
+## 2. Initialize in your project
 
 Open a terminal in **your project's root directory** (not the ViewGraph directory):
 
@@ -62,7 +47,7 @@ Done.
 npx viewgraph-init --url localhost:3000
 ```
 
-## 4. Capture and annotate
+## 3. Capture and annotate
 
 1. Open your app in Chrome
 2. Click the **ViewGraph** icon - sidebar opens, elements highlight on hover
@@ -70,7 +55,7 @@ npx viewgraph-init --url localhost:3000
 4. **Shift+drag** to select a region
 5. Click **Send to Agent**
 
-## 5. Let your agent fix it
+## 4. Let your agent fix it
 
 Tell your agent:
 

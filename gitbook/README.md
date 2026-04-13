@@ -81,7 +81,7 @@ Your agent discovers these automatically via the MCP protocol:
 
 ## Open Source
 
-ViewGraph is AGPL-3.0 licensed. The full source is on [GitHub](https://github.com/sourjya/viewgraph).
+ViewGraph is AGPL-3.0 licensed. Full source, issues, and contributions on [GitHub](https://github.com/sourjya/viewgraph).
 
 | Component | Description |
 |---|---|
@@ -89,3 +89,7 @@ ViewGraph is AGPL-3.0 licensed. The full source is on [GitHub](https://github.co
 | [extension/](https://github.com/sourjya/viewgraph/tree/main/extension) | Chrome/Firefox extension - capture, annotate, export |
 | [packages/playwright/](https://github.com/sourjya/viewgraph/tree/main/packages/playwright) | Playwright fixture for E2E test captures |
 | [power/](https://github.com/sourjya/viewgraph/tree/main/power) | Kiro Power assets - hooks, prompts, steering docs |
+
+{% hint style="info" %}
+**GitHub:** [github.com/sourjya/viewgraph](https://github.com/sourjya/viewgraph) - star the repo, report issues, contribute
+{% endhint %}
