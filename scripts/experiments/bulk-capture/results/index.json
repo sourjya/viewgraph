@@ -1,0 +1,139 @@
+{
+  "runs": [
+    {
+      "timestamp": "2026-04-12T10:22:38.916Z",
+      "dir": "/home/sourjya/coding/viewgraph/scripts/experiments/bulk-capture/results/run-2026-04-12T10-20-39",
+      "set": "a",
+      "totalSites": 48,
+      "cleanSites": 36,
+      "sitesWithAccuracy": 28,
+      "excludedSites": 12,
+      "composite": {
+        "mean": 0.767,
+        "median": 0.785,
+        "p5": 0.586,
+        "p95": 0.878
+      },
+      "dimensions": {
+        "testidRecall": {
+          "mean": 0.93,
+          "median": 1
+        },
+        "interactiveRecall": {
+          "mean": 0.871,
+          "median": 0.979
+        },
+        "selectorAccuracy": {
+          "mean": 0.991,
+          "median": 0.999
+        },
+        "bboxAccuracy": {
+          "mean": 0.187,
+          "median": 0.121
+        },
+        "textAccuracy": {
+          "mean": 0.517,
+          "median": 0.531
+        },
+        "semanticRecall": {
+          "mean": 0.79,
+          "median": 0.882
+        },
+        "elementRecall": {
+          "mean": 0.991,
+          "median": 0.999
+        }
+      }
+    },
+    {
+      "timestamp": "2026-04-12T10:26:37.173Z",
+      "dir": "/home/sourjya/coding/viewgraph/scripts/experiments/bulk-capture/results/run-2026-04-12T10-24-42",
+      "set": "a",
+      "totalSites": 48,
+      "cleanSites": 35,
+      "sitesWithAccuracy": 28,
+      "excludedSites": 13,
+      "composite": {
+        "mean": 0.774,
+        "median": 0.785,
+        "p5": 0.586,
+        "p95": 0.878
+      },
+      "dimensions": {
+        "testidRecall": {
+          "mean": 0.966,
+          "median": 1
+        },
+        "interactiveRecall": {
+          "mean": 0.871,
+          "median": 0.978
+        },
+        "selectorAccuracy": {
+          "mean": 0.988,
+          "median": 0.997
+        },
+        "bboxAccuracy": {
+          "mean": 0.194,
+          "median": 0.126
+        },
+        "textAccuracy": {
+          "mean": 0.516,
+          "median": 0.531
+        },
+        "semanticRecall": {
+          "mean": 0.792,
+          "median": 0.882
+        },
+        "elementRecall": {
+          "mean": 0.988,
+          "median": 0.997
+        }
+      }
+    },
+    {
+      "timestamp": "2026-04-12T10:29:58.979Z",
+      "dir": "/home/sourjya/coding/viewgraph/scripts/experiments/bulk-capture/results/run-2026-04-12T10-27-53",
+      "set": "a",
+      "totalSites": 48,
+      "cleanSites": 34,
+      "sitesWithAccuracy": 26,
+      "excludedSites": 14,
+      "composite": {
+        "mean": 0.894,
+        "median": 0.921,
+        "p5": 0.7,
+        "p95": 0.964
+      },
+      "dimensions": {
+        "testidRecall": {
+          "mean": 0.963,
+          "median": 1
+        },
+        "interactiveRecall": {
+          "mean": 0.868,
+          "median": 0.979
+        },
+        "selectorAccuracy": {
+          "mean": 0.99,
+          "median": 0.997
+        },
+        "bboxAccuracy": {
+          "mean": 1,
+          "median": 1
+        },
+        "textAccuracy": {
+          "mean": 0.518,
+          "median": 0.531
+        },
+        "semanticRecall": {
+          "mean": 0.782,
+          "median": 0.882
+        },
+        "elementRecall": {
+          "mean": 0.99,
+          "median": 0.997
+        }
+      }
+    }
+  ]
+}

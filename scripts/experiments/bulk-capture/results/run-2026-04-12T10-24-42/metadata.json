@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-04-12T10:24:42.988Z",
+  "set": "a",
+  "siteCount": 48,
+  "concurrency": 3,
+  "timeout": 30,
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "category": null,
+  "resume": false,
+  "diversity": {
+    "category": {
+      "news": 4,
+      "ecommerce": 4,
+      "spa": 4,
+      "static": 4,
+      "government": 3,
+      "i18n": 7,
+      "docs": 3,
+      "social": 4,
+      "data": 4,
+      "media": 4,
+      "tools": 4,
+      "webcomponents": 3
+    },
+    "complexity": {
+      "complex": 25,
+      "simple": 10,
+      "moderate": 13
+    },
+    "rendering": {
+      "ssr": 15,
+      "static": 11,
+      "hybrid": 8,
+      "csr": 14
+    },
+    "script": {
+      "latin": 40,
+      "cjk": 2,
+      "arabic": 1,
+      "indic": 1,
+      "cyrillic": 1,
+      "mixed": 3
+    },
+    "a11y": {
+      "high": 18,
+      "low": 11,
+      "medium": 19
+    },
+    "total": 48
+  }
+}

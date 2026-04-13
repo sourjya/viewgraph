@@ -1,0 +1,1143 @@
+{
+  "timestamp": "2026-04-12T05:35:53.673Z",
+  "totalSites": 48,
+  "sitesWithAccuracy": 37,
+  "weights": {
+    "testidRecall": 0.2,
+    "interactiveRecall": 0.2,
+    "selectorAccuracy": 0.2,
+    "bboxAccuracy": 0.15,
+    "textAccuracy": 0.1,
+    "semanticRecall": 0.1,
+    "elementRecall": 0.05
+  },
+  "accuracy": {
+    "overall": {
+      "mean": 0.764,
+      "median": 0.784,
+      "p5": 0.529,
+      "p95": 0.884
+    },
+    "dimensions": {
+      "testidRecall": {
+        "mean": 0.93,
+        "median": 1,
+        "p5": 0.163,
+        "p95": 1,
+        "weight": 0.2
+      },
+      "interactiveRecall": {
+        "mean": 0.884,
+        "median": 0.979,
+        "p5": 0.267,
+        "p95": 1,
+        "weight": 0.2
+      },
+      "selectorAccuracy": {
+        "mean": 0.988,
+        "median": 0.997,
+        "p5": 0.946,
+        "p95": 1,
+        "weight": 0.2
+      },
+      "bboxAccuracy": {
+        "mean": 0.173,
+        "median": 0.112,
+        "p5": 0.028,
+        "p95": 0.571,
+        "weight": 0.15
+      },
+      "textAccuracy": {
+        "mean": 0.495,
+        "median": 0.533,
+        "p5": 0.18,
+        "p95": 0.744,
+        "weight": 0.1
+      },
+      "semanticRecall": {
+        "mean": 0.783,
+        "median": 0.875,
+        "p5": 0,
+        "p95": 1,
+        "weight": 0.1
+      },
+      "elementRecall": {
+        "mean": 0.988,
+        "median": 0.997,
+        "p5": 0.946,
+        "p95": 1,
+        "weight": 0.05
+      }
+    }
+  },
+  "dimensions": {
+    "elementRecall": {
+      "sites": 37,
+      "recall": {
+        "mean": 0.878,
+        "median": 0.981,
+        "p5": 0.398,
+        "p95": 1,
+        "min": 0.003,
+        "max": 1
+      },
+      "vgNodeCounts": {
+        "mean": 1101.459,
+        "median": 857,
+        "p5": 21,
+        "p95": 3370,
+        "min": 2,
+        "max": 6738
+      },
+      "gtVisibleCounts": {
+        "mean": 1232.838,
+        "median": 902,
+        "p5": 44,
+        "p95": 3415,
+        "min": 21,
+        "max": 6757
+      }
+    },
+    "testidRecall": {
+      "sites": 37,
+      "mean": 0.93,
+      "median": 1,
+      "p5": 0.163,
+      "p95": 1,
+      "min": 0,
+      "max": 1,
+      "medianDomTestids": 0,
+      "sitesWithZeroTestids": 24
+    },
+    "interactiveRecall": {
+      "sites": 37,
+      "mean": 0.884,
+      "median": 0.979,
+      "p5": 0.267,
+      "p95": 1,
+      "min": 0,
+      "max": 1,
+      "medianDomInteractive": 138
+    },
+    "selectorAccuracy": {
+      "sites": 37,
+      "mean": 0.988,
+      "median": 0.997,
+      "p5": 0.946,
+      "p95": 1,
+      "min": 0.844,
+      "max": 1
+    },
+    "bboxAccuracy": {
+      "sites": 37,
+      "within5px": {
+        "mean": 0.173,
+        "median": 0.112,
+        "p5": 0.028,
+        "p95": 0.571,
+        "min": 0.021,
+        "max": 1
+      },
+      "within10px": {
+        "mean": 0.173,
+        "median": 0.112,
+        "p5": 0.028,
+        "p95": 0.571,
+        "min": 0.021,
+        "max": 1
+      },
+      "meanDeviation": {
+        "mean": 2691.046,
+        "median": 2009.2,
+        "p5": 258,
+        "p95": 7199.8,
+        "min": 0,
+        "max": 10442.6
+      }
+    },
+    "textAccuracy": {
+      "sites": 37,
+      "exactMatchRate": {
+        "mean": 0.369,
+        "median": 0.348,
+        "p5": 0.154,
+        "p95": 0.705,
+        "min": 0.135,
+        "max": 1
+      },
+      "matchRate": {
+        "mean": 0.495,
+        "median": 0.533,
+        "p5": 0.18,
+        "p95": 0.744,
+        "min": 0.145,
+        "max": 1
+      },
+      "totalEmptyText": 4595
+    },
+    "semanticRecall": {
+      "sites": 37,
+      "mean": 0.783,
+      "median": 0.875,
+      "p5": 0,
+      "p95": 1,
+      "min": 0,
+      "max": 1
+    }
+  },
+  "groundTruth": {
+    "totalElements": {
+      "mean": 1833,
+      "median": 1557,
+      "p95": 4505,
+      "total": 82498
+    },
+    "visibleElements": {
+      "mean": 1101,
+      "median": 825,
+      "p95": 2534,
+      "total": 49553
+    },
+    "hiddenElements": {
+      "mean": 732,
+      "median": 528,
+      "p95": 1971,
+      "total": 32945
+    },
+    "interactiveElements": {
+      "mean": 305,
+      "median": 229,
+      "p95": 766,
+      "total": 13735
+    },
+    "semanticElements": {
+      "mean": 24,
+      "median": 13,
+      "p95": 65,
+      "total": 1059
+    },
+    "elementsWithTestid": {
+      "mean": 88,
+      "median": 0,
+      "p95": 177,
+      "total": 3963
+    },
+    "elementsWithRole": {
+      "mean": 60,
+      "median": 30,
+      "p95": 196,
+      "total": 2722
+    },
+    "elementsWithAriaLabel": {
+      "mean": 53,
+      "median": 29,
+      "p95": 128,
+      "total": 2403
+    },
+    "elementsWithText": {
+      "mean": 971,
+      "median": 677,
+      "p95": 2557,
+      "total": 43680
+    },
+    "shadowRoots": {
+      "mean": 9,
+      "median": 0,
+      "p95": 74,
+      "total": 412
+    },
+    "visibilityRatio": {
+      "mean": 0.648,
+      "median": 0.666,
+      "p5": 0.335,
+      "p95": 0.961,
+      "min": 0.232,
+      "max": 1
+    }
+  },
+  "byCategory": [
+    {
+      "group": "social",
+      "sites": 2,
+      "overallMedian": 0.529,
+      "overallMean": 0.665,
+      "dimensions": {
+        "testidRecall": 0.444,
+        "interactiveRecall": 0.547,
+        "selectorAccuracy": 0.844,
+        "bboxAccuracy": 0.07,
+        "textAccuracy": 0.568,
+        "semanticRecall": 0.375,
+        "elementRecall": 0.844
+      }
+    },
+    {
+      "group": "media",
+      "sites": 4,
+      "overallMedian": 0.596,
+      "overallMean": 0.694,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.955,
+        "selectorAccuracy": 0.996,
+        "bboxAccuracy": 0.087,
+        "textAccuracy": 0.514,
+        "semanticRecall": 0.75,
+        "elementRecall": 0.996
+      }
+    },
+    {
+      "group": "government",
+      "sites": 2,
+      "overallMedian": 0.719,
+      "overallMean": 0.756,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.587,
+        "selectorAccuracy": 0.974,
+        "bboxAccuracy": 0.125,
+        "textAccuracy": 0.298,
+        "semanticRecall": 0.679,
+        "elementRecall": 0.974
+      }
+    },
+    {
+      "group": "docs",
+      "sites": 2,
+      "overallMedian": 0.756,
+      "overallMean": 0.758,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.978,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.111,
+        "textAccuracy": 0.145,
+        "semanticRecall": 0.444,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "ecommerce",
+      "sites": 3,
+      "overallMedian": 0.756,
+      "overallMean": 0.776,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.984,
+        "selectorAccuracy": 0.982,
+        "bboxAccuracy": 0.084,
+        "textAccuracy": 0.437,
+        "semanticRecall": 0.75,
+        "elementRecall": 0.982
+      }
+    },
+    {
+      "group": "spa",
+      "sites": 3,
+      "overallMedian": 0.764,
+      "overallMean": 0.75,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.825,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.209,
+        "textAccuracy": 0.704,
+        "semanticRecall": 0.75,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "news",
+      "sites": 4,
+      "overallMedian": 0.77,
+      "overallMean": 0.797,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.987,
+        "bboxAccuracy": 0.054,
+        "textAccuracy": 0.321,
+        "semanticRecall": 0.7,
+        "elementRecall": 0.987
+      }
+    },
+    {
+      "group": "data",
+      "sites": 4,
+      "overallMedian": 0.772,
+      "overallMean": 0.71,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.778,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.099,
+        "textAccuracy": 0.298,
+        "semanticRecall": 0.957,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "i18n",
+      "sites": 7,
+      "overallMedian": 0.788,
+      "overallMean": 0.789,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.979,
+        "selectorAccuracy": 0.995,
+        "bboxAccuracy": 0.065,
+        "textAccuracy": 0.555,
+        "semanticRecall": 0.9,
+        "elementRecall": 0.995
+      }
+    },
+    {
+      "group": "tools",
+      "sites": 3,
+      "overallMedian": 0.812,
+      "overallMean": 0.831,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.979,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.142,
+        "textAccuracy": 0.539,
+        "semanticRecall": 0.909,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "static",
+      "sites": 3,
+      "overallMedian": 0.828,
+      "overallMean": 0.832,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.977,
+        "bboxAccuracy": 0.295,
+        "textAccuracy": 0.477,
+        "semanticRecall": 1,
+        "elementRecall": 0.977
+      }
+    }
+  ],
+  "byComplexity": [
+    {
+      "group": "complex",
+      "sites": 21,
+      "overallMedian": 0.77,
+      "overallMean": 0.731,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.955,
+        "selectorAccuracy": 0.997,
+        "bboxAccuracy": 0.087,
+        "textAccuracy": 0.519,
+        "semanticRecall": 0.813,
+        "elementRecall": 0.997
+      }
+    },
+    {
+      "group": "moderate",
+      "sites": 8,
+      "overallMedian": 0.779,
+      "overallMean": 0.782,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.962,
+        "selectorAccuracy": 0.993,
+        "bboxAccuracy": 0.087,
+        "textAccuracy": 0.533,
+        "semanticRecall": 0.875,
+        "elementRecall": 0.993
+      }
+    },
+    {
+      "group": "simple",
+      "sites": 8,
+      "overallMedian": 0.812,
+      "overallMean": 0.832,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.995,
+        "bboxAccuracy": 0.216,
+        "textAccuracy": 0.477,
+        "semanticRecall": 1,
+        "elementRecall": 0.995
+      }
+    }
+  ],
+  "byRendering": [
+    {
+      "group": "csr",
+      "sites": 10,
+      "overallMedian": 0.756,
+      "overallMean": 0.699,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.778,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.157,
+        "textAccuracy": 0.548,
+        "semanticRecall": 0.667,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "hybrid",
+      "sites": 5,
+      "overallMedian": 0.76,
+      "overallMean": 0.764,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.978,
+        "selectorAccuracy": 0.991,
+        "bboxAccuracy": 0.087,
+        "textAccuracy": 0.437,
+        "semanticRecall": 0.62,
+        "elementRecall": 0.991
+      }
+    },
+    {
+      "group": "ssr",
+      "sites": 13,
+      "overallMedian": 0.788,
+      "overallMean": 0.772,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.979,
+        "selectorAccuracy": 0.996,
+        "bboxAccuracy": 0.065,
+        "textAccuracy": 0.547,
+        "semanticRecall": 0.909,
+        "elementRecall": 0.996
+      }
+    },
+    {
+      "group": "static",
+      "sites": 9,
+      "overallMedian": 0.803,
+      "overallMean": 0.824,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.995,
+        "bboxAccuracy": 0.216,
+        "textAccuracy": 0.477,
+        "semanticRecall": 1,
+        "elementRecall": 0.995
+      }
+    }
+  ],
+  "byScript": [
+    {
+      "group": "cjk",
+      "sites": 2,
+      "overallMedian": 0.762,
+      "overallMean": 0.789,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.992,
+        "selectorAccuracy": 0.993,
+        "bboxAccuracy": 0.021,
+        "textAccuracy": 0.298,
+        "semanticRecall": 0.813,
+        "elementRecall": 0.993
+      }
+    },
+    {
+      "group": "latin",
+      "sites": 31,
+      "overallMedian": 0.776,
+      "overallMean": 0.759,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.981,
+        "selectorAccuracy": 0.999,
+        "bboxAccuracy": 0.125,
+        "textAccuracy": 0.519,
+        "semanticRecall": 0.833,
+        "elementRecall": 0.999
+      }
+    },
+    {
+      "group": "cyrillic",
+      "sites": 1,
+      "overallMedian": 0.779,
+      "overallMean": 0.779,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.876,
+        "selectorAccuracy": 0.982,
+        "bboxAccuracy": 0.037,
+        "textAccuracy": 0.651,
+        "semanticRecall": 0.875,
+        "elementRecall": 0.982
+      }
+    },
+    {
+      "group": "arabic",
+      "sites": 1,
+      "overallMedian": 0.788,
+      "overallMean": 0.788,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.978,
+        "selectorAccuracy": 0.996,
+        "bboxAccuracy": 0.104,
+        "textAccuracy": 0.414,
+        "semanticRecall": 0.863,
+        "elementRecall": 0.996
+      }
+    },
+    {
+      "group": "indic",
+      "sites": 1,
+      "overallMedian": 0.792,
+      "overallMean": 0.792,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.871,
+        "selectorAccuracy": 0.995,
+        "bboxAccuracy": 0.053,
+        "textAccuracy": 0.678,
+        "semanticRecall": 0.933,
+        "elementRecall": 0.995
+      }
+    },
+    {
+      "group": "mixed",
+      "sites": 1,
+      "overallMedian": 0.796,
+      "overallMean": 0.796,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.962,
+        "selectorAccuracy": 0.995,
+        "bboxAccuracy": 0.087,
+        "textAccuracy": 0.533,
+        "semanticRecall": 0.882,
+        "elementRecall": 0.995
+      }
+    }
+  ],
+  "byA11y": [
+    {
+      "group": "high",
+      "sites": 9,
+      "overallMedian": 0.772,
+      "overallMean": 0.797,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.984,
+        "selectorAccuracy": 0.999,
+        "bboxAccuracy": 0.125,
+        "textAccuracy": 0.535,
+        "semanticRecall": 0.909,
+        "elementRecall": 0.999
+      }
+    },
+    {
+      "group": "low",
+      "sites": 10,
+      "overallMedian": 0.779,
+      "overallMean": 0.746,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.929,
+        "selectorAccuracy": 0.995,
+        "bboxAccuracy": 0.157,
+        "textAccuracy": 0.321,
+        "semanticRecall": 0.875,
+        "elementRecall": 0.995
+      }
+    },
+    {
+      "group": "medium",
+      "sites": 18,
+      "overallMedian": 0.784,
+      "overallMean": 0.757,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.978,
+        "selectorAccuracy": 0.996,
+        "bboxAccuracy": 0.087,
+        "textAccuracy": 0.519,
+        "semanticRecall": 0.833,
+        "elementRecall": 0.996
+      }
+    }
+  ],
+  "operational": {
+    "timing": {
+      "navigation": {
+        "count": 48,
+        "p50": 3772,
+        "p95": 15141,
+        "mean": 5771
+      },
+      "groundTruth": {
+        "count": 45,
+        "p50": 27,
+        "p95": 72,
+        "mean": 30
+      },
+      "viewgraph": {
+        "count": 45,
+        "p50": 96,
+        "p95": 371,
+        "mean": 150
+      },
+      "accuracy": {
+        "count": 37,
+        "p50": 98,
+        "p95": 932,
+        "mean": 180
+      },
+      "snapshot": {
+        "count": 45,
+        "p50": 100,
+        "p95": 345,
+        "mean": 114
+      },
+      "screenshot": {
+        "count": 45,
+        "p50": 104,
+        "p95": 275,
+        "mean": 133
+      }
+    },
+    "sizes": {
+      "viewgraph": {
+        "count": 37,
+        "p50": 352779,
+        "p95": 1169312,
+        "mean": 496703
+      },
+      "snapshot": {
+        "count": 37,
+        "p50": 827723,
+        "p95": 2475820,
+        "mean": 949196
+      },
+      "screenshot": {
+        "count": 45,
+        "p50": 175716,
+        "p95": 772836,
+        "mean": 290073
+      }
+    },
+    "successRates": {
+      "total": 48,
+      "navigation": {
+        "count": 47,
+        "pct": 0.979
+      },
+      "viewgraph": {
+        "count": 37,
+        "pct": 0.771
+      },
+      "snapshot": {
+        "count": 37,
+        "pct": 0.771
+      },
+      "screenshot": {
+        "count": 45,
+        "pct": 0.938
+      },
+      "accuracy": {
+        "count": 37,
+        "pct": 0.771
+      },
+      "allOk": {
+        "count": 27,
+        "pct": 0.563
+      }
+    },
+    "failures": {
+      "errors": [
+        {
+          "category": "capture-crash",
+          "count": 16,
+          "examples": [
+            "Cannot read properties of undefined (reading 'traverseDOM')",
+            "Cannot read properties of undefined (reading 'captureSnapshot')"
+          ]
+        },
+        {
+          "category": "nav-timeout",
+          "count": 1,
+          "examples": [
+            "Navigation timeout of 20000 ms exceeded"
+          ]
+        },
+        {
+          "category": "inject-error",
+          "count": 2,
+          "examples": [
+            "Failed to set the 'text' property on 'HTMLScriptElement': This document requires 'TrustedScript' assignment.\npptr:evalua"
+          ]
+        },
+        {
+          "category": "bot-blocked",
+          "count": 10,
+          "examples": [
+            "Likely blocked: cloudflare-title",
+            "Likely blocked: captcha-iframe"
+          ]
+        }
+      ],
+      "botDetection": {
+        "blockedCount": 10,
+        "blockedPct": 0.208,
+        "blockedUrls": [
+          "https://validator.w3.org",
+          "https://www.aljazeera.net",
+          "https://www.bbc.com",
+          "https://www.chosun.com",
+          "https://www.globo.com",
+          "https://www.nationalgeographic.com",
+          "https://www.ndtv.com",
+          "https://www.reddit.com",
+          "https://www.target.com",
+          "https://www.theverge.com"
+        ],
+        "signalCounts": {
+          "cloudflare-title": 1,
+          "captcha-iframe": 9
+        }
+      }
+    }
+  },
+  "worstSites": [
+    {
+      "url": "https://www.flightradar24.com",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 0.16279069767441862,
+      "interactiveRecall": 0.26666666666666666,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.4375,
+      "textAccuracy": 0.6818181818181818,
+      "semanticRecall": 0.3888888888888889,
+      "overall": 0.509
+    },
+    {
+      "url": "https://www.reddit.com",
+      "category": "social",
+      "complexity": "complex",
+      "elementRecall": 0.8438818565400844,
+      "testidRecall": 0.4444444444444444,
+      "interactiveRecall": 0.5471698113207547,
+      "selectorAccuracy": 0.8438818565400844,
+      "bboxAccuracy": 0.17,
+      "textAccuracy": 0.5675,
+      "semanticRecall": 0.375,
+      "overall": 0.529
+    },
+    {
+      "url": "https://www.artstation.com",
+      "category": "media",
+      "complexity": "complex",
+      "elementRecall": 0.9966666666666667,
+      "testidRecall": 1,
+      "interactiveRecall": 0.4187192118226601,
+      "selectorAccuracy": 0.9966666666666667,
+      "bboxAccuracy": 0.15719063545150502,
+      "textAccuracy": 0.2993311036789298,
+      "semanticRecall": 0,
+      "overall": 0.586
+    },
+    {
+      "url": "https://www.nationalgeographic.com",
+      "category": "media",
+      "complexity": "complex",
+      "elementRecall": 0.99625,
+      "testidRecall": 0,
+      "interactiveRecall": 0.9551724137931035,
+      "selectorAccuracy": 0.99625,
+      "bboxAccuracy": 0.053534086156419906,
+      "textAccuracy": 0.5144291091593476,
+      "semanticRecall": 0.96,
+      "overall": 0.596
+    },
+    {
+      "url": "https://notion.so",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 1,
+      "semanticRecall": 0,
+      "overall": 0.7
+    },
+    {
+      "url": "https://www.who.int",
+      "category": "government",
+      "complexity": "moderate",
+      "elementRecall": 0.9742388758782201,
+      "testidRecall": 1,
+      "interactiveRecall": 0.5866666666666667,
+      "selectorAccuracy": 0.9742388758782201,
+      "bboxAccuracy": 0.1658653846153846,
+      "textAccuracy": 0.65625,
+      "semanticRecall": 0.6785714285714286,
+      "overall": 0.719
+    },
+    {
+      "url": "https://www.theverge.com",
+      "category": "news",
+      "complexity": "complex",
+      "elementRecall": 0.9873873873873874,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9873873873873874,
+      "bboxAccuracy": 0.05018248175182482,
+      "textAccuracy": 0.25866788321167883,
+      "semanticRecall": 0.5,
+      "overall": 0.73
+    },
+    {
+      "url": "https://www.ebay.com",
+      "category": "ecommerce",
+      "complexity": "complex",
+      "elementRecall": 0.981630309988519,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9521276595744681,
+      "selectorAccuracy": 0.981630309988519,
+      "bboxAccuracy": 0.08654970760233918,
+      "textAccuracy": 0.43742690058479533,
+      "semanticRecall": 0.62,
+      "overall": 0.755
+    },
+    {
+      "url": "https://doc.rust-lang.org/book/",
+      "category": "docs",
+      "complexity": "simple",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.11068702290076336,
+      "textAccuracy": 0.1450381679389313,
+      "semanticRecall": 0.75,
+      "overall": 0.756
+    },
+    {
+      "url": "https://www.target.com",
+      "category": "ecommerce",
+      "complexity": "complex",
+      "elementRecall": 0.9888623707239459,
+      "testidRecall": 1,
+      "interactiveRecall": 0.984251968503937,
+      "selectorAccuracy": 0.9888623707239459,
+      "bboxAccuracy": 0.083668543845535,
+      "textAccuracy": 0.24215607401448108,
+      "semanticRecall": 0.75,
+      "overall": 0.756
+    },
+    {
+      "url": "https://react.dev",
+      "category": "docs",
+      "complexity": "moderate",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9781021897810219,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.12147505422993492,
+      "textAccuracy": 0.5151843817787418,
+      "semanticRecall": 0.4444444444444444,
+      "overall": 0.76
+    },
+    {
+      "url": "https://www.chosun.com",
+      "category": "i18n",
+      "complexity": "complex",
+      "elementRecall": 0.9967359050445104,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9919786096256684,
+      "selectorAccuracy": 0.9967359050445104,
+      "bboxAccuracy": 0.020541827924977673,
+      "textAccuracy": 0.29770765108663294,
+      "semanticRecall": 0.8125,
+      "overall": 0.762
+    },
+    {
+      "url": "https://www.canva.com",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0.8246753246753247,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.061843640606767794,
+      "textAccuracy": 0.5612602100350058,
+      "semanticRecall": 0.8333333333333334,
+      "overall": 0.764
+    },
+    {
+      "url": "https://www.bbc.com",
+      "category": "news",
+      "complexity": "complex",
+      "elementRecall": 0.9982445874780573,
+      "testidRecall": 0.9432860717264387,
+      "interactiveRecall": 0.9950738916256158,
+      "selectorAccuracy": 0.9982445874780573,
+      "bboxAccuracy": 0.053927315357561546,
+      "textAccuracy": 0.5468933177022274,
+      "semanticRecall": 0.7,
+      "overall": 0.77
+    },
+    {
+      "url": "https://ourworldindata.org",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 0.9913867355727821,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9177631578947368,
+      "selectorAccuracy": 0.9913867355727821,
+      "bboxAccuracy": 0.09904430929626412,
+      "textAccuracy": 0.29800173761946136,
+      "semanticRecall": 0.9565217391304348,
+      "overall": 0.772
+    }
+  ],
+  "bestSites": [
+    {
+      "url": "https://validator.w3.org",
+      "category": "tools",
+      "complexity": "simple",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.5714285714285714,
+      "textAccuracy": 0.7142857142857143,
+      "semanticRecall": 1,
+      "overall": 0.907
+    },
+    {
+      "url": "https://text.npr.org",
+      "category": "news",
+      "complexity": "simple",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.5352112676056338,
+      "textAccuracy": 0.5352112676056338,
+      "semanticRecall": 1,
+      "overall": 0.884
+    },
+    {
+      "url": "https://www.paulgraham.com",
+      "category": "static",
+      "complexity": "simple",
+      "elementRecall": 0.9772727272727273,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9772727272727273,
+      "bboxAccuracy": 0.3023255813953488,
+      "textAccuracy": 0.7441860465116279,
+      "semanticRecall": 1,
+      "overall": 0.864
+    },
+    {
+      "url": "https://solar.lowtechmagazine.com",
+      "category": "static",
+      "complexity": "simple",
+      "elementRecall": 0.946078431372549,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.946078431372549,
+      "bboxAccuracy": 0.29533678756476683,
+      "textAccuracy": 0.47668393782383417,
+      "semanticRecall": 1,
+      "overall": 0.828
+    },
+    {
+      "url": "https://www.zappos.com",
+      "category": "ecommerce",
+      "complexity": "moderate",
+      "elementRecall": 0.9676461858118136,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9676461858118136,
+      "bboxAccuracy": 0.027760736196319018,
+      "textAccuracy": 0.714877300613497,
+      "semanticRecall": 1,
+      "overall": 0.818
+    },
+    {
+      "url": "https://www.nhk.or.jp/news/",
+      "category": "i18n",
+      "complexity": "moderate",
+      "elementRecall": 0.9925187032418953,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9925187032418953,
+      "bboxAccuracy": 0.06482412060301508,
+      "textAccuracy": 0.5758793969849246,
+      "semanticRecall": 1,
+      "overall": 0.815
+    },
+    {
+      "url": "https://duckduckgo.com",
+      "category": "tools",
+      "complexity": "simple",
+      "elementRecall": 0.9990393852065321,
+      "testidRecall": 1,
+      "interactiveRecall": 0.979381443298969,
+      "selectorAccuracy": 0.9990393852065321,
+      "bboxAccuracy": 0.1423076923076923,
+      "textAccuracy": 0.5394230769230769,
+      "semanticRecall": 0.9090909090909091,
+      "overall": 0.812
+    },
+    {
+      "url": "https://danluu.com",
+      "category": "static",
+      "complexity": "simple",
+      "elementRecall": 0.9947089947089947,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9947089947089947,
+      "bboxAccuracy": 0.21631205673758866,
+      "textAccuracy": 0.21808510638297873,
+      "semanticRecall": 1,
+      "overall": 0.803
+    },
+    {
+      "url": "https://news.ycombinator.com",
+      "category": "news",
+      "complexity": "simple",
+      "elementRecall": 0.9610894941634242,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9610894941634242,
+      "bboxAccuracy": 0.19433198380566802,
+      "textAccuracy": 0.32118758434547906,
+      "semanticRecall": 1,
+      "overall": 0.802
+    },
+    {
+      "url": "https://www.globo.com",
+      "category": "i18n",
+      "complexity": "complex",
+      "elementRecall": 0.9951526902569074,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9806451612903225,
+      "selectorAccuracy": 0.9951526902569074,
+      "bboxAccuracy": 0.07501217730150998,
+      "textAccuracy": 0.5547978567949342,
+      "semanticRecall": 0.9,
+      "overall": 0.802
+    }
+  ]
+}

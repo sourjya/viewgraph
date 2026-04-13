@@ -1,0 +1,1105 @@
+{
+  "timestamp": "2026-04-12T05:38:40.444Z",
+  "totalSites": 50,
+  "sitesWithAccuracy": 33,
+  "weights": {
+    "testidRecall": 0.2,
+    "interactiveRecall": 0.2,
+    "selectorAccuracy": 0.2,
+    "bboxAccuracy": 0.15,
+    "textAccuracy": 0.1,
+    "semanticRecall": 0.1,
+    "elementRecall": 0.05
+  },
+  "accuracy": {
+    "overall": {
+      "mean": 0.792,
+      "median": 0.79,
+      "p5": 0.685,
+      "p95": 0.916
+    },
+    "dimensions": {
+      "testidRecall": {
+        "mean": 0.967,
+        "median": 1,
+        "p5": 0.872,
+        "p95": 1,
+        "weight": 0.2
+      },
+      "interactiveRecall": {
+        "mean": 0.865,
+        "median": 0.978,
+        "p5": 0,
+        "p95": 1,
+        "weight": 0.2
+      },
+      "selectorAccuracy": {
+        "mean": 0.996,
+        "median": 1,
+        "p5": 0.982,
+        "p95": 1,
+        "weight": 0.2
+      },
+      "bboxAccuracy": {
+        "mean": 0.251,
+        "median": 0.143,
+        "p5": 0.021,
+        "p95": 1,
+        "weight": 0.15
+      },
+      "textAccuracy": {
+        "mean": 0.535,
+        "median": 0.516,
+        "p5": 0.242,
+        "p95": 1,
+        "weight": 0.1
+      },
+      "semanticRecall": {
+        "mean": 0.854,
+        "median": 0.957,
+        "p5": 0.389,
+        "p95": 1,
+        "weight": 0.1
+      },
+      "elementRecall": {
+        "mean": 0.996,
+        "median": 1,
+        "p5": 0.982,
+        "p95": 1,
+        "weight": 0.05
+      }
+    }
+  },
+  "dimensions": {
+    "elementRecall": {
+      "sites": 33,
+      "recall": {
+        "mean": 0.85,
+        "median": 0.972,
+        "p5": 0.01,
+        "p95": 1,
+        "min": 0.003,
+        "max": 1
+      },
+      "vgNodeCounts": {
+        "mean": 1016.394,
+        "median": 637,
+        "p5": 1,
+        "p95": 4626,
+        "min": 0,
+        "max": 6172
+      },
+      "gtVisibleCounts": {
+        "mean": 1128.848,
+        "median": 734,
+        "p5": 22,
+        "p95": 4832,
+        "min": 0,
+        "max": 6183
+      }
+    },
+    "testidRecall": {
+      "sites": 33,
+      "mean": 0.967,
+      "median": 1,
+      "p5": 0.872,
+      "p95": 1,
+      "min": 0.163,
+      "max": 1,
+      "medianDomTestids": 0,
+      "sitesWithZeroTestids": 24
+    },
+    "interactiveRecall": {
+      "sites": 33,
+      "mean": 0.865,
+      "median": 0.978,
+      "p5": 0,
+      "p95": 1,
+      "min": 0,
+      "max": 1,
+      "medianDomInteractive": 95
+    },
+    "selectorAccuracy": {
+      "sites": 33,
+      "mean": 0.996,
+      "median": 1,
+      "p5": 0.982,
+      "p95": 1,
+      "min": 0.957,
+      "max": 1
+    },
+    "bboxAccuracy": {
+      "sites": 33,
+      "within5px": {
+        "mean": 0.251,
+        "median": 0.143,
+        "p5": 0.021,
+        "p95": 1,
+        "min": 0.013,
+        "max": 1
+      },
+      "within10px": {
+        "mean": 0.252,
+        "median": 0.143,
+        "p5": 0.021,
+        "p95": 1,
+        "min": 0.013,
+        "max": 1
+      },
+      "meanDeviation": {
+        "mean": 2782.485,
+        "median": 1913.4,
+        "p5": 0,
+        "p95": 10442.6,
+        "min": 0,
+        "max": 17993.7
+      }
+    },
+    "textAccuracy": {
+      "sites": 33,
+      "exactMatchRate": {
+        "mean": 0.433,
+        "median": 0.356,
+        "p5": 0.177,
+        "p95": 1,
+        "min": 0.174,
+        "max": 1
+      },
+      "matchRate": {
+        "mean": 0.535,
+        "median": 0.516,
+        "p5": 0.242,
+        "p95": 1,
+        "min": 0.18,
+        "max": 1
+      },
+      "totalEmptyText": 2638
+    },
+    "semanticRecall": {
+      "sites": 33,
+      "mean": 0.854,
+      "median": 0.957,
+      "p5": 0.389,
+      "p95": 1,
+      "min": 0,
+      "max": 1
+    }
+  },
+  "groundTruth": {
+    "totalElements": {
+      "mean": 1582,
+      "median": 1340,
+      "p95": 4450,
+      "total": 63276
+    },
+    "visibleElements": {
+      "mean": 1039,
+      "median": 734,
+      "p95": 3415,
+      "total": 41544
+    },
+    "hiddenElements": {
+      "mean": 543,
+      "median": 377,
+      "p95": 1299,
+      "total": 21732
+    },
+    "interactiveElements": {
+      "mean": 233,
+      "median": 156,
+      "p95": 626,
+      "total": 9335
+    },
+    "semanticElements": {
+      "mean": 26,
+      "median": 8,
+      "p95": 65,
+      "total": 1044
+    },
+    "elementsWithTestid": {
+      "mean": 34,
+      "median": 0,
+      "p95": 113,
+      "total": 1357
+    },
+    "elementsWithRole": {
+      "mean": 34,
+      "median": 21,
+      "p95": 106,
+      "total": 1371
+    },
+    "elementsWithAriaLabel": {
+      "mean": 37,
+      "median": 16,
+      "p95": 128,
+      "total": 1484
+    },
+    "elementsWithText": {
+      "mean": 849,
+      "median": 553,
+      "p95": 2886,
+      "total": 33943
+    },
+    "shadowRoots": {
+      "mean": 2,
+      "median": 0,
+      "p95": 1,
+      "total": 70
+    },
+    "visibilityRatio": {
+      "mean": 0.642,
+      "median": 0.682,
+      "p5": 0,
+      "p95": 0.917,
+      "min": 0,
+      "max": 0.952
+    }
+  },
+  "byCategory": [
+    {
+      "group": "news",
+      "sites": 1,
+      "overallMedian": 0.73,
+      "overallMean": 0.73,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.987,
+        "bboxAccuracy": 0.05,
+        "textAccuracy": 0.259,
+        "semanticRecall": 0.5,
+        "elementRecall": 0.987
+      }
+    },
+    {
+      "group": "ecommerce",
+      "sites": 1,
+      "overallMedian": 0.756,
+      "overallMean": 0.756,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.984,
+        "selectorAccuracy": 0.989,
+        "bboxAccuracy": 0.084,
+        "textAccuracy": 0.242,
+        "semanticRecall": 0.75,
+        "elementRecall": 0.989
+      }
+    },
+    {
+      "group": "data",
+      "sites": 7,
+      "overallMedian": 0.783,
+      "overallMean": 0.766,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.918,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.189,
+        "textAccuracy": 0.34,
+        "semanticRecall": 1,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "tools",
+      "sites": 2,
+      "overallMedian": 0.783,
+      "overallMean": 0.892,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.143,
+        "textAccuracy": 0.445,
+        "semanticRecall": 0.667,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "spa",
+      "sites": 10,
+      "overallMedian": 0.787,
+      "overallMean": 0.781,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.893,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.098,
+        "textAccuracy": 0.561,
+        "semanticRecall": 0.905,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "i18n",
+      "sites": 7,
+      "overallMedian": 0.79,
+      "overallMean": 0.789,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.988,
+        "selectorAccuracy": 0.996,
+        "bboxAccuracy": 0.042,
+        "textAccuracy": 0.516,
+        "semanticRecall": 0.875,
+        "elementRecall": 0.996
+      }
+    },
+    {
+      "group": "webcomponents",
+      "sites": 1,
+      "overallMedian": 0.815,
+      "overallMean": 0.815,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.969,
+        "selectorAccuracy": 0.957,
+        "bboxAccuracy": 0.274,
+        "textAccuracy": 0.408,
+        "semanticRecall": 1,
+        "elementRecall": 0.957
+      }
+    },
+    {
+      "group": "media",
+      "sites": 1,
+      "overallMedian": 0.826,
+      "overallMean": 0.826,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.193,
+        "textAccuracy": 0.47,
+        "semanticRecall": 1,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "social",
+      "sites": 3,
+      "overallMedian": 0.828,
+      "overallMean": 0.846,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.591,
+        "textAccuracy": 0.727,
+        "semanticRecall": 1,
+        "elementRecall": 1
+      }
+    }
+  ],
+  "byComplexity": [
+    {
+      "group": "complex",
+      "sites": 23,
+      "overallMedian": 0.784,
+      "overallMean": 0.774,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.969,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.107,
+        "textAccuracy": 0.48,
+        "semanticRecall": 0.952,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "moderate",
+      "sites": 10,
+      "overallMedian": 0.818,
+      "overallMean": 0.833,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.999,
+        "bboxAccuracy": 0.143,
+        "textAccuracy": 0.59,
+        "semanticRecall": 1,
+        "elementRecall": 0.999
+      }
+    }
+  ],
+  "byRendering": [
+    {
+      "group": "static",
+      "sites": 1,
+      "overallMedian": 0.776,
+      "overallMean": 0.776,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.051,
+        "textAccuracy": 0.18,
+        "semanticRecall": 1,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "csr",
+      "sites": 18,
+      "overallMedian": 0.787,
+      "overallMean": 0.794,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.929,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.25,
+        "textAccuracy": 0.519,
+        "semanticRecall": 1,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "ssr",
+      "sites": 7,
+      "overallMedian": 0.79,
+      "overallMean": 0.793,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.988,
+        "selectorAccuracy": 0.996,
+        "bboxAccuracy": 0.059,
+        "textAccuracy": 0.59,
+        "semanticRecall": 0.875,
+        "elementRecall": 0.996
+      }
+    },
+    {
+      "group": "hybrid",
+      "sites": 7,
+      "overallMedian": 0.794,
+      "overallMean": 0.788,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.969,
+        "selectorAccuracy": 0.997,
+        "bboxAccuracy": 0.099,
+        "textAccuracy": 0.47,
+        "semanticRecall": 0.933,
+        "elementRecall": 0.997
+      }
+    }
+  ],
+  "byScript": [
+    {
+      "group": "cjk",
+      "sites": 2,
+      "overallMedian": 0.762,
+      "overallMean": 0.79,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.992,
+        "selectorAccuracy": 0.993,
+        "bboxAccuracy": 0.021,
+        "textAccuracy": 0.298,
+        "semanticRecall": 0.813,
+        "elementRecall": 0.993
+      }
+    },
+    {
+      "group": "arabic",
+      "sites": 2,
+      "overallMedian": 0.778,
+      "overallMean": 0.784,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.969,
+        "selectorAccuracy": 0.994,
+        "bboxAccuracy": 0.091,
+        "textAccuracy": 0.416,
+        "semanticRecall": 0.4,
+        "elementRecall": 0.994
+      }
+    },
+    {
+      "group": "cyrillic",
+      "sites": 1,
+      "overallMedian": 0.779,
+      "overallMean": 0.779,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.876,
+        "selectorAccuracy": 0.982,
+        "bboxAccuracy": 0.04,
+        "textAccuracy": 0.653,
+        "semanticRecall": 0.875,
+        "elementRecall": 0.982
+      }
+    },
+    {
+      "group": "latin",
+      "sites": 27,
+      "overallMedian": 0.792,
+      "overallMean": 0.793,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.969,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.193,
+        "textAccuracy": 0.5,
+        "semanticRecall": 1,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "indic",
+      "sites": 1,
+      "overallMedian": 0.8,
+      "overallMean": 0.8,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.988,
+        "selectorAccuracy": 0.996,
+        "bboxAccuracy": 0.042,
+        "textAccuracy": 0.516,
+        "semanticRecall": 0.952,
+        "elementRecall": 0.996
+      }
+    }
+  ],
+  "byA11y": [
+    {
+      "group": "high",
+      "sites": 4,
+      "overallMedian": 0.756,
+      "overallMean": 0.774,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.918,
+        "selectorAccuracy": 0.989,
+        "bboxAccuracy": 0.096,
+        "textAccuracy": 0.298,
+        "semanticRecall": 0.905,
+        "elementRecall": 0.989
+      }
+    },
+    {
+      "group": "low",
+      "sites": 10,
+      "overallMedian": 0.787,
+      "overallMean": 0.774,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.929,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.098,
+        "textAccuracy": 0.516,
+        "semanticRecall": 0.952,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "medium",
+      "sites": 19,
+      "overallMedian": 0.794,
+      "overallMean": 0.805,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.178,
+        "textAccuracy": 0.519,
+        "semanticRecall": 0.979,
+        "elementRecall": 1
+      }
+    }
+  ],
+  "operational": {
+    "timing": {
+      "navigation": {
+        "count": 50,
+        "p50": 4591,
+        "p95": 20505,
+        "mean": 7287
+      },
+      "groundTruth": {
+        "count": 41,
+        "p50": 21,
+        "p95": 71,
+        "mean": 26
+      },
+      "viewgraph": {
+        "count": 41,
+        "p50": 71,
+        "p95": 637,
+        "mean": 146
+      },
+      "accuracy": {
+        "count": 33,
+        "p50": 68,
+        "p95": 1002,
+        "mean": 192
+      },
+      "snapshot": {
+        "count": 41,
+        "p50": 63,
+        "p95": 349,
+        "mean": 98
+      },
+      "screenshot": {
+        "count": 41,
+        "p50": 127,
+        "p95": 280,
+        "mean": 143
+      }
+    },
+    "sizes": {
+      "viewgraph": {
+        "count": 34,
+        "p50": 260591,
+        "p95": 2528639,
+        "mean": 429449
+      },
+      "snapshot": {
+        "count": 34,
+        "p50": 578080,
+        "p95": 2523140,
+        "mean": 756090
+      },
+      "screenshot": {
+        "count": 41,
+        "p50": 175716,
+        "p95": 888475,
+        "mean": 301599
+      }
+    },
+    "successRates": {
+      "total": 50,
+      "navigation": {
+        "count": 45,
+        "pct": 0.9
+      },
+      "viewgraph": {
+        "count": 34,
+        "pct": 0.68
+      },
+      "snapshot": {
+        "count": 34,
+        "pct": 0.68
+      },
+      "screenshot": {
+        "count": 41,
+        "pct": 0.82
+      },
+      "accuracy": {
+        "count": 33,
+        "pct": 0.66
+      },
+      "allOk": {
+        "count": 20,
+        "pct": 0.4
+      }
+    },
+    "failures": {
+      "errors": [
+        {
+          "category": "bot-blocked",
+          "count": 14,
+          "examples": [
+            "Likely blocked: captcha-iframe",
+            "Likely blocked: cloudflare-title",
+            "Likely blocked: perimeterx"
+          ]
+        },
+        {
+          "category": "capture-crash",
+          "count": 14,
+          "examples": [
+            "Cannot read properties of undefined (reading 'traverseDOM')",
+            "Cannot read properties of undefined (reading 'captureSnapshot')",
+            "Cannot read properties of null (reading 'querySelectorAll')"
+          ]
+        },
+        {
+          "category": "nav-timeout",
+          "count": 5,
+          "examples": [
+            "Navigation timeout of 20000 ms exceeded"
+          ]
+        },
+        {
+          "category": "inject-error",
+          "count": 4,
+          "examples": [
+            "Failed to set the 'text' property on 'HTMLScriptElement': This document requires 'TrustedScript' assignment.\npptr:evalua",
+            "Execution context was destroyed, most likely because of a navigation."
+          ]
+        },
+        {
+          "category": "capture-empty",
+          "count": 2,
+          "examples": [
+            "0 nodes captured"
+          ]
+        },
+        {
+          "category": "gt-crash",
+          "count": 1,
+          "examples": [
+            "Cannot read properties of undefined (reading 'toLowerCase')"
+          ]
+        }
+      ],
+      "botDetection": {
+        "blockedCount": 14,
+        "blockedPct": 0.28,
+        "blockedUrls": [
+          "https://arabic.cnn.com",
+          "https://caniuse.com",
+          "https://medium.com",
+          "https://netlify.com",
+          "https://timesofindia.indiatimes.com",
+          "https://trello.com",
+          "https://www.aljazeera.net",
+          "https://www.chosun.com",
+          "https://www.flickr.com/explore",
+          "https://www.producthunt.com",
+          "https://www.speedtest.net",
+          "https://www.target.com",
+          "https://www.theverge.com",
+          "https://www.wayfair.com"
+        ],
+        "signalCounts": {
+          "captcha-iframe": 11,
+          "cloudflare-title": 2,
+          "perimeterx": 1
+        }
+      }
+    }
+  },
+  "worstSites": [
+    {
+      "url": "https://www.flightradar24.com",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 0.16279069767441862,
+      "interactiveRecall": 0.26666666666666666,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.4375,
+      "textAccuracy": 0.6818181818181818,
+      "semanticRecall": 0.3888888888888889,
+      "overall": 0.509
+    },
+    {
+      "url": "https://trello.com",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 0.9953379953379954,
+      "testidRecall": 0.8717948717948718,
+      "interactiveRecall": 0.7313432835820896,
+      "selectorAccuracy": 0.9953379953379954,
+      "bboxAccuracy": 0.0936768149882904,
+      "textAccuracy": 0.297423887587822,
+      "semanticRecall": 0.72,
+      "overall": 0.685
+    },
+    {
+      "url": "https://notion.so",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 1,
+      "semanticRecall": 0,
+      "overall": 0.7
+    },
+    {
+      "url": "https://www.theverge.com",
+      "category": "news",
+      "complexity": "complex",
+      "elementRecall": 0.9873873873873874,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9873873873873874,
+      "bboxAccuracy": 0.05018248175182482,
+      "textAccuracy": 0.25866788321167883,
+      "semanticRecall": 0.5,
+      "overall": 0.73
+    },
+    {
+      "url": "https://vercel.com",
+      "category": "spa",
+      "complexity": "moderate",
+      "elementRecall": 0.9981290926099158,
+      "testidRecall": 1,
+      "interactiveRecall": 0.7191780821917808,
+      "selectorAccuracy": 0.9981290926099158,
+      "bboxAccuracy": 0.09559512652296158,
+      "textAccuracy": 0.5313964386129335,
+      "semanticRecall": 0.9047619047619048,
+      "overall": 0.751
+    },
+    {
+      "url": "https://www.target.com",
+      "category": "ecommerce",
+      "complexity": "complex",
+      "elementRecall": 0.9888623707239459,
+      "testidRecall": 1,
+      "interactiveRecall": 0.984251968503937,
+      "selectorAccuracy": 0.9888623707239459,
+      "bboxAccuracy": 0.083668543845535,
+      "textAccuracy": 0.24215607401448108,
+      "semanticRecall": 0.75,
+      "overall": 0.756
+    },
+    {
+      "url": "https://www.chosun.com",
+      "category": "i18n",
+      "complexity": "complex",
+      "elementRecall": 0.9967359050445104,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9919786096256684,
+      "selectorAccuracy": 0.9967359050445104,
+      "bboxAccuracy": 0.020541827924977673,
+      "textAccuracy": 0.29770765108663294,
+      "semanticRecall": 0.8125,
+      "overall": 0.762
+    },
+    {
+      "url": "https://www.canva.com",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0.8246753246753247,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.061843640606767794,
+      "textAccuracy": 0.5612602100350058,
+      "semanticRecall": 0.8333333333333334,
+      "overall": 0.764
+    },
+    {
+      "url": "https://ourworldindata.org",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 0.9913867355727821,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9177631578947368,
+      "selectorAccuracy": 0.9913867355727821,
+      "bboxAccuracy": 0.09904430929626412,
+      "textAccuracy": 0.29800173761946136,
+      "semanticRecall": 0.9565217391304348,
+      "overall": 0.772
+    },
+    {
+      "url": "https://www.worldometers.info",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.05148005148005148,
+      "textAccuracy": 0.18018018018018017,
+      "semanticRecall": 1,
+      "overall": 0.776
+    },
+    {
+      "url": "https://arabic.cnn.com",
+      "category": "i18n",
+      "complexity": "complex",
+      "elementRecall": 0.9943181818181818,
+      "testidRecall": 1,
+      "interactiveRecall": 0.96875,
+      "selectorAccuracy": 0.9943181818181818,
+      "bboxAccuracy": 0.09142857142857143,
+      "textAccuracy": 0.8185714285714286,
+      "semanticRecall": 0.4,
+      "overall": 0.778
+    },
+    {
+      "url": "https://lenta.ru",
+      "category": "i18n",
+      "complexity": "moderate",
+      "elementRecall": 0.9821428571428571,
+      "testidRecall": 1,
+      "interactiveRecall": 0.8756218905472637,
+      "selectorAccuracy": 0.9821428571428571,
+      "bboxAccuracy": 0.03966942148760331,
+      "textAccuracy": 0.6528925619834711,
+      "semanticRecall": 0.875,
+      "overall": 0.779
+    },
+    {
+      "url": "https://data.worldbank.org",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 0.9907407407407407,
+      "testidRecall": 1,
+      "interactiveRecall": 0.8736842105263158,
+      "selectorAccuracy": 0.9907407407407407,
+      "bboxAccuracy": 0.17757009345794392,
+      "textAccuracy": 0.3395638629283489,
+      "semanticRecall": 1,
+      "overall": 0.783
+    },
+    {
+      "url": "https://regex101.com",
+      "category": "tools",
+      "complexity": "moderate",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.14313346228239845,
+      "textAccuracy": 0.4448742746615087,
+      "semanticRecall": 0.6666666666666666,
+      "overall": 0.783
+    },
+    {
+      "url": "https://earthquake.usgs.gov/earthquakes/map/",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0.7777777777777778,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.189419795221843,
+      "textAccuracy": 0.5187713310580204,
+      "semanticRecall": 0.9787234042553191,
+      "overall": 0.784
+    }
+  ],
+  "bestSites": [
+    {
+      "url": "https://www.virustotal.com",
+      "category": "tools",
+      "complexity": "moderate",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 1,
+      "semanticRecall": 1,
+      "overall": 1
+    },
+    {
+      "url": "https://www.speedtest.net",
+      "category": "data",
+      "complexity": "moderate",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.6,
+      "textAccuracy": 0.76,
+      "semanticRecall": 1,
+      "overall": 0.916
+    },
+    {
+      "url": "https://www.producthunt.com",
+      "category": "social",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.5909090909090909,
+      "textAccuracy": 0.7272727272727273,
+      "semanticRecall": 1,
+      "overall": 0.911
+    },
+    {
+      "url": "https://gitlab.com/explore",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.3699421965317919,
+      "textAccuracy": 0.5606936416184971,
+      "semanticRecall": 1,
+      "overall": 0.862
+    },
+    {
+      "url": "https://medium.com",
+      "category": "social",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.25,
+      "textAccuracy": 0.40476190476190477,
+      "semanticRecall": 1,
+      "overall": 0.828
+    },
+    {
+      "url": "https://www.gettyimages.com",
+      "category": "media",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.19285714285714287,
+      "textAccuracy": 0.47,
+      "semanticRecall": 1,
+      "overall": 0.826
+    },
+    {
+      "url": "https://netlify.com",
+      "category": "spa",
+      "complexity": "moderate",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0.8933333333333333,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.24646781789638933,
+      "textAccuracy": 0.6797488226059655,
+      "semanticRecall": 0.9090909090909091,
+      "overall": 0.825
+    },
+    {
+      "url": "https://render.com",
+      "category": "spa",
+      "complexity": "moderate",
+      "elementRecall": 0.9994065281899109,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9994065281899109,
+      "bboxAccuracy": 0.05938242280285035,
+      "textAccuracy": 0.6425178147268409,
+      "semanticRecall": 1,
+      "overall": 0.823
+    },
+    {
+      "url": "https://stackblitz.com",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9629629629629629,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.2708333333333333,
+      "textAccuracy": 0.3854166666666667,
+      "semanticRecall": 1,
+      "overall": 0.822
+    },
+    {
+      "url": "https://caniuse.com",
+      "category": "data",
+      "complexity": "moderate",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.25824175824175827,
+      "textAccuracy": 0.3021978021978022,
+      "semanticRecall": 1,
+      "overall": 0.819
+    }
+  ]
+}

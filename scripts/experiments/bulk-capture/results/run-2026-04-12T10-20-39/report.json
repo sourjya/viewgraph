@@ -1,0 +1,1138 @@
+{
+  "timestamp": "2026-04-12T10:22:38.905Z",
+  "totalSites": 48,
+  "excludedSites": 12,
+  "cleanSites": 36,
+  "sitesWithAccuracy": 28,
+  "excludedReasons": {
+    "botBlocked": 7,
+    "cspBlocked": 2,
+    "navFailed": 3,
+    "total": 12,
+    "urls": {
+      "botBlocked": [
+        "https://validator.w3.org",
+        "https://www.aljazeera.net",
+        "https://www.bbc.com",
+        "https://www.chosun.com",
+        "https://www.reddit.com",
+        "https://www.target.com",
+        "https://www.theverge.com"
+      ],
+      "cspBlocked": [
+        "https://translate.google.com",
+        "https://www.youtube.com"
+      ],
+      "navFailed": [
+        "https://shoelace.style",
+        "https://www.globo.com",
+        "https://www.ndtv.com"
+      ]
+    }
+  },
+  "weights": {
+    "testidRecall": 0.2,
+    "interactiveRecall": 0.2,
+    "selectorAccuracy": 0.2,
+    "bboxAccuracy": 0.15,
+    "textAccuracy": 0.1,
+    "semanticRecall": 0.1,
+    "elementRecall": 0.05
+  },
+  "accuracy": {
+    "overall": {
+      "mean": 0.767,
+      "median": 0.785,
+      "p5": 0.586,
+      "p95": 0.878
+    },
+    "dimensions": {
+      "testidRecall": {
+        "mean": 0.93,
+        "median": 1,
+        "p5": 0.163,
+        "p95": 1,
+        "weight": 0.2
+      },
+      "interactiveRecall": {
+        "mean": 0.871,
+        "median": 0.979,
+        "p5": 0.267,
+        "p95": 1,
+        "weight": 0.2
+      },
+      "selectorAccuracy": {
+        "mean": 0.991,
+        "median": 0.999,
+        "p5": 0.961,
+        "p95": 1,
+        "weight": 0.2
+      },
+      "bboxAccuracy": {
+        "mean": 0.187,
+        "median": 0.121,
+        "p5": 0.044,
+        "p95": 0.535,
+        "weight": 0.15
+      },
+      "textAccuracy": {
+        "mean": 0.517,
+        "median": 0.531,
+        "p5": 0.216,
+        "p95": 0.884,
+        "weight": 0.1
+      },
+      "semanticRecall": {
+        "mean": 0.79,
+        "median": 0.882,
+        "p5": 0,
+        "p95": 1,
+        "weight": 0.1
+      },
+      "elementRecall": {
+        "mean": 0.991,
+        "median": 0.999,
+        "p5": 0.961,
+        "p95": 1,
+        "weight": 0.05
+      }
+    }
+  },
+  "dimensions": {
+    "elementRecall": {
+      "sites": 28,
+      "recall": {
+        "mean": 0.869,
+        "median": 0.981,
+        "p5": 0.396,
+        "p95": 1,
+        "min": 0.003,
+        "max": 1
+      },
+      "vgNodeCounts": {
+        "mean": 848.571,
+        "median": 619,
+        "p5": 44,
+        "p95": 2380,
+        "min": 2,
+        "max": 4041
+      },
+      "gtVisibleCounts": {
+        "mean": 976.464,
+        "median": 777,
+        "p5": 71,
+        "p95": 2403,
+        "min": 44,
+        "max": 4062
+      }
+    },
+    "testidRecall": {
+      "sites": 28,
+      "mean": 0.93,
+      "median": 1,
+      "p5": 0.163,
+      "p95": 1,
+      "min": 0,
+      "max": 1,
+      "medianDomTestids": 0,
+      "sitesWithZeroTestids": 19
+    },
+    "interactiveRecall": {
+      "sites": 28,
+      "mean": 0.871,
+      "median": 0.979,
+      "p5": 0.267,
+      "p95": 1,
+      "min": 0,
+      "max": 1,
+      "medianDomInteractive": 123
+    },
+    "selectorAccuracy": {
+      "sites": 28,
+      "mean": 0.991,
+      "median": 0.999,
+      "p5": 0.961,
+      "p95": 1,
+      "min": 0.943,
+      "max": 1
+    },
+    "bboxAccuracy": {
+      "sites": 28,
+      "within5px": {
+        "mean": 0.187,
+        "median": 0.121,
+        "p5": 0.044,
+        "p95": 0.535,
+        "min": 0.04,
+        "max": 1
+      },
+      "within10px": {
+        "mean": 0.188,
+        "median": 0.121,
+        "p5": 0.044,
+        "p95": 0.535,
+        "min": 0.04,
+        "max": 1
+      },
+      "meanDeviation": {
+        "mean": 2327.882,
+        "median": 1638.2,
+        "p5": 276.8,
+        "p95": 7300.5,
+        "min": 0,
+        "max": 9021.3
+      }
+    },
+    "textAccuracy": {
+      "sites": 28,
+      "exactMatchRate": {
+        "mean": 0.378,
+        "median": 0.343,
+        "p5": 0.14,
+        "p95": 0.703,
+        "min": 0.134,
+        "max": 1
+      },
+      "matchRate": {
+        "mean": 0.517,
+        "median": 0.531,
+        "p5": 0.216,
+        "p95": 0.884,
+        "min": 0.195,
+        "max": 1
+      },
+      "totalEmptyText": 2504
+    },
+    "semanticRecall": {
+      "sites": 28,
+      "mean": 0.79,
+      "median": 0.882,
+      "p5": 0,
+      "p95": 1,
+      "min": 0,
+      "max": 1
+    }
+  },
+  "groundTruth": {
+    "totalElements": {
+      "mean": 1437,
+      "median": 1231,
+      "p95": 3500,
+      "total": 51715
+    },
+    "visibleElements": {
+      "mean": 869,
+      "median": 686,
+      "p95": 2403,
+      "total": 31281
+    },
+    "hiddenElements": {
+      "mean": 568,
+      "median": 431,
+      "p95": 1854,
+      "total": 20434
+    },
+    "interactiveElements": {
+      "mean": 262,
+      "median": 198,
+      "p95": 766,
+      "total": 9416
+    },
+    "semanticElements": {
+      "mean": 20,
+      "median": 10,
+      "p95": 52,
+      "total": 719
+    },
+    "elementsWithTestid": {
+      "mean": 45,
+      "median": 0,
+      "p95": 178,
+      "total": 1602
+    },
+    "elementsWithRole": {
+      "mean": 62,
+      "median": 23,
+      "p95": 239,
+      "total": 2238
+    },
+    "elementsWithAriaLabel": {
+      "mean": 36,
+      "median": 20,
+      "p95": 83,
+      "total": 1294
+    },
+    "elementsWithText": {
+      "mean": 822,
+      "median": 580,
+      "p95": 2562,
+      "total": 29594
+    },
+    "shadowRoots": {
+      "mean": 5,
+      "median": 0,
+      "p95": 74,
+      "total": 196
+    },
+    "visibilityRatio": {
+      "mean": 0.661,
+      "median": 0.681,
+      "p5": 0.331,
+      "p95": 0.986,
+      "min": 0.232,
+      "max": 1
+    }
+  },
+  "byCategory": [
+    {
+      "group": "media",
+      "sites": 4,
+      "overallMedian": 0.594,
+      "overallMean": 0.694,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.96,
+        "selectorAccuracy": 0.996,
+        "bboxAccuracy": 0.087,
+        "textAccuracy": 0.497,
+        "semanticRecall": 0.75,
+        "elementRecall": 0.996
+      }
+    },
+    {
+      "group": "government",
+      "sites": 2,
+      "overallMedian": 0.719,
+      "overallMean": 0.755,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.587,
+        "selectorAccuracy": 0.974,
+        "bboxAccuracy": 0.114,
+        "textAccuracy": 0.294,
+        "semanticRecall": 0.679,
+        "elementRecall": 0.974
+      }
+    },
+    {
+      "group": "ecommerce",
+      "sites": 2,
+      "overallMedian": 0.751,
+      "overallMean": 0.786,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.951,
+        "selectorAccuracy": 0.97,
+        "bboxAccuracy": 0.044,
+        "textAccuracy": 0.41,
+        "semanticRecall": 0.62,
+        "elementRecall": 0.97
+      }
+    },
+    {
+      "group": "docs",
+      "sites": 2,
+      "overallMedian": 0.761,
+      "overallMean": 0.761,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.978,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.111,
+        "textAccuracy": 0.195,
+        "semanticRecall": 0.444,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "spa",
+      "sites": 3,
+      "overallMedian": 0.764,
+      "overallMean": 0.751,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.825,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.209,
+        "textAccuracy": 0.709,
+        "semanticRecall": 0.75,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "data",
+      "sites": 4,
+      "overallMedian": 0.772,
+      "overallMean": 0.713,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.778,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.099,
+        "textAccuracy": 0.302,
+        "semanticRecall": 0.957,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "tools",
+      "sites": 2,
+      "overallMedian": 0.785,
+      "overallMean": 0.799,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.979,
+        "selectorAccuracy": 0.999,
+        "bboxAccuracy": 0.142,
+        "textAccuracy": 0.471,
+        "semanticRecall": 0.667,
+        "elementRecall": 0.999
+      }
+    },
+    {
+      "group": "i18n",
+      "sites": 3,
+      "overallMedian": 0.788,
+      "overallMean": 0.794,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.979,
+        "selectorAccuracy": 0.992,
+        "bboxAccuracy": 0.066,
+        "textAccuracy": 0.582,
+        "semanticRecall": 0.941,
+        "elementRecall": 0.992
+      }
+    },
+    {
+      "group": "social",
+      "sites": 1,
+      "overallMedian": 0.798,
+      "overallMean": 0.798,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.985,
+        "selectorAccuracy": 0.999,
+        "bboxAccuracy": 0.071,
+        "textAccuracy": 0.587,
+        "semanticRecall": 0.818,
+        "elementRecall": 0.999
+      }
+    },
+    {
+      "group": "news",
+      "sites": 2,
+      "overallMedian": 0.801,
+      "overallMean": 0.843,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.961,
+        "bboxAccuracy": 0.194,
+        "textAccuracy": 0.317,
+        "semanticRecall": 1,
+        "elementRecall": 0.961
+      }
+    },
+    {
+      "group": "static",
+      "sites": 3,
+      "overallMedian": 0.839,
+      "overallMean": 0.84,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.977,
+        "bboxAccuracy": 0.294,
+        "textAccuracy": 0.594,
+        "semanticRecall": 1,
+        "elementRecall": 0.977
+      }
+    }
+  ],
+  "byComplexity": [
+    {
+      "group": "complex",
+      "sites": 13,
+      "overallMedian": 0.772,
+      "overallMean": 0.725,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.929,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.113,
+        "textAccuracy": 0.517,
+        "semanticRecall": 0.818,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "moderate",
+      "sites": 8,
+      "overallMedian": 0.785,
+      "overallMean": 0.783,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.978,
+        "selectorAccuracy": 0.992,
+        "bboxAccuracy": 0.087,
+        "textAccuracy": 0.531,
+        "semanticRecall": 0.875,
+        "elementRecall": 0.992
+      }
+    },
+    {
+      "group": "simple",
+      "sites": 7,
+      "overallMedian": 0.813,
+      "overallMean": 0.826,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.995,
+        "bboxAccuracy": 0.216,
+        "textAccuracy": 0.535,
+        "semanticRecall": 1,
+        "elementRecall": 0.995
+      }
+    }
+  ],
+  "byRendering": [
+    {
+      "group": "hybrid",
+      "sites": 3,
+      "overallMedian": 0.761,
+      "overallMean": 0.761,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.951,
+        "selectorAccuracy": 0.991,
+        "bboxAccuracy": 0.099,
+        "textAccuracy": 0.41,
+        "semanticRecall": 0.62,
+        "elementRecall": 0.991
+      }
+    },
+    {
+      "group": "csr",
+      "sites": 8,
+      "overallMedian": 0.764,
+      "overallMean": 0.715,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.778,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.157,
+        "textAccuracy": 0.561,
+        "semanticRecall": 0.667,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "ssr",
+      "sites": 9,
+      "overallMedian": 0.79,
+      "overallMean": 0.769,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.979,
+        "selectorAccuracy": 0.996,
+        "bboxAccuracy": 0.071,
+        "textAccuracy": 0.582,
+        "semanticRecall": 0.933,
+        "elementRecall": 0.996
+      }
+    },
+    {
+      "group": "static",
+      "sites": 8,
+      "overallMedian": 0.801,
+      "overallMean": 0.818,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.995,
+        "bboxAccuracy": 0.194,
+        "textAccuracy": 0.317,
+        "semanticRecall": 1,
+        "elementRecall": 0.995
+      }
+    }
+  ],
+  "byScript": [
+    {
+      "group": "cyrillic",
+      "sites": 1,
+      "overallMedian": 0.779,
+      "overallMean": 0.779,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.874,
+        "selectorAccuracy": 0.982,
+        "bboxAccuracy": 0.04,
+        "textAccuracy": 0.654,
+        "semanticRecall": 0.875,
+        "elementRecall": 0.982
+      }
+    },
+    {
+      "group": "latin",
+      "sites": 25,
+      "overallMedian": 0.785,
+      "overallMean": 0.763,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.979,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 0.142,
+        "textAccuracy": 0.53,
+        "semanticRecall": 0.909,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "mixed",
+      "sites": 1,
+      "overallMedian": 0.795,
+      "overallMean": 0.795,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.962,
+        "selectorAccuracy": 0.995,
+        "bboxAccuracy": 0.087,
+        "textAccuracy": 0.531,
+        "semanticRecall": 0.882,
+        "elementRecall": 0.995
+      }
+    },
+    {
+      "group": "cjk",
+      "sites": 1,
+      "overallMedian": 0.816,
+      "overallMean": 0.816,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.992,
+        "bboxAccuracy": 0.066,
+        "textAccuracy": 0.582,
+        "semanticRecall": 1,
+        "elementRecall": 0.992
+      }
+    }
+  ],
+  "byA11y": [
+    {
+      "group": "high",
+      "sites": 6,
+      "overallMedian": 0.772,
+      "overallMean": 0.79,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.978,
+        "selectorAccuracy": 0.999,
+        "bboxAccuracy": 0.121,
+        "textAccuracy": 0.53,
+        "semanticRecall": 0.909,
+        "elementRecall": 0.999
+      }
+    },
+    {
+      "group": "low",
+      "sites": 8,
+      "overallMedian": 0.784,
+      "overallMean": 0.742,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.929,
+        "selectorAccuracy": 0.995,
+        "bboxAccuracy": 0.194,
+        "textAccuracy": 0.317,
+        "semanticRecall": 0.875,
+        "elementRecall": 0.995
+      }
+    },
+    {
+      "group": "medium",
+      "sites": 14,
+      "overallMedian": 0.785,
+      "overallMean": 0.771,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.979,
+        "selectorAccuracy": 0.999,
+        "bboxAccuracy": 0.087,
+        "textAccuracy": 0.531,
+        "semanticRecall": 0.833,
+        "elementRecall": 0.999
+      }
+    }
+  ],
+  "operational": {
+    "timing": {
+      "navigation": {
+        "count": 48,
+        "p50": 3726,
+        "p95": 20002,
+        "mean": 6011
+      },
+      "groundTruth": {
+        "count": 43,
+        "p50": 25,
+        "p95": 94,
+        "mean": 38
+      },
+      "viewgraph": {
+        "count": 43,
+        "p50": 141,
+        "p95": 720,
+        "mean": 192
+      },
+      "accuracy": {
+        "count": 35,
+        "p50": 109,
+        "p95": 700,
+        "mean": 196
+      },
+      "snapshot": {
+        "count": 43,
+        "p50": 104,
+        "p95": 429,
+        "mean": 187
+      },
+      "screenshot": {
+        "count": 43,
+        "p50": 105,
+        "p95": 310,
+        "mean": 145
+      }
+    },
+    "sizes": {
+      "viewgraph": {
+        "count": 35,
+        "p50": 352764,
+        "p95": 1166969,
+        "mean": 453009
+      },
+      "snapshot": {
+        "count": 35,
+        "p50": 794906,
+        "p95": 2354289,
+        "mean": 816833
+      },
+      "screenshot": {
+        "count": 43,
+        "p50": 160649,
+        "p95": 741717,
+        "mean": 279440
+      }
+    },
+    "successRates": {
+      "total": 48,
+      "navigation": {
+        "count": 45,
+        "pct": 0.938
+      },
+      "viewgraph": {
+        "count": 35,
+        "pct": 0.729
+      },
+      "snapshot": {
+        "count": 35,
+        "pct": 0.729
+      },
+      "screenshot": {
+        "count": 43,
+        "pct": 0.896
+      },
+      "accuracy": {
+        "count": 35,
+        "pct": 0.729
+      },
+      "allOk": {
+        "count": 28,
+        "pct": 0.583
+      }
+    },
+    "failures": {
+      "errors": [
+        {
+          "category": "capture-crash",
+          "count": 16,
+          "examples": [
+            "Cannot read properties of undefined (reading 'traverseDOM')",
+            "Cannot read properties of undefined (reading 'captureSnapshot')"
+          ]
+        },
+        {
+          "category": "nav-timeout",
+          "count": 3,
+          "examples": [
+            "Navigation timeout of 20000 ms exceeded"
+          ]
+        },
+        {
+          "category": "inject-error",
+          "count": 2,
+          "examples": [
+            "Failed to set the 'text' property on 'HTMLScriptElement': This document requires 'TrustedScript' assignment.\npptr:evalua"
+          ]
+        },
+        {
+          "category": "bot-blocked",
+          "count": 7,
+          "examples": [
+            "Likely blocked: cloudflare-title",
+            "Likely blocked: captcha-iframe"
+          ]
+        }
+      ],
+      "botDetection": {
+        "blockedCount": 7,
+        "blockedPct": 0.146,
+        "blockedUrls": [
+          "https://validator.w3.org",
+          "https://www.aljazeera.net",
+          "https://www.bbc.com",
+          "https://www.chosun.com",
+          "https://www.reddit.com",
+          "https://www.target.com",
+          "https://www.theverge.com"
+        ],
+        "signalCounts": {
+          "cloudflare-title": 1,
+          "captcha-iframe": 6
+        }
+      }
+    }
+  },
+  "worstSites": [
+    {
+      "url": "https://www.flightradar24.com",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 0.16279069767441862,
+      "interactiveRecall": 0.26666666666666666,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.44,
+      "textAccuracy": 0.7314285714285714,
+      "semanticRecall": 0.3888888888888889,
+      "overall": 0.514
+    },
+    {
+      "url": "https://www.artstation.com",
+      "category": "media",
+      "complexity": "complex",
+      "elementRecall": 0.9966666666666667,
+      "testidRecall": 1,
+      "interactiveRecall": 0.4187192118226601,
+      "selectorAccuracy": 0.9966666666666667,
+      "bboxAccuracy": 0.15719063545150502,
+      "textAccuracy": 0.2993311036789298,
+      "semanticRecall": 0,
+      "overall": 0.586
+    },
+    {
+      "url": "https://www.nationalgeographic.com",
+      "category": "media",
+      "complexity": "complex",
+      "elementRecall": 0.996218487394958,
+      "testidRecall": 0,
+      "interactiveRecall": 0.9601328903654485,
+      "selectorAccuracy": 0.996218487394958,
+      "bboxAccuracy": 0.060733867566427666,
+      "textAccuracy": 0.49725854070012654,
+      "semanticRecall": 0.9454545454545454,
+      "overall": 0.594
+    },
+    {
+      "url": "https://notion.so",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 1,
+      "semanticRecall": 0,
+      "overall": 0.7
+    },
+    {
+      "url": "https://www.who.int",
+      "category": "government",
+      "complexity": "moderate",
+      "elementRecall": 0.9742388758782201,
+      "testidRecall": 1,
+      "interactiveRecall": 0.5866666666666667,
+      "selectorAccuracy": 0.9742388758782201,
+      "bboxAccuracy": 0.1658653846153846,
+      "textAccuracy": 0.65625,
+      "semanticRecall": 0.6785714285714286,
+      "overall": 0.719
+    },
+    {
+      "url": "https://www.ebay.com",
+      "category": "ecommerce",
+      "complexity": "complex",
+      "elementRecall": 0.9810201660735468,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9510869565217391,
+      "selectorAccuracy": 0.9810201660735468,
+      "bboxAccuracy": 0.08464328899637243,
+      "textAccuracy": 0.40991535671100365,
+      "semanticRecall": 0.62,
+      "overall": 0.751
+    },
+    {
+      "url": "https://doc.rust-lang.org/book/",
+      "category": "docs",
+      "complexity": "simple",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.11068702290076336,
+      "textAccuracy": 0.1946564885496183,
+      "semanticRecall": 0.75,
+      "overall": 0.761
+    },
+    {
+      "url": "https://react.dev",
+      "category": "docs",
+      "complexity": "moderate",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9781021897810219,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.12147505422993492,
+      "textAccuracy": 0.5303687635574837,
+      "semanticRecall": 0.4444444444444444,
+      "overall": 0.761
+    },
+    {
+      "url": "https://www.canva.com",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0.8246753246753247,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.061843640606767794,
+      "textAccuracy": 0.5635939323220537,
+      "semanticRecall": 0.8333333333333334,
+      "overall": 0.764
+    },
+    {
+      "url": "https://ourworldindata.org",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 0.9913867355727821,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9177631578947368,
+      "selectorAccuracy": 0.9913867355727821,
+      "bboxAccuracy": 0.09904430929626412,
+      "textAccuracy": 0.3023457862728063,
+      "semanticRecall": 0.9565217391304348,
+      "overall": 0.772
+    },
+    {
+      "url": "https://lenta.ru",
+      "category": "i18n",
+      "complexity": "moderate",
+      "elementRecall": 0.9820261437908496,
+      "testidRecall": 1,
+      "interactiveRecall": 0.8743718592964824,
+      "selectorAccuracy": 0.9820261437908496,
+      "bboxAccuracy": 0.03993344425956739,
+      "textAccuracy": 0.653910149750416,
+      "semanticRecall": 0.875,
+      "overall": 0.779
+    },
+    {
+      "url": "https://earthquake.usgs.gov/earthquakes/map/",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0.7777777777777778,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.1841680129240711,
+      "textAccuracy": 0.5169628432956381,
+      "semanticRecall": 0.98,
+      "overall": 0.783
+    },
+    {
+      "url": "https://www.worldometers.info",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.05148005148005148,
+      "textAccuracy": 0.2625482625482625,
+      "semanticRecall": 1,
+      "overall": 0.784
+    },
+    {
+      "url": "https://regex101.com",
+      "category": "tools",
+      "complexity": "moderate",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.14478764478764478,
+      "textAccuracy": 0.47104247104247104,
+      "semanticRecall": 0.6666666666666666,
+      "overall": 0.785
+    },
+    {
+      "url": "https://excalidraw.com",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 0.875,
+      "interactiveRecall": 0.9285714285714286,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.20869565217391303,
+      "textAccuracy": 0.7086956521739131,
+      "semanticRecall": 0.75,
+      "overall": 0.788
+    }
+  ],
+  "bestSites": [
+    {
+      "url": "https://text.npr.org",
+      "category": "news",
+      "complexity": "simple",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.5352112676056338,
+      "textAccuracy": 0.5352112676056338,
+      "semanticRecall": 1,
+      "overall": 0.884
+    },
+    {
+      "url": "https://www.paulgraham.com",
+      "category": "static",
+      "complexity": "simple",
+      "elementRecall": 0.9772727272727273,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9772727272727273,
+      "bboxAccuracy": 0.3023255813953488,
+      "textAccuracy": 0.8837209302325582,
+      "semanticRecall": 1,
+      "overall": 0.878
+    },
+    {
+      "url": "https://solar.lowtechmagazine.com",
+      "category": "static",
+      "complexity": "simple",
+      "elementRecall": 0.9425837320574163,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9425837320574163,
+      "bboxAccuracy": 0.29441624365482233,
+      "textAccuracy": 0.5939086294416244,
+      "semanticRecall": 1,
+      "overall": 0.839
+    },
+    {
+      "url": "https://www.zappos.com",
+      "category": "ecommerce",
+      "complexity": "moderate",
+      "elementRecall": 0.9698094531056669,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9698094531056669,
+      "bboxAccuracy": 0.044399081398315894,
+      "textAccuracy": 0.7226333248277622,
+      "semanticRecall": 1,
+      "overall": 0.821
+    },
+    {
+      "url": "https://www.nhk.or.jp/news/",
+      "category": "i18n",
+      "complexity": "moderate",
+      "elementRecall": 0.9924089068825911,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9924089068825911,
+      "bboxAccuracy": 0.06629270780214176,
+      "textAccuracy": 0.5818459969403366,
+      "semanticRecall": 1,
+      "overall": 0.816
+    },
+    {
+      "url": "https://duckduckgo.com",
+      "category": "tools",
+      "complexity": "simple",
+      "elementRecall": 0.9990393852065321,
+      "testidRecall": 1,
+      "interactiveRecall": 0.979381443298969,
+      "selectorAccuracy": 0.9990393852065321,
+      "bboxAccuracy": 0.1423076923076923,
+      "textAccuracy": 0.5490384615384616,
+      "semanticRecall": 0.9090909090909091,
+      "overall": 0.813
+    },
+    {
+      "url": "https://danluu.com",
+      "category": "static",
+      "complexity": "simple",
+      "elementRecall": 0.9947089947089947,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9947089947089947,
+      "bboxAccuracy": 0.21631205673758866,
+      "textAccuracy": 0.21631205673758866,
+      "semanticRecall": 1,
+      "overall": 0.803
+    },
+    {
+      "url": "https://news.ycombinator.com",
+      "category": "news",
+      "complexity": "simple",
+      "elementRecall": 0.9610894941634242,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9610894941634242,
+      "bboxAccuracy": 0.19433198380566802,
+      "textAccuracy": 0.31713900134952766,
+      "semanticRecall": 1,
+      "overall": 0.801
+    },
+    {
+      "url": "https://unsplash.com",
+      "category": "media",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 0.12753036437246965,
+      "textAccuracy": 0.5607287449392713,
+      "semanticRecall": 0.75,
+      "overall": 0.8
+    },
+    {
+      "url": "https://stackoverflow.com",
+      "category": "social",
+      "complexity": "complex",
+      "elementRecall": 0.9989816700610998,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9846938775510204,
+      "selectorAccuracy": 0.9989816700610998,
+      "bboxAccuracy": 0.07135575942915393,
+      "textAccuracy": 0.5871559633027523,
+      "semanticRecall": 0.8181818181818182,
+      "overall": 0.798
+    }
+  ]
+}
