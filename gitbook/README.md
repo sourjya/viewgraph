@@ -1,5 +1,7 @@
 # What is ViewGraph?
 
+<figure><img src="/.gitbook/assets/viewgraph-logo.png" alt="ViewGraph" width="420"></figure>
+
 ViewGraph is the UI context layer for AI coding agents. It captures structured DOM snapshots from any web page and exposes them to your AI assistant through the [Model Context Protocol](https://modelcontextprotocol.io/).
 
 ## The Problem
