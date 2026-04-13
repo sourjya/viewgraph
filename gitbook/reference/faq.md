@@ -1,0 +1,69 @@
+# FAQ
+
+## General
+
+### What is ViewGraph?
+A browser extension + MCP server that captures structured DOM snapshots and exposes them to AI coding agents. You click a broken element, describe what's wrong, and your agent fixes the code with full UI context.
+
+### Which AI agents does it work with?
+Any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline, Aider, and others. The 34 MCP tools are the same regardless of agent.
+
+### Does it work with any web app?
+Yes. ViewGraph captures the rendered DOM from the browser. It doesn't matter what backend technology your app uses - Python, Ruby, Java, Go, PHP, Node.js, or static HTML.
+
+### Do I need to modify my application code?
+No. ViewGraph runs alongside your project as a standalone tool. It reads the DOM through the browser extension and never injects into or modifies your application.
+
+## Installation
+
+### How do I install it?
+```bash
+npm install viewgraph
+npx viewgraph-init
+```
+Then install the browser extension from the Chrome Web Store or Firefox Add-ons. See [Installation](../getting-started/installation.md) for details.
+
+### Does it work on Windows / macOS / Linux?
+Yes. The MCP server runs on Node.js 18+. The extension works in Chrome and Firefox on all platforms. WSL (Windows Subsystem for Linux) is also supported.
+
+### Can I use it with multiple projects?
+Yes. Each project gets its own server on a different port (9876-9879). The extension routes captures to the correct project automatically. See [Multi-Project Setup](../getting-started/multi-project.md).
+
+## Usage
+
+### How do I capture a page?
+Click the ViewGraph icon in your browser toolbar. The sidebar opens and elements highlight as you hover. Click elements to annotate them, then click "Send to Agent."
+
+### Can I use it without an AI agent?
+Yes. The extension works standalone for QA and bug reporting. Click "Copy MD" for a markdown report or "Report" for a ZIP with screenshots. No MCP server needed.
+
+### How do I generate tests from a capture?
+Capture a page, then tell your agent `@vg-tests`. The agent reads the capture via MCP tools and generates a Playwright test file with correct locators for every interactive element.
+
+### What data does a capture include?
+Every visible element with CSS selectors, computed styles, bounding boxes, accessibility attributes, data-testid values, plus network requests, console errors, component names, and 11 other enrichment data types.
+
+## Security & Privacy
+
+### Does ViewGraph send data to external servers?
+No. All captures stay on your local machine. The extension communicates only with a server running on localhost (127.0.0.1). No cloud services, no analytics, no telemetry.
+
+### Is it safe to use on production sites?
+Yes. ViewGraph only reads the DOM - it never modifies the page, submits forms, or makes network requests on behalf of the site. It's a read-only observer.
+
+### Why is there no authentication on the local server?
+The server binds to localhost only and is not accessible from the network. Auth tokens were removed for beta because they caused more problems than they solved (silent failures, token sync issues). Post-beta, native messaging will replace localhost HTTP entirely. See [ADR-010](https://github.com/sourjya/viewgraph/blob/main/docs/decisions/ADR-010-remove-http-auth-beta.md) for the full security analysis.
+
+## Troubleshooting
+
+### The sidebar shows a red dot
+The server isn't running. Run `npx viewgraph-init` from your project folder.
+
+### "Send to Agent" shows green checkmark but no capture appears
+Kill all servers and re-init: `pkill -f "node.*server/index.js"` then `npx viewgraph-init`.
+
+### Wrong project shown in sidebar
+Add a URL pattern: `npx viewgraph-init --url localhost:3000`. See [Multi-Project Setup](../getting-started/multi-project.md).
+
+### The page looks unstyled when opened as a file
+Chrome blocks cross-origin requests for `file://` URLs. Serve the files via HTTP instead: `npx serve .`

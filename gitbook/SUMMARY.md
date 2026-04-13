@@ -23,5 +23,7 @@
 ## Reference
 
 * [Prompt Shortcuts](reference/prompt-shortcuts.md)
+* [Roadmap](reference/roadmap.md)
+* [FAQ](reference/faq.md)
 * [License (AGPL-3.0)](reference/license.md)
 * [Privacy Policy](reference/privacy-policy.md)
