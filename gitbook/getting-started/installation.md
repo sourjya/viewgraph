@@ -100,6 +100,8 @@ See [Multi-Project Setup](multi-project.md) for details.
 2. The sidebar should show a **green dot** with "Connected"
 3. Hover over elements - blue highlight should follow your cursor
 
+![Green connection dot in sidebar](/.gitbook/assets/green-dot.png)
+
 If the dot is red, the server isn't running. Run `npx viewgraph-init` again from your project folder.
 
 ## Starting the server in later sessions

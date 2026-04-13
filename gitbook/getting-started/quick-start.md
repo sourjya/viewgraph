@@ -23,6 +23,8 @@ Open a terminal in **your project's root directory** (not the ViewGraph director
 npx viewgraph-init
 ```
 
+![viewgraph-init terminal output](/.gitbook/assets/init-output.png)
+
 You'll see:
 
 ```
@@ -51,9 +53,21 @@ npx viewgraph-init --url localhost:3000
 
 1. Open your app in Chrome
 2. Click the **ViewGraph** icon - sidebar opens, elements highlight on hover
+
+![Element highlighted with tooltip](/.gitbook/assets/hover-highlight.png)
+
 3. **Click** any element to annotate it - type what's wrong, set severity
+
+![Annotation panel with comment and severity](/.gitbook/assets/annotation-panel.png)
+
 4. **Shift+drag** to select a region
 5. Click **Send to Agent**
+
+![Send to Agent button](/.gitbook/assets/send-to-agent.png)
+
+After sending, the button confirms with a green checkmark:
+
+![Send success](/.gitbook/assets/send-to-agent-success.png)
 
 ## 4. Let your agent fix it
 

@@ -6,6 +6,8 @@ When you see a bug in the browser, you click it, describe what's wrong, and send
 
 No screenshots with arrows. No copy-pasting selectors from DevTools. No "the button is somewhere on the settings page."
 
+![ViewGraph sidebar with annotations](/.gitbook/assets/sidebar-annotations.png)
+
 ## How It Works
 
 ```
