@@ -407,6 +407,8 @@ scripts/         Git scripts, build scripts, init, status, doctor
 
 - [User Guide](https://chaoslabz.gitbook.io/viewgraph) - getting started, tutorials, feature guides
 - [Quick Start](https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start) - zero to first fix in 5 minutes
+- [Why ViewGraph?](https://chaoslabz.gitbook.io/viewgraph/why-viewgraph) - 27 problems it solves
+- [Who Benefits?](https://chaoslabz.gitbook.io/viewgraph/who-benefits) - developers, testers, PMs, career switchers
 - [Multi-Project Setup](https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project) - URL patterns, routing
 - [@viewgraph/playwright](https://www.npmjs.com/package/@viewgraph/playwright) - Playwright fixture on npm
 - [Roadmap](./docs/roadmap/roadmap.md) - milestone plan and completion status
