@@ -43,15 +43,9 @@ A screenshot costs 50-200x more tokens than a ViewGraph capture and gives the ag
 
 ViewGraph eliminates the need to be fluent in browser internals. You point at what's wrong and describe it in plain language. The tool captures the technical details automatically.
 
-**Junior developers** who know something looks wrong but can't articulate "the z-index stacking context on the dropdown is lower than the sibling positioned element" - they just click the dropdown, write "this is behind the other thing," and the agent gets the exact z-index values, stacking contexts, and element hierarchy it needs to fix it.
+Junior developers, PMs, designers, QA testers, bootcamp graduates, career switchers, backend engineers doing frontend work - anyone who can see a problem can now report it with enough precision for an AI agent to fix it.
 
-**Non-technical stakeholders** - PMs, designers, QA testers - entering the world of agentic coding can now file precise, actionable bug reports by clicking elements and typing plain English. No CSS selectors, no DevTools, no "inspect element." Click, describe, send.
-
-**Career switchers** coming from non-frontend backgrounds who use AI agents but struggle with browser-specific concepts like computed styles, ARIA roles, or layout overflow. ViewGraph captures all of that automatically - the human just needs to say what looks wrong.
-
-**Frontend onboarding** for new team members who shouldn't need tribal knowledge to understand which piece of UI comes from where. ViewGraph externalizes the browser-to-component mapping that usually lives only in senior engineers' heads.
-
-This is one of ViewGraph's strongest angles: it lowers the technical barrier for everyone who interacts with UI, while giving AI agents the precise technical data they need to act.
+See [Who Benefits?](who-benefits.md) for the full list of audiences and how ViewGraph helps each one.
 
 ---
 

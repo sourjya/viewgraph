@@ -65,7 +65,7 @@ Same annotation workflow, no AI agent needed. Click elements, add comments, expo
 
 ### Non-technical stakeholders and new developers
 
-You don't need to speak DOM. PMs, designers, junior devs, and career switchers can click what looks wrong, describe it in plain language, and ViewGraph captures the technical details automatically. See [You Don't Need to Speak DOM](why-viewgraph.md#you-dont-need-to-speak-dom).
+You don't need to speak DOM. PMs, designers, junior devs, bootcamp grads, and career switchers can click what looks wrong, describe it in plain language, and ViewGraph captures the technical details automatically. See [Who Benefits?](who-benefits.md) for the full list.
 
 ### Test automation teams
 

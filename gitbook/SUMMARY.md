@@ -2,6 +2,7 @@
 
 * [What is ViewGraph?](README.md)
 * [Why ViewGraph?](why-viewgraph.md)
+* [Who Benefits?](who-benefits.md)
 
 ## Getting Started
 
