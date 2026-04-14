@@ -8,7 +8,7 @@ ViewGraph separates the human skill (seeing what's wrong) from the technical ski
 
 ### Senior and mid-level frontend developers
 
-The primary audience. You see a bug, click it, describe it, send to your agent. The agent receives the element's exact selector, computed styles, accessibility state, and your comment. It finds the source file and fixes the code.
+The primary audience. You see a bug, click it, describe it, send to your agent. The agent receives the element's exact selector, computed styles, accessibility state, and your comment. It finds the source file and fixes the code. Works with [Kiro](https://kiro.dev), [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview), [Cursor](https://www.cursor.com), [Windsurf](https://windsurf.com), [Cline](https://cline.bot), and any MCP-compatible agent.
 
 **Use cases:**
 - Annotate visual bugs and send to agent for instant fixes
