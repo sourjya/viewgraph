@@ -49,7 +49,7 @@ AWS, Azure, GCP engineers who build APIs and infrastructure but get pulled into 
 
 ### Career switchers and workforce programs
 
-Adults switching from non-tech backgrounds through programs like AWS re/Start, Google Career Certificates, or Microsoft LEAP. You're learning to code with AI agents from day one.
+Adults switching from non-tech backgrounds through programs like [AWS re/Start](https://aws.amazon.com/training/restart/), [Google Career Certificates](https://grow.google/certificates/), or [Microsoft LEAP](https://leap.microsoft.com/). You're learning to code with AI agents from day one.
 
 **Use cases:**
 - Contribute to UI work immediately - click what looks wrong, describe it, let the agent fix it
