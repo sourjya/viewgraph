@@ -63,6 +63,10 @@ Same annotation workflow, no AI agent needed. Click elements, add comments, expo
 - **Markdown** - paste into Jira, Linear, or GitHub Issues
 - **ZIP report** - markdown + cropped screenshots + network.json + console.json
 
+### Non-technical stakeholders and new developers
+
+You don't need to speak DOM. PMs, designers, junior devs, and career switchers can click what looks wrong, describe it in plain language, and ViewGraph captures the technical details automatically. See [You Don't Need to Speak DOM](why-viewgraph.md#you-dont-need-to-speak-dom).
+
 ### Test automation teams
 
 Capture DOM snapshots during Playwright E2E tests. Generate tests from browser captures. The `@viewgraph/playwright` package bridges testing and review.
