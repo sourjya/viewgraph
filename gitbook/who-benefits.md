@@ -59,7 +59,7 @@ Adults switching from non-tech backgrounds through programs like [AWS re/Start](
 
 ### Data scientists and ML engineers
 
-Building Streamlit, Gradio, or Jupyter dashboards. You know Python but not CSS. When the dashboard layout breaks, you need to describe it, not debug it.
+Building [Streamlit](https://streamlit.io/), [Gradio](https://www.gradio.app/), or [Jupyter](https://jupyter.org/) dashboards. You know Python but not CSS. When the dashboard layout breaks, you need to describe it, not debug it.
 
 **Use cases:**
 - Fix dashboard styling issues by annotating and sending to agent
