@@ -2,7 +2,8 @@
 
 Find and fix WCAG accessibility violations automatically.
 
-<!-- TODO: Embed video V3 when recorded -->
+<!-- VIDEO: Paste https://www.youtube.com/watch?v=ybYn-71Iut8 in GitBook editor to embed -->
+[▶ Watch: Accessibility Audit Demo](https://www.youtube.com/watch?v=ybYn-71Iut8)
 
 ## Prerequisites
 
