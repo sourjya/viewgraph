@@ -25,50 +25,95 @@ function getPanel() {
 }
 
 describe('annotation panel', () => {
-  afterEach(() => {
-    hide();
+  beforeEach(() => {
+    // Mock chrome.storage for config reads
+    globalThis.chrome = {
+      storage: { local: { get: async () => ({}) } },
+    };
   });
 
-  it('(+) shows panel for annotation', () => {
-    show(makeAnnotation());
+  afterEach(() => {
+    hide();
+    delete globalThis.chrome;
+  });
+
+  it('(+) shows panel for annotation', async () => {
+    await show(makeAnnotation());
     expect(getPanel()).toBeTruthy();
     expect(currentAnnotationId()).toBe(1);
   });
 
-  it('(+) hides panel and clears state', () => {
-    show(makeAnnotation());
+  it('(+) hides panel and clears state', async () => {
+    await show(makeAnnotation());
     hide();
     expect(getPanel()).toBeNull();
     expect(currentAnnotationId()).toBeNull();
   });
 
-  it('(+) textarea has box-sizing border-box to prevent overflow', () => {
-    show(makeAnnotation());
+  it('(+) textarea has box-sizing border-box to prevent overflow', async () => {
+    await show(makeAnnotation());
     const textarea = getPanel().querySelector(`[${ATTR}="input"]`);
     expect(textarea).toBeTruthy();
     expect(textarea.style.boxSizing).toBe('border-box');
   });
 
-  it('(+) textarea width is 100% and contained within panel', () => {
-    show(makeAnnotation());
+  it('(+) textarea width is 100% and contained within panel', async () => {
+    await show(makeAnnotation());
     const panel = getPanel();
     const textarea = panel.querySelector(`[${ATTR}="input"]`);
     expect(textarea.style.width).toBe('100%');
-    // Panel has box-sizing: border-box, textarea should too
     expect(panel.style.boxSizing).toBe('border-box');
     expect(textarea.style.boxSizing).toBe('border-box');
   });
 
-  it('(+) panel has fixed width of 270px', () => {
-    show(makeAnnotation());
+  it('(+) panel has fixed width of 270px', async () => {
+    await show(makeAnnotation());
     expect(getPanel().style.width).toBe('270px');
   });
 
-  it('(-) showing new annotation replaces previous panel', () => {
-    show(makeAnnotation({ id: 1 }));
-    show(makeAnnotation({ id: 2 }));
+  it('(-) showing new annotation replaces previous panel', async () => {
+    await show(makeAnnotation({ id: 1 }));
+    await show(makeAnnotation({ id: 2 }));
     const panels = document.querySelectorAll(`[${ATTR}="panel"]`);
     expect(panels.length).toBe(1);
     expect(currentAnnotationId()).toBe(2);
+  });
+
+  it('(+) shows suggestion chips when element has diagnostics', async () => {
+    // Create a button without aria-label to trigger diagnostics
+    const btn = document.createElement('button');
+    document.body.appendChild(btn);
+    await show(makeAnnotation({ element: { selector: 'button' } }));
+    const chips = getPanel()?.querySelectorAll(`[${ATTR}="suggestion-chip"]`) || [];
+    // Button without accessible name should produce at least one chip
+    expect(chips.length).toBeGreaterThan(0);
+    btn.remove();
+  });
+
+  it('(+) clicking suggestion chip populates textarea', async () => {
+    const btn = document.createElement('button');
+    document.body.appendChild(btn);
+    await show(makeAnnotation({ element: { selector: 'button' } }));
+    const chip = getPanel()?.querySelector(`[${ATTR}="suggestion-chip"]`);
+    const textarea = getPanel()?.querySelector(`[${ATTR}="input"]`);
+    if (chip && textarea) {
+      chip.click();
+      expect(textarea.value.length).toBeGreaterThan(0);
+      // Chip should dim after click
+      expect(chip.style.opacity).toBe('0.4');
+    }
+    btn.remove();
+  });
+
+  it('(-) no suggestion chips when smartSuggestions is disabled', async () => {
+    globalThis.chrome = {
+      storage: { local: { get: async () => ({ vg_project_config: { smartSuggestions: false } }) } },
+    };
+    const btn = document.createElement('button');
+    document.body.appendChild(btn);
+    await show(makeAnnotation({ element: { selector: 'button' } }));
+    const chips = getPanel()?.querySelectorAll(`[${ATTR}="suggestion-chip"]`) || [];
+    expect(chips.length).toBe(0);
+    btn.remove();
   });
 });

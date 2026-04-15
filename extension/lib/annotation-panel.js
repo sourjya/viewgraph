@@ -22,7 +22,7 @@ let outsideClickHandler = null;
  * @param {{ id: number, region: object, comment: string }} annotation
  * @param {{ onChange?: Function }} callbacks
  */
-export function show(annotation, callbacks = {}) {
+export async function show(annotation, callbacks = {}) {
   hide();
   currentId = annotation.id;
   onCommentChange = callbacks.onChange || null;
@@ -232,24 +232,51 @@ export function show(annotation, callbacks = {}) {
 
   panelEl.append(header, chipRow, textarea);
 
-  // Element diagnostics - contextual hints for the selected element
-  if (annotation.element?.selector) {
+  // Element diagnostics - clickable suggestion chips for the selected element
+  let suggestionsEnabled = true; // default on; config can disable
+  try {
+    const cached = await chrome.storage.local.get('vg_project_config');
+    if (cached.vg_project_config?.smartSuggestions === false) suggestionsEnabled = false;
+  } catch { /* no cache - show suggestions by default */ }
+
+  if (suggestionsEnabled && annotation.element?.selector) {
     try {
       const domEl = document.querySelector(annotation.element.selector);
       if (domEl) {
         const hints = diagnoseElement(domEl);
         if (hints.length > 0) {
           const hintsDiv = document.createElement('div');
-          hintsDiv.setAttribute(ATTR, 'hints');
-          Object.assign(hintsDiv.style, { marginTop: '6px', borderTop: '1px solid #333', paddingTop: '6px' });
+          hintsDiv.setAttribute(ATTR, 'suggestions');
+          Object.assign(hintsDiv.style, { marginTop: '6px', borderTop: '1px solid #333', paddingTop: '6px', display: 'flex', flexWrap: 'wrap', gap: '4px' });
+          const label = document.createElement('div');
+          label.textContent = 'Suggestions';
+          Object.assign(label.style, { width: '100%', fontSize: '10px', color: '#666', marginBottom: '2px', fontFamily: 'system-ui, sans-serif' });
+          hintsDiv.appendChild(label);
           for (const hint of hints) {
-            const row = document.createElement('div');
-            Object.assign(row.style, {
-              fontSize: '10px', padding: '2px 0', display: 'flex', alignItems: 'center', gap: '4px',
-              color: hint.icon === '\u26a0' ? '#f59e0b' : '#6b7280',
+            const chip = document.createElement('button');
+            chip.setAttribute(ATTR, 'suggestion-chip');
+            const isWarning = hint.icon === '\u26a0';
+            chip.textContent = `${hint.icon} ${hint.text}`;
+            Object.assign(chip.style, {
+              fontSize: '10px', padding: '3px 8px', borderRadius: '12px',
+              border: `1px solid ${isWarning ? '#92400e' : '#374151'}`,
+              background: isWarning ? '#451a03' : '#1f2937',
+              color: isWarning ? '#fbbf24' : '#9ca3af',
+              cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+              transition: 'background 0.1s',
             });
-            row.textContent = `${hint.icon} ${hint.text}`;
-            hintsDiv.appendChild(row);
+            chip.addEventListener('mouseenter', () => { chip.style.background = isWarning ? '#78350f' : '#374151'; });
+            chip.addEventListener('mouseleave', () => { chip.style.background = isWarning ? '#451a03' : '#1f2937'; });
+            chip.addEventListener('click', () => {
+              const current = textarea.value.trim();
+              const sep = current ? '\n' : '';
+              textarea.value = current + sep + hint.text;
+              updateComment(annotation.id, textarea.value);
+              if (onCommentChange) onCommentChange(annotation.id, textarea.value);
+              chip.style.opacity = '0.4';
+              chip.style.pointerEvents = 'none';
+            });
+            hintsDiv.appendChild(chip);
           }
           panelEl.appendChild(hintsDiv);
         }

@@ -288,9 +288,9 @@ import { show as showPanel, hide as hidePanel } from '#lib/annotation-panel.js';
 describe('annotation panel positioning', () => {
   afterEach(() => hidePanel());
 
-  it('positions panel to the right when space available', () => {
+  it('positions panel to the right when space available', async () => {
     const ann = { id: 1, region: { x: 50, y: 100, width: 200, height: 100 }, comment: '' };
-    showPanel(ann);
+    await showPanel(ann);
     const panel = document.querySelector('[data-vg-annotate="panel"]');
     expect(panel).not.toBeNull();
     const left = parseInt(panel.style.left);
@@ -298,21 +298,21 @@ describe('annotation panel positioning', () => {
     expect(left).toBe(262);
   });
 
-  it('positions panel to the left when near right edge', () => {
+  it('positions panel to the left when near right edge', async () => {
     // Simulate annotation near right edge (viewport is 1024 in jsdom)
     const ann = { id: 2, region: { x: 600, y: 100, width: 200, height: 100 }, comment: '' };
-    showPanel(ann);
+    await showPanel(ann);
     const panel = document.querySelector('[data-vg-annotate="panel"]');
     const left = parseInt(panel.style.left);
     // Should be left of region: 600 - 240 - 12 = 348
     expect(left).toBeLessThan(600);
   });
 
-  it('panel left position never goes below 8px', () => {
+  it('panel left position never goes below 8px', async () => {
     const ann = { id: 3, region: { x: 10, y: 100, width: 5, height: 5 }, comment: '' };
     // Force right edge overflow by using large region x
     const bigAnn = { id: 4, region: { x: 900, y: 100, width: 200, height: 100 }, comment: '' };
-    showPanel(bigAnn);
+    await showPanel(bigAnn);
     const panel = document.querySelector('[data-vg-annotate="panel"]');
     const left = parseInt(panel.style.left);
     expect(left).toBeGreaterThanOrEqual(8);
