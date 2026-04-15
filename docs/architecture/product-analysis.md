@@ -213,7 +213,7 @@ npx viewgraph-status
 | **Live DOM capture** | Yes - full structured snapshot | Partial - a11y tree only | No - component screenshots | Yes - runtime recording | No - a11y violations only | No - design files | No - component stories |
 | **Human annotations** | Yes - click/drag + comments + severity | No | Yes - component review | No | No | Partial - design comments | No |
 | **Annotation lifecycle** | Yes - resolve, track, diff, patterns, specs | No | No | No | No | No | No |
-| **AI agent context via MCP** | Yes - 34 tools | Yes - browser automation | Yes - component metadata | Yes - runtime debugging | Yes - a11y scanning | Yes - design tokens | Yes - component API |
+| **AI agent context via MCP** | Yes - 36 tools | Yes - browser automation | Yes - component metadata | Yes - runtime debugging | Yes - a11y scanning | Yes - design tokens | Yes - component API |
 | **Accessibility audit** | Yes - WCAG + contrast + axe-core (100+ rules) | Partial - needs axe-playwright | Yes - WCAG violations | No | Yes - industry standard | No | Yes - axe-core addon |
 | **Layout analysis** | Yes - overflow/overlap/viewport | No | No | No | No | No | No |
 | **Source file linking** | Yes - testid/label/selector/component grep | No | No | Yes - source maps | No | Yes - Code Connect | Yes - component mapping |
@@ -306,4 +306,4 @@ The closest peers are Playwright MCP (structured but no annotations), Chromatic 
 
 The product is strongest for the "developer + AI agent" workflow where the human annotates and the agent fixes. The annotation intelligence layer (resolve, track, diff, detect patterns, generate specs) creates a closed feedback loop that no competitor offers. The tester workflow (Copy MD / ZIP) is a secondary but valuable use case that requires no AI agent at all.
 
-**Current state:** 34 MCP tools, 984 tests, 14 enrichment collectors, 3 Kiro hooks, 8 CLI prompt shortcuts, @viewgraph/playwright fixture. Works with Kiro, Claude Code, Cursor, Windsurf, Cline, and any MCP-compatible agent. Capture accuracy measured at 92.1% composite across 48 diverse real-world websites (see [bulk capture experiment](../../scripts/experiments/bulk-capture/)). All 6 strategic gaps from the original analysis are now shipped.
+**Current state:** 36 MCP tools, 1056 tests, 14 enrichment collectors, 3 Kiro hooks, 8 CLI prompt shortcuts, @viewgraph/playwright fixture. Works with Kiro, Claude Code, Cursor, Windsurf, Cline, and any MCP-compatible agent. Capture accuracy measured at 92.1% composite across 48 diverse real-world websites (see [bulk capture experiment](../../scripts/experiments/bulk-capture/)). All 6 strategic gaps from the original analysis are now shipped.

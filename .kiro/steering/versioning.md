@@ -82,7 +82,7 @@ v1.0.0
 
 ```bash
 # Create annotated tag (always use annotated, not lightweight)
-git tag -a v0.1.0 -m "v0.1.0 - Beta: 34 MCP tools, extension, Playwright fixture"
+git tag -a v0.1.0 -m "v0.1.0 - Beta: 36 MCP tools, extension, Playwright fixture"
 
 # Push tag
 git push origin v0.1.0

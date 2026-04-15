@@ -43,7 +43,7 @@
 | F8: Component Coverage | Complete | get_component_coverage MCP tool - testid coverage per component |
 | M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
 
-**Current totals:** 1045 tests (373 server + 672 extension), 36 MCP tools, 14 enrichment collectors
+**Current totals:** 1056 tests (378 server + 678 extension), 36 MCP tools, 14 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and

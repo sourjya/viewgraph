@@ -21,7 +21,7 @@ The audit found 3 HIGH, 8 MEDIUM, and 6 LOW severity issues. All HIGH and MEDIUM
 |---|---|---|---|
 | HTTP server (127.0.0.1:9876) | 15 endpoints (8 GET, 7 POST) | POST: Bearer token. GET: open | Medium - localhost only but any page can reach it |
 | WebSocket (ws://127.0.0.1:9876/ws) | Upgrade on /ws path | Token as first message | Medium - now has 5s auth timeout |
-| MCP tools (stdio) | 34 tools via JSON-RPC | MCP SDK handles framing | Low - agent-mediated |
+| MCP tools (stdio) | 36 tools via JSON-RPC | MCP SDK handles framing | Low - agent-mediated |
 | File system | Captures dir read/write | Path validation | Low - sandboxed to captures dir |
 | Extension content script | Injected into all pages | None (runs in page context) | Medium - DOM access, fetch to server |
 | Extension options page | chrome-extension:// origin | Extension context | Low - elevated privileges |
@@ -119,7 +119,7 @@ The audit found 3 HIGH, 8 MEDIUM, and 6 LOW severity issues. All HIGH and MEDIUM
 2. Payload size limits: 5MB captures, 10MB snapshots, enforced with connection destruction
 3. 127.0.0.1 binding - not network-accessible
 4. Auth tokens on all POST endpoints (after S1-2 fix)
-5. Zod input validation on all 34 MCP tool parameters
+5. Zod input validation on all 36 MCP tool parameters
 6. No `eval()`, `new Function()`, or dynamic code execution anywhere
 7. No SSRF vectors - no user-controlled URLs passed to server-side HTTP clients
 8. Graceful shutdown on SIGINT/SIGTERM

@@ -118,7 +118,7 @@ ViewGraph is AGPL-3.0 licensed. Full source, issues, and contributions on [GitHu
 
 | Component | Description |
 |---|---|
-| [server/](https://github.com/sourjya/viewgraph/tree/main/server) | MCP server - 34 tools, WebSocket collab, baselines |
+| [server/](https://github.com/sourjya/viewgraph/tree/main/server) | MCP server - 36 tools, WebSocket collab, baselines |
 | [extension/](https://github.com/sourjya/viewgraph/tree/main/extension) | Chrome/Firefox extension - capture, annotate, export |
 | [packages/playwright/](https://github.com/sourjya/viewgraph/tree/main/packages/playwright) | Playwright fixture for E2E test captures |
 | [power/](https://github.com/sourjya/viewgraph/tree/main/power) | Kiro Power assets - hooks, prompts, steering docs |

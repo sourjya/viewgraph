@@ -37,4 +37,4 @@ Installed to `.kiro/steering/` to guide the agent's behavior:
 
 ## Other Agents
 
-ViewGraph works with any MCP-compatible agent via the standard MCP protocol. The 34 tools are the same regardless of agent. Dedicated Power packages for Claude Code, Cursor, Windsurf, and Cline are planned.
+ViewGraph works with any MCP-compatible agent via the standard MCP protocol. The 36 tools are the same regardless of agent. Dedicated Power packages for Claude Code, Cursor, Windsurf, and Cline are planned.

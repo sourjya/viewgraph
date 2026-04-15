@@ -12,7 +12,7 @@ You can freely:
 - Install and use the extension
 - Run the MCP server with any AI agent
 - Capture any web page
-- Use all 34 MCP tools
+- Use all 36 MCP tools
 - Use the Playwright fixture in your tests
 
 ViewGraph runs alongside your project as a standalone tool. It does not embed into your codebase. **Your application code is not affected by the AGPL license.**

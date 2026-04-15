@@ -87,5 +87,5 @@ viewgraph-init/
 | Package | Contents | Published |
 |---|---|---|
 | `viewgraph-init` | Init script + templates + Power assets | npm |
-| `@viewgraph/server` | MCP server (34 tools, analysis, parsers) | npm |
+| `@viewgraph/server` | MCP server (36 tools, analysis, parsers) | npm |
 | Extension | Browser extension (Chrome Web Store / AMO) | Store |

@@ -8,7 +8,7 @@ ViewGraph occupies a unique position: the UI context layer for AI coding agents.
 |---|---|---|---|---|---|
 | Structured DOM capture | Full snapshot with styles, bbox, selectors | Accessibility tree only | Component screenshots | Runtime recording | Violations only |
 | Human annotations | Click/drag + comments + severity | No | Component review | No | No |
-| MCP tools for agents | 34 tools | Browser automation | Component metadata | Runtime debugging | A11y scanning |
+| MCP tools for agents | 36 tools | Browser automation | Component metadata | Runtime debugging | A11y scanning |
 | Accessibility audit | WCAG + contrast + axe-core (100+ rules) | Needs axe-playwright | WCAG violations | No | Industry standard |
 | Layout analysis | Overflow, overlap, viewport | No | No | No | No |
 | Source file linking | testid/label/selector grep + React fiber | No | No | Source maps | No |

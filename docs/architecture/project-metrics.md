@@ -38,7 +38,7 @@ Updated manually at milestones. First entry: v0.1.0 beta launch.
 
 | Metric | Count |
 |---|---|
-| Total tests | 982 |
+| Total tests | 1056 |
 | Server tests | 329 |
 | Extension tests | 653 |
 | Routing tests | 46 |

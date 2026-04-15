@@ -31,7 +31,7 @@ docs/demo/
 | **Settings** | 5 bugs: form inputs without labels, color picker with no accessible name, toggle switch not keyboard-accessible, save button disabled with no explanation (aria-disabled but no aria-describedby), required fields not marked | Deep a11y audit, focus chain analysis |
 | **Checkout** | 4 bugs: step indicator loses state on back-navigation, card number input accepts letters, total price element missing from DOM on step 2 (regression), submit button appears before terms checkbox | Multi-step flow recording, regression detection, journey analysis |
 
-**Total: 23 bugs across 4 pages, covering all 34 MCP tools.**
+**Total: 23 bugs across 4 pages, covering all 36 MCP tools.**
 
 ---
 
