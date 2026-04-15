@@ -836,10 +836,18 @@ export function create() {
     noteBtn.dataset.section = title;
     noteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8L19 13M17.8 6.2L19 5M12.2 11.8L11 13M12.2 6.2L11 5"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>';
     noteBtn.title = `Add as note for agent`;
+    // Check if a diagnostic note already exists for this section
+    const alreadyNoted = getAnnotations().some((a) => a.diagnostic?.section === title);
     Object.assign(noteBtn.style, {
-      border: 'none', background: 'transparent', cursor: 'pointer', color: '#6366f1',
+      border: 'none', background: 'transparent', cursor: alreadyNoted ? 'default' : 'pointer',
+      color: alreadyNoted ? '#4ade80' : '#6366f1',
       padding: '2px', borderRadius: '3px', display: 'flex', flexShrink: '0',
+      opacity: alreadyNoted ? '0.4' : '1', pointerEvents: alreadyNoted ? 'none' : 'auto',
     });
+    if (alreadyNoted) {
+      noteBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      noteBtn.title = 'Note added';
+    }
     noteBtn.addEventListener('mouseenter', () => { noteBtn.style.color = '#818cf8'; });
     noteBtn.addEventListener('mouseleave', () => { if (noteBtn.dataset.noted !== 'true') noteBtn.style.color = '#6366f1'; });
     noteBtn.addEventListener('click', (e) => {
