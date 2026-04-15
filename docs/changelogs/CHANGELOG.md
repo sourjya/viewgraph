@@ -10,6 +10,64 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-15
+
+### New Features
+
+#### Auto-Audit on Capture (F3)
+- Post-capture audit runner: automatically runs a11y, layout, and testid audits after each capture
+- WS broadcast of audit:results to extension
+- Auto-audit toggle in Inspect tab (reads/writes .viewgraph/config.json)
+- Audit summary badge: amber for issues, green for clean
+
+#### CSS Style Diff Tool (F7)
+- New MCP tool: `compare_styles` - diffs computed CSS styles between two captures for a given element
+- Returns changed, added, and removed properties with before/after values
+
+#### Component Coverage Report (F8)
+- New MCP tool: `get_component_coverage` - reports data-testid coverage per framework component
+- Falls back to tag-based grouping when no framework detected
+- Sorted worst-first for quick triage
+
+#### Project Config Infrastructure (F2)
+- `.viewgraph/config.json` with feature flag defaults (autoAudit, baselineAutoCompare, smartSuggestions)
+- Server GET/PUT /config endpoints
+- Extension fetchConfig/updateConfig helpers with chrome.storage.local cache
+
+#### Keyboard Shortcuts
+- Wired into annotate mode: Escape, Ctrl+Enter, Ctrl+Shift+C, 1/2/3 severity, Delete
+- Help overlay with keycap-styled shortcut table and documentation links
+- Escape layered behavior: help card -> settings -> close sidebar
+
+#### Sidebar UI Improvements
+- VG icon in header and collapsed strip (via web_accessible_resources)
+- Green connection dot moved inline after ViewGraph label
+- Settings moved from header to footer
+- Collapsed strip redesigned: VG icon, expand chevron, separator, tool icons, separator, chat bubble (always visible)
+- Pending state: amber "Sent to agent - waiting for fix..." between send and resolve
+
+#### Journey Recorder
+- Auto-capture on SPA navigation (pushState, popstate, hashchange, link clicks)
+- Wired into session start/stop in Inspect tab
+
+### Changed
+- 36 MCP tools (up from 34)
+- 1052 tests (up from 982)
+- README condensed from 430 to 152 lines
+- GitBook roadmap rewritten for v0.2.0/v0.3.0
+- Safe publish.sh script with trap-based README restore
+- Removed 6 superseded scripts (extension-build, server-start/stop, ci, dev, package-handoff)
+
+### Fixed
+- Escape key no longer closes sidebar when help card or settings are open
+- Broken VG icon in shadow DOM (added web_accessible_resources)
+
+### Documentation
+- New GitBook page: Keyboard Shortcuts
+- E2LLM/insitu.im acknowledgment with SiFR v2 comparison table
+- Privacy trust SVG graphic on security page
+- Metrics hero SVG graphic on capture format page
+
 ### New Features
 
 #### Demo App - TaskFlow (2026-04-12)
