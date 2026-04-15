@@ -864,7 +864,7 @@ describe('annotation type badges', () => {
       const html = entries[0].innerHTML;
       // Contains terminal SVG path and teal color
       expect(html).toContain('4 17 10 11 4 5');
-      expect(html).toMatch(/14b8a6|20, 184, 166/);
+      expect(html).toMatch(/0d9488|13, 148, 136/);
     }
 
     stop();
@@ -944,7 +944,7 @@ describe('annotation type badges', () => {
     if (entries.length > 0) {
       const html = entries[0].innerHTML;
       // Diagnostic (teal) takes priority over idea (yellow)
-      expect(html).toMatch(/14b8a6|20, 184, 166/);
+      expect(html).toMatch(/0d9488|13, 148, 136/);
       expect(html).not.toMatch(/eab308|234, 179, 8/);
     }
 

@@ -2080,41 +2080,25 @@ export function refresh() {
     const SEV_DOT_COLORS = { critical: '#ef4444', major: '#eab308', minor: '#9ca3af' };
     const isIdea = (ann.category || '').includes('idea');
     const isDiagNote = !!ann.diagnostic;
-    const markerColor = isDiagNote ? '#14b8a6' : isIdea ? '#eab308' : ann.type === 'page-note' ? '#0ea5e9' : MARKER_COLORS[(ann.id - 1) % MARKER_COLORS.length];
-    if (isDiagNote) {
-      // Bold diagnostic badge - teal with terminal icon
-      numBadge.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg> #' + ann.id;
-      Object.assign(numBadge.style, {
-        background: '#0d9488', color: '#fff', fontSize: '10px', fontWeight: '700',
-        padding: '2px 6px', borderRadius: '4px', marginRight: '3px',
-        fontFamily: 'system-ui, sans-serif', flexShrink: '0',
-        display: 'inline-flex', alignItems: 'center', gap: '3px',
-        border: '1px solid #14b8a6',
-      });
-    } else if (isIdea) {
-      numBadge.innerHTML = '#' + ann.id + ' <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg>';
-      Object.assign(numBadge.style, {
-        background: '#eab308', color: '#fff', fontSize: '10px', fontWeight: '700',
-        padding: '1px 5px', borderRadius: '3px', marginRight: '2px',
-        fontFamily: 'system-ui, sans-serif', flexShrink: '0',
-        display: 'inline-flex', alignItems: 'center', gap: '1px',
-      });
-    } else if (ann.type === 'page-note') {
-      numBadge.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${ann.id}`;
-      Object.assign(numBadge.style, {
-        background: markerColor, color: '#fff', fontSize: '10px', fontWeight: '700',
-        padding: '1px 5px', borderRadius: '3px', marginRight: '2px',
-        fontFamily: 'system-ui, sans-serif', flexShrink: '0',
-        display: 'inline-flex', alignItems: 'center', gap: '1px',
-      });
-    } else {
-      numBadge.textContent = `#${ann.id}`;
-      Object.assign(numBadge.style, {
-        background: markerColor, color: '#fff', fontSize: '10px', fontWeight: '700',
-        padding: '1px 4px', borderRadius: '3px', marginRight: '2px',
-        fontFamily: 'system-ui, sans-serif', flexShrink: '0',
-      });
-    }
+    const markerColor = isDiagNote ? '#0d9488' : isIdea ? '#eab308' : ann.type === 'page-note' ? '#0ea5e9' : MARKER_COLORS[(ann.id - 1) % MARKER_COLORS.length];
+
+    // Consistent badge: [icon] #N - same layout for all types, only color and icon differ
+    const badgeStyle = {
+      background: markerColor, color: '#fff', fontSize: '10px', fontWeight: '700',
+      padding: '2px 6px', borderRadius: '4px', marginRight: '3px',
+      fontFamily: 'system-ui, sans-serif', flexShrink: '0',
+      display: 'inline-flex', alignItems: 'center', gap: '3px',
+    };
+
+    const icons = {
+      diagnostic: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
+      idea: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg>',
+      pageNote: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+    };
+
+    const icon = isDiagNote ? icons.diagnostic : isIdea ? icons.idea : ann.type === 'page-note' ? icons.pageNote : '';
+    numBadge.innerHTML = icon ? `${icon}#${ann.id}` : `#${ann.id}`;
+    Object.assign(numBadge.style, badgeStyle);
     numBadge.title = `Annotation ${ann.id}`;
     line1.appendChild(numBadge);
 
