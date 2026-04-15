@@ -277,6 +277,49 @@ describe('save and load', () => {
       stop();
     });
   });
+
+  it('(+) diagnostic property persists through save/load', async () => {
+    start();
+    addPageNote();
+    const anns = getAnnotations();
+    anns[0].diagnostic = { section: 'Network', data: 'failed requests' };
+    await save();
+    clearAnnotations();
+    expect(getAnnotations().length).toBe(0);
+    const loaded = await load();
+    expect(loaded).toBe(true);
+    const restored = getAnnotations();
+    expect(restored[0].diagnostic).toBeDefined();
+    expect(restored[0].diagnostic.section).toBe('Network');
+    expect(restored[0].diagnostic.data).toBe('failed requests');
+    stop();
+  });
+
+  it('(+) pending property persists through save/load', async () => {
+    start();
+    addPageNote();
+    const anns = getAnnotations();
+    anns[0].pending = true;
+    await save();
+    clearAnnotations();
+    const loaded = await load();
+    expect(loaded).toBe(true);
+    expect(getAnnotations()[0].pending).toBe(true);
+    stop();
+  });
+
+  it('(-) annotations without diagnostic/pending save cleanly', async () => {
+    start();
+    addPageNote();
+    await save();
+    clearAnnotations();
+    const loaded = await load();
+    expect(loaded).toBe(true);
+    const restored = getAnnotations();
+    expect(restored[0].diagnostic).toBeUndefined();
+    expect(restored[0].pending).toBeUndefined();
+    stop();
+  });
 });
 
 // ---------------------------------------------------------------------------
