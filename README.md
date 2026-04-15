@@ -77,7 +77,7 @@ For detailed setup with screenshots, browser-specific instructions, and multi-pr
 
 ## Workflows
 
-ViewGraph supports three broad workstreams. For the full list of 27 problems it solves, see [Why ViewGraph?](https://chaoslabz.gitbook.io/viewgraph/why-viewgraph).
+ViewGraph supports three broad workstreams. For the full list of 23 problems it solves, see [Why ViewGraph?](https://chaoslabz.gitbook.io/viewgraph/why-viewgraph).
 
 ### For developers with AI agents
 
@@ -133,7 +133,7 @@ Full methodology, per-site breakdowns, and run history: [`scripts/experiments/bu
 
 - [User Guide](https://chaoslabz.gitbook.io/viewgraph) - getting started, tutorials, feature guides
 - [Quick Start](https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start) - zero to first fix in 5 minutes
-- [Why ViewGraph?](https://chaoslabz.gitbook.io/viewgraph/why-viewgraph) - 27 problems it solves
+- [Why ViewGraph?](https://chaoslabz.gitbook.io/viewgraph/why-viewgraph) - 23 problems it solves
 - [Who Benefits?](https://chaoslabz.gitbook.io/viewgraph/who-benefits) - developers, testers, PMs, career switchers
 - [Multi-Project Setup](https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project) - URL patterns, routing
 - [@viewgraph/playwright](https://www.npmjs.com/package/@viewgraph/playwright) - Playwright fixture on npm

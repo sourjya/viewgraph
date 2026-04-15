@@ -28,7 +28,7 @@ The agent receives the element's exact CSS selector, computed styles, accessibil
 
 No screenshots with arrows. No copy-pasting selectors from DevTools. No "the button is somewhere on the settings page."
 
-For the full list of 27 problems ViewGraph solves across development, testing, QA, and release workflows, see [Why ViewGraph?](why-viewgraph.md).
+For the full list of 23 problems ViewGraph solves across development, testing, QA, and release workflows, see [Why ViewGraph?](why-viewgraph.md).
 
 ![ViewGraph sidebar with annotations](.gitbook/assets/sidebar-annotations.png)
 
@@ -99,14 +99,15 @@ Measured automatically against 48 diverse real-world websites:
 
 Full methodology and per-site breakdowns: [bulk capture experiment](https://github.com/sourjya/viewgraph/tree/main/scripts/experiments/bulk-capture)
 
-## 34 MCP Tools
+## [36 MCP Tools](features/mcp-tools.md)
 
 Your agent discovers these automatically via the MCP protocol:
 
 - **Core:** list captures, get capture, page summary
 - **Analysis:** accessibility audit, layout audit, missing testids, interactive elements
 - **Annotations:** resolve, track, diff, detect patterns, generate specs
-- **Comparison:** structural diff, baseline regression, screenshot pixel diff, cross-page consistency
+- **Comparison:** structural diff, baseline regression, screenshot pixel diff, cross-page consistency, CSS style diff
+- **Coverage:** component testid coverage report
 - **Sessions:** journey recording, flow visualization, capture stats
 - **Source:** find source file, component detection
 - **Bidirectional:** request capture from agent, verify fixes
