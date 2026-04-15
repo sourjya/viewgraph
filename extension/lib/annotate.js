@@ -663,7 +663,12 @@ export function clearAnnotations() {
   annotations = [];
   nextId = 1;
   nextPageNoteId = 1;
-  document.querySelectorAll(`[${ATTR}]`).forEach((el) => el.remove());
+  // Remove markers, overlays, tooltips - but preserve sidebar (shadow-host) and panel
+  document.querySelectorAll(`[${ATTR}]`).forEach((el) => {
+    const val = el.getAttribute(ATTR);
+    if (val === 'shadow-host' || val === 'panel') return;
+    el.remove();
+  });
 }
 
 export function hideMarkers() {
