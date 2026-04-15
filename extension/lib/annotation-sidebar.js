@@ -1701,9 +1701,9 @@ export function refresh() {
         color: '#fff',
         fontSize: '10px', fontWeight: '900', marginRight: '4px', flexShrink: '0',
         fontFamily: 'system-ui, sans-serif',
-        padding: '1px 5px', borderRadius: '3px',
+        padding: '1px 4px', borderRadius: '3px',
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        minWidth: '14px', height: '16px',
+        minWidth: '14px',
       });
       sevIcon.title = ann.severity;
       line1.appendChild(sevIcon);
