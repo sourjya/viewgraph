@@ -2,14 +2,14 @@
 <!--
   ViewGraph Options Page
 
-  Lets users configure project mappings: URL patterns to captures directories.
-  The extension matches the current tab URL against these patterns and sends
-  the corresponding capturesDir with each HTTP push to the MCP server.
+  Shows connected servers and their URL patterns (read-only).
+  URL patterns are configured via npx viewgraph-init --url or .viewgraph/config.json.
+  See docs/decisions/ADR-010-remove-http-auth-beta.md and docs/bugs/BUG-010.
 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ViewGraph Options</title>
+  <title>ViewGraph Settings</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -19,27 +19,27 @@
     h1 { font-size: 18px; color: #a5b4fc; margin-bottom: 4px; }
     .subtitle { font-size: 13px; color: #666; margin-bottom: 20px; }
     h2 { font-size: 14px; color: #94a3b8; margin: 20px 0 8px; }
-    .mapping {
-      display: flex; gap: 8px; margin-bottom: 8px; align-items: center;
+    .hint { font-size: 11px; color: #555; margin-bottom: 12px; line-height: 1.5; }
+    .server-card {
+      background: #1a1a2e; border: 1px solid #333; border-radius: 8px;
+      padding: 12px 14px; margin-bottom: 12px; font-size: 12px;
     }
-    .mapping input {
-      flex: 1; padding: 8px 10px; background: #1a1a2e; border: 1px solid #333;
-      border-radius: 6px; color: #e0e0e0; font-size: 13px;
+    .server-row { margin-bottom: 6px; display: flex; gap: 8px; }
+    .server-row:last-child { margin-bottom: 0; }
+    .server-label { color: #666; font-size: 11px; min-width: 80px; }
+    .server-value {
+      color: #93c5fd; font-family: 'SF Mono', 'Cascadia Code', monospace; font-size: 12px;
+    }
+    .server-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; }
+    .server-dot.connected { background: #4ade80; }
+    .no-servers { color: #666; font-style: italic; font-size: 12px; }
+    .pattern-tag {
+      display: inline-block; background: #2a2a4a; color: #a5b4fc;
+      padding: 1px 6px; border-radius: 3px; font-size: 11px; margin-right: 4px;
       font-family: 'SF Mono', 'Cascadia Code', monospace;
     }
-    .mapping input:focus { outline: none; border-color: #6366f1; }
-    .mapping input::placeholder { color: #475569; }
-    .mapping .remove-btn {
-      background: transparent; border: none; color: #666; cursor: pointer;
-      font-size: 16px; padding: 4px 8px; border-radius: 4px;
-    }
-    .mapping .remove-btn:hover { color: #f87171; background: #1f0d0d; }
-    .add-btn {
-      background: #1a1a2e; border: 1px dashed #333; border-radius: 6px;
-      color: #666; padding: 8px; width: 100%; cursor: pointer;
-      font-size: 12px; margin-bottom: 16px;
-    }
-    .add-btn:hover { border-color: #6366f1; color: #a5b4fc; }
+    .setting-row { margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .setting-label { font-size: 12px; color: #94a3b8; min-width: 120px; }
     .save-btn {
       background: #6366f1; border: none; border-radius: 6px;
       color: white; padding: 10px 20px; font-size: 13px; font-weight: 600;
@@ -47,56 +47,24 @@
     }
     .save-btn:hover { opacity: 0.9; }
     .status { font-size: 12px; color: #4ade80; margin-left: 12px; display: none; }
-    .hint { font-size: 11px; color: #555; margin-bottom: 12px; line-height: 1.5; }
-    .auto-mapping {
-      background: #1a1a2e; border: 1px solid #333; border-radius: 8px;
-      padding: 12px 14px; margin-bottom: 16px; font-size: 12px;
-    }
-    .auto-mapping .auto-label { color: #666; font-size: 11px; margin-bottom: 4px; }
-    .auto-mapping .auto-value {
-      color: #93c5fd; font-family: 'SF Mono', 'Cascadia Code', monospace; font-size: 12px;
-    }
-    .auto-mapping .auto-status { color: #666; font-style: italic; }
-    .auto-mapping .auto-row { margin-bottom: 8px; }
-    .auto-mapping .auto-row:last-child { margin-bottom: 0; }
-    .auto-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; }
-    .auto-dot.connected { background: #4ade80; }
-    .auto-dot.disconnected { background: #666; }
-    .override-toggle {
-      display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8;
-      cursor: pointer; margin-bottom: 12px;
-    }
+    .override-toggle { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; cursor: pointer; }
     .override-toggle input { accent-color: #6366f1; }
-    .setting-row { margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-    .setting-label { font-size: 12px; color: #94a3b8; min-width: 120px; }
+    a { color: #a5b4fc; text-decoration: none; }
+    a:hover { text-decoration: underline; }
     select:focus, input[type="number"]:focus, input[type="text"]:focus { outline: none; border-color: #6366f1; }
   </style>
 </head>
 <body>
   <h1>ViewGraph Settings</h1>
-  <p class="subtitle">Configure project mappings for multi-project capture routing</p>
+  <p class="subtitle">Server connections and capture preferences</p>
 
-  <h2>Active Mapping</h2>
-  <div id="autoMapping" class="auto-mapping">
-    <div class="auto-status">Checking server...</div>
-  </div>
-
-  <h2>Manual Overrides</h2>
+  <h2>Connected Servers</h2>
+  <div id="servers"><div class="no-servers">Scanning ports 9876-9879...</div></div>
   <p class="hint">
-    Override the auto-detected mapping for specific URL patterns.
-    Only needed for multi-project setups. Use <code>*</code> as a catch-all.
+    To add URL patterns, run <code>npx viewgraph-init --url localhost:3000</code> from your project,
+    or edit <code>.viewgraph/config.json</code> directly.
+    <a href="https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project" target="_blank">Multi-project setup guide</a>
   </p>
-  <label class="override-toggle">
-    <input type="checkbox" id="overrideToggle"> Enable manual overrides
-  </label>
-
-  <div id="manualSection" style="display:none">
-    <div id="mappings"></div>
-    <button class="add-btn" id="addBtn">+ Add mapping</button>
-  </div>
-
-  <button class="save-btn" id="saveBtn">Save</button>
-  <span class="status" id="status">Saved!</span>
 
   <h2>Auto-Capture</h2>
   <p class="hint">
@@ -112,15 +80,6 @@
     <label class="setting-label" for="debounceMs">Debounce delay (ms)</label>
     <input type="number" id="debounceMs" value="1000" min="200" max="10000" step="100"
       style="width:80px; padding:6px 8px; background:#1a1a2e; border:1px solid #333; border-radius:6px; color:#e0e0e0; font-size:13px;">
-    <span class="hint" style="margin-left:8px; display:inline">Wait this long after HMR before capturing</span>
-  </div>
-
-  <h2>Server</h2>
-  <div class="setting-row">
-    <label class="setting-label" for="serverUrl">Server URL</label>
-    <input type="text" id="serverUrl" placeholder="http://127.0.0.1:9876"
-      style="width:250px; padding:8px 10px; background:#1a1a2e; border:1px solid #333; border-radius:6px; color:#e0e0e0; font-size:13px; font-family:'SF Mono','Cascadia Code',monospace;">
-    <span class="hint" style="margin-left:8px; display:inline">Leave empty for default (127.0.0.1:9876)</span>
   </div>
 
   <h2>Capture Quality</h2>
@@ -134,7 +93,7 @@
   </div>
 
   <div style="margin-top:20px">
-    <button class="save-btn" id="saveAllBtn">Save All Settings</button>
+    <button class="save-btn" id="saveAllBtn">Save Settings</button>
     <span class="status" id="statusAll">Saved!</span>
   </div>
 

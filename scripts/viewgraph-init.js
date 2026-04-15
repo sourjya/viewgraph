@@ -14,11 +14,24 @@
  * @see .kiro/specs/multi-export/requirements.md
  */
 
-import { existsSync, mkdirSync, writeFileSync, readFileSync, appendFileSync, accessSync, chmodSync, readdirSync, constants as fsConstants } from 'fs';
+import { existsSync, mkdirSync, writeFileSync, readFileSync, appendFileSync, accessSync, chmodSync, readdirSync, statSync, constants as fsConstants } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+/**
+ * Check if source file is newer than destination, or destination doesn't exist.
+ * Used to update power assets (prompts, hooks, steering) when ViewGraph is updated.
+ */
+function shouldCopy(src, dest) {
+  if (!existsSync(dest)) return true;
+  try {
+    const srcStat = statSync(src);
+    const destStat = statSync(dest);
+    return srcStat.mtimeMs > destStat.mtimeMs;
+  } catch { return true; }
+}
+
 const SERVER_ENTRY = path.resolve(__dirname, '..', 'server', 'index.js');
 const VIEWGRAPH_ROOT = path.resolve(__dirname, '..');
 const CWD = process.cwd();
@@ -196,7 +209,7 @@ if (agent?.name === 'Kiro') {
     for (const file of ['viewgraph-workflow.md', 'viewgraph-resolution.md', 'viewgraph-hostile-dom.md']) {
       const src = path.join(srcSteering, file);
       const dest = path.join(steeringDir, file);
-      if (existsSync(src) && !existsSync(dest)) {
+      if (existsSync(src) && shouldCopy(src, dest)) {
         writeFileSync(dest, readFileSync(src, 'utf-8'));
         console.log(`  Installed steering: ${file}`);
       }
@@ -209,7 +222,7 @@ if (agent?.name === 'Kiro') {
     for (const file of readdirSync(srcHooks)) {
       const src = path.join(srcHooks, file);
       const dest = path.join(hooksDir, file);
-      if (existsSync(src) && !existsSync(dest)) {
+      if (existsSync(src) && shouldCopy(src, dest)) {
         writeFileSync(dest, readFileSync(src, 'utf-8'));
         if (file.endsWith('.sh')) chmodSync(dest, 0o755);
         console.log(`  Installed hook: ${file}`);
@@ -225,7 +238,7 @@ if (agent?.name === 'Kiro') {
     for (const file of readdirSync(srcPrompts).filter((f) => f.startsWith('vg-'))) {
       const src = path.join(srcPrompts, file);
       const dest = path.join(promptsDir, file);
-      if (!existsSync(dest)) {
+      if (shouldCopy(src, dest)) {
         writeFileSync(dest, readFileSync(src, 'utf-8'));
         console.log(`  Installed prompt: ${file}`);
       }
