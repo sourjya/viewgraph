@@ -752,17 +752,18 @@ describe('help card', () => {
     destroy();
   });
 
-  it('(+) help card links have emoji icons', () => {
+  it('(+) help card links have SVG icons and text labels', () => {
     start();
     create();
 
     const helpCard = shadowQuery(`[${ATTR}="help-card"]`);
     const links = helpCard?.querySelectorAll('a') || [];
     expect(links.length).toBe(3);
-    // Check emoji prefixes
-    expect(links[0].textContent).toMatch(/📖/);
-    expect(links[1].textContent).toMatch(/⌨/);
-    expect(links[2].textContent).toMatch(/🐛/);
+    // Each link has an SVG icon span and a text span
+    for (const link of links) {
+      expect(link.querySelector('svg')).toBeTruthy();
+      expect(link.querySelectorAll('span').length).toBe(2);
+    }
 
     stop();
     destroy();

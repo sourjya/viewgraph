@@ -343,21 +343,30 @@ export function create() {
 
   // Links
   const links = [
-    ['📖', 'Documentation', 'https://chaoslabz.gitbook.io/viewgraph'],
-    ['⌨️', 'All Shortcuts', 'https://chaoslabz.gitbook.io/viewgraph/reference/keyboard-shortcuts'],
-    ['🐛', 'Report a Bug', 'https://github.com/sourjya/viewgraph/issues'],
+    // SVG icons: book, keyboard, bug (Feather-style, 12px)
+    ['<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>',
+      'Documentation', 'https://chaoslabz.gitbook.io/viewgraph'],
+    ['<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a3 3 0 00-3 3v12a3 3 0 003 3 3 3 0 003-3 3 3 0 00-3-3H6a3 3 0 00-3 3 3 3 0 003 3 3 3 0 003-3V6a3 3 0 00-3-3"/></svg>',
+      'All Shortcuts', 'https://chaoslabz.gitbook.io/viewgraph/reference/keyboard-shortcuts'],
+    ['<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+      'Report a Bug', 'https://github.com/sourjya/viewgraph/issues'],
   ];
   const linkRow = document.createElement('div');
-  Object.assign(linkRow.style, { display: 'flex', gap: '10px', flexWrap: 'wrap' });
-  for (const [icon, label, url] of links) {
+  Object.assign(linkRow.style, { display: 'flex', gap: '12px', flexWrap: 'wrap' });
+  for (const [iconSvg, label, url] of links) {
     const a = document.createElement('a');
-    a.textContent = `${icon} ${label}`;
     a.href = url;
     a.target = '_blank';
     a.rel = 'noopener';
-    Object.assign(a.style, { color: '#6366f1', fontSize: '11px', textDecoration: 'none' });
-    a.addEventListener('mouseenter', () => { a.style.textDecoration = 'underline'; });
-    a.addEventListener('mouseleave', () => { a.style.textDecoration = 'none'; });
+    Object.assign(a.style, { color: '#6366f1', fontSize: '11px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' });
+    const ico = document.createElement('span');
+    ico.innerHTML = iconSvg;
+    Object.assign(ico.style, { display: 'inline-flex', flexShrink: '0' });
+    const txt = document.createElement('span');
+    txt.textContent = label;
+    a.append(ico, txt);
+    a.addEventListener('mouseenter', () => { txt.style.textDecoration = 'underline'; });
+    a.addEventListener('mouseleave', () => { txt.style.textDecoration = 'none'; });
     linkRow.appendChild(a);
   }
   helpCard.appendChild(linkRow);
