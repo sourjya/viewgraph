@@ -66,6 +66,20 @@ Each diagnostic section has a copy button. Click it, paste into a chat with your
 
 The diagnostics are captured at the moment you click the ViewGraph icon - they reflect the exact state of the page you're looking at, not a stale snapshot.
 
+## One-Click Error Reporting to Your IDE
+
+Traditional bug reporting: notice something broken, open DevTools, find the Network tab, locate the failed request, screenshot it, switch to Console, copy the error, open Jira, write a description, attach the screenshots, assign it, wait for a developer to reproduce it.
+
+ViewGraph: click the note icon next to the error. Done.
+
+Every diagnostic section in the sidebar - network failures, console errors, accessibility issues, layout problems - has a note button. One click creates an annotation pre-populated with the technical details. It shows up in your annotation list alongside your visual bug reports. When you click "Send to Agent", everything goes to your AI coding assistant together - the visual issues you pointed at AND the technical errors the browser detected.
+
+**For non-technical users:** You don't need to know what a "failed network request" means. You see a red badge that says "2 failed" - click the note icon, and the error details are packaged for the developer or AI agent automatically. You just added a technical bug report without writing a single technical word.
+
+**For developers:** The diagnostic note contains the full URL, request type, duration, and failure reason. Your agent receives it as structured annotation data in the capture, alongside the DOM context. It can correlate the failed API call with the broken UI element and fix both the frontend error handling and the root cause.
+
+**For QA teams:** Copy the diagnostic section to clipboard and paste into Jira. Or create a note and send the whole capture to the developer's agent. Either way, the bug report arrives with evidence instead of "something is broken on the dashboard."
+
 ---
 
 ## Common Problems

@@ -104,7 +104,12 @@ Every capture automatically includes data from these collectors:
 | Animations | Running CSS/JS animations |
 | Intersection | Element visibility relative to viewport |
 
-Every diagnostic section has a **copy button** - click it to copy that section's data as text. Paste into a chat with your AI agent, a Jira ticket, or a Slack message. No DevTools expertise required - the sidebar surfaces what matters and lets you share it instantly.
+Every diagnostic section has two action buttons:
+
+- **Copy** (clipboard icon) - copies the section data as text. Paste into a chat, Jira ticket, or Slack message.
+- **Note** (document icon) - creates an annotation pre-populated with the diagnostic data. It appears in your Review tab and gets sent with your next "Send to Agent."
+
+This turns error reporting into a one-click action. See a red "2 failed" badge on Network? Click the note icon - the failed URLs, request types, and durations are packaged into an annotation automatically. No DevTools, no copy-pasting error messages, no writing technical descriptions. The sidebar surfaces what matters and lets you report it instantly.
 
 ## Keyboard Shortcuts
 
