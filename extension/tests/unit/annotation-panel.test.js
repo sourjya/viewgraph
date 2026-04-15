@@ -117,3 +117,108 @@ describe('annotation panel', () => {
     btn.remove();
   });
 });
+
+describe('idea mode switching', () => {
+  beforeEach(() => {
+    globalThis.chrome = {
+      storage: { local: { get: async () => ({}) } },
+    };
+  });
+
+  afterEach(() => {
+    hide();
+    delete globalThis.chrome;
+  });
+
+  it('(+) idea toggle button exists in panel header', async () => {
+    await show(makeAnnotation());
+    const panel = getPanel();
+    const ideaBtn = panel.querySelector('[title="Toggle idea mode"]');
+    expect(ideaBtn).toBeTruthy();
+  });
+
+  it('(+) clicking idea toggle adds idea to category', async () => {
+    const ann = makeAnnotation({ category: '' });
+    await show(ann);
+    const panel = getPanel();
+    const ideaBtn = panel.querySelector('[title="Toggle idea mode"]');
+    ideaBtn.click();
+    expect(ann.category).toContain('idea');
+  });
+
+  it('(+) clicking idea toggle again removes idea from category', async () => {
+    const ann = makeAnnotation({ category: 'idea' });
+    await show(ann);
+    const panel = getPanel();
+    const ideaBtn = panel.querySelector('[title="Toggle idea mode"]');
+    ideaBtn.click();
+    expect(ann.category).not.toContain('idea');
+  });
+
+  it('(+) severity is hidden when idea is active', async () => {
+    const ann = makeAnnotation({ category: 'idea' });
+    await show(ann);
+    const panel = getPanel();
+    const severity = panel.querySelector(`[${ATTR}="severity"]`);
+    if (severity) {
+      expect(severity.style.display).toBe('none');
+    }
+  });
+
+  it('(+) severity is visible when idea is not active', async () => {
+    const ann = makeAnnotation({ category: 'visual' });
+    await show(ann);
+    const panel = getPanel();
+    const severity = panel.querySelector(`[${ATTR}="severity"]`);
+    if (severity) {
+      expect(severity.style.display).not.toBe('none');
+    }
+  });
+
+  it('(+) severity is cleared when switching to idea mode', async () => {
+    const ann = makeAnnotation({ category: '', severity: 'critical' });
+    await show(ann);
+    const panel = getPanel();
+    const ideaBtn = panel.querySelector('[title="Toggle idea mode"]');
+    ideaBtn.click();
+    expect(ann.severity).toBe('');
+  });
+
+  it('(+) panel border turns yellow in idea mode', async () => {
+    const ann = makeAnnotation({ category: 'idea' });
+    await show(ann);
+    const panel = getPanel();
+    // Browser normalizes hex to rgb
+    expect(panel.style.border).toMatch(/eab308|rgb\(234, 179, 8\)/);
+  });
+
+  it('(+) panel border reverts when idea is removed', async () => {
+    const ann = makeAnnotation({ category: 'idea' });
+    await show(ann);
+    const panel = getPanel();
+    const ideaBtn = panel.querySelector('[title="Toggle idea mode"]');
+    ideaBtn.click();
+    expect(panel.style.border).not.toContain('#eab308');
+  });
+
+  it('(+) idea toggle preserves other categories', async () => {
+    const ann = makeAnnotation({ category: 'visual,a11y' });
+    await show(ann);
+    const panel = getPanel();
+    const ideaBtn = panel.querySelector('[title="Toggle idea mode"]');
+    ideaBtn.click();
+    expect(ann.category).toContain('visual');
+    expect(ann.category).toContain('a11y');
+    expect(ann.category).toContain('idea');
+  });
+
+  it('(-) removing idea preserves other categories', async () => {
+    const ann = makeAnnotation({ category: 'visual,idea' });
+    await show(ann);
+    const panel = getPanel();
+    const ideaBtn = panel.querySelector('[title="Toggle idea mode"]');
+    ideaBtn.click();
+    expect(ann.category).toContain('visual');
+    expect(ann.category).not.toContain('idea');
+  });
+});
