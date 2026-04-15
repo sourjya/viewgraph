@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="shield-fill" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="card-shadow2">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="480" rx="16" fill="url(#bg2)"/>
+
+  <!-- Title -->
+  <text x="450" y="48" text-anchor="middle" fill="#f8fafc" font-size="28" font-weight="800" letter-spacing="1">WHAT HAPPENS IN YOUR BROWSER,</text>
+  <text x="450" y="80" text-anchor="middle" fill="#f8fafc" font-size="28" font-weight="800" letter-spacing="1">STAYS IN YOUR BROWSER.</text>
+  <text x="450" y="106" text-anchor="middle" fill="#94a3b8" font-size="14">ViewGraph processes DOM locally. Your data never leaves your machine. Ever.</text>
+
+  <!-- Left side: Shield + checklist -->
+  <!-- Shield icon -->
+  <path d="M120,170 L120,220 C120,260 150,295 170,310 C190,295 220,260 220,220 L220,170 L170,150 Z" fill="url(#shield-fill)" opacity="0.15" stroke="#22c55e" stroke-width="2"/>
+  <text x="170" y="245" text-anchor="middle" fill="#22c55e" font-size="28" font-weight="800" filter="url(#glow)">&#x2713;</text>
+
+  <!-- Checklist items -->
+  <!-- Item 1: Process DOM locally -->
+  <rect x="260" y="148" width="340" height="56" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#card-shadow2)"/>
+  <rect x="276" y="166" width="22" height="22" rx="4" fill="#22c55e"/>
+  <text x="287" y="183" text-anchor="middle" fill="#0f172a" font-size="14" font-weight="700">&#x2713;</text>
+  <text x="312" y="175" fill="#f8fafc" font-size="15" font-weight="600">Process DOM locally</text>
+  <rect x="510" y="164" width="46" height="26" rx="13" fill="#22c55e"/>
+  <text x="533" y="182" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="700">YES</text>
+
+  <!-- Item 2: Send data to cloud -->
+  <rect x="260" y="216" width="340" height="56" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#card-shadow2)"/>
+  <rect x="276" y="234" width="22" height="22" rx="4" fill="transparent" stroke="#475569" stroke-width="2"/>
+  <text x="312" y="243" fill="#f8fafc" font-size="15" font-weight="600">Send data to cloud</text>
+  <rect x="510" y="232" width="46" height="26" rx="13" fill="#ef4444"/>
+  <text x="533" y="250" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700">NO</text>
+
+  <!-- Item 3: Anonymous analytics -->
+  <rect x="260" y="284" width="340" height="56" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#card-shadow2)"/>
+  <rect x="276" y="302" width="22" height="22" rx="4" fill="transparent" stroke="#475569" stroke-width="2"/>
+  <text x="312" y="311" fill="#f8fafc" font-size="15" font-weight="600">Anonymous analytics</text>
+  <rect x="478" y="300" width="78" height="26" rx="13" fill="#475569"/>
+  <text x="517" y="318" text-anchor="middle" fill="#f8fafc" font-size="11" font-weight="700">Disabled</text>
+
+  <!-- Item 4: Third-party APIs -->
+  <rect x="260" y="352" width="340" height="56" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#card-shadow2)"/>
+  <rect x="276" y="370" width="22" height="22" rx="4" fill="transparent" stroke="#475569" stroke-width="2"/>
+  <text x="312" y="379" fill="#f8fafc" font-size="15" font-weight="600">Third-party API calls</text>
+  <rect x="510" y="368" width="46" height="26" rx="13" fill="#ef4444"/>
+  <text x="533" y="386" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700">NO</text>
+
+  <!-- Right side: Data flow diagram -->
+  <rect x="630" y="148" width="240" height="270" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#card-shadow2)"/>
+  <text x="750" y="176" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600" letter-spacing="1">YOUR DATA STAYS HERE</text>
+
+  <!-- Browser box -->
+  <rect x="670" y="194" width="160" height="40" rx="6" fill="#334155"/>
+  <text x="750" y="219" text-anchor="middle" fill="#f8fafc" font-size="13" font-weight="600">Browser Extension</text>
+
+  <!-- Arrow down -->
+  <line x1="750" y1="234" x2="750" y2="254" stroke="#22c55e" stroke-width="2"/>
+  <polygon points="744,252 756,252 750,262" fill="#22c55e"/>
+
+  <!-- Local capture box -->
+  <rect x="670" y="264" width="160" height="40" rx="6" fill="#334155"/>
+  <text x="750" y="289" text-anchor="middle" fill="#f8fafc" font-size="13" font-weight="600">.viewgraph/captures/</text>
+
+  <!-- Arrow down -->
+  <line x1="750" y1="304" x2="750" y2="324" stroke="#22c55e" stroke-width="2"/>
+  <polygon points="744,322 756,322 750,332" fill="#22c55e"/>
+
+  <!-- MCP server box -->
+  <rect x="670" y="334" width="160" height="40" rx="6" fill="#334155"/>
+  <text x="750" y="359" text-anchor="middle" fill="#f8fafc" font-size="13" font-weight="600">Local MCP Server</text>
+
+  <!-- "localhost only" label -->
+  <text x="750" y="394" text-anchor="middle" fill="#22c55e" font-size="11" font-weight="600">localhost:9876 only</text>
+
+  <!-- Cloud with X -->
+  <text x="750" y="416" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="600">&#x2718; No external connections</text>
+
+  <!-- Footer -->
+  <rect x="0" y="440" width="900" height="40" rx="0" fill="#16a34a"/>
+  <text x="450" y="465" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="700" letter-spacing="1">OPEN SOURCE (AGPL-3.0) - AUDIT THE CODE YOURSELF - GITHUB.COM/SOURJYA/VIEWGRAPH</text>
+</svg>

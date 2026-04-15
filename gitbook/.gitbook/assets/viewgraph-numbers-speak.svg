@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="bar-vg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <filter id="card-shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="520" rx="16" fill="url(#bg)"/>
+
+  <!-- Title -->
+  <text x="450" y="52" text-anchor="middle" fill="#f8fafc" font-size="32" font-weight="800" letter-spacing="2">THE NUMBERS SPEAK.</text>
+  <text x="450" y="76" text-anchor="middle" fill="#94a3b8" font-size="13">Measured across 48 real-world websites. Not marketing claims - experiment data.</text>
+
+  <!-- Card 1: Token Savings -->
+  <rect x="30" y="100" width="260" height="150" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#card-shadow)"/>
+  <text x="50" y="132" fill="#94a3b8" font-size="14" font-weight="600">Token Savings</text>
+  <text x="50" y="190" fill="#8b5cf6" font-size="56" font-weight="800">181x</text>
+  <text x="50" y="216" fill="#cbd5e1" font-size="13">fewer tokens via progressive</text>
+  <text x="50" y="234" fill="#cbd5e1" font-size="13">disclosure (summary vs raw HTML)</text>
+
+  <!-- Card 2: Accuracy -->
+  <rect x="320" y="100" width="260" height="150" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#card-shadow)"/>
+  <text x="340" y="132" fill="#94a3b8" font-size="14" font-weight="600">Capture Accuracy</text>
+  <text x="340" y="190" fill="#22c55e" font-size="56" font-weight="800">92.1%</text>
+  <text x="340" y="216" fill="#cbd5e1" font-size="13">composite median across</text>
+  <text x="340" y="234" fill="#cbd5e1" font-size="13">7 accuracy dimensions</text>
+
+  <!-- Card 3: Compatibility -->
+  <rect x="610" y="100" width="260" height="150" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#card-shadow)"/>
+  <text x="630" y="132" fill="#94a3b8" font-size="14" font-weight="600">Compatibility</text>
+  <text x="630" y="190" fill="#f59e0b" font-size="56" font-weight="800">100%</text>
+  <text x="630" y="216" fill="#cbd5e1" font-size="13">works with any MCP agent:</text>
+  <text x="630" y="234" fill="#cbd5e1" font-size="13">Kiro, Claude, Cursor, Windsurf...</text>
+
+  <!-- Bar chart section -->
+  <text x="450" y="290" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600" letter-spacing="1">WHAT YOUR AGENT RECEIVES (TOKENS)</text>
+
+  <!-- Chart area -->
+  <!-- Y-axis labels -->
+  <text x="115" y="318" text-anchor="end" fill="#64748b" font-size="11">100K</text>
+  <text x="115" y="358" text-anchor="end" fill="#64748b" font-size="11">50K</text>
+  <text x="115" y="398" text-anchor="end" fill="#64748b" font-size="11">10K</text>
+  <text x="115" y="438" text-anchor="end" fill="#64748b" font-size="11">500</text>
+
+  <!-- Grid lines -->
+  <line x1="125" y1="312" x2="850" y2="312" stroke="#334155" stroke-width="0.5"/>
+  <line x1="125" y1="352" x2="850" y2="352" stroke="#334155" stroke-width="0.5"/>
+  <line x1="125" y1="392" x2="850" y2="392" stroke="#334155" stroke-width="0.5"/>
+  <line x1="125" y1="432" x2="850" y2="432" stroke="#334155" stroke-width="0.5"/>
+  <!-- Baseline -->
+  <line x1="125" y1="452" x2="850" y2="452" stroke="#475569" stroke-width="1"/>
+
+  <!-- Bar: Raw HTML - tall (91K tokens ~ 140px) -->
+  <rect x="170" y="314" width="100" height="138" rx="4" fill="#475569"/>
+  <text x="220" y="306" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600">~91K</text>
+  <text x="220" y="474" text-anchor="middle" fill="#94a3b8" font-size="12">Raw HTML</text>
+
+  <!-- Bar: Screenshot - medium (base64 ~125K tokens ~ 140px, but different problem) -->
+  <rect x="320" y="308" width="100" height="144" rx="4" fill="#475569"/>
+  <text x="370" y="300" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600">~125K</text>
+  <text x="370" y="474" text-anchor="middle" fill="#94a3b8" font-size="12">Screenshot</text>
+  <text x="370" y="488" text-anchor="middle" fill="#64748b" font-size="10">(base64)</text>
+
+  <!-- Bar: Full VG Capture - shorter (22.5K tokens ~ 35px) -->
+  <rect x="470" y="382" width="100" height="70" rx="4" fill="#6366f1"/>
+  <text x="520" y="374" text-anchor="middle" fill="#a5b4fc" font-size="12" font-weight="600">~23K</text>
+  <text x="520" y="474" text-anchor="middle" fill="#94a3b8" font-size="12">ViewGraph</text>
+  <text x="520" y="488" text-anchor="middle" fill="#64748b" font-size="10">(full capture)</text>
+
+  <!-- Bar: VG Summary - tiny (500 tokens ~ 1px, show as min 8px) -->
+  <rect x="620" y="444" width="100" height="8" rx="4" fill="url(#bar-vg)"/>
+  <text x="670" y="438" text-anchor="middle" fill="#c4b5fd" font-size="12" font-weight="700">~500</text>
+  <text x="670" y="474" text-anchor="middle" fill="#f8fafc" font-size="12" font-weight="600">ViewGraph</text>
+  <text x="670" y="488" text-anchor="middle" fill="#a5b4fc" font-size="10">(summary)</text>
+
+  <!-- Arrow showing 181x -->
+  <line x1="770" y1="314" x2="770" y2="444" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="810" y="375" text-anchor="middle" fill="#8b5cf6" font-size="16" font-weight="800">181x</text>
+  <text x="810" y="392" text-anchor="middle" fill="#8b5cf6" font-size="11">fewer</text>
+  <text x="810" y="406" text-anchor="middle" fill="#8b5cf6" font-size="11">tokens</text>
+
+  <!-- Footer -->
+  <rect x="0" y="500" width="900" height="20" rx="0" fill="#6366f1"/>
+  <text x="450" y="515" text-anchor="middle" fill="#f8fafc" font-size="13" font-weight="700" letter-spacing="1">BUILT FOR AI AGENTS. 34 MCP TOOLS. 14 ENRICHMENT COLLECTORS. 982 TESTS.</text>
+</svg>

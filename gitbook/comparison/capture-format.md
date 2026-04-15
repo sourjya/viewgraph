@@ -1,5 +1,7 @@
 # The Capture Format
 
+![ViewGraph metrics: 181x token savings, 92.1% accuracy, 100% MCP compatibility](../.gitbook/assets/viewgraph-numbers-speak.svg)
+
 ViewGraph uses a custom structured JSON format designed specifically for AI agent consumption. It's not raw HTML, not an accessibility tree, not a screenshot - it's a purpose-built representation that gives agents the most actionable context per token.
 
 ## Why Not Just Use Raw HTML?

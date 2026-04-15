@@ -1,5 +1,7 @@
 # Security
 
+![ViewGraph privacy: all data stays local, no cloud, no tracking](../.gitbook/assets/viewgraph-privacy-trust.svg)
+
 ViewGraph is designed to be safe for developers, testers, and teams working on production applications. Here's how it handles common security concerns.
 
 ## No Data Leaves Your Machine
