@@ -47,6 +47,25 @@ Junior developers, PMs, designers, QA testers, bootcamp graduates, career switch
 
 See [Who Benefits?](who-benefits.md) for the full list of audiences and how ViewGraph helps each one.
 
+## Built-In Diagnostics - No DevTools Required
+
+The Inspect tab surfaces browser-level diagnostics that normally require opening DevTools, navigating to the right panel, and knowing what to look for. ViewGraph puts it all in one sidebar:
+
+- **Failed network requests** - click to expand the full URL, request type, and duration. You can see which API call failed without opening the Network tab.
+- **Console errors** - JavaScript errors and warnings from the page, with the error message. No need to open the Console tab.
+- **Accessibility issues** - missing labels, low contrast, keyboard traps. No need to run Lighthouse or install a separate extension.
+- **Layout problems** - overflow, z-index conflicts, focus chain issues. Normally invisible without inspecting computed styles.
+
+Each diagnostic section has a copy button. Click it, paste into a chat with your AI agent or a senior developer, and get help immediately. This is especially valuable for:
+
+- **Junior developers** who haven't memorized DevTools workflows yet
+- **QA testers** who need to report technical details without being frontend experts
+- **Career switchers** from non-tech backgrounds learning to debug web apps
+- **Backend engineers** doing occasional frontend work who don't live in the browser
+- **PMs and designers** who can now include technical evidence in their feedback
+
+The diagnostics are captured at the moment you click the ViewGraph icon - they reflect the exact state of the page you're looking at, not a stale snapshot.
+
 ---
 
 ## Common Problems

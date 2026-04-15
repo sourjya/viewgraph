@@ -104,6 +104,8 @@ Every capture automatically includes data from these collectors:
 | Animations | Running CSS/JS animations |
 | Intersection | Element visibility relative to viewport |
 
+Every diagnostic section has a **copy button** - click it to copy that section's data as text. Paste into a chat with your AI agent, a Jira ticket, or a Slack message. No DevTools expertise required - the sidebar surfaces what matters and lets you share it instantly.
+
 ## Keyboard Shortcuts
 
 Click the `?` button in the sidebar header for the shortcut cheat sheet. See [Keyboard Shortcuts](../reference/keyboard-shortcuts.md) for the full list.

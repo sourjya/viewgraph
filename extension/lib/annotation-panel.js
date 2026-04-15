@@ -54,13 +54,37 @@ export async function show(annotation, callbacks = {}) {
   );
   deleteBtn.addEventListener('click', () => { hide(); removeAnnotation(annotation.id); });
 
+  // Idea toggle - one-click switch to/from idea mode
+  const ideaBtn = makeHeaderBtn(
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg>',
+    'Toggle idea mode',
+  );
+  const isIdeaInit = (annotation.category || '').includes('idea');
+  if (isIdeaInit) {
+    ideaBtn.querySelector('svg').setAttribute('stroke', '#eab308');
+    ideaBtn.style.background = 'rgba(234,179,8,0.15)';
+  }
+  ideaBtn.addEventListener('click', () => {
+    const cats = (annotation.category || '').split(',').map((s) => s.trim()).filter(Boolean);
+    const hasIdea = cats.includes('idea');
+    const updated = hasIdea ? cats.filter((c) => c !== 'idea') : [...cats, 'idea'];
+    annotation.category = updated.join(',');
+    updateCategory(annotation.id, annotation.category);
+    // Update button visual
+    ideaBtn.querySelector('svg').setAttribute('stroke', updated.includes('idea') ? '#eab308' : '#9ca3af');
+    ideaBtn.style.background = updated.includes('idea') ? 'rgba(234,179,8,0.15)' : 'transparent';
+    // Re-render category chips and panel tint
+    renderCategoryChips();
+    if (onCommentChange) onCommentChange(annotation.id);
+  });
+
   const closeBtn = makeHeaderBtn(
     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>',
     'Close panel',
   );
   closeBtn.addEventListener('click', () => hide());
 
-  header.append(title, deleteBtn, closeBtn);
+  header.append(title, ideaBtn, deleteBtn, closeBtn);
 
   /** Chip colors by type. */
   const CHIP_COLORS = {
