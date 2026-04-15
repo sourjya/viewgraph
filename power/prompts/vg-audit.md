@@ -4,8 +4,11 @@ description: "Full audit: accessibility + layout + missing testids"
 
 # @vg-audit
 
-Run a comprehensive UI audit on the latest ViewGraph capture. REPORT ONLY - do NOT fix any issues. Present findings as a structured table.
+## IMPORTANT: This is a REPORT-ONLY command. Do NOT modify any files. Do NOT fix any issues. Do NOT write code. Only produce a report.
 
+Run a comprehensive UI audit on the latest ViewGraph capture and present findings as a structured table.
+
+Steps:
 1. Call `get_latest_capture` to find the most recent capture
 2. Run `audit_accessibility` - collect all a11y violations
 3. Run `audit_layout` - collect overflow, overlap, and viewport issues
@@ -17,6 +20,14 @@ Run a comprehensive UI audit on the latest ViewGraph capture. REPORT ONLY - do N
 
 Where Type is one of: a11y, layout, testid
 
-6. After the table, show a summary: "Found N issues: X errors, Y warnings, Z info"
-7. Do NOT edit any files. Do NOT fix any issues. This is a report-only command.
-8. Ask the user: "Would you like me to fix these issues? Run @vg-a11y for accessibility fixes or @vg-review for annotated issues."
+6. After the table, show a summary line: "Found N issues: X errors, Y warnings, Z info"
+
+## Constraints - READ CAREFULLY
+- Do NOT open, read, or edit any source files
+- Do NOT call find_source
+- Do NOT implement any fixes
+- Do NOT resolve any annotations
+- Do NOT create or modify any files
+- ONLY call ViewGraph MCP tools and produce the report table above
+
+After the report, tell the user: "To fix these issues, run @vg-a11y for accessibility fixes, @vg-testids for missing testids, or @vg-review for annotated issues."
