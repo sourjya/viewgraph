@@ -1692,14 +1692,18 @@ export function refresh() {
     numBadge.title = `Annotation ${ann.id}`;
     line1.appendChild(numBadge);
 
-    // Severity icon - colored exclamation mark, separate from number badge
+    // Severity icon - colored pill with exclamation mark, same size as number badge
     if (ann.severity) {
       const sevIcon = document.createElement('span');
       sevIcon.textContent = '!';
       Object.assign(sevIcon.style, {
-        color: SEV_DOT_COLORS[ann.severity] || '#a855f7',
-        fontSize: '11px', fontWeight: '900', marginRight: '4px', flexShrink: '0',
+        background: SEV_DOT_COLORS[ann.severity] || '#a855f7',
+        color: '#fff',
+        fontSize: '10px', fontWeight: '900', marginRight: '4px', flexShrink: '0',
         fontFamily: 'system-ui, sans-serif',
+        padding: '1px 5px', borderRadius: '3px',
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        minWidth: '14px', height: '16px',
       });
       sevIcon.title = ann.severity;
       line1.appendChild(sevIcon);
