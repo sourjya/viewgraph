@@ -843,7 +843,9 @@ export function create() {
     noteBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       const fullData = body.textContent.trim();
-      const summary = `${title}: ${fullData.split('\n')[0].slice(0, 60)}`;
+      // Clean summary: just section name + count from badge text
+      const badgeText = headerRow.querySelector('span:nth-child(4)')?.textContent || '';
+      const summary = `${title}: ${badgeText}`.trim();
       const ann = addPageNote();
       if (ann) {
         updateComment(ann.id, summary);
@@ -2068,13 +2070,14 @@ export function refresh() {
     const isDiagNote = !!ann.diagnostic;
     const markerColor = isDiagNote ? '#14b8a6' : isIdea ? '#eab308' : ann.type === 'page-note' ? '#0ea5e9' : MARKER_COLORS[(ann.id - 1) % MARKER_COLORS.length];
     if (isDiagNote) {
-      // Terminal/console icon in teal for diagnostic notes
-      numBadge.innerHTML = '#' + ann.id + ' <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>';
+      // Bold diagnostic badge - teal with terminal icon
+      numBadge.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg> #' + ann.id;
       Object.assign(numBadge.style, {
-        background: '#14b8a6', color: '#fff', fontSize: '10px', fontWeight: '700',
-        padding: '1px 5px', borderRadius: '3px', marginRight: '2px',
+        background: '#0d9488', color: '#fff', fontSize: '10px', fontWeight: '700',
+        padding: '2px 6px', borderRadius: '4px', marginRight: '3px',
         fontFamily: 'system-ui, sans-serif', flexShrink: '0',
-        display: 'inline-flex', alignItems: 'center', gap: '2px',
+        display: 'inline-flex', alignItems: 'center', gap: '3px',
+        border: '1px solid #14b8a6',
       });
     } else if (isIdea) {
       numBadge.innerHTML = '#' + ann.id + ' <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg>';
