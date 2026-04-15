@@ -49,6 +49,7 @@ export function startShortcuts(handlers) {
 
     if (e.key === 'Escape') {
       e.preventDefault();
+      e.stopImmediatePropagation();
       handlers.onEscape?.();
       return;
     }

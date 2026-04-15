@@ -277,65 +277,76 @@ export function create() {
   helpCard.setAttribute(ATTR, 'help-card');
   Object.assign(helpCard.style, {
     display: 'none', background: '#1a1a2e', borderBottom: '1px solid #333',
-    padding: '12px', fontSize: '11px', fontFamily: 'system-ui, sans-serif',
+    padding: '14px 12px', fontSize: '12px', fontFamily: 'system-ui, sans-serif',
     color: '#c8c8d0', flexShrink: '0', overflow: 'hidden',
     transition: 'max-height 0.2s ease', maxHeight: '0',
   });
 
-  // Help card close button
-  const helpClose = document.createElement('button');
-  helpClose.setAttribute(ATTR, 'btn');
-  helpClose.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';
-  Object.assign(helpClose.style, {
-    border: 'none', background: 'transparent', cursor: 'pointer',
-    padding: '2px', float: 'right', borderRadius: '4px',
-  });
-  helpClose.addEventListener('click', () => hideHelpCard());
-  helpCard.appendChild(helpClose);
-
-  // Shortcuts table
+  // Shortcuts table - no close button, dismiss via ? toggle or Escape
   const title = document.createElement('div');
   title.textContent = 'Keyboard Shortcuts';
-  Object.assign(title.style, { fontWeight: '700', fontSize: '12px', color: '#a5b4fc', marginBottom: '8px' });
+  Object.assign(title.style, { fontWeight: '700', fontSize: '13px', color: '#a5b4fc', marginBottom: '10px' });
   helpCard.appendChild(title);
 
   const shortcuts = [
     ['Esc', 'Dismiss help / deselect'],
-    ['Ctrl+Enter', 'Send to Agent'],
-    ['Ctrl+Shift+C', 'Copy Markdown'],
-    ['1 / 2 / 3', 'Severity: critical / major / minor'],
+    ['Ctrl', 'Enter', 'Send to Agent'],
+    ['Ctrl', 'Shift', 'C', 'Copy Markdown'],
+    ['1', '2', '3', 'Severity: critical / major / minor'],
     ['Del', 'Delete selected annotation'],
   ];
-  const table = document.createElement('div');
-  Object.assign(table.style, { display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '4px 12px', marginBottom: '10px' });
-  for (const [key, desc] of shortcuts) {
+
+  /** Render a single keycap-styled span. */
+  function keycap(text) {
     const k = document.createElement('span');
-    k.textContent = key;
-    Object.assign(k.style, { color: '#f59e0b', fontFamily: 'monospace', fontSize: '10px', fontWeight: '600' });
+    k.textContent = text;
+    Object.assign(k.style, {
+      display: 'inline-block', padding: '2px 6px', borderRadius: '4px',
+      border: '1px solid #555', background: '#2a2a3a', color: '#e2e8f0',
+      fontFamily: 'monospace', fontSize: '11px', fontWeight: '600',
+      lineHeight: '1.4', minWidth: '20px', textAlign: 'center',
+    });
+    return k;
+  }
+
+  const table = document.createElement('div');
+  Object.assign(table.style, { display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '6px 14px', marginBottom: '12px', alignItems: 'center' });
+  for (const row of shortcuts) {
+    const desc = row[row.length - 1];
+    const keys = row.slice(0, -1);
+    const keyCell = document.createElement('span');
+    Object.assign(keyCell.style, { display: 'flex', gap: '3px', alignItems: 'center' });
+    for (let i = 0; i < keys.length; i++) {
+      keyCell.appendChild(keycap(keys[i]));
+      if (i < keys.length - 1) {
+        const plus = document.createElement('span');
+        plus.textContent = '+';
+        Object.assign(plus.style, { color: '#666', fontSize: '10px' });
+        keyCell.appendChild(plus);
+      }
+    }
     const d = document.createElement('span');
     d.textContent = desc;
-    Object.assign(d.style, { color: '#9ca3af', fontSize: '10px' });
-    table.append(k, d);
+    Object.assign(d.style, { color: '#9ca3af', fontSize: '12px' });
+    table.append(keyCell, d);
   }
   helpCard.appendChild(table);
 
   // Links
   const links = [
     ['Documentation', 'https://chaoslabz.gitbook.io/viewgraph'],
-    ['Keyboard Shortcuts', 'https://chaoslabz.gitbook.io/viewgraph/reference/keyboard-shortcuts'],
+    ['All Shortcuts', 'https://chaoslabz.gitbook.io/viewgraph/reference/keyboard-shortcuts'],
     ['Report a Bug', 'https://github.com/sourjya/viewgraph/issues'],
   ];
   const linkRow = document.createElement('div');
-  Object.assign(linkRow.style, { display: 'flex', gap: '8px', flexWrap: 'wrap' });
+  Object.assign(linkRow.style, { display: 'flex', gap: '10px', flexWrap: 'wrap' });
   for (const [label, url] of links) {
     const a = document.createElement('a');
     a.textContent = label;
     a.href = url;
     a.target = '_blank';
     a.rel = 'noopener';
-    Object.assign(a.style, {
-      color: '#6366f1', fontSize: '10px', textDecoration: 'none',
-    });
+    Object.assign(a.style, { color: '#6366f1', fontSize: '11px', textDecoration: 'none' });
     a.addEventListener('mouseenter', () => { a.style.textDecoration = 'underline'; });
     a.addEventListener('mouseleave', () => { a.style.textDecoration = 'none'; });
     linkRow.appendChild(a);
@@ -347,7 +358,7 @@ export function create() {
   function showHelpCard() {
     helpVisible = true;
     helpCard.style.display = 'block';
-    requestAnimationFrame(() => { helpCard.style.maxHeight = '300px'; });
+    requestAnimationFrame(() => { helpCard.style.maxHeight = '400px'; });
   }
   function hideHelpCard() {
     helpVisible = false;
@@ -514,9 +525,9 @@ export function create() {
   settingsLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg> Settings';
   Object.assign(settingsLink.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
-    color: '#555', fontSize: '10px', fontFamily: 'system-ui, sans-serif',
-    padding: '4px 0', display: 'flex', alignItems: 'center', gap: '4px',
-    width: '100%', justifyContent: 'center', marginTop: '2px',
+    color: '#666', fontSize: '11px', fontFamily: 'system-ui, sans-serif',
+    padding: '6px 0', display: 'flex', alignItems: 'center', gap: '5px',
+    width: '100%', justifyContent: 'center', marginTop: '4px',
   });
   settingsLink.addEventListener('mouseenter', () => { settingsLink.style.color = '#9ca3af'; });
   settingsLink.addEventListener('mouseleave', () => { settingsLink.style.color = '#555'; });
