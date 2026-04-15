@@ -343,15 +343,15 @@ export function create() {
 
   // Links
   const links = [
-    ['Documentation', 'https://chaoslabz.gitbook.io/viewgraph'],
-    ['All Shortcuts', 'https://chaoslabz.gitbook.io/viewgraph/reference/keyboard-shortcuts'],
-    ['Report a Bug', 'https://github.com/sourjya/viewgraph/issues'],
+    ['📖', 'Documentation', 'https://chaoslabz.gitbook.io/viewgraph'],
+    ['⌨️', 'All Shortcuts', 'https://chaoslabz.gitbook.io/viewgraph/reference/keyboard-shortcuts'],
+    ['🐛', 'Report a Bug', 'https://github.com/sourjya/viewgraph/issues'],
   ];
   const linkRow = document.createElement('div');
   Object.assign(linkRow.style, { display: 'flex', gap: '10px', flexWrap: 'wrap' });
-  for (const [label, url] of links) {
+  for (const [icon, label, url] of links) {
     const a = document.createElement('a');
-    a.textContent = label;
+    a.textContent = `${icon} ${label}`;
     a.href = url;
     a.target = '_blank';
     a.rel = 'noopener';
