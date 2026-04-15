@@ -36,6 +36,7 @@ function serializeAnnotations(annotations) {
     nodeIds: a.nids, ancestor: a.ancestor,
     timestamp: a.timestamp || new Date().toISOString(),
     resolved: a.resolved || false, resolution: a.resolution || null,
+    ...(a.diagnostic ? { diagnostic: a.diagnostic } : {}),
   }));
 }
 
