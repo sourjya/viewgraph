@@ -19,6 +19,7 @@ import { existsSync, accessSync, constants as fsConstants, readFileSync, mkdirSy
 import path from 'path';
 import { LOG_PREFIX } from './constants.js';
 import { validateCapturePath } from './utils/validate-path.js';
+import { runPostCaptureAudit } from '#src/analysis/post-capture-audit.js';
 import { createWebSocketServer } from './ws-server.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { diffCaptures } from '#src/analysis/capture-diff.js';
@@ -234,6 +235,18 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       // Check if this completes a pending request
       const match = queue.findByUrl(capture.metadata.url);
       if (match) queue.complete(match.id, filename);
+
+      // Post-capture auto-audit: run if enabled in project config, push via WS
+      try {
+        const configFile = path.resolve(path.dirname(targetDir), 'config.json');
+        const cfg = JSON.parse(readFileSync(configFile, 'utf-8'));
+        if (cfg.autoAudit) {
+          const audit = await runPostCaptureAudit(safePath);
+          if (audit && wsServer) {
+            wsServer.broadcast({ type: 'audit:results', filename, audit });
+          }
+        }
+      } catch { /* config missing or audit failed - non-blocking */ }
 
       return json(res, 201, { filename, requestId: match?.id ?? null });
     }

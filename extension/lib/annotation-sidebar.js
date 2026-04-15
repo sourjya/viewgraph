@@ -62,7 +62,7 @@ function stopResolutionPolling() {
   }
 }
 import { formatMarkdown } from './export-markdown.js';
-import { discoverServer, getAgentName, fetchConfig } from './constants.js';
+import { discoverServer, getAgentName, fetchConfig, updateConfig } from './constants.js';
 import { collectNetworkState } from './network-collector.js';
 import { getConsoleState } from './console-collector.js';
 import { collectBreakpoints } from './breakpoint-collector.js';
@@ -812,7 +812,7 @@ export function create() {
   }
 
   /** Populate the Inspect tab with live page data. Called on tab switch. */
-  function refreshInspect() {
+  async function refreshInspect() {
     inspectContent.innerHTML = '';
 
     // Breakpoint indicator (always visible, not collapsible)
@@ -833,6 +833,43 @@ export function create() {
     Object.assign(bpLabel.style, { color: '#666', fontSize: '11px' });
     bpRow.append(bpTitle, bpBadge, bpLabel);
     inspectContent.appendChild(bpRow);
+
+    // Auto-audit toggle (reads/writes config.json via server)
+    const auditRow = document.createElement('div');
+    Object.assign(auditRow.style, { display: 'flex', alignItems: 'center', gap: '8px' });
+    const auditLabel = document.createElement('span');
+    auditLabel.textContent = 'AUTO-AUDIT';
+    Object.assign(auditLabel.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', flex: '1' });
+    const auditToggle = document.createElement('button');
+    auditToggle.setAttribute(ATTR, 'audit-toggle');
+    let auditEnabled = false;
+    try {
+      const cached = await chrome.storage.local.get('vg_project_config');
+      auditEnabled = cached.vg_project_config?.autoAudit || false;
+    } catch { /* no cache */ }
+    auditToggle.textContent = auditEnabled ? 'ON' : 'OFF';
+    Object.assign(auditToggle.style, {
+      border: 'none', borderRadius: '10px', padding: '2px 10px', fontSize: '10px',
+      fontWeight: '700', cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+      background: auditEnabled ? '#166534' : '#333', color: auditEnabled ? '#4ade80' : '#666',
+    });
+    auditToggle.addEventListener('click', async () => {
+      const serverUrl = await discoverServer(window.location.href);
+      if (!serverUrl) return;
+      auditEnabled = !auditEnabled;
+      auditToggle.textContent = auditEnabled ? 'ON' : 'OFF';
+      auditToggle.style.background = auditEnabled ? '#166534' : '#333';
+      auditToggle.style.color = auditEnabled ? '#4ade80' : '#666';
+      try { await updateConfig(serverUrl, { autoAudit: auditEnabled }); } catch { /* offline */ }
+    });
+    auditRow.append(auditLabel, auditToggle);
+    inspectContent.appendChild(auditRow);
+
+    // Audit results badge (populated by WS audit:results messages)
+    const auditBadge = document.createElement('div');
+    auditBadge.setAttribute(ATTR, 'audit-badge');
+    Object.assign(auditBadge.style, { display: 'none', fontSize: '11px', color: '#9ca3af', padding: '2px 0' });
+    inspectContent.appendChild(auditBadge);
 
     // Auto-capture toggle
     const autoRow = document.createElement('div');
@@ -1468,6 +1505,19 @@ export function create() {
           const anns = getAnnotations();
           const ann = anns.find((a) => a.uuid === msg.uuid && !a.resolved);
           if (ann) { ann.resolved = true; ann.resolution = msg.resolution; refresh(); }
+        }
+        if (msg.type === 'audit:results' && msg.audit) {
+          const badge = hostEl?.shadowRoot?.querySelector(`[${ATTR}="audit-badge"]`);
+          if (badge) {
+            const a = msg.audit;
+            const parts = [];
+            if (a.a11y) parts.push(`${a.a11y} a11y`);
+            if (a.layout) parts.push(`${a.layout} layout`);
+            if (a.testids) parts.push(`${a.testids} testids`);
+            badge.textContent = parts.length ? `Auto-audit: ${parts.join(', ')}` : 'Auto-audit: no issues found';
+            badge.style.display = 'block';
+            badge.style.color = a.total > 0 ? '#f59e0b' : '#4ade80';
+          }
         }
       },
     });
