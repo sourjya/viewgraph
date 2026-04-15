@@ -1185,7 +1185,7 @@ export function create() {
     // Auto-capture toggle (grouped with captures below)
     const autoDesc = document.createElement('div');
     autoDesc.textContent = 'Captures on every DOM change or hot-reload';
-    Object.assign(autoDesc.style, { color: '#555', fontSize: '9px', marginBottom: '6px' });
+    Object.assign(autoDesc.style, { color: '#555', fontSize: '10px', marginBottom: '6px' });
     inspectContent.appendChild(autoRow);
     inspectContent.appendChild(autoDesc);
 
@@ -1287,7 +1287,7 @@ export function create() {
     if (!recording) {
       const recDesc = document.createElement('div');
       recDesc.textContent = 'Tag captures as steps in a multi-page flow';
-      Object.assign(recDesc.style, { color: '#555', fontSize: '9px', marginBottom: '2px' });
+      Object.assign(recDesc.style, { color: '#555', fontSize: '10px', marginBottom: '2px' });
       inspectContent.appendChild(recDesc);
     }
 
