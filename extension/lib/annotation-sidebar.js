@@ -305,6 +305,8 @@ export function create() {
     ['Ctrl', 'Shift', 'C', 'Copy Markdown'],
     ['1', '2', '3', 'Severity: critical / major / minor'],
     ['Del', 'Delete selected annotation'],
+    ['Ctrl', 'Shift', 'B', 'Toggle collapse sidebar'],
+    ['Ctrl', 'Shift', 'X', 'Close panel entirely'],
   ];
 
   /** Render a single keycap-styled span. */
@@ -1700,6 +1702,8 @@ export function create() {
       const selected = getAnnotations().find((a) => a.selected);
       if (selected) { updateSeverity(selected.id, sev); refresh(); }
     },
+    onToggleCollapse: () => { if (collapsed) { expand(); } else { collapse(); } },
+    onClose: () => { hideMarkers(); stopAnnotate(); destroy(); },
   });
 }
 

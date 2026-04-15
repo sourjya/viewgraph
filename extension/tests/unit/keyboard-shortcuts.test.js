@@ -90,6 +90,27 @@ describe('keyboard shortcuts', () => {
     expect(onCopyMd).toHaveBeenCalledTimes(1);
   });
 
+  it('(+) fires onToggleCollapse on Ctrl+Shift+B', () => {
+    const onToggleCollapse = vi.fn();
+    startShortcuts({ onToggleCollapse });
+    press('b', { ctrlKey: true, shiftKey: true });
+    expect(onToggleCollapse).toHaveBeenCalledTimes(1);
+  });
+
+  it('(+) fires onClose on Ctrl+Shift+X', () => {
+    const onClose = vi.fn();
+    startShortcuts({ onClose });
+    press('x', { ctrlKey: true, shiftKey: true });
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('(-) Ctrl+B without Shift does not fire onToggleCollapse', () => {
+    const onToggleCollapse = vi.fn();
+    startShortcuts({ onToggleCollapse });
+    press('b', { ctrlKey: true });
+    expect(onToggleCollapse).not.toHaveBeenCalled();
+  });
+
   it('(+) fires onDelete on Delete key', () => {
     const onDelete = vi.fn();
     startShortcuts({ onDelete });

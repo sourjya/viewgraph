@@ -13,6 +13,8 @@ ViewGraph supports keyboard shortcuts when the sidebar is open in annotate mode.
 | `2` | Set severity to Major on selected annotation | When annotation is selected |
 | `3` | Set severity to Minor on selected annotation | When annotation is selected |
 | `Delete` / `Backspace` | Delete selected annotation | When annotation is selected |
+| `Ctrl+Shift+B` (`Cmd+Shift+B` on Mac) | Toggle collapse/expand sidebar | Always active |
+| `Ctrl+Shift+X` (`Cmd+Shift+X` on Mac) | Close panel entirely (exit annotation mode) | Always active |
 
 ## Mouse Controls
 

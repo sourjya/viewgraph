@@ -84,6 +84,18 @@ export function startShortcuts(handlers) {
         handlers.onDelete?.();
       }
     }
+
+    if (ctrl && e.shiftKey && e.key.toLowerCase() === 'b') {
+      e.preventDefault();
+      handlers.onToggleCollapse?.();
+      return;
+    }
+
+    if (ctrl && e.shiftKey && e.key.toLowerCase() === 'x') {
+      e.preventDefault();
+      handlers.onClose?.();
+      return;
+    }
   };
 
   document.addEventListener('keydown', handler, true);
