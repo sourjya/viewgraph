@@ -10,6 +10,15 @@
 * [Installation](getting-started/installation.md)
 * [Multi-Project Setup](getting-started/multi-project.md)
 
+## Tutorials
+
+* [Annotate and Fix Bugs](tutorials/annotate-and-fix.md)
+* [Run an Accessibility Audit](tutorials/accessibility-audit.md)
+* [Generate Playwright Tests](tutorials/generate-tests.md)
+* [File a QA Bug Report](tutorials/qa-bug-report.md)
+* [Detect Regressions](tutorials/detect-regressions.md)
+* [Record a User Journey](tutorials/record-journey.md)
+
 ## Features
 
 * [Browser Extension](features/extension.md)
