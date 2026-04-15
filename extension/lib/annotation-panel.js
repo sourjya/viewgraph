@@ -373,6 +373,9 @@ export async function show(annotation, callbacks = {}) {
   y = annotation.region.y;
   Object.assign(panelEl.style, { left: `${x}px`, top: `${y}px` });
 
+  // Prevent wheel events from bubbling to annotate.js DOM tree cycling
+  panelEl.addEventListener('wheel', (e) => { e.stopPropagation(); }, { passive: true });
+
   document.documentElement.appendChild(panelEl);
   textarea.focus();
 
