@@ -199,3 +199,29 @@ Release notes are published on [GitHub Releases](https://github.com/sourjya/view
 | "Send to Agent" does nothing | Check sidebar connection status. Server must be running. Re-run `npx viewgraph-init` from your project. |
 | Captures not appearing in agent | Verify `.viewgraph/captures/` exists. Run `npx viewgraph-status` for a health check. |
 | Wrong project shown in sidebar | Add `--url` pattern. See [Multi-Project Setup](multi-project.md). |
+
+## Agent and IDE Compatibility
+
+ViewGraph works with any MCP-compatible agent. The init script auto-detects your agent and writes the correct config file.
+
+| Agent | MCP Config Location | Power Assets |
+|---|---|---|
+| Kiro | `.kiro/settings/mcp.json` | Hooks, prompts, steering docs |
+| Claude Code | `~/.claude/mcp.json` | MCP tools only |
+| Cursor | `.cursor/mcp.json` | MCP tools only |
+| Windsurf | `.windsurf/mcp.json` | MCP tools only |
+| Cline | `.cline/mcp.json` | MCP tools only |
+| Other MCP agents | `.viewgraph/mcp.json` | MCP tools only |
+
+### Cloud IDEs
+
+The extension runs in your local browser. The MCP server runs wherever your code is. For cloud IDEs (GitHub Codespaces, Gitpod, AWS Cloud9), you need port forwarding so the extension can reach the server.
+
+| Environment | MCP Server | Extension | Port Forwarding |
+|---|---|---|---|
+| Local IDE | localhost | localhost | Not needed |
+| Codespaces | Remote | Local browser | Automatic for most ports |
+| Gitpod | Remote | Local browser | Automatic for most ports |
+| SSH remote | Remote | Local browser | `ssh -L 9876:localhost:9876` |
+
+The standalone export modes (Copy MD, Download Report) work without any server connection. The `@viewgraph/playwright` package runs entirely server-side.
