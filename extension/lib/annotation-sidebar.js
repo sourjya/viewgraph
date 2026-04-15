@@ -850,11 +850,10 @@ export function create() {
         noteBtn.dataset.noted = 'true';
         noteBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
         noteBtn.style.color = '#4ade80';
-        setTimeout(() => {
-          noteBtn.dataset.noted = 'false';
-          noteBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
-          noteBtn.style.color = '#555';
-        }, 1500);
+        // Disable after use - one note per section prevents duplicates
+        noteBtn.style.opacity = '0.4';
+        noteBtn.style.pointerEvents = 'none';
+        noteBtn.title = 'Note added';
       }
     });
     headerRow.appendChild(noteBtn);
