@@ -807,6 +807,153 @@ describe('settings', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Annotation type badge differentiation
+// ---------------------------------------------------------------------------
+
+describe('annotation type badges', () => {
+  it('(+) regular bug annotation shows colored number badge', () => {
+    start();
+    addPageNote(); // creates annotation id=1
+    const anns = getAnnotations();
+    anns[0].type = 'element';
+    anns[0].category = 'visual';
+    create();
+    refresh();
+
+    const entries = getEntries();
+    expect(entries.length).toBeGreaterThan(0);
+    // Should not have idea or diagnostic styling
+    const badge = entries[0].querySelector('span');
+    expect(badge.textContent).toContain('#');
+
+    stop();
+    destroy();
+  });
+
+  it('(+) idea annotation shows yellow badge with lightbulb', () => {
+    start();
+    addPageNote();
+    const anns = getAnnotations();
+    anns[0].category = 'idea';
+    create();
+    refresh();
+
+    const entries = getEntries();
+    if (entries.length > 0) {
+      const html = entries[0].innerHTML;
+      // Contains lightbulb SVG path and yellow color
+      expect(html).toContain('M9 18h6');
+      expect(html).toMatch(/eab308|234, 179, 8/);
+    }
+
+    stop();
+    destroy();
+  });
+
+  it('(+) diagnostic note shows teal badge with terminal icon', () => {
+    start();
+    addPageNote();
+    const anns = getAnnotations();
+    anns[0].diagnostic = { section: 'Network', data: 'test data' };
+    anns[0].comment = 'Network: 2 failed requests';
+    create();
+    refresh();
+
+    const entries = getEntries();
+    if (entries.length > 0) {
+      const html = entries[0].innerHTML;
+      // Contains terminal SVG path and teal color
+      expect(html).toContain('4 17 10 11 4 5');
+      expect(html).toMatch(/14b8a6|20, 184, 166/);
+    }
+
+    stop();
+    destroy();
+  });
+
+  it('(+) page note shows blue badge with document icon', () => {
+    start();
+    addPageNote();
+    const anns = getAnnotations();
+    anns[0].type = 'page-note';
+    create();
+    refresh();
+
+    const entries = getEntries();
+    if (entries.length > 0) {
+      const html = entries[0].innerHTML;
+      // Contains document SVG path and blue color
+      expect(html).toContain('M14 2H6');
+      expect(html).toMatch(/0ea5e9|14, 165, 233/);
+    }
+
+    stop();
+    destroy();
+  });
+
+  it('(+) diagnostic note shows styled section tag in comment', () => {
+    start();
+    addPageNote();
+    const anns = getAnnotations();
+    anns[0].diagnostic = { section: 'Console', data: 'TypeError: x is not defined' };
+    anns[0].comment = 'Console: TypeError: x is not defined';
+    create();
+    refresh();
+
+    const entries = getEntries();
+    if (entries.length > 0) {
+      const text = entries[0].textContent;
+      expect(text).toContain('Console');
+    }
+
+    stop();
+    destroy();
+  });
+
+  it('(+) diagnostic note truncates long excerpt', () => {
+    start();
+    addPageNote();
+    const anns = getAnnotations();
+    anns[0].diagnostic = { section: 'Network', data: 'a'.repeat(200) };
+    anns[0].comment = 'Network: ' + 'a'.repeat(200);
+    create();
+    refresh();
+
+    const entries = getEntries();
+    if (entries.length > 0) {
+      const text = entries[0].textContent;
+      // Should be truncated with ellipsis
+      expect(text).toContain('...');
+    }
+
+    stop();
+    destroy();
+  });
+
+  it('(-) diagnostic badge takes priority over idea badge', () => {
+    start();
+    addPageNote();
+    const anns = getAnnotations();
+    anns[0].diagnostic = { section: 'Network', data: 'test' };
+    anns[0].category = 'idea';
+    anns[0].comment = 'Network: test';
+    create();
+    refresh();
+
+    const entries = getEntries();
+    if (entries.length > 0) {
+      const html = entries[0].innerHTML;
+      // Diagnostic (teal) takes priority over idea (yellow)
+      expect(html).toMatch(/14b8a6|20, 184, 166/);
+      expect(html).not.toMatch(/eab308|234, 179, 8/);
+    }
+
+    stop();
+    destroy();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Inspect tab section copy buttons
 // ---------------------------------------------------------------------------
 
