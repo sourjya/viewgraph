@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 440" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
   <defs>
     <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#0f172a"/>
@@ -18,7 +18,7 @@
   </defs>
 
   <!-- Background -->
-  <rect width="900" height="480" rx="16" fill="url(#bg2)"/>
+  <rect width="900" height="440" rx="16" fill="url(#bg2)"/>
 
   <!-- Title -->
   <text x="450" y="48" text-anchor="middle" fill="#f8fafc" font-size="28" font-weight="800" letter-spacing="1">WHAT HAPPENS IN YOUR BROWSER,</text>
@@ -85,12 +85,11 @@
   <text x="750" y="359" text-anchor="middle" fill="#f8fafc" font-size="13" font-weight="600">Local MCP Server</text>
 
   <!-- "localhost only" label -->
-  <text x="750" y="388" text-anchor="middle" fill="#22c55e" font-size="11" font-weight="600">localhost:9876 only</text>
+  <text x="750" y="388" text-anchor="middle" fill="#22c55e" font-size="11" font-weight="600">localhost only</text>
 
   <!-- Cloud with X -->
   <text x="750" y="406" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="600">&#x2718; No external connections</text>
 
-  <!-- Footer -->
-  <rect x="0" y="440" width="900" height="40" rx="0" fill="#16a34a"/>
-  <text x="450" y="465" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="700" letter-spacing="1">OPEN SOURCE (AGPL-3.0) - AUDIT THE CODE YOURSELF - GITHUB.COM/SOURJYA/VIEWGRAPH</text>
+  <!-- Bottom padding -->
+  <rect x="0" y="430" width="900" height="50" fill="url(#bg2)"/>
 </svg>
