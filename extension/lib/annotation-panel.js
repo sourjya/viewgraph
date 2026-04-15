@@ -153,6 +153,12 @@ export async function show(annotation, callbacks = {}) {
     categoryWrapper.innerHTML = '';
     const selected = parseCats();
 
+    // Restyle panel when idea category is active
+    const isIdea = selected.includes('idea');
+    const defaultBorder = MARKER_COLORS[(annotation.id - 1) % MARKER_COLORS.length];
+    panelEl.style.border = `2px solid ${isIdea ? '#eab308' : defaultBorder}`;
+    panelEl.style.background = isIdea ? '#1a1a0e' : '#1e1e2e';
+
     // Render chips for selected categories
     for (const val of selected) {
       const chip = document.createElement('span');

@@ -800,6 +800,33 @@ export function create() {
       });
       headerRow.appendChild(badge);
     }
+    // Copy button - copies section content as text
+    const copyBtn = document.createElement('button');
+    copyBtn.setAttribute(ATTR, 'section-copy');
+    copyBtn.dataset.section = title;
+    copyBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+    copyBtn.title = `Copy ${title} data`;
+    Object.assign(copyBtn.style, {
+      border: 'none', background: 'transparent', cursor: 'pointer', color: '#555',
+      padding: '2px', borderRadius: '3px', display: 'flex', flexShrink: '0',
+    });
+    copyBtn.addEventListener('mouseenter', () => { copyBtn.style.color = '#a5b4fc'; });
+    copyBtn.addEventListener('mouseleave', () => { if (copyBtn.dataset.copied !== 'true') copyBtn.style.color = '#555'; });
+    copyBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const text = `${title}:\n${body.textContent.trim()}`;
+      navigator.clipboard.writeText(text).then(() => {
+        copyBtn.dataset.copied = 'true';
+        copyBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+        copyBtn.style.color = '#4ade80';
+        setTimeout(() => {
+          copyBtn.dataset.copied = 'false';
+          copyBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+          copyBtn.style.color = '#555';
+        }, 1500);
+      }).catch(() => {});
+    });
+    headerRow.appendChild(copyBtn);
     const body = document.createElement('div');
     Object.assign(body.style, { display: 'none', marginTop: '6px', fontSize: '11px' });
     headerRow.addEventListener('click', () => {

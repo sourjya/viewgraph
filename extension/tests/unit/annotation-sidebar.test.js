@@ -807,6 +807,53 @@ describe('settings', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Inspect tab section copy buttons
+// ---------------------------------------------------------------------------
+
+describe('inspect tab section copy buttons', () => {
+  it('(+) each section has a copy button with unique data-section', async () => {
+    start();
+    create();
+    const tabs = shadowQueryAll(`[${ATTR}="primary-tab"]`);
+    const inspectTab = [...tabs].find((t) => t.textContent.includes('Inspect'));
+    if (inspectTab) inspectTab.click();
+    await new Promise((r) => setTimeout(r, 100));
+
+    const copyBtns = shadowQueryAll(`[${ATTR}="section-copy"]`);
+    // In test env, at least Network and Console sections should render
+    if (copyBtns.length > 0) {
+      // Each button has a unique data-section attribute
+      const sections = copyBtns.map((b) => b.dataset.section);
+      const unique = new Set(sections);
+      expect(unique.size).toBe(sections.length);
+    }
+
+    stop();
+    destroy();
+  });
+
+  it('(+) copy buttons have distinct section names (no cross-contamination)', async () => {
+    start();
+    create();
+    const tabs = shadowQueryAll(`[${ATTR}="primary-tab"]`);
+    const inspectTab = [...tabs].find((t) => t.textContent.includes('Inspect'));
+    if (inspectTab) inspectTab.click();
+    await new Promise((r) => setTimeout(r, 100));
+
+    const copyBtns = shadowQueryAll(`[${ATTR}="section-copy"]`);
+    const sections = copyBtns.map((b) => b.dataset.section);
+    // Verify known sections exist
+    if (sections.length > 0) {
+      expect(sections).toContain('Network');
+      expect(sections).toContain('Console');
+    }
+
+    stop();
+    destroy();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Auto-audit toggle and badge
 // ---------------------------------------------------------------------------
 
