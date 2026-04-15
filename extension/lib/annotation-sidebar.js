@@ -1701,7 +1701,7 @@ export function refresh() {
         color: '#fff',
         fontSize: '10px', fontWeight: '900', marginRight: '4px', flexShrink: '0',
         fontFamily: 'system-ui, sans-serif',
-        padding: '1px 3px', borderRadius: '3px',
+        padding: '1px 4px', borderRadius: '3px',
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       });
       sevIcon.title = ann.severity;
