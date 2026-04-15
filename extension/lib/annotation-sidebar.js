@@ -10,7 +10,7 @@
  */
 
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker } from './annotate.js';
+import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker, MARKER_COLORS } from './annotate.js';
 import { KEYS, get as storageGet, set as storageSet } from './storage.js';
 import { groupRequests, smartPath } from './network-grouper.js';
 
@@ -1668,28 +1668,46 @@ export function refresh() {
       maxHeight: '20px', transition: 'max-height 0.25s ease, white-space 0s',
     });
 
-    // Number badge - color encodes severity (red=critical, yellow=major, default=purple)
+    // Number badge - color matches the bounding box marker on the page
+    // Severity dot - separate indicator after the number
     const numBadge = document.createElement('span');
-    const SEV_BADGE_COLORS = { critical: '#dc2626', major: '#f59e0b', minor: '#6b7280' };
-    const badgeBg = ann.type === 'page-note' ? '#0ea5e9' : (SEV_BADGE_COLORS[ann.severity] || '#6366f1');
+    const SEV_DOT_COLORS = { critical: '#ef4444', major: '#eab308', minor: '#9ca3af' };
+    const markerColor = ann.type === 'page-note' ? '#0ea5e9' : MARKER_COLORS[(ann.id - 1) % MARKER_COLORS.length];
     if (ann.type === 'page-note') {
       numBadge.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${ann.id}`;
       Object.assign(numBadge.style, {
-        background: badgeBg, color: '#fff', fontSize: '10px', fontWeight: '700',
-        padding: '1px 5px', borderRadius: '3px', marginRight: '4px',
+        background: markerColor, color: '#fff', fontSize: '10px', fontWeight: '700',
+        padding: '1px 5px', borderRadius: '3px', marginRight: '2px',
         fontFamily: 'system-ui, sans-serif', flexShrink: '0',
         display: 'inline-flex', alignItems: 'center', gap: '1px',
       });
     } else {
       numBadge.textContent = `#${ann.id}`;
       Object.assign(numBadge.style, {
-        background: badgeBg, color: '#fff', fontSize: '10px', fontWeight: '700',
-        padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
+        background: markerColor, color: '#fff', fontSize: '10px', fontWeight: '700',
+        padding: '1px 4px', borderRadius: '3px', marginRight: '2px',
         fontFamily: 'system-ui, sans-serif', flexShrink: '0',
       });
     }
-    if (ann.severity) numBadge.title = ann.severity;
+    numBadge.title = `Annotation ${ann.id}`;
     line1.appendChild(numBadge);
+
+    // Severity dot - separate from number badge
+    if (ann.severity) {
+      const sevDot = document.createElement('span');
+      sevDot.textContent = '●';
+      Object.assign(sevDot.style, {
+        color: SEV_DOT_COLORS[ann.severity] || '#a855f7',
+        fontSize: '10px', marginRight: '4px', flexShrink: '0',
+      });
+      sevDot.title = ann.severity;
+      line1.appendChild(sevDot);
+    } else {
+      // No severity set - add small spacer
+      const spacer = document.createElement('span');
+      spacer.style.marginRight = '4px';
+      line1.appendChild(spacer);
+    }
 
     // Ancestor element badge
     if (ann.ancestor) {

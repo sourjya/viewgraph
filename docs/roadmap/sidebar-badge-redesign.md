@@ -1,8 +1,8 @@
 # Sidebar Annotation Badge Color Redesign
 
 **Priority:** Medium (UX polish, post-beta)
-**Status:** Planned
-**Date:** 2026-04-13
+**Status:** DONE
+**Date:** 2026-04-15
 
 ## Problem
 
