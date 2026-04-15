@@ -125,6 +125,16 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 
 
+
+#### Codebase Audit (2026-04-15)
+- 8-scan audit: dead code, stale references, test coverage, edge cases
+- Removed dead `getServerToken()` and `authHeaders()` from constants.js
+- Identified ~18 unused exports (test-only or unfinished features - kept)
+- 982 tests verified: 46 routing, 10 security, all edge cases covered
+- Prompt engineering audit: all 8 prompts tightened with scope boundaries and output formats
+- BUG-012: steering doc overriding prompt constraints - fixed with priority section
+- Reports: `docs/audits/codebase-audit-2026-04-15.md`, `docs/audits/prompt-engineering-audit-2026-04-15.md`
+
 #### ADR-010: Auth Removal for Beta (2026-04-13)
 - Removed HTTP auth tokens from server, extension, and init script
 - Full threat model analysis: localhost HTTP risks, token lifecycle failures, attack vectors

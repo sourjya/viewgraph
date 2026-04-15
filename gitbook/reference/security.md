@@ -61,6 +61,7 @@ The entire codebase is open source under AGPL-3.0. You can inspect every line:
 - [Server source](https://github.com/sourjya/viewgraph/tree/main/server)
 - [Security assessment](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/security-assessment.md)
 - [Security audit](https://github.com/sourjya/viewgraph/blob/main/docs/audits/security-audit-2026-04-12.md)
+- [Codebase audit](https://github.com/sourjya/viewgraph/blob/main/docs/audits/codebase-audit-2026-04-15.md)
 
 ## Security Audits Performed
 
