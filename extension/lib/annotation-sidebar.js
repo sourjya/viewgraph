@@ -1692,16 +1692,17 @@ export function refresh() {
     numBadge.title = `Annotation ${ann.id}`;
     line1.appendChild(numBadge);
 
-    // Severity dot - separate from number badge
+    // Severity icon - colored exclamation mark, separate from number badge
     if (ann.severity) {
-      const sevDot = document.createElement('span');
-      sevDot.textContent = '●';
-      Object.assign(sevDot.style, {
+      const sevIcon = document.createElement('span');
+      sevIcon.textContent = '!';
+      Object.assign(sevIcon.style, {
         color: SEV_DOT_COLORS[ann.severity] || '#a855f7',
-        fontSize: '10px', marginRight: '4px', flexShrink: '0',
+        fontSize: '11px', fontWeight: '900', marginRight: '4px', flexShrink: '0',
+        fontFamily: 'system-ui, sans-serif',
       });
-      sevDot.title = ann.severity;
-      line1.appendChild(sevDot);
+      sevIcon.title = ann.severity;
+      line1.appendChild(sevIcon);
     } else {
       // No severity set - add small spacer
       const spacer = document.createElement('span');
