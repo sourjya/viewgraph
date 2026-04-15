@@ -34,6 +34,7 @@
 
 ## Reference
 
+* [Keyboard Shortcuts](reference/keyboard-shortcuts.md)
 * [Security](reference/security.md)
 * [Prompt Shortcuts](reference/prompt-shortcuts.md)
 * [Roadmap](reference/roadmap.md)
