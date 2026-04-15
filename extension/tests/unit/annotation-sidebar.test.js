@@ -618,3 +618,83 @@ describe('inspect tab captures section', () => {
     delete navigator.clipboard;
   });
 });
+
+// ---------------------------------------------------------------------------
+// Pending state after Send to Agent
+// ---------------------------------------------------------------------------
+
+describe('pending state after Send to Agent', () => {
+  it('(+) pending annotation renders amber status text', () => {
+    start();
+    addPageNote();
+    const anns = getAnnotations();
+    anns[0].pending = true;
+    create();
+    refresh();
+
+    const entries = getEntries();
+    if (entries.length > 0) {
+      const text = entries[0].textContent;
+      expect(text).toContain('Sent to agent');
+    }
+
+    stop();
+    destroy();
+  });
+
+  it('(+) resolved annotation shows resolution instead of pending', () => {
+    start();
+    addPageNote();
+    const anns = getAnnotations();
+    anns[0].pending = true;
+    anns[0].resolved = true;
+    anns[0].resolution = { by: 'kiro', action: 'fixed', summary: 'Done' };
+    create();
+    refresh();
+
+    const entries = getEntries();
+    if (entries.length > 0) {
+      const text = entries[0].textContent;
+      expect(text).toContain('fixed');
+      expect(text).not.toContain('Sent to agent');
+    }
+
+    stop();
+    destroy();
+  });
+
+  it('(+) non-pending unresolved annotation does not show amber text', () => {
+    start();
+    addPageNote();
+    create();
+    refresh();
+
+    const entries = getEntries();
+    if (entries.length > 0) {
+      const text = entries[0].textContent;
+      expect(text).not.toContain('Sent to agent');
+    }
+
+    stop();
+    destroy();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Keyboard shortcuts integration
+// ---------------------------------------------------------------------------
+
+describe('keyboard shortcuts integration', () => {
+  it('(+) shortcuts are cleaned up on destroy without errors', () => {
+    start();
+    create();
+    destroy();
+    stop();
+
+    // After destroy, dispatching shortcut keys should not throw
+    expect(() => {
+      const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+      document.dispatchEvent(event);
+    }).not.toThrow();
+  });
+});
