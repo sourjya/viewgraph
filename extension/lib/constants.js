@@ -37,8 +37,6 @@ export function resetServerCache() {
   _registryExpiry = 0;
 }
 
-/** Get the cached auth token. No longer used - auth removed for beta (ADR-010). */
-export function getServerToken() { return null; }
 
 /** Get the detected agent name. Defaults to "Agent". */
 export function getAgentName() {
@@ -234,10 +232,4 @@ export async function discoverServer(pageUrl = null, targetDir = null) {
   return [...reg.values()][0].url;
 }
 
-/**
- * Build Authorization headers. No-op for beta - auth removed (ADR-010).
- * @returns {object}
- */
-export function authHeaders() {
-  return {};
-}
+
