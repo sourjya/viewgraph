@@ -35,8 +35,8 @@
 ## Reference
 
 * [Keyboard Shortcuts](reference/keyboard-shortcuts.md)
-* [Security](reference/security.md)
 * [Prompt Shortcuts](reference/prompt-shortcuts.md)
+* [Security](reference/security.md)
 * [Roadmap](reference/roadmap.md)
 * [FAQ](reference/faq.md)
 * [License (AGPL-3.0)](reference/license.md)
