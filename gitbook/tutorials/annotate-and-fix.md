@@ -2,14 +2,11 @@
 
 The core ViewGraph workflow: see a bug, click it, describe it, agent fixes it. Three bugs annotated and fixed without ever opening DevTools - the agent does the rest.
 
-**Watch the full walkthrough** - see how three visual bugs on a login page get annotated in the browser and fixed by Kiro in under 4 minutes:
+**Watch the walkthrough** - three visual bugs on a login page, annotated and fixed by Kiro:
 
-<figure>
-  <a href="https://www.youtube.com/watch?v=ociXQLaY2z4">
-    <img src="../.gitbook/assets/demo-thumbnail.png" alt="ViewGraph Demo - Annotate and Fix Bugs" width="600">
-  </a>
-  <figcaption>Demo: Annotate bugs in the browser, send to Kiro, watch them get fixed</figcaption>
-</figure>
+{% embed url="https://www.youtube.com/watch?v=ociXQLaY2z4" %}
+Demo: Annotate bugs in the browser, send to Kiro, watch them get fixed
+{% endembed %}
 
 ## Prerequisites
 
