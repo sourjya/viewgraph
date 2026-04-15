@@ -162,22 +162,28 @@ export function create() {
 
   const toggle = document.createElement('button');
   toggle.setAttribute(ATTR, 'toggle');
-  toggle.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>ViewGraph';
+  // VG icon from extension assets + label + connection dot inline
+  const vgIcon = document.createElement('img');
+  vgIcon.src = chrome.runtime.getURL('icon-16.png');
+  vgIcon.width = 16;
+  vgIcon.height = 16;
+  Object.assign(vgIcon.style, { verticalAlign: 'middle', marginRight: '6px' });
+  toggle.appendChild(vgIcon);
+  toggle.appendChild(document.createTextNode('ViewGraph'));
   Object.assign(toggle.style, {
     flex: '1', padding: '10px', border: 'none',
     background: 'transparent', color: '#a5b4fc', fontSize: '13px', fontWeight: '600',
-    cursor: 'pointer', textAlign: 'left',
+    cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center',
   });
   toggle.addEventListener('click', () => toggleCollapse());
 
-  // Connection status dot in header
+  // Connection status dot - inline after ViewGraph label
   const statusDot = document.createElement('span');
   statusDot.setAttribute(ATTR, 'status-dot');
   Object.assign(statusDot.style, {
-    width: '8px', height: '8px', borderRadius: '50%',
+    width: '7px', height: '7px', borderRadius: '50%',
     background: '#666', flexShrink: '0', transition: 'background 0.3s',
-    marginRight: '6px', marginLeft: '2px',
-    boxShadow: '0 0 0 3px #1e1e2e',
+    marginLeft: '6px',
   });
 
   // Status banner - shown between primary tabs and content when disconnected
@@ -255,7 +261,10 @@ export function create() {
     if (typeof switchTab === 'function') switchTab('review');
   });
 
-  header.append(toggle, statusDot, bellBtn, collapseBtn, closeBtn);
+  // Dot goes inside toggle, after the label text
+  toggle.appendChild(statusDot);
+
+  header.append(toggle, bellBtn, collapseBtn, closeBtn);
 
   // Help button in header - opens slide-down help card
   const helpBtn = document.createElement('button');
@@ -1341,7 +1350,7 @@ export function create() {
   shadow.append(scrollStyle, sidebarEl);
   document.documentElement.appendChild(hostEl);
 
-  // Collapsed strip - vertical mode icons, hidden initially
+  // Collapsed strip - vertical: VG icon + <, separator, tool icons, separator, chat count
   badgeEl = document.createElement('div');
   badgeEl.setAttribute(ATTR, 'collapse-badge');
   Object.assign(badgeEl.style, {
@@ -1350,30 +1359,40 @@ export function create() {
     padding: '6px 5px', borderRadius: '10px 0 0 10px',
     background: '#252536', border: '1px solid #333', borderRight: 'none',
     fontFamily: 'system-ui, sans-serif',
-    boxShadow: '-2px 0 8px rgba(0,0,0,0.3)',
+    boxShadow: '-2px 0 8px rgba(0,0,0,0.3)', alignItems: 'center',
   });
 
-  // Expand button at top of strip
+  // VG icon at top of strip
+  const stripIcon = document.createElement('img');
+  stripIcon.src = chrome.runtime.getURL('icon-16.png');
+  stripIcon.width = 20;
+  stripIcon.height = 20;
+  Object.assign(stripIcon.style, { cursor: 'pointer', padding: '2px' });
+  stripIcon.title = 'ViewGraph';
+  stripIcon.addEventListener('click', () => { expand(); setCaptureMode(null); updateModeButtons(); });
+  badgeEl.appendChild(stripIcon);
+
+  // Expand chevron next to icon
   const expandBtn = document.createElement('button');
-  expandBtn.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+  expandBtn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
   Object.assign(expandBtn.style, {
     border: 'none', background: 'transparent', color: '#a5b4fc',
-    cursor: 'pointer', padding: '4px', borderRadius: '4px', display: 'flex',
+    cursor: 'pointer', padding: '2px', borderRadius: '4px', display: 'flex',
   });
   expandBtn.title = 'Expand sidebar';
   expandBtn.addEventListener('click', () => { expand(); setCaptureMode(null); updateModeButtons(); });
   badgeEl.appendChild(expandBtn);
 
-  // Divider
-  const stripDivider = document.createElement('div');
-  Object.assign(stripDivider.style, { height: '1px', background: '#333', margin: '2px 0' });
-  badgeEl.appendChild(stripDivider);
+  // Separator 1
+  const stripSep1 = document.createElement('div');
+  Object.assign(stripSep1.style, { height: '1px', width: '100%', background: '#333', margin: '3px 0' });
+  badgeEl.appendChild(stripSep1);
 
-  // Mode icons in collapsed strip - doubled size for easy tap targets
+  // Mode icons in collapsed strip
   const stripButtons = {};
   for (const [key, icon] of Object.entries(MODE_ICONS)) {
     const btn = document.createElement('button');
-    btn.innerHTML = icon.replace(/width="16" height="16"/, 'width="32" height="32"');
+    btn.innerHTML = icon.replace(/width="16" height="16"/, 'width="28" height="28"');
     btn.title = MODE_HINTS[key];
     btn.dataset.mode = key;
     Object.assign(btn.style, {
@@ -1399,6 +1418,11 @@ export function create() {
     stripButtons[key] = btn;
     badgeEl.appendChild(btn);
   }
+
+  // Separator 2 (before chat count)
+  const stripSep2 = document.createElement('div');
+  Object.assign(stripSep2.style, { height: '1px', width: '100%', background: '#333', margin: '3px 0' });
+  badgeEl.appendChild(stripSep2);
 
   /** Sync collapsed strip mode button active states. */
   function updateStripButtons() {

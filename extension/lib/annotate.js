@@ -451,7 +451,7 @@ function onWheel(e) {
 }
 
 function onKeyDown(e) {
-  if (e.key === 'Escape') stop();
+  // Escape is handled by keyboard-shortcuts.js (layered: help card -> deselect -> collapse)
 }
 
 // ---------------------------------------------------------------------------
