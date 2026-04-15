@@ -8,7 +8,7 @@
 
 | Milestone | Status | Key Deliverables |
 |---|---|---|
-| M0-M8: Foundation | Complete | 34 MCP tools, extension core, Kiro Power |
+| M0-M8: Foundation | Complete | 36 MCP tools, extension core, Kiro Power |
 | M9.5: Settings Page | Complete | Auto-capture, server URL, quality settings |
 | M10.1: Element Flash | Complete | Visual feedback on select |
 | M10.2: Annotation Status | Complete | Stale annotation detection |
@@ -37,10 +37,13 @@
 | Code Quality Audit | Complete | Deduplication, static import conversion, timeout fixes |
 | Dead Code Elimination | Complete | 16 unused exports/imports/functions removed |
 | Redundancy Centralization | Complete | selector(), ATTR, readAndParse() helpers extracted |
-| M16: Sidebar UX Polish | In Progress | UX-01/08/09/10 done, UX-02/03/04/05/06/07 remaining |
+| M16: Sidebar UX Polish | In Progress | Help overlay, keyboard shortcuts, settings to footer, VG icon, strip redesign |
+| F2: Project Config | Complete | .viewgraph/config.json, GET/PUT endpoints, extension fetch/cache |
+| F7: CSS Style Diff | Complete | compare_styles MCP tool - diff computed styles between captures |
+| F8: Component Coverage | Complete | get_component_coverage MCP tool - testid coverage per component |
 | M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
 
-**Current totals:** 923 tests (324 server + 599 extension), 34 MCP tools, 14 enrichment collectors
+**Current totals:** 1045 tests (373 server + 672 extension), 36 MCP tools, 14 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and

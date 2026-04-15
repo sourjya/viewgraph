@@ -1,6 +1,6 @@
-# MCP Tools (34)
+# MCP Tools (36)
 
-ViewGraph exposes 34 tools to your AI agent via the Model Context Protocol. The agent discovers them automatically - you don't call them directly.
+ViewGraph exposes 36 tools to your AI agent via the Model Context Protocol. The agent discovers them automatically - you don't call them directly.
 
 ![Kiro using ViewGraph MCP tools](../.gitbook/assets/mcp-tools-kiro.png)
 
@@ -71,4 +71,6 @@ ViewGraph exposes 34 tools to your AI agent via the Model Context Protocol. The 
 | `find_source` | Find source file that renders a DOM element (testid, label, selector, React fiber) |
 | `check_consistency` | Compare elements across pages for style inconsistencies |
 | `compare_screenshots` | Pixel-by-pixel screenshot comparison |
+| `compare_styles` | Diff computed CSS styles of an element between two captures |
+| `get_component_coverage` | Report data-testid coverage per framework component |
 | `validate_capture` | Check capture for quality issues (empty pages, missing data) |
