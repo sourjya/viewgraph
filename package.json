@@ -1,6 +1,6 @@
 {
   "name": "@viewgraph/core",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "MCP server for AI-powered UI capture, auditing, and annotation",
   "type": "module",
   "main": "server/index.js",
@@ -49,7 +49,16 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "keywords": ["mcp", "viewgraph", "ui-review", "accessibility", "dom-capture", "kiro", "claude", "cursor"],
+  "keywords": [
+    "mcp",
+    "viewgraph",
+    "ui-review",
+    "accessibility",
+    "dom-capture",
+    "kiro",
+    "claude",
+    "cursor"
+  ],
   "license": "AGPL-3.0",
   "homepage": "https://chaoslabz.gitbook.io/viewgraph",
   "bugs": {

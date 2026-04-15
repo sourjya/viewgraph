@@ -1,6 +1,6 @@
 {
   "name": "@viewgraph/playwright",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "ViewGraph capture fixture for Playwright - capture structured DOM snapshots during E2E tests",
   "type": "module",
   "main": "index.js",
@@ -22,7 +22,14 @@
   "peerDependencies": {
     "@playwright/test": ">=1.40.0"
   },
-  "keywords": ["viewgraph", "playwright", "testing", "dom-capture", "mcp", "accessibility"],
+  "keywords": [
+    "viewgraph",
+    "playwright",
+    "testing",
+    "dom-capture",
+    "mcp",
+    "accessibility"
+  ],
   "license": "AGPL-3.0",
   "homepage": "https://chaoslabz.gitbook.io/viewgraph",
   "bugs": {
