@@ -49,3 +49,5 @@ Each run is recorded in a timestamped index so accuracy can be tracked across co
 Browser automation MCP servers (Playwright MCP, Browser Use) operate on accessibility trees or screenshots rather than structured DOM, so there is no directly comparable recall/precision measurement. ViewGraph is the only tool that produces structured, agent-consumable DOM captures and measures their fidelity against ground truth.
 
 Full experiment code and results: [scripts/experiments/bulk-capture/](https://github.com/sourjya/viewgraph/tree/main/scripts/experiments/bulk-capture)
+
+![Accuracy experiment terminal output](../.gitbook/assets/accuracy-terminal.png)
