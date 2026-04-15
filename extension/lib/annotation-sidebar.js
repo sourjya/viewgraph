@@ -74,6 +74,8 @@ import { collectComponents } from './component-collector.js';
 import { checkRendered } from './visibility-collector.js';
 import { startWatcher, stopWatcher, isWatcherEnabled } from './continuous-capture.js';
 import { isRecording, startSession, stopSession, getState } from './session-manager.js';
+import { startJourney, stopJourney } from './journey-recorder.js';
+import { startShortcuts, stopShortcuts } from './keyboard-shortcuts.js';
 import { connect as wsConnect, disconnect as wsDisconnect } from './ws-client.js';
 
 import { ATTR } from './selector.js';
@@ -1012,9 +1014,15 @@ export function create() {
     });
     recBtn.addEventListener('click', () => {
       if (isRecording()) {
+        stopJourney();
         stopSession();
       } else {
         startSession();
+        startJourney(({ url, trigger: src }) => {
+          // Auto-capture on navigation during journey recording
+          chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true, sessionNote: `Auto: ${src} to ${url}` }, () => {});
+          refreshInspect();
+        });
       }
       refreshInspect();
     });
@@ -1313,6 +1321,21 @@ export function create() {
       },
     });
   })();
+
+  // Wire keyboard shortcuts for annotate mode actions
+  startShortcuts({
+    onEscape: () => { collapse(); },
+    onSend: () => { hostEl?.shadowRoot?.querySelector(`[${ATTR}="send"]`)?.click(); },
+    onCopyMd: () => { hostEl?.shadowRoot?.querySelector(`[${ATTR}="copy-md"]`)?.click(); },
+    onDelete: () => {
+      const selected = getAnnotations().find((a) => a.selected);
+      if (selected) { removeAnnotation(selected.id); refresh(); }
+    },
+    onSeverity: (sev) => {
+      const selected = getAnnotations().find((a) => a.selected);
+      if (selected) { updateSeverity(selected.id, sev); refresh(); }
+    },
+  });
 }
 
 /** Collapse sidebar to strip. Exported for capture mode integration. */
@@ -1821,6 +1844,8 @@ export function refresh() {
 
 /** Remove the sidebar from the DOM. */
 export function destroy() {
+  stopShortcuts();
+  stopJourney();
   stopRequestPolling();
   stopResolutionPolling();
   wsDisconnect();
