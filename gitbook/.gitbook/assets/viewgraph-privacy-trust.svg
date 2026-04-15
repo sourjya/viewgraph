@@ -26,9 +26,9 @@
   <text x="450" y="106" text-anchor="middle" fill="#94a3b8" font-size="14">ViewGraph processes DOM locally. Your data never leaves your machine. Ever.</text>
 
   <!-- Left side: Shield + checklist -->
-  <!-- Shield icon -->
-  <path d="M120,170 L120,220 C120,260 150,295 170,310 C190,295 220,260 220,220 L220,170 L170,150 Z" fill="url(#shield-fill)" opacity="0.15" stroke="#22c55e" stroke-width="2"/>
-  <text x="170" y="245" text-anchor="middle" fill="#22c55e" font-size="28" font-weight="800" filter="url(#glow)">&#x2713;</text>
+  <!-- Shield icon (wider, shorter) -->
+  <path d="M80,175 L80,240 C80,285 130,325 160,345 C190,325 240,285 240,240 L240,175 L160,150 Z" fill="url(#shield-fill)" opacity="0.15" stroke="#22c55e" stroke-width="2"/>
+  <text x="160" y="275" text-anchor="middle" fill="#22c55e" font-size="48" font-weight="800" filter="url(#glow)">&#x2713;</text>
 
   <!-- Checklist items -->
   <!-- Item 1: Process DOM locally -->
@@ -85,10 +85,10 @@
   <text x="750" y="359" text-anchor="middle" fill="#f8fafc" font-size="13" font-weight="600">Local MCP Server</text>
 
   <!-- "localhost only" label -->
-  <text x="750" y="394" text-anchor="middle" fill="#22c55e" font-size="11" font-weight="600">localhost:9876 only</text>
+  <text x="750" y="388" text-anchor="middle" fill="#22c55e" font-size="11" font-weight="600">localhost:9876 only</text>
 
   <!-- Cloud with X -->
-  <text x="750" y="416" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="600">&#x2718; No external connections</text>
+  <text x="750" y="406" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="600">&#x2718; No external connections</text>
 
   <!-- Footer -->
   <rect x="0" y="440" width="900" height="40" rx="0" fill="#16a34a"/>
