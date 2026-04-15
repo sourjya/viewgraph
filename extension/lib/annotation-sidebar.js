@@ -853,12 +853,9 @@ export function create() {
     noteBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       const fullData = body.textContent.trim();
-      // Clean summary: just section name + count from badge text
-      const badgeText = headerRow.querySelector('span:nth-child(4)')?.textContent || '';
-      const summary = badgeText || title;
       const ann = addPageNote();
       if (ann) {
-        updateComment(ann.id, summary);
+        updateComment(ann.id, '');
         ann.diagnostic = { section: title, data: fullData };
         refresh();
         noteBtn.dataset.noted = 'true';
