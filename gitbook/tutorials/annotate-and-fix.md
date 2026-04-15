@@ -4,7 +4,7 @@ The core ViewGraph workflow: see a bug, click it, describe it, agent fixes it. T
 
 **Watch the walkthrough** - three visual bugs on a login page, annotated and fixed by Kiro:
 
-{% embed url="https://www.youtube.com/watch?v=ociXQLaY2z4" %}
+{% embed url="https://www.youtube.com/watch?t=2s&v=ociXQLaY2z4" %}
 
 ## Prerequisites
 
