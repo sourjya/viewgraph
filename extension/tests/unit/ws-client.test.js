@@ -36,10 +36,10 @@ afterEach(() => { disconnect(); });
 
 describe('WebSocket client', () => {
   it('(+) connect establishes WebSocket (no auth - ADR-010)', async () => {
-    let ws;
+    let _ws;
     const origWS = globalThis.WebSocket;
     globalThis.WebSocket = class extends MockWebSocket {
-      constructor(...args) { super(...args); ws = this; }
+      constructor(...args) { super(...args); _ws = this; }
     };
     connect({ url: 'http://127.0.0.1:9876',  });
     await new Promise((r) => setTimeout(r, 20));

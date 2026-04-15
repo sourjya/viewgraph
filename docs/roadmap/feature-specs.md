@@ -234,3 +234,23 @@ F10 (live DOM watcher)     <- depends on F2, F3
 ```
 
 GitBook updates needed for: F1 (shortcuts page), F3 (auto-audit guide), F4 (baselines guide), F5 (suggestions guide).
+
+---
+
+## Tier 4: Future Ideas
+
+### F11: Remote MCP Server Mode
+
+**Problem:** Cloud IDE users (Codespaces, Gitpod) can't connect the extension to the server without port forwarding. Teams may want a shared review server.
+
+**UX:**
+- Opt-in "Remote Mode" in extension settings: server URL + API key
+- `viewgraph-init --remote` generates API key, enables auth on server
+- Extension sends `Authorization: Bearer <key>` with every request
+- HTTPS required for remote connections (reject plain HTTP)
+- Default remains local-only - privacy promise unchanged
+
+**Auth:** API key (stateless, no sessions). Key stored in chrome.storage.local. Rate limiting on auth failures. Key rotation via `viewgraph-init --rotate-key`.
+
+**Dependencies:** Re-enable ADR-010 auth (gated behind `remote: true` config flag)
+**Effort:** Small (2-3 hours - infrastructure was built and removed)

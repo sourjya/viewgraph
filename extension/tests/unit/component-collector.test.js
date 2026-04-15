@@ -8,7 +8,7 @@
  * @see lib/component-collector.js
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { detectFramework, collectComponents } from '#lib/component-collector.js';
 
 beforeEach(() => {

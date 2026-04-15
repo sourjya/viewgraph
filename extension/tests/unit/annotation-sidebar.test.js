@@ -177,7 +177,7 @@ describe('sidebar list rendering', () => {
   it('(+) refresh updates list after removing annotation', () => {
     start();
     const a = addPageNote();
-    const b = addPageNote();
+    const _b = addPageNote();
     create();
     expect(getEntries().length).toBe(2);
     removeAnnotation(a.id);
@@ -278,7 +278,7 @@ describe('sidebar renders all annotations', () => {
     start();
     const a = addPageNote();
     const b = addPageNote();
-    const c = addPageNote();
+    const _c = addPageNote();
     resolveAnnotation(a.id);
     resolveAnnotation(b.id);
     create();

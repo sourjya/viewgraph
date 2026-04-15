@@ -14,8 +14,6 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { readFile } from 'fs/promises';
 import { existsSync, mkdirSync } from 'fs';
-import path from 'path';
-import { promises as fs } from 'fs';
 
 import {
   SERVER_NAME, SERVER_VERSION, SERVER_DESCRIPTION, LOG_PREFIX,

@@ -10,7 +10,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createHttpReceiver } from '#src/http-receiver.js';
 import { createRequestQueue } from '#src/request-queue.js';
-import { mkdirSync, rmSync, existsSync, readFileSync } from 'fs';
+import { mkdirSync, rmSync, existsSync } from 'fs';
 import path from 'path';
 import os from 'os';
 

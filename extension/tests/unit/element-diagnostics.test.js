@@ -46,7 +46,7 @@ describe('accessibility checks', () => {
   });
 
   it('(+) flags input without label', () => {
-    const hints = diagnoseElement(el('<form><input type="text"></form>'));
+    const _hints = diagnoseElement(el('<form><input type="text"></form>'));
     const input = document.querySelector('input');
     expect(diagnoseElement(input).some((h) => h.text === 'Form input has no label')).toBe(true);
   });

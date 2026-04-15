@@ -50,6 +50,7 @@ async function fetchServerInfo() {
  *
  * @see docs/bugs/BUG-009-multi-project-routing.md
  */
+// eslint-disable-next-line no-unused-vars
 async function lookupCapturesDir(pageUrl) {
   // Check if manual overrides are enabled
   const { [OVERRIDE_KEY]: overrideEnabled } = await chrome.storage.local.get(OVERRIDE_KEY);
@@ -230,7 +231,7 @@ export default defineBackground(() => {
     // Handle subtree capture from inspector - just push to server
     if (message.type === 'inspect-capture') {
       (async () => {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        const [_tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         const result = await pushToServer(message.capture);
         sendResponse({ ok: true, pushed: !!result, filename: result?.filename });
       })();

@@ -309,7 +309,7 @@ describe('annotation panel positioning', () => {
   });
 
   it('panel left position never goes below 8px', async () => {
-    const ann = { id: 3, region: { x: 10, y: 100, width: 5, height: 5 }, comment: '' };
+    const _ann = { id: 3, region: { x: 10, y: 100, width: 5, height: 5 }, comment: '' };
     // Force right edge overflow by using large region x
     const bigAnn = { id: 4, region: { x: 900, y: 100, width: 200, height: 100 }, comment: '' };
     await showPanel(bigAnn);
@@ -442,7 +442,7 @@ describe('click dedup', () => {
   });
 
   it('annotations with same region but different ancestor are not duplicates', () => {
-    const region = { x: 10, y: 10, width: 100, height: 50 };
+    const _region = { x: 10, y: 10, width: 100, height: 50 };
     expect('div.card' === 'button.primary').toBe(false);
   });
 });
@@ -919,9 +919,9 @@ describe('filter logic - all/open/resolved', () => {
   });
 
   it('partitions into open and resolved correctly', () => {
-    const a = addPageNote();
+    const _a = addPageNote();
     const b = addPageNote();
-    const c = addPageNote();
+    const _c = addPageNote();
     toggleResolved(b.id);
     const anns = getAnnotations();
     const open = anns.filter((x) => !x.resolved);
@@ -933,7 +933,7 @@ describe('filter logic - all/open/resolved', () => {
 
   it('all filter returns every annotation', () => {
     const a = addPageNote();
-    const b = addPageNote();
+    const _b = addPageNote();
     toggleResolved(a.id);
     const anns = getAnnotations();
     expect(anns).toHaveLength(2);
@@ -1203,7 +1203,7 @@ describe('resolveAnnotation edge cases', () => {
 
   it('(-) cannot delete a resolved annotation via removeAnnotation', () => {
     const a = addPageNote();
-    const b = addPageNote();
+    const _b = addPageNote();
     resolveAnnotation(a.id);
     removeAnnotation(a.id);
     // removeAnnotation still works - it removes from array entirely
@@ -1229,7 +1229,7 @@ describe('filter after mutations', () => {
 
   it('(+) open count decreases after resolve', () => {
     const a = addPageNote();
-    const b = addPageNote();
+    const _b = addPageNote();
     expect(getAnnotations().filter((x) => !x.resolved)).toHaveLength(2);
     resolveAnnotation(a.id);
     expect(getAnnotations().filter((x) => !x.resolved)).toHaveLength(1);
@@ -1323,7 +1323,7 @@ describe('badge count edge cases', () => {
 
   it('(-) deleting resolved item does not affect open count', () => {
     const a = addPageNote();
-    const b = addPageNote();
+    const _b = addPageNote();
     resolveAnnotation(a.id);
     const openBefore = getAnnotations().filter((x) => !x.resolved).length;
     removeAnnotation(a.id);
@@ -1776,7 +1776,7 @@ describe('sidebar collapse/expand lifecycle', () => {
     const b = addPageNote();
     resolveAnnotation(a.id);
     removeAnnotation(b.id);
-    const c = addPageNote();
+    const _c = addPageNote();
     expect(getAnnotations()).toHaveLength(2); // a (resolved) + c
     expect(getAnnotations().filter((x) => !x.resolved)).toHaveLength(1);
   });
