@@ -17,6 +17,8 @@ Writing E2E tests is slow:
 2. Tell your agent: `@vg-tests`
 3. Agent generates a complete Playwright test file with correct locators for every interactive element
 
+![Generating tests from a capture](../.gitbook/assets/generating-tests.png)
+
 **20-30 minutes of manual inspection reduced to one prompt.**
 
 ### Capture during tests (existing suites)

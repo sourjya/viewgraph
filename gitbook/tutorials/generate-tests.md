@@ -21,16 +21,15 @@ Tell your agent:
 @vg-tests
 ```
 
-The agent reads the capture and generates a Playwright test file with:
-- A test for each interactive element (buttons, links, inputs)
-- Correct locator strategy per element (`getByTestId` > `getByRole` > `getByLabel`)
-- Visibility assertions for critical elements
-- Page title verification
-- Basic form fill tests if inputs are present
+The agent reads the capture and generates a Playwright test file.
+
+![Kiro generating Playwright tests from a ViewGraph capture](../.gitbook/assets/generating-tests.png)
 
 ## Step 3: Review the generated file
 
 The agent creates a single `.spec.ts` file in your `tests/` directory. Review it - the locators come directly from the capture data, not from guessing.
+
+![Generated Playwright test file with correct locators](../.gitbook/assets/generated-test.png)
 
 Example output:
 

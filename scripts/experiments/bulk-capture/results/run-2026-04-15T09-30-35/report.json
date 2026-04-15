@@ -1,0 +1,498 @@
+{
+  "timestamp": "2026-04-15T09:30:51.101Z",
+  "totalSites": 3,
+  "excludedSites": 2,
+  "cleanSites": 1,
+  "sitesWithAccuracy": 1,
+  "excludedReasons": {
+    "botBlocked": 2,
+    "cspBlocked": 0,
+    "navFailed": 0,
+    "total": 2,
+    "urls": {
+      "botBlocked": [
+        "https://www.bbc.com",
+        "https://www.theverge.com"
+      ],
+      "cspBlocked": [],
+      "navFailed": []
+    }
+  },
+  "weights": {
+    "testidRecall": 0.2,
+    "interactiveRecall": 0.2,
+    "selectorAccuracy": 0.2,
+    "bboxAccuracy": 0.15,
+    "textAccuracy": 0.1,
+    "semanticRecall": 0.1,
+    "elementRecall": 0.05
+  },
+  "accuracy": {
+    "overall": {
+      "mean": 0.922,
+      "median": 0.922,
+      "p5": 0.922,
+      "p95": 0.922
+    },
+    "dimensions": {
+      "testidRecall": {
+        "mean": 1,
+        "median": 1,
+        "p5": 1,
+        "p95": 1,
+        "weight": 0.2
+      },
+      "interactiveRecall": {
+        "mean": 1,
+        "median": 1,
+        "p5": 1,
+        "p95": 1,
+        "weight": 0.2
+      },
+      "selectorAccuracy": {
+        "mean": 0.961,
+        "median": 0.961,
+        "p5": 0.961,
+        "p95": 0.961,
+        "weight": 0.2
+      },
+      "bboxAccuracy": {
+        "mean": 1,
+        "median": 1,
+        "p5": 1,
+        "p95": 1,
+        "weight": 0.15
+      },
+      "textAccuracy": {
+        "mean": 0.316,
+        "median": 0.316,
+        "p5": 0.316,
+        "p95": 0.316,
+        "weight": 0.1
+      },
+      "semanticRecall": {
+        "mean": 1,
+        "median": 1,
+        "p5": 1,
+        "p95": 1,
+        "weight": 0.1
+      },
+      "elementRecall": {
+        "mean": 0.961,
+        "median": 0.961,
+        "p5": 0.961,
+        "p95": 0.961,
+        "weight": 0.05
+      }
+    }
+  },
+  "dimensions": {
+    "elementRecall": {
+      "sites": 1,
+      "recall": {
+        "mean": 1,
+        "median": 1,
+        "p5": 1,
+        "p95": 1,
+        "min": 1,
+        "max": 1
+      },
+      "vgNodeCounts": {
+        "mean": 765,
+        "median": 765,
+        "p5": 765,
+        "p95": 765,
+        "min": 765,
+        "max": 765
+      },
+      "gtVisibleCounts": {
+        "mean": 765,
+        "median": 765,
+        "p5": 765,
+        "p95": 765,
+        "min": 765,
+        "max": 765
+      }
+    },
+    "testidRecall": {
+      "sites": 1,
+      "mean": 1,
+      "median": 1,
+      "p5": 1,
+      "p95": 1,
+      "min": 1,
+      "max": 1,
+      "medianDomTestids": 0,
+      "sitesWithZeroTestids": 1
+    },
+    "interactiveRecall": {
+      "sites": 1,
+      "mean": 1,
+      "median": 1,
+      "p5": 1,
+      "p95": 1,
+      "min": 1,
+      "max": 1,
+      "medianDomInteractive": 226
+    },
+    "selectorAccuracy": {
+      "sites": 1,
+      "mean": 0.961,
+      "median": 0.961,
+      "p5": 0.961,
+      "p95": 0.961,
+      "min": 0.961,
+      "max": 0.961
+    },
+    "bboxAccuracy": {
+      "sites": 1,
+      "within5px": {
+        "mean": 1,
+        "median": 1,
+        "p5": 1,
+        "p95": 1,
+        "min": 1,
+        "max": 1
+      },
+      "within10px": {
+        "mean": 1,
+        "median": 1,
+        "p5": 1,
+        "p95": 1,
+        "min": 1,
+        "max": 1
+      },
+      "meanDeviation": {
+        "mean": 0,
+        "median": 0,
+        "p5": 0,
+        "p95": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "textAccuracy": {
+      "sites": 1,
+      "exactMatchRate": {
+        "mean": 0.261,
+        "median": 0.261,
+        "p5": 0.261,
+        "p95": 0.261,
+        "min": 0.261,
+        "max": 0.261
+      },
+      "matchRate": {
+        "mean": 0.316,
+        "median": 0.316,
+        "p5": 0.316,
+        "p95": 0.316,
+        "min": 0.316,
+        "max": 0.316
+      },
+      "totalEmptyText": 67
+    },
+    "semanticRecall": {
+      "sites": 1,
+      "mean": 1,
+      "median": 1,
+      "p5": 1,
+      "p95": 1,
+      "min": 1,
+      "max": 1
+    }
+  },
+  "groundTruth": {
+    "totalElements": {
+      "mean": 795,
+      "median": 795,
+      "p95": 795,
+      "total": 795
+    },
+    "visibleElements": {
+      "mean": 765,
+      "median": 765,
+      "p95": 765,
+      "total": 765
+    },
+    "hiddenElements": {
+      "mean": 30,
+      "median": 30,
+      "p95": 30,
+      "total": 30
+    },
+    "interactiveElements": {
+      "mean": 226,
+      "median": 226,
+      "p95": 226,
+      "total": 226
+    },
+    "semanticElements": {
+      "mean": 5,
+      "median": 5,
+      "p95": 5,
+      "total": 5
+    },
+    "elementsWithTestid": {
+      "mean": 0,
+      "median": 0,
+      "p95": 0,
+      "total": 0
+    },
+    "elementsWithRole": {
+      "mean": 0,
+      "median": 0,
+      "p95": 0,
+      "total": 0
+    },
+    "elementsWithAriaLabel": {
+      "mean": 0,
+      "median": 0,
+      "p95": 0,
+      "total": 0
+    },
+    "elementsWithText": {
+      "mean": 576,
+      "median": 576,
+      "p95": 576,
+      "total": 576
+    },
+    "shadowRoots": {
+      "mean": 0,
+      "median": 0,
+      "p95": 0,
+      "total": 0
+    },
+    "visibilityRatio": {
+      "mean": 0.962,
+      "median": 0.962,
+      "p5": 0.962,
+      "p95": 0.962,
+      "min": 0.962,
+      "max": 0.962
+    }
+  },
+  "byCategory": [
+    {
+      "group": "news",
+      "sites": 1,
+      "overallMedian": 0.922,
+      "overallMean": 0.922,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.961,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.316,
+        "semanticRecall": 1,
+        "elementRecall": 0.961
+      }
+    }
+  ],
+  "byComplexity": [
+    {
+      "group": "simple",
+      "sites": 1,
+      "overallMedian": 0.922,
+      "overallMean": 0.922,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.961,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.316,
+        "semanticRecall": 1,
+        "elementRecall": 0.961
+      }
+    }
+  ],
+  "byRendering": [
+    {
+      "group": "static",
+      "sites": 1,
+      "overallMedian": 0.922,
+      "overallMean": 0.922,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.961,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.316,
+        "semanticRecall": 1,
+        "elementRecall": 0.961
+      }
+    }
+  ],
+  "byScript": [
+    {
+      "group": "latin",
+      "sites": 1,
+      "overallMedian": 0.922,
+      "overallMean": 0.922,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.961,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.316,
+        "semanticRecall": 1,
+        "elementRecall": 0.961
+      }
+    }
+  ],
+  "byA11y": [
+    {
+      "group": "low",
+      "sites": 1,
+      "overallMedian": 0.922,
+      "overallMean": 0.922,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.961,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.316,
+        "semanticRecall": 1,
+        "elementRecall": 0.961
+      }
+    }
+  ],
+  "operational": {
+    "timing": {
+      "navigation": {
+        "count": 3,
+        "p50": 6449,
+        "p95": 13560,
+        "mean": 7252
+      },
+      "groundTruth": {
+        "count": 3,
+        "p50": 39,
+        "p95": 42,
+        "mean": 39
+      },
+      "viewgraph": {
+        "count": 3,
+        "p50": 421,
+        "p95": 509,
+        "mean": 385
+      },
+      "accuracy": {
+        "count": 3,
+        "p50": 308,
+        "p95": 481,
+        "mean": 312
+      },
+      "snapshot": {
+        "count": 3,
+        "p50": 147,
+        "p95": 319,
+        "mean": 174
+      },
+      "screenshot": {
+        "count": 3,
+        "p50": 190,
+        "p95": 198,
+        "mean": 163
+      }
+    },
+    "sizes": {
+      "viewgraph": {
+        "count": 3,
+        "p50": 856916,
+        "p95": 1047534,
+        "mean": 771350
+      },
+      "snapshot": {
+        "count": 3,
+        "p50": 817441,
+        "p95": 2339726,
+        "mean": 1123954
+      },
+      "screenshot": {
+        "count": 3,
+        "p50": 238207,
+        "p95": 621311,
+        "mean": 338199
+      }
+    },
+    "successRates": {
+      "total": 3,
+      "navigation": {
+        "count": 3,
+        "pct": 1
+      },
+      "viewgraph": {
+        "count": 3,
+        "pct": 1
+      },
+      "snapshot": {
+        "count": 3,
+        "pct": 1
+      },
+      "screenshot": {
+        "count": 3,
+        "pct": 1
+      },
+      "accuracy": {
+        "count": 3,
+        "pct": 1
+      },
+      "allOk": {
+        "count": 1,
+        "pct": 0.333
+      }
+    },
+    "failures": {
+      "errors": [
+        {
+          "category": "bot-blocked",
+          "count": 2,
+          "examples": [
+            "Likely blocked: captcha-iframe"
+          ]
+        }
+      ],
+      "botDetection": {
+        "blockedCount": 2,
+        "blockedPct": 0.667,
+        "blockedUrls": [
+          "https://www.bbc.com",
+          "https://www.theverge.com"
+        ],
+        "signalCounts": {
+          "captcha-iframe": 2
+        }
+      }
+    }
+  },
+  "worstSites": [
+    {
+      "url": "https://news.ycombinator.com",
+      "category": "news",
+      "complexity": "simple",
+      "elementRecall": 0.9607843137254902,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9607843137254902,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.31564625850340133,
+      "semanticRecall": 1,
+      "overall": 0.922
+    }
+  ],
+  "bestSites": [
+    {
+      "url": "https://news.ycombinator.com",
+      "category": "news",
+      "complexity": "simple",
+      "elementRecall": 0.9607843137254902,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9607843137254902,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.31564625850340133,
+      "semanticRecall": 1,
+      "overall": 0.922
+    }
+  ]
+}

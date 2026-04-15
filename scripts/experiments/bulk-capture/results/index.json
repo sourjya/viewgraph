@@ -134,6 +134,51 @@
           "median": 0.997
         }
       }
+    },
+    {
+      "timestamp": "2026-04-15T09:30:51.108Z",
+      "dir": "/home/sourjya/coding/viewgraph/scripts/experiments/bulk-capture/results/run-2026-04-15T09-30-35",
+      "set": "a",
+      "totalSites": 3,
+      "cleanSites": 1,
+      "sitesWithAccuracy": 1,
+      "excludedSites": 2,
+      "composite": {
+        "mean": 0.922,
+        "median": 0.922,
+        "p5": 0.922,
+        "p95": 0.922
+      },
+      "dimensions": {
+        "testidRecall": {
+          "mean": 1,
+          "median": 1
+        },
+        "interactiveRecall": {
+          "mean": 1,
+          "median": 1
+        },
+        "selectorAccuracy": {
+          "mean": 0.961,
+          "median": 0.961
+        },
+        "bboxAccuracy": {
+          "mean": 1,
+          "median": 1
+        },
+        "textAccuracy": {
+          "mean": 0.316,
+          "median": 0.316
+        },
+        "semanticRecall": {
+          "mean": 1,
+          "median": 1
+        },
+        "elementRecall": {
+          "mean": 0.961,
+          "median": 0.961
+        }
+      }
     }
   ]
 }
