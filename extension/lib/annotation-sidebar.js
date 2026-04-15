@@ -2118,7 +2118,19 @@ export function refresh() {
     }
 
     const commentText = document.createElement('span');
-    commentText.textContent = ann.comment || '(no comment)';
+    // Diagnostic notes (from Inspect section note buttons) get styled excerpt
+    const isDiagnostic = /^(Network|Console|Visibility|Stacking|Focus|Scroll|Landmarks):/.test(ann.comment || '');
+    if (isDiagnostic) {
+      const [section, ...rest] = (ann.comment || '').split(':');
+      const excerpt = rest.join(':').trim().slice(0, 50);
+      const sectionTag = document.createElement('span');
+      sectionTag.textContent = section;
+      Object.assign(sectionTag.style, { background: '#1e3a5f', color: '#60a5fa', padding: '0 4px', borderRadius: '3px', fontSize: '9px', marginRight: '4px' });
+      commentText.appendChild(sectionTag);
+      commentText.appendChild(document.createTextNode(excerpt + (rest.join(':').trim().length > 50 ? '...' : '')));
+    } else {
+      commentText.textContent = ann.comment || '(no comment)';
+    }
     Object.assign(commentText.style, { overflow: 'hidden', textOverflow: 'ellipsis' });
     if (ann.resolved) Object.assign(commentText.style, { textDecoration: 'line-through' });
 
