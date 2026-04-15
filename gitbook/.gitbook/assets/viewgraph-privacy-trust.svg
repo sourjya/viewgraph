@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 440" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 425" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
   <defs>
     <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#0f172a"/>
@@ -18,7 +18,7 @@
   </defs>
 
   <!-- Background -->
-  <rect width="900" height="440" rx="16" fill="url(#bg2)"/>
+  <rect width="900" height="425" rx="16" fill="url(#bg2)"/>
 
   <!-- Title -->
   <text x="450" y="48" text-anchor="middle" fill="#f8fafc" font-size="28" font-weight="800" letter-spacing="1">WHAT HAPPENS IN YOUR BROWSER,</text>
@@ -89,7 +89,4 @@
 
   <!-- Cloud with X -->
   <text x="750" y="406" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="600">&#x2718; No external connections</text>
-
-  <!-- Bottom padding -->
-  <rect x="0" y="430" width="900" height="50" fill="url(#bg2)"/>
 </svg>
