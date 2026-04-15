@@ -2065,8 +2065,18 @@ export function refresh() {
     const numBadge = document.createElement('span');
     const SEV_DOT_COLORS = { critical: '#ef4444', major: '#eab308', minor: '#9ca3af' };
     const isIdea = (ann.category || '').includes('idea');
-    const markerColor = isIdea ? '#eab308' : ann.type === 'page-note' ? '#0ea5e9' : MARKER_COLORS[(ann.id - 1) % MARKER_COLORS.length];
-    if (isIdea) {
+    const isDiagNote = !!ann.diagnostic;
+    const markerColor = isDiagNote ? '#14b8a6' : isIdea ? '#eab308' : ann.type === 'page-note' ? '#0ea5e9' : MARKER_COLORS[(ann.id - 1) % MARKER_COLORS.length];
+    if (isDiagNote) {
+      // Terminal/console icon in teal for diagnostic notes
+      numBadge.innerHTML = '#' + ann.id + ' <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>';
+      Object.assign(numBadge.style, {
+        background: '#14b8a6', color: '#fff', fontSize: '10px', fontWeight: '700',
+        padding: '1px 5px', borderRadius: '3px', marginRight: '2px',
+        fontFamily: 'system-ui, sans-serif', flexShrink: '0',
+        display: 'inline-flex', alignItems: 'center', gap: '2px',
+      });
+    } else if (isIdea) {
       numBadge.innerHTML = '#' + ann.id + ' <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg>';
       Object.assign(numBadge.style, {
         background: '#eab308', color: '#fff', fontSize: '10px', fontWeight: '700',
