@@ -10,7 +10,7 @@
  */
 
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker, MARKER_COLORS } from './annotate.js';
+import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker, MARKER_COLORS, updateSeverity } from './annotate.js';
 import { KEYS, get as storageGet, set as storageSet } from './storage.js';
 import { groupRequests, smartPath } from './network-grouper.js';
 

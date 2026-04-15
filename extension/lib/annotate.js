@@ -450,7 +450,7 @@ function onWheel(e) {
   highlight(next);
 }
 
-function onKeyDown(e) {
+function onKeyDown(_e) {
   // Escape is handled by keyboard-shortcuts.js (layered: help card -> deselect -> collapse)
 }
 
