@@ -5,7 +5,11 @@ description: ViewGraph annotation workflow - when and how to use UI captures
 
 # ViewGraph Workflow
 
-## When the user mentions UI issues
+## When the user uses a @vg- prompt shortcut
+
+Follow the prompt instructions exactly. Some prompts are report-only (@vg-audit, @vg-capture, @vg-diff, @vg-help) and must NOT modify files. Others are action prompts (@vg-a11y, @vg-review, @vg-testids, @vg-tests) and will specify exactly what to change. Do not exceed the scope defined in the prompt.
+
+## When the user mentions UI issues (without a prompt)
 
 1. Call `list_captures` to check for recent captures
 2. If captures exist, call `get_annotations` to read user feedback
