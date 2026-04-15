@@ -373,6 +373,11 @@ export function create() {
     const sessionNote = noteInput?.value?.trim() || undefined;
     if (noteInput) noteInput.value = '';
     chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true, sessionNote }, () => {});
+    // Mark unresolved annotations as pending (visual feedback while agent works)
+    for (const ann of getAnnotations()) {
+      if (!ann.resolved) ann.pending = true;
+    }
+    refresh();
     sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Sent!';
     sendBtn.style.background = '#059669';
     setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Agent'; sendBtn.style.background = '#6366f1'; }, 2000);
@@ -1667,6 +1672,7 @@ export function refresh() {
       padding: '8px 12px', borderBottom: '1px solid #2a2a3a',
       cursor: ann.resolved ? 'default' : 'pointer', display: 'flex', justifyContent: 'space-between',
       alignItems: 'center', transition: 'background 0.1s',
+      opacity: ann.pending && !ann.resolved ? '0.7' : '1',
     });
     entry.addEventListener('mouseenter', () => {
       entry.style.background = '#2a2a4a';
@@ -1791,6 +1797,14 @@ export function refresh() {
         fontFamily: 'system-ui, sans-serif',
       });
       label.appendChild(resLine);
+    } else if (ann.pending) {
+      const pendLine = document.createElement('div');
+      pendLine.textContent = '\u23F3 Sent to agent - waiting for fix...';
+      Object.assign(pendLine.style, {
+        color: '#f59e0b', fontSize: '10px', marginTop: '2px',
+        fontFamily: 'system-ui, sans-serif',
+      });
+      label.appendChild(pendLine);
     }
 
     // Click to scroll and show panel (open items only)
