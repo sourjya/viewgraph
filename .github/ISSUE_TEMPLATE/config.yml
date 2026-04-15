@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://chaoslabz.gitbook.io/viewgraph
+    about: Check the docs before opening an issue
+  - name: FAQ
+    url: https://chaoslabz.gitbook.io/viewgraph/reference/faq
+    about: Common questions answered here

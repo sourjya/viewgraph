@@ -1,0 +1,93 @@
+name: Bug Report
+description: Something isn't working as expected
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! The more detail you provide, the faster we can fix it.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+      placeholder: "When I click Send to Agent, nothing happens and the button stays green."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How can we see this bug?
+      placeholder: |
+        1. Open any page
+        2. Click ViewGraph icon
+        3. Add an annotation
+        4. Click "Send to Agent"
+        5. Nothing happens
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should have happened?
+      placeholder: "The capture should be sent to the MCP server and the button should show 'Sent!'"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Which part of ViewGraph?
+      options:
+        - Browser extension (sidebar, annotations, capture)
+        - MCP server (tools, analysis, server)
+        - Playwright integration
+        - Kiro Power (hooks, prompts)
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Firefox
+        - Edge
+        - Brave
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "Windows 11, macOS 14, Ubuntu 22.04, WSL2"
+
+  - type: input
+    id: version
+    attributes:
+      label: ViewGraph version
+      description: Run `npx viewgraph-status` or check extension settings
+      placeholder: "0.3.1"
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or ViewGraph export
+      description: Drag and drop screenshots, or paste a ViewGraph markdown export (Copy MD button).
+      placeholder: "Paste screenshots or markdown export here"
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      placeholder: "Console errors, network failures, or other context that might help."

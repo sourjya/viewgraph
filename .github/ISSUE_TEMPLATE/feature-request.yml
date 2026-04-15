@@ -1,0 +1,61 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We'd love to hear your ideas! Describe what you need and why.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: What are you trying to do that ViewGraph doesn't support yet?
+      placeholder: "I want to compare CSS styles across pages, but there's no way to do that from the sidebar."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: What would the ideal solution look like?
+      description: Describe how you'd want this to work. Screenshots or mockups welcome.
+      placeholder: "A 'Compare Styles' button in the Inspect tab that shows changed CSS properties between two captures."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've considered
+      description: Have you tried any workarounds?
+      placeholder: "I've been manually comparing captures in the JSON files, but it's tedious."
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Which part of ViewGraph?
+      options:
+        - Browser extension (sidebar, annotations, capture)
+        - MCP server (tools, analysis)
+        - Playwright integration
+        - Kiro Power (hooks, prompts)
+        - Documentation
+        - Other
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: How important is this to you?
+      options:
+        - Nice to have
+        - Would use it regularly
+        - Blocking my workflow
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      placeholder: "Links, screenshots, or examples that help explain the request."

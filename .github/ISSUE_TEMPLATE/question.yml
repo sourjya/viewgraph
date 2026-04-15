@@ -1,0 +1,42 @@
+name: Question
+description: Ask a question about setup, usage, or how something works
+title: "[Question] "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before asking, check the [documentation](https://chaoslabz.gitbook.io/viewgraph) and [FAQ](https://chaoslabz.gitbook.io/viewgraph/reference/faq).
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      placeholder: "How do I set up ViewGraph with multiple projects on different ports?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: What have you tried?
+      description: Any steps you've already taken or docs you've read.
+      placeholder: "I followed the Quick Start guide but I'm stuck on the multi-project setup."
+
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic
+      options:
+        - Installation and setup
+        - Browser extension usage
+        - MCP server and agent integration
+        - Playwright integration
+        - Multi-project configuration
+        - Other
+
+  - type: input
+    id: version
+    attributes:
+      label: ViewGraph version (if relevant)
+      placeholder: "0.3.1"
