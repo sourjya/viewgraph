@@ -2,7 +2,8 @@
 
 The core ViewGraph workflow: see a bug, click it, describe it, agent fixes it.
 
-<!-- TODO: Embed video V2 when recorded -->
+<!-- Video: See Bug, Fix Bug -->
+[![Watch: Annotate and Fix Bugs](../.gitbook/assets/demo-thumbnail.png)](https://www.youtube.com/watch?v=ociXQLaY2z4)
 
 ## Prerequisites
 
