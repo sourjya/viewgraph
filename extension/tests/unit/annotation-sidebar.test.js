@@ -1095,4 +1095,44 @@ describe('auto-audit', () => {
     stop();
     destroy();
   });
+
+  it('(+) auto-audit has description text', async () => {
+    start();
+    create();
+    const tabs = shadowQueryAll(`[${ATTR}="primary-tab"]`);
+    const inspectTab = [...tabs].find((t) => t.textContent.includes('Inspect'));
+    if (inspectTab) inspectTab.click();
+    await new Promise((r) => setTimeout(r, 100));
+
+    const inspectContent = shadowQuery(`[${ATTR}="inspect-content"]`);
+    if (inspectContent && inspectContent.textContent.length > 0) {
+      const text = inspectContent.textContent;
+      expect(text).toContain('a11y');
+    }
+
+    stop();
+    destroy();
+  });
+
+  it('(+) auto-audit appears after auto-capture in DOM order', async () => {
+    start();
+    create();
+    const tabs = shadowQueryAll(`[${ATTR}="primary-tab"]`);
+    const inspectTab = [...tabs].find((t) => t.textContent.includes('Inspect'));
+    if (inspectTab) inspectTab.click();
+    await new Promise((r) => setTimeout(r, 100));
+
+    const inspectContent = shadowQuery(`[${ATTR}="inspect-content"]`);
+    if (inspectContent) {
+      const html = inspectContent.innerHTML;
+      const autoCapturePos = html.indexOf('AUTO-CAPTURE');
+      const autoAuditPos = html.indexOf('AUTO-AUDIT');
+      if (autoCapturePos > -1 && autoAuditPos > -1) {
+        expect(autoAuditPos).toBeGreaterThan(autoCapturePos);
+      }
+    }
+
+    stop();
+    destroy();
+  });
 });

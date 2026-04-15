@@ -1219,6 +1219,10 @@ export function create() {
     });
     auditRow.append(auditLabel, auditToggle);
     inspectContent.appendChild(auditRow);
+    const auditDesc = document.createElement('div');
+    auditDesc.textContent = 'Runs a11y, layout, and testid audits after each capture';
+    Object.assign(auditDesc.style, { color: '#555', fontSize: '10px', marginBottom: '6px' });
+    inspectContent.appendChild(auditDesc);
 
     // Audit results badge (populated by WS audit:results messages)
     const auditBadge = document.createElement('div');
