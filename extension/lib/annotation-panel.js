@@ -183,6 +183,13 @@ export async function show(annotation, callbacks = {}) {
     panelEl.style.border = `2px solid ${isIdea ? '#eab308' : defaultBorder}`;
     panelEl.style.background = isIdea ? '#1a1a0e' : '#1e1e2e';
 
+    // Hide severity for ideas (not applicable), clear stale severity on mode switch
+    severityChip.style.display = isIdea ? 'none' : 'inline-block';
+    if (isIdea && annotation.severity) {
+      annotation.severity = '';
+      updateSeverity(annotation.id, '');
+    }
+
     // Render chips for selected categories
     for (const val of selected) {
       const chip = document.createElement('span');
