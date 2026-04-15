@@ -133,3 +133,40 @@ The sidebar split (#1) should be done as a dedicated refactor branch with no fea
 5. The core module shrinks from 2,268 lines to ~300 lines
 
 The key constraint: all modules share access to the sidebar's shadow DOM and annotation state. The core module passes these as context to each sub-module's `render()` function.
+
+
+## Test Reorganization
+
+The sidebar split requires parallel test reorganization. Currently `annotation-sidebar.test.js` is 58 tests in one file (the largest test file in the extension). It must be split to mirror the new module structure.
+
+### Current state
+- `extension/tests/unit/annotation-sidebar.test.js` - 58 tests covering creation, tabs, filters, severity, MCP disconnect, captures, baselines, pending state, keyboard shortcuts, collapsed strip, help card, settings, section copy/note buttons, auto-audit, annotation type badges, diagnostic notes
+
+### Proposed split
+
+| New test file | Mirrors | Tests (approx) |
+|---|---|---|
+| `tests/unit/sidebar/core.test.js` | `sidebar/core.js` | Creation, destroy, shadow DOM, header, tab switching |
+| `tests/unit/sidebar/review.test.js` | `sidebar/review.js` | Annotation list, entry rendering, filters, type badges, pending state |
+| `tests/unit/sidebar/inspect.test.js` | `sidebar/inspect.js` | Diagnostics, section copy/note buttons, auto-audit, auto-capture |
+| `tests/unit/sidebar/captures.test.js` | `sidebar/captures.js` | Captures section, baselines |
+| `tests/unit/sidebar/settings.test.js` | `sidebar/settings.js` | Settings screen |
+| `tests/unit/sidebar/help.test.js` | `sidebar/help.js` | Help card, shortcuts display |
+| `tests/unit/sidebar/strip.test.js` | `sidebar/strip.js` | Collapsed strip, badge count, mode icons |
+| `tests/unit/sidebar/sync.test.js` | `sidebar/sync.js` | Resolution polling, WS handlers |
+
+### Why split tests alongside source
+
+1. **One test file per source file** - project convention (see `.kiro/steering/file-naming.md`). A 58-test monolith violates this.
+2. **Faster feedback** - running `tests/unit/sidebar/inspect.test.js` takes seconds vs running the full sidebar test file.
+3. **Ownership clarity** - when a sidebar module changes, the developer knows exactly which test file to update.
+4. **Shared test fixtures** - extract common setup (chrome mocks, shadow DOM helpers, `mockFetchWith`) into `tests/unit/sidebar/helpers.js`. Currently duplicated across test sections.
+5. **Parallel execution** - Vitest runs test files in parallel. 8 small files run faster than 1 large file.
+
+### Migration approach
+
+1. Create `tests/unit/sidebar/helpers.js` with shared mocks and utilities
+2. Move tests one describe block at a time, updating imports
+3. Run full suite after each move to catch breakage
+4. Delete the monolith only after all tests are migrated
+5. Verify test count matches before and after (currently 58 sidebar tests)
