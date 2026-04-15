@@ -150,15 +150,25 @@ for (let i = 2; i < process.argv.length; i++) {
 const configPath = path.join(CWD, '.viewgraph', 'config.json');
 let config = {};
 try { config = JSON.parse(readFileSync(configPath, 'utf-8')); } catch { /* no existing config */ }
+
+// Ensure feature flag defaults exist (additive - never overwrite user values)
+const DEFAULTS = { autoAudit: false, baselineAutoCompare: false, smartSuggestions: false };
+let configChanged = false;
+for (const [key, val] of Object.entries(DEFAULTS)) {
+  if (config[key] === undefined) { config[key] = val; configChanged = true; }
+}
+
 if (urlPatterns.length > 0) {
   config.urlPatterns = [...new Set([...(config.urlPatterns || []), ...urlPatterns])];
-  writeFileSync(configPath, JSON.stringify(config, null, 2));
+  configChanged = true;
   console.log(`  URL patterns: ${config.urlPatterns.join(', ')}`);
-} else if (!config.urlPatterns && existsSync(configPath)) {
-  // Config exists but no patterns - leave it alone
-} else if (!existsSync(configPath)) {
-  // Create empty config for future use
-  writeFileSync(configPath, JSON.stringify({ urlPatterns: [] }, null, 2));
+} else if (!config.urlPatterns) {
+  config.urlPatterns = [];
+  configChanged = true;
+}
+
+if (configChanged || !existsSync(configPath)) {
+  writeFileSync(configPath, JSON.stringify(config, null, 2) + '\n');
 }
 
 // 4. Add .viewgraph to .gitignore if not already there

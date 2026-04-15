@@ -15,7 +15,7 @@
 
 import { createServer } from 'http';
 import { writeFile, mkdir, readFile } from 'fs/promises';
-import { existsSync, accessSync, constants as fsConstants, readFileSync, mkdirSync } from 'fs';
+import { existsSync, accessSync, constants as fsConstants, readFileSync, mkdirSync, writeFileSync } from 'fs';
 import path from 'path';
 import { LOG_PREFIX } from './constants.js';
 import { validateCapturePath } from './utils/validate-path.js';
@@ -102,7 +102,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
     if (method === 'OPTIONS') {
       res.writeHead(204, {
         'access-control-allow-origin': '*',
-        'access-control-allow-methods': 'GET, POST, OPTIONS',
+        'access-control-allow-methods': 'GET, POST, PUT, OPTIONS',
         'access-control-allow-headers': 'content-type, authorization, x-capture-filename, x-captures-dir',
       });
       return res.end();
@@ -132,6 +132,33 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         urlPatterns = cfg.urlPatterns || [];
       } catch { /* no config */ }
       return json(res, 200, { capturesDir: absCaptures, projectRoot, agent, urlPatterns });
+    }
+
+    // GET /config - read project config
+    if (method === 'GET' && url === '/config') {
+      const configFile = path.resolve(path.dirname(capturesDir), 'config.json');
+      try {
+        const raw = readFileSync(configFile, 'utf-8');
+        return json(res, 200, JSON.parse(raw));
+      } catch (err) {
+        if (err.code === 'ENOENT') return json(res, 200, {});
+        return json(res, 500, { error: `Failed to read config: ${err.message}` });
+      }
+    }
+
+    // PUT /config - update project config (merges with existing)
+    if (method === 'PUT' && url === '/config') {
+      const configFile = path.resolve(path.dirname(capturesDir), 'config.json');
+      let updates;
+      try { updates = JSON.parse(await readBody(req)); } catch {
+        return json(res, 400, { error: 'Invalid JSON body' });
+      }
+      // Merge with existing config
+      let existing = {};
+      try { existing = JSON.parse(readFileSync(configFile, 'utf-8')); } catch { /* new file */ }
+      const merged = { ...existing, ...updates };
+      writeFileSync(configFile, JSON.stringify(merged, null, 2) + '\n');
+      return json(res, 200, merged);
     }
 
     // GET /requests/pending

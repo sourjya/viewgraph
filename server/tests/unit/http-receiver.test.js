@@ -372,3 +372,64 @@ describe('HTTP no-auth (ADR-010)', () => {
     expect(res.status).toBe(201);
   });
 });
+
+describe('config endpoints', () => {
+  let queue, receiver, port, capturesDir, rootDir;
+
+  beforeEach(async () => {
+    rootDir = path.join(os.tmpdir(), `vg-cfg-${Date.now()}`);
+    capturesDir = path.join(rootDir, 'captures');
+    mkdirSync(capturesDir, { recursive: true });
+    queue = createRequestQueue({ maxSize: 10, ttlMs: 60000 });
+    receiver = createHttpReceiver({ queue, capturesDir, port: 0 });
+    port = await receiver.start();
+  });
+
+  afterEach(async () => {
+    await receiver.stop();
+    rmSync(rootDir, { recursive: true, force: true });
+  });
+
+  it('(+) GET /config returns empty object when no config file', async () => {
+    const res = await req(port, 'GET', '/config');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({});
+  });
+
+  it('(+) PUT /config creates config and returns merged result', async () => {
+    const res = await req(port, 'PUT', '/config', { autoAudit: true });
+    expect(res.status).toBe(200);
+    expect(res.body.autoAudit).toBe(true);
+  });
+
+  it('(+) PUT /config merges with existing config', async () => {
+    await req(port, 'PUT', '/config', { autoAudit: false, urlPatterns: ['localhost:3000'] });
+    const res = await req(port, 'PUT', '/config', { smartSuggestions: true });
+    expect(res.status).toBe(200);
+    expect(res.body.autoAudit).toBe(false);
+    expect(res.body.smartSuggestions).toBe(true);
+    expect(res.body.urlPatterns).toEqual(['localhost:3000']);
+  });
+
+  it('(+) GET /config returns previously written config', async () => {
+    await req(port, 'PUT', '/config', { autoAudit: true, baselineAutoCompare: false });
+    const res = await req(port, 'GET', '/config');
+    expect(res.status).toBe(200);
+    expect(res.body.autoAudit).toBe(true);
+    expect(res.body.baselineAutoCompare).toBe(false);
+  });
+
+  it('(-) PUT /config rejects invalid JSON', async () => {
+    const opts = { method: 'PUT', headers: { 'content-type': 'application/json' }, body: 'not json{' };
+    const res = await fetch(`http://localhost:${port}/config`, opts);
+    expect(res.status).toBe(400);
+  });
+
+  it('(+) config persists to disk as JSON file', async () => {
+    await req(port, 'PUT', '/config', { autoAudit: true });
+    const configFile = path.join(rootDir, 'config.json');
+    const raw = readFileSync(configFile, 'utf-8');
+    const config = JSON.parse(raw);
+    expect(config.autoAudit).toBe(true);
+  });
+});

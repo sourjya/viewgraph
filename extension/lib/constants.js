@@ -233,3 +233,51 @@ export async function discoverServer(pageUrl = null, targetDir = null) {
 }
 
 
+
+// ──────────────────────────────────────────────
+// Project Config Helpers
+// ──────────────────────────────────────────────
+
+/** Cache key for config in chrome.storage.local. */
+const CONFIG_CACHE_KEY = 'vg_project_config';
+
+/**
+ * Fetch project config from the server and cache in chrome.storage.local.
+ * Returns cached value if server is unreachable.
+ * @param {string} serverUrl - Base URL of the ViewGraph server
+ * @returns {Promise<Object>} Config object (empty {} if unavailable)
+ */
+export async function fetchConfig(serverUrl) {
+  try {
+    const res = await fetch(`${serverUrl}/config`, { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const config = await res.json();
+    try { await chrome.storage.local.set({ [CONFIG_CACHE_KEY]: config }); } catch { /* tests */ }
+    return config;
+  } catch {
+    // Server offline - return cached value
+    try {
+      const data = await chrome.storage.local.get(CONFIG_CACHE_KEY);
+      return data[CONFIG_CACHE_KEY] || {};
+    } catch { return {}; }
+  }
+}
+
+/**
+ * Update project config on the server and refresh local cache.
+ * @param {string} serverUrl - Base URL of the ViewGraph server
+ * @param {Object} updates - Key-value pairs to merge into config
+ * @returns {Promise<Object>} Updated config object
+ */
+export async function updateConfig(serverUrl, updates) {
+  const res = await fetch(`${serverUrl}/config`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updates),
+    signal: AbortSignal.timeout(3000),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const config = await res.json();
+  try { await chrome.storage.local.set({ [CONFIG_CACHE_KEY]: config }); } catch { /* tests */ }
+  return config;
+}

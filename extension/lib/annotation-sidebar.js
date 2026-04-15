@@ -62,7 +62,7 @@ function stopResolutionPolling() {
   }
 }
 import { formatMarkdown } from './export-markdown.js';
-import { discoverServer, getAgentName } from './constants.js';
+import { discoverServer, getAgentName, fetchConfig } from './constants.js';
 import { collectNetworkState } from './network-collector.js';
 import { getConsoleState } from './console-collector.js';
 import { collectBreakpoints } from './breakpoint-collector.js';
@@ -197,11 +197,13 @@ export function create() {
   });
 
   discoverServer(window.location.href)
-    .then((url) => {
+    .then(async (url) => {
       if (url) {
         statusDot.style.background = '#4ade80';
         statusDot.title = `MCP server: ${url}`;
         statusBanner.style.display = 'none';
+        // Fetch project config and cache locally
+        await fetchConfig(url);
       } else {
         statusDot.style.background = '#f87171';
         statusDot.title = 'MCP server offline';
