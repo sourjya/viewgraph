@@ -842,10 +842,12 @@ export function create() {
     noteBtn.addEventListener('mouseleave', () => { if (noteBtn.dataset.noted !== 'true') noteBtn.style.color = '#6366f1'; });
     noteBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      const text = `${title}: ${body.textContent.trim()}`.slice(0, 500);
+      const fullData = body.textContent.trim();
+      const summary = `${title}: ${fullData.split('\n')[0].slice(0, 60)}`;
       const ann = addPageNote();
       if (ann) {
-        updateComment(ann.id, text);
+        updateComment(ann.id, summary);
+        ann.diagnostic = { section: title, data: fullData };
         refresh();
         noteBtn.dataset.noted = 'true';
         noteBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
