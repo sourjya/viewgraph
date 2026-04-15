@@ -855,7 +855,7 @@ export function create() {
       const fullData = body.textContent.trim();
       // Clean summary: just section name + count from badge text
       const badgeText = headerRow.querySelector('span:nth-child(4)')?.textContent || '';
-      const summary = `${title}: ${badgeText}`.trim();
+      const summary = badgeText || title;
       const ann = addPageNote();
       if (ann) {
         updateComment(ann.id, summary);

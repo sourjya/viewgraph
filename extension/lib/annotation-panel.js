@@ -280,10 +280,10 @@ export async function show(annotation, callbacks = {}) {
     Object.assign(attachHeader.style, { display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' });
     const arrow = document.createElement('span');
     arrow.textContent = '\u25b8';
-    Object.assign(arrow.style, { color: '#0d9488', fontSize: '9px', transition: 'transform 0.15s' });
+    Object.assign(arrow.style, { color: '#0d9488', fontSize: '12px', transition: 'transform 0.15s' });
     const attachLabel = document.createElement('span');
     attachLabel.textContent = `${annotation.diagnostic.section} data attached`;
-    Object.assign(attachLabel.style, { color: '#0d9488', fontSize: '10px', fontWeight: '600' });
+    Object.assign(attachLabel.style, { color: '#0d9488', fontSize: '11px', fontWeight: '600' });
     attachHeader.append(arrow, attachLabel);
 
     const attachBody = document.createElement('div');
@@ -292,6 +292,7 @@ export async function show(annotation, callbacks = {}) {
       background: '#0d1117', borderRadius: '4px', fontSize: '10px',
       color: '#8b949e', fontFamily: 'monospace', maxHeight: '80px',
       overflowY: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-all',
+      scrollbarWidth: 'thin', scrollbarColor: '#2a2a3a transparent',
     });
     attachBody.textContent = annotation.diagnostic.data;
 
