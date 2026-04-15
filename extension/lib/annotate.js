@@ -581,8 +581,8 @@ export function storageKey() {
 export async function save() {
   if (typeof chrome === 'undefined' || !chrome.storage) return;
   const key = storageKey();
-  const data = annotations.map(({ id, uuid, type, region, comment, severity, category, nids, ancestor, element, resolved, resolution, timestamp }) =>
-    ({ id, uuid, type, region, comment, severity, category, nids, ancestor, element, timestamp, ...(resolved ? { resolved, resolution } : {}) }));
+  const data = annotations.map(({ id, uuid, type, region, comment, severity, category, nids, ancestor, element, resolved, resolution, timestamp, diagnostic, pending }) =>
+    ({ id, uuid, type, region, comment, severity, category, nids, ancestor, element, timestamp, ...(resolved ? { resolved, resolution } : {}), ...(diagnostic ? { diagnostic } : {}), ...(pending ? { pending } : {}) }));
   await chrome.storage.local.set({ [key]: { annotations: data, nextId, nextPageNoteId } });
 }
 
