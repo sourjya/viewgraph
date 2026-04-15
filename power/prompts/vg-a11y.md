@@ -4,24 +4,42 @@ description: "Deep accessibility audit with automatic source fixes"
 
 # @vg-a11y
 
-Run a deep accessibility audit AND fix all error-level issues. This is the action command - it modifies files.
+Run a deep accessibility audit AND fix ONLY accessibility-related issues. Do NOT fix visual, layout, or functional bugs.
+
+## Scope: ONLY fix these issue types
+- Missing alt text on images
+- Missing or empty aria-label on interactive elements
+- Missing form labels (label elements or aria-label)
+- Insufficient color contrast (WCAG AA 4.5:1)
+- Missing landmark elements (main, nav, etc.)
+- Keyboard accessibility issues
+- ARIA attribute errors
+
+## Do NOT fix these (even if you notice them)
+- Font sizes, spacing, or visual styling
+- Border radius, shadows, or decorative CSS
+- Input types (e.g., type="text" vs type="password")
+- Layout or positioning issues
+- Functional bugs
+- HTML comments that describe bugs
+
+## Steps
 
 1. Call `get_latest_capture` to find the most recent capture
-2. Call `audit_accessibility` - this includes both ViewGraph's built-in rules and axe-core results when available
-3. Present findings in a table first (same format as @vg-audit) so the user sees what will be fixed
-4. For each ERROR-level issue:
+2. Call `audit_accessibility` - collect all violations
+3. Present findings in a table first:
+
+| # | Element | Issue | Severity | WCAG Rule |
+|---|---|---|---|---|
+
+4. For each ERROR-level accessibility issue:
    a. Call `find_source` to locate the source file
-   b. Implement the fix:
-      - `missing-alt`: add descriptive alt text based on image context
-      - `button-no-name`: add aria-label or ensure visible text exists
-      - `missing-form-label`: add `<label>` element or aria-label
-      - `insufficient-contrast`: adjust color to meet WCAG AA (4.5:1 ratio)
-      - `empty-aria-label`: remove empty attribute or add meaningful label
-   c. Note each fix in a summary
-5. For WARNING-level issues: list them with suggested fixes but do NOT auto-implement. Ask the user if they want these fixed too.
-6. After all fixes, show a summary table:
+   b. Implement the fix (only a11y fixes from the scope list above)
+   c. Note the fix
+5. For WARNING-level issues: list with suggested fixes, do NOT auto-implement
+6. After fixes, show summary:
 
 | # | Element | Issue | Action Taken |
 |---|---|---|---|
 
-7. Offer to request a verification capture to confirm fixes
+7. Offer to request a verification capture
