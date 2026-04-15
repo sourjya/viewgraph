@@ -163,9 +163,11 @@ export function create() {
   const toggle = document.createElement('button');
   toggle.setAttribute(ATTR, 'toggle');
   // VG icon from extension assets + label + connection dot inline
-  const vgIcon = document.createElement('span');
-  vgIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
-  Object.assign(vgIcon.style, { display: 'inline-flex', verticalAlign: 'middle', marginRight: '6px' });
+  const vgIcon = document.createElement('img');
+  vgIcon.src = chrome.runtime.getURL('icon-16.png');
+  vgIcon.width = 16;
+  vgIcon.height = 16;
+  Object.assign(vgIcon.style, { verticalAlign: 'middle', marginRight: '6px' });
   toggle.appendChild(vgIcon);
   toggle.appendChild(document.createTextNode('ViewGraph'));
   Object.assign(toggle.style, {
@@ -1361,9 +1363,11 @@ export function create() {
   });
 
   // VG icon at top of strip
-  const stripIcon = document.createElement('span');
-  stripIcon.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
-  Object.assign(stripIcon.style, { cursor: 'pointer', padding: '2px', display: 'flex' });
+  const stripIcon = document.createElement('img');
+  stripIcon.src = chrome.runtime.getURL('icon-16.png');
+  stripIcon.width = 20;
+  stripIcon.height = 20;
+  Object.assign(stripIcon.style, { cursor: 'pointer', padding: '2px' });
   stripIcon.title = 'ViewGraph';
   stripIcon.addEventListener('click', () => { expand(); setCaptureMode(null); updateModeButtons(); });
   badgeEl.appendChild(stripIcon);
@@ -1503,25 +1507,23 @@ function toggleCollapse() {
 function updateBadgeCount() {
   if (!badgeEl) return;
   const count = getAnnotations().filter((a) => !a.resolved).length;
-  // Update or create a chat bubble count indicator at the bottom of the strip
+  // Always show chat bubble count indicator at the bottom of the strip
   let countEl = badgeEl.querySelector('[data-vg-badge-count]');
-  if (count > 0) {
-    if (!countEl) {
-      countEl = document.createElement('div');
-      countEl.setAttribute('data-vg-badge-count', '');
-      Object.assign(countEl.style, {
-        alignSelf: 'center', marginTop: '2px', position: 'relative',
-        width: '32px', height: '32px',
-      });
-      badgeEl.appendChild(countEl);
-    }
-    countEl.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">'
-      + '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill="#6366f1" stroke="#818cf8" stroke-width="1.2"/>'
-      + `<text x="12" y="14" text-anchor="middle" fill="#fff" font-family="system-ui,sans-serif" font-size="10" font-weight="700">${count}</text>`
-      + '</svg>';
-  } else if (countEl) {
-    countEl.remove();
+  if (!countEl) {
+    countEl = document.createElement('div');
+    countEl.setAttribute('data-vg-badge-count', '');
+    Object.assign(countEl.style, {
+      alignSelf: 'center', marginTop: '2px', position: 'relative',
+      width: '32px', height: '32px',
+    });
+    badgeEl.appendChild(countEl);
   }
+  const fill = count > 0 ? '#6366f1' : '#333';
+  const stroke = count > 0 ? '#818cf8' : '#555';
+  countEl.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">'
+    + `<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill="${fill}" stroke="${stroke}" stroke-width="1.2"/>`
+    + `<text x="12" y="14" text-anchor="middle" fill="#fff" font-family="system-ui,sans-serif" font-size="10" font-weight="700">${count}</text>`
+    + '</svg>';
 }
 
 /** Refresh the sidebar list from current annotations. */

@@ -27,6 +27,9 @@ export default defineConfig({
         128: 'icon-128.png',
       },
     },
+    web_accessible_resources: [
+      { resources: ['icon-16.png', 'icon-48.png'], matches: ['<all_urls>'] },
+    ],
     // Firefox requires an explicit add-on ID for MV3
     browser_specific_settings: {
       gecko: {
