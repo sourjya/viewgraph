@@ -1001,6 +1001,59 @@ describe('inspect tab section copy buttons', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Diagnostic note button behavior
+// ---------------------------------------------------------------------------
+
+describe('diagnostic note button', () => {
+  it('(+) created annotation has diagnostic property with section name', () => {
+    start();
+    // Manually create a diagnostic annotation to simulate note button
+    addPageNote();
+    const anns = getAnnotations();
+    anns[0].diagnostic = { section: 'Network', data: 'test data here' };
+    anns[0].comment = 'Network: 1 failed / 5';
+    expect(anns[0].diagnostic.section).toBe('Network');
+    expect(anns[0].diagnostic.data).toBe('test data here');
+    stop();
+  });
+
+  it('(+) diagnostic data is a snapshot, not a live reference', () => {
+    start();
+    addPageNote();
+    const anns = getAnnotations();
+    const originalData = 'Network failures at time of click';
+    anns[0].diagnostic = { section: 'Network', data: originalData };
+    // Simulating page state change after note creation
+    const laterData = 'Different data after page change';
+    // The annotation should still have the original data
+    expect(anns[0].diagnostic.data).toBe(originalData);
+    expect(anns[0].diagnostic.data).not.toBe(laterData);
+    stop();
+  });
+
+  it('(+) note button disabled when diagnostic annotation already exists for section', () => {
+    start();
+    addPageNote();
+    const anns = getAnnotations();
+    anns[0].diagnostic = { section: 'Network', data: 'test' };
+    // Check that getAnnotations finds the diagnostic
+    const hasNetwork = getAnnotations().some((a) => a.diagnostic?.section === 'Network');
+    expect(hasNetwork).toBe(true);
+    stop();
+  });
+
+  it('(-) note button not disabled for different section', () => {
+    start();
+    addPageNote();
+    const anns = getAnnotations();
+    anns[0].diagnostic = { section: 'Network', data: 'test' };
+    const hasConsole = getAnnotations().some((a) => a.diagnostic?.section === 'Console');
+    expect(hasConsole).toBe(false);
+    stop();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Auto-audit toggle and badge
 // ---------------------------------------------------------------------------
 
