@@ -319,3 +319,24 @@ Open (3)  Resolved (1)  All (4)        ← status filter (existing)
 
 **Dependencies:** None
 **Effort:** Medium (3-4 hours)
+
+### F14: Architecture Refactor - Sidebar Decomposition
+
+**Problem:** `annotation-sidebar.js` is 2,268 lines with 31 functions and 21 imports. It's a god module that handles UI, state, networking, settings, and diagnostics. Every sidebar feature change touches this one file.
+
+**Approach:** Split into 8 focused modules under `extension/lib/sidebar/`:
+- `core.js` - shell, shadow DOM, header, tabs, collapse/expand (~200 lines)
+- `review.js` - annotation list, entry rendering, filters (~400 lines)
+- `inspect.js` - diagnostics, sections, copy/note buttons (~500 lines)
+- `captures.js` - captures section + baseline management (~200 lines)
+- `settings.js` - settings screen (~150 lines)
+- `help.js` - help card with shortcuts (~100 lines)
+- `strip.js` - collapsed strip with mode icons (~150 lines)
+- `sync.js` - resolution polling, request polling, WS handlers (~150 lines)
+
+Also: router pattern for `http-receiver.js`, auto-discovery for tool registration.
+
+**Full analysis:** `docs/architecture/modularity-audit.md`
+
+**Dependencies:** None (pure refactor, no feature changes)
+**Effort:** Large (8-10 hours for sidebar, 3-4 hours for server)
