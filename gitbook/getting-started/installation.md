@@ -17,17 +17,26 @@ Or from [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/viewgra
 
 Or [build from source](#for-developers-build-from-source) if you prefer.
 
-### Step 2: Install the npm package in your project
+### Step 2: Install the npm package
+
+**Option A: Global install** (recommended - install once, use in any project)
 
 ```bash
-cd ~/my-project          # your project, not a new folder
+npm install -g @viewgraph/core
+```
+
+Then in any project, just run `viewgraph-init` (no `npx` needed).
+
+**Option B: Per-project install**
+
+```bash
+cd ~/my-project
 npm install @viewgraph/core
 ```
 
-<!-- TODO: Replace with actual link when published -->
-Package: [@viewgraph/core on npm](https://www.npmjs.com/package/@viewgraph/core)
+Then use `npx viewgraph-init` in that project.
 
-This adds the MCP server and init script to your project's `node_modules`.
+Package: [@viewgraph/core on npm](https://www.npmjs.com/package/@viewgraph/core)
 
 ### Step 3: Initialize
 

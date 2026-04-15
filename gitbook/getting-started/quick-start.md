@@ -22,9 +22,9 @@ Or [build from source](installation.md#from-source-for-development) if you prefe
 Open a terminal in **your project** (the app you're building, not a new folder):
 
 ```bash
+npm install -g @viewgraph/core    # one-time global install
 cd ~/my-project
-npm install @viewgraph/core
-npx viewgraph-init
+viewgraph-init
 ```
 
 ![viewgraph-init terminal output](../.gitbook/assets/init-output.png)
