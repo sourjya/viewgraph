@@ -832,7 +832,7 @@ export function create() {
     const noteBtn = document.createElement('button');
     noteBtn.setAttribute(ATTR, 'section-note');
     noteBtn.dataset.section = title;
-    noteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>';
+    noteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2H22l-6 4.8 2.4 7.2L12 16l-6.4 5.2 2.4-7.2-6-4.8h7.6z"/></svg>';
     noteBtn.title = `Add as annotation`;
     Object.assign(noteBtn.style, {
       border: 'none', background: 'transparent', cursor: 'pointer', color: '#6366f1',

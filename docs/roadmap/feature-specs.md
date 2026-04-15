@@ -280,3 +280,42 @@ GitBook updates needed for: F1 (shortcuts page), F3 (auto-audit guide), F4 (base
 
 **Dependencies:** None
 **Effort:** Small (1-2 hours)
+
+### F13: Annotation Type Filtering + Visual Differentiation
+
+**Problem:** The sidebar mixes bugs, ideas, and diagnostic notes in one list. As annotation count grows, users can't quickly find what they're looking for. No way to see "just my ideas" or "just the diagnostic errors."
+
+**Annotation types:**
+1. **Bug** (default) - regular element/region annotations with severity. Icon: colored `#N` badge.
+2. **Idea** - feature ideas with lightbulb. Icon: yellow `#N 💡` badge.
+3. **Diagnostic** - notes created from Inspect tab sections. Icon: `#N` with blue `[Network]`/`[Console]` tag.
+4. **Page note** - general page-level notes. Icon: `#N` with document icon, blue badge.
+
+**UX - Filter bar:**
+```
+Open (3)  Resolved (1)  All (4)        ← status filter (existing)
+[🐛] [💡] [📋] [📄]                    ← type toggles (new)
+```
+- Type toggles are icon buttons below the status tabs
+- All active by default (show everything)
+- Click to toggle off/on - dimmed when off
+- Multiple can be active simultaneously
+- Count in status tabs updates to reflect active type filters
+- Persisted in chrome.storage.local per session
+
+**UX - Idea mode suggestions:**
+- When idea category is active, suppress diagnostic suggestions (no testid, missing aria-label, low contrast)
+- Only show structural context hints if any
+
+**UX - Diagnostic notes in list:**
+- Blue section tag pill (`[Network]`, `[Console]`) already implemented
+- Truncated excerpt with expand chevron already implemented
+
+**Files to change:**
+- `extension/lib/annotation-sidebar.js` - filter toggle row, filter logic in refresh(), count updates
+- `extension/tests/unit/annotation-sidebar.test.js` - filter toggle tests
+- `extension/lib/annotation-panel.js` - suppress diagnostic suggestions in idea mode
+- `gitbook/features/extension.md` - document filtering
+
+**Dependencies:** None
+**Effort:** Medium (3-4 hours)
