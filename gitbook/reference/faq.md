@@ -43,6 +43,18 @@ Capture a page, then tell your agent `@vg-tests`. The agent reads the capture vi
 ### What data does a capture include?
 Every visible element with CSS selectors, computed styles, bounding boxes, accessibility attributes, data-testid values, plus network requests, console errors, component names, and 11 other enrichment data types.
 
+### Are there keyboard shortcuts?
+Yes. When the sidebar is open: `Esc` to close, `Ctrl+Enter` to send to agent, `Ctrl+Shift+C` to copy markdown, `1/2/3` to set severity, `Delete` to remove an annotation. Click the `?` button in the sidebar header for the full list. See [Keyboard Shortcuts](keyboard-shortcuts.md).
+
+### What are smart suggestions?
+When you select an element, the annotation panel shows clickable suggestion chips based on detected issues - "Missing aria-label", "No data-testid", "Low contrast". Click a chip to populate your comment. Controlled by the `smartSuggestions` setting in `.viewgraph/config.json`.
+
+### Can I auto-audit captures?
+Yes. Toggle "Auto-Audit" in the Inspect tab. When enabled, the server automatically runs accessibility, layout, and testid audits after each capture and shows results in the sidebar. Controlled by the `autoAudit` setting in `.viewgraph/config.json`.
+
+### How do I compare against a baseline?
+In the Inspect tab, click "Set" to promote the latest capture as your baseline. Click "Compare" to see a structural diff: elements added, removed, moved, or with changed testids.
+
 ## Security & Privacy
 
 ### Does ViewGraph send data to external servers?
@@ -67,3 +79,6 @@ Add a URL pattern: `npx viewgraph-init --url localhost:3000`. See [Multi-Project
 
 ### The page looks unstyled when opened as a file
 Chrome blocks cross-origin requests for `file://` URLs. Serve the files via HTTP instead: `npx serve .`
+
+### How do I reset project settings?
+Delete `.viewgraph/config.json` and re-run `npx viewgraph-init`. The init script recreates it with defaults.

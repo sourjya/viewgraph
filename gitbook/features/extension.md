@@ -6,6 +6,8 @@ The ViewGraph extension runs in Chrome and Firefox. Other Chromium-based browser
 
 Click the ViewGraph toolbar icon to enter annotate mode. The sidebar opens and elements highlight as you hover.
 
+![Hover highlighting with tooltip showing selector and testid](../.gitbook/assets/hover-highlight.png)
+
 ### Element Selection
 
 - **Click** any element to select it and add a comment
@@ -26,6 +28,9 @@ When you click an element, a floating panel appears with:
 - **Comment** text area - describe what's wrong
 - **Severity** - Critical (red), Major (yellow), Minor (gray)
 - **Category** - Visual, Functional, Content, A11y, Perf
+- **Smart suggestions** - clickable chips based on detected issues (missing aria-label, no testid, low contrast)
+
+![Annotation panel with severity, category, and comment](../.gitbook/assets/annotation-panel.png)
 
 ## Two-Tab Sidebar
 
@@ -37,6 +42,8 @@ For annotating and exporting:
 - Annotation list with severity badges
 - Filter: Open / Resolved / All
 - Export: Send to Agent, Copy MD, Download Report
+
+![Sidebar with annotations and export buttons](../.gitbook/assets/sidebar-annotations.png)
 
 ### Inspect Tab
 
@@ -54,6 +61,8 @@ For understanding page state:
 ### Send to Agent
 
 Pushes annotations + full DOM capture + all enrichment data to the MCP server. Your agent receives everything needed to implement fixes.
+
+![Send to Agent button and success confirmation](../.gitbook/assets/send-to-agent.png)
 
 ### Copy Markdown
 
@@ -94,3 +103,23 @@ Every capture automatically includes data from these collectors:
 | Performance | Navigation timing, resource timing, memory |
 | Animations | Running CSS/JS animations |
 | Intersection | Element visibility relative to viewport |
+
+## Keyboard Shortcuts
+
+Click the `?` button in the sidebar header for the shortcut cheat sheet. See [Keyboard Shortcuts](../reference/keyboard-shortcuts.md) for the full list.
+
+| Shortcut | Action |
+|---|---|
+| `Esc` | Close current panel or exit |
+| `Ctrl+Enter` | Send to Agent |
+| `Ctrl+Shift+C` | Copy Markdown |
+| `1` / `2` / `3` | Set severity |
+| `Delete` | Delete annotation |
+
+## Auto-Audit
+
+Toggle "Auto-Audit" in the Inspect tab. When enabled, the server automatically runs accessibility, layout, and testid audits after each capture and shows a summary badge in the sidebar.
+
+## Baselines
+
+In the Inspect tab, set the latest capture as your baseline. On subsequent captures, click "Compare" to see a structural diff: elements added, removed, moved, or with changed testids.
