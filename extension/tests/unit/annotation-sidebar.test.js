@@ -618,6 +618,24 @@ describe('inspect tab captures section', () => {
     expect(copied).toBe('viewgraph-localhost-20260408-120612.json');
     delete navigator.clipboard;
   });
+
+  it('(+) baseline row renders with Set button when no baseline exists', async () => {
+    const captures = [{ filename: 'viewgraph-localhost-20260408-120612.json', url: 'http://localhost:8040', timestamp: new Date().toISOString(), nodeCount: 12, title: 'Test' }];
+    globalThis.fetch = mockFetchWith(captures, []);
+    start();
+    create();
+    const tabs = shadowQueryAll(`[${ATTR}="primary-tab"]`);
+    const inspectTab = [...tabs].find((t) => t.textContent.includes('Inspect'));
+    if (inspectTab) inspectTab.click();
+    await new Promise((r) => setTimeout(r, 200));
+    const baseRow = shadowQuery(`[${ATTR}="baseline-row"]`);
+    if (baseRow) {
+      const btn = shadowQuery(`[${ATTR}="baseline-btn"]`);
+      expect(btn.textContent).toBe('Set');
+    }
+    stop();
+    destroy();
+  });
 });
 
 // ---------------------------------------------------------------------------

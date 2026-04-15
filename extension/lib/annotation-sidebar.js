@@ -1356,6 +1356,90 @@ export function create() {
       });
       container.appendChild(warn);
     }
+
+    // Baseline section
+    const baseRow = document.createElement('div');
+    baseRow.setAttribute(ATTR, 'baseline-row');
+    Object.assign(baseRow.style, { display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 0', borderTop: '1px solid #2a2a3a', marginTop: '4px' });
+
+    const baseLabel = document.createElement('span');
+    baseLabel.textContent = 'BASELINE';
+    Object.assign(baseLabel.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px' });
+
+    const baseInfo = document.createElement('span');
+    baseInfo.setAttribute(ATTR, 'baseline-info');
+    Object.assign(baseInfo.style, { color: '#666', fontSize: '11px', flex: '1' });
+
+    const baseBtn = document.createElement('button');
+    baseBtn.setAttribute(ATTR, 'baseline-btn');
+    Object.assign(baseBtn.style, {
+      border: 'none', borderRadius: '10px', padding: '2px 10px', fontSize: '10px',
+      fontWeight: '700', cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+      background: '#333', color: '#666',
+    });
+
+    baseRow.append(baseLabel, baseInfo, baseBtn);
+    container.appendChild(baseRow);
+
+    // Baseline diff results area
+    const baseDiff = document.createElement('div');
+    baseDiff.setAttribute(ATTR, 'baseline-diff');
+    Object.assign(baseDiff.style, { display: 'none', fontSize: '10px', color: '#9ca3af', padding: '2px 0' });
+    container.appendChild(baseDiff);
+
+    // Fetch baseline status
+    try {
+      const baseRes = await fetch(`${serverUrl}/baselines?url=${encodeURIComponent(pageUrl)}`, { signal: AbortSignal.timeout(3000) });
+      if (baseRes.ok) {
+        const { baselines } = await baseRes.json();
+        const current = baselines?.[0];
+        if (current) {
+          baseInfo.textContent = current.filename?.replace(/\.json$/, '').slice(-20) || 'set';
+          baseBtn.textContent = 'Compare';
+          baseBtn.style.background = '#1e3a5f';
+          baseBtn.style.color = '#60a5fa';
+          baseBtn.addEventListener('click', async () => {
+            baseBtn.textContent = '...';
+            try {
+              const cmpRes = await fetch(`${serverUrl}/baselines/compare?url=${encodeURIComponent(pageUrl)}`, { signal: AbortSignal.timeout(5000) });
+              if (cmpRes.ok) {
+                const data = await cmpRes.json();
+                if (data.diff) {
+                  const d = data.diff;
+                  const parts = [];
+                  if (d.added) parts.push(`+${d.added} added`);
+                  if (d.removed) parts.push(`-${d.removed} removed`);
+                  if (d.moved) parts.push(`${d.moved} moved`);
+                  if (d.testidChanges) parts.push(`${d.testidChanges} testid changes`);
+                  baseDiff.textContent = parts.length ? parts.join(', ') : 'No structural changes';
+                  baseDiff.style.display = 'block';
+                  baseDiff.style.color = parts.length ? '#f59e0b' : '#4ade80';
+                }
+              }
+            } catch { /* timeout */ }
+            baseBtn.textContent = 'Compare';
+          });
+        } else {
+          baseInfo.textContent = 'none set';
+          baseBtn.textContent = 'Set';
+          baseBtn.addEventListener('click', async () => {
+            baseBtn.textContent = '...';
+            try {
+              await fetch(`${serverUrl}/baselines`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: latest.filename }),
+                signal: AbortSignal.timeout(3000),
+              });
+              baseInfo.textContent = latest.filename.replace(/\.json$/, '').slice(-20);
+              baseBtn.textContent = 'Compare';
+              baseBtn.style.background = '#1e3a5f';
+              baseBtn.style.color = '#60a5fa';
+            } catch { baseBtn.textContent = 'Set'; }
+          });
+        }
+      }
+    } catch { baseInfo.textContent = 'unavailable'; }
   }
 
   /** Switch between Review and Inspect tabs. */
