@@ -903,43 +903,6 @@ export function create() {
     bpRow.append(bpTitle, bpBadge, bpLabel);
     inspectContent.appendChild(bpRow);
 
-    // Auto-audit toggle (reads/writes config.json via server)
-    const auditRow = document.createElement('div');
-    Object.assign(auditRow.style, { display: 'flex', alignItems: 'center', gap: '8px' });
-    const auditLabel = document.createElement('span');
-    auditLabel.textContent = 'AUTO-AUDIT';
-    Object.assign(auditLabel.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', flex: '1' });
-    const auditToggle = document.createElement('button');
-    auditToggle.setAttribute(ATTR, 'audit-toggle');
-    let auditEnabled = false;
-    try {
-      const cached = await chrome.storage.local.get('vg_project_config');
-      auditEnabled = cached.vg_project_config?.autoAudit || false;
-    } catch { /* no cache */ }
-    auditToggle.textContent = auditEnabled ? 'ON' : 'OFF';
-    Object.assign(auditToggle.style, {
-      border: 'none', borderRadius: '10px', padding: '2px 10px', fontSize: '10px',
-      fontWeight: '700', cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
-      background: auditEnabled ? '#166534' : '#333', color: auditEnabled ? '#4ade80' : '#666',
-    });
-    auditToggle.addEventListener('click', async () => {
-      const serverUrl = await discoverServer(window.location.href);
-      if (!serverUrl) return;
-      auditEnabled = !auditEnabled;
-      auditToggle.textContent = auditEnabled ? 'ON' : 'OFF';
-      auditToggle.style.background = auditEnabled ? '#166534' : '#333';
-      auditToggle.style.color = auditEnabled ? '#4ade80' : '#666';
-      try { await updateConfig(serverUrl, { autoAudit: auditEnabled }); } catch { /* offline */ }
-    });
-    auditRow.append(auditLabel, auditToggle);
-    inspectContent.appendChild(auditRow);
-
-    // Audit results badge (populated by WS audit:results messages)
-    const auditBadge = document.createElement('div');
-    auditBadge.setAttribute(ATTR, 'audit-badge');
-    Object.assign(auditBadge.style, { display: 'none', fontSize: '11px', color: '#9ca3af', padding: '2px 0' });
-    inspectContent.appendChild(auditBadge);
-
     // Auto-capture toggle
     const autoRow = document.createElement('div');
     Object.assign(autoRow.style, { display: 'flex', alignItems: 'center', gap: '8px' });
@@ -1226,7 +1189,44 @@ export function create() {
     inspectContent.appendChild(autoRow);
     inspectContent.appendChild(autoDesc);
 
-    // Thin divider between auto-capture and record flow
+    // Auto-audit toggle (reads/writes config.json via server)
+    const auditRow = document.createElement('div');
+    Object.assign(auditRow.style, { display: 'flex', alignItems: 'center', gap: '8px' });
+    const auditLabel = document.createElement('span');
+    auditLabel.textContent = 'AUTO-AUDIT';
+    Object.assign(auditLabel.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', flex: '1' });
+    const auditToggle = document.createElement('button');
+    auditToggle.setAttribute(ATTR, 'audit-toggle');
+    let auditEnabled = false;
+    try {
+      const cached = await chrome.storage.local.get('vg_project_config');
+      auditEnabled = cached.vg_project_config?.autoAudit || false;
+    } catch { /* no cache */ }
+    auditToggle.textContent = auditEnabled ? 'ON' : 'OFF';
+    Object.assign(auditToggle.style, {
+      border: 'none', borderRadius: '10px', padding: '2px 10px', fontSize: '10px',
+      fontWeight: '700', cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+      background: auditEnabled ? '#166534' : '#333', color: auditEnabled ? '#4ade80' : '#666',
+    });
+    auditToggle.addEventListener('click', async () => {
+      const serverUrl = await discoverServer(window.location.href);
+      if (!serverUrl) return;
+      auditEnabled = !auditEnabled;
+      auditToggle.textContent = auditEnabled ? 'ON' : 'OFF';
+      auditToggle.style.background = auditEnabled ? '#166534' : '#333';
+      auditToggle.style.color = auditEnabled ? '#4ade80' : '#666';
+      try { await updateConfig(serverUrl, { autoAudit: auditEnabled }); } catch { /* offline */ }
+    });
+    auditRow.append(auditLabel, auditToggle);
+    inspectContent.appendChild(auditRow);
+
+    // Audit results badge (populated by WS audit:results messages)
+    const auditBadge = document.createElement('div');
+    auditBadge.setAttribute(ATTR, 'audit-badge');
+    Object.assign(auditBadge.style, { display: 'none', fontSize: '11px', color: '#9ca3af', padding: '2px 0' });
+    inspectContent.appendChild(auditBadge);
+
+    // Thin divider between toggles and record flow
     const flowSep = document.createElement('hr');
     Object.assign(flowSep.style, { border: 'none', borderTop: '1px solid #2a2a3a', margin: '4px 0' });
     inspectContent.appendChild(flowSep);
