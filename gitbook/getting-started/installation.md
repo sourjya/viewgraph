@@ -19,13 +19,13 @@ Or [build from source](#for-developers-build-from-source) if you prefer.
 
 ### Step 2: Install the npm package
 
-**Option A: Global install** (recommended - install once, use in any project)
+**Option A: Global install** (simpler - install once, use in any project)
 
 ```bash
 npm install -g @viewgraph/core
 ```
 
-Then in any project, just run `viewgraph-init` (no `npx` needed).
+Then in any project, just run `viewgraph-init` (no `npx` needed). One install covers all your projects.
 
 **Option B: Per-project install**
 
@@ -34,7 +34,7 @@ cd ~/my-project
 npm install @viewgraph/core
 ```
 
-Then use `npx viewgraph-init` in that project.
+Then use `npx viewgraph-init` in that project. Use this approach when different projects need different ViewGraph versions, or when your team pins dependencies in `package.json` for reproducible builds.
 
 Package: [@viewgraph/core on npm](https://www.npmjs.com/package/@viewgraph/core)
 
