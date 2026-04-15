@@ -139,6 +139,48 @@ The init script starts the server automatically on first run. For subsequent ses
 - Re-run `npx viewgraph-init` from your project (restarts cleanly)
 - Or run `npm run dev:server` from the ViewGraph repo (if building from source)
 
+
+## Updating ViewGraph
+
+ViewGraph has multiple components that update independently:
+
+| Component | How it updates | What you do |
+|---|---|---|
+| **Chrome extension** | Auto-updates from Chrome Web Store | Nothing - Chrome handles it automatically (checks every few hours) |
+| **Firefox extension** | Auto-updates from Firefox Add-ons | Nothing - Firefox handles it automatically (checks every 24 hours) |
+| **@viewgraph/core** (MCP server) | npm package | Run `npm update @viewgraph/core` in your project |
+| **@viewgraph/playwright** | npm package | Run `npm update @viewgraph/playwright` in your project |
+| **Power assets** (prompts, hooks, steering) | Re-run init script | Run `npx viewgraph-init` - it automatically updates files that are older than the source |
+| **MCP server process** | Restarts on init | Re-running `npx viewgraph-init` kills the old server and starts the updated one |
+
+### Updating the npm packages
+
+```bash
+cd ~/my-project
+npm update @viewgraph/core
+npx viewgraph-init
+```
+
+The `npm update` pulls the latest server code. The `npx viewgraph-init` restarts the server and updates any power assets (prompts, hooks, steering docs) that have changed since your last init.
+
+### Checking for updates
+
+```bash
+npm outdated @viewgraph/core @viewgraph/playwright
+```
+
+This shows your installed version vs the latest available version.
+
+### What triggers a version bump
+
+| Change type | Version bump | Example |
+|---|---|---|
+| Bug fixes | Patch (0.1.1 → 0.1.2) | Fix routing bug, fix prompt scope |
+| New features | Minor (0.1.2 → 0.2.0) | New MCP tool, sidebar redesign |
+| Breaking changes | Major (0.x → 1.0) | Capture format change, API change |
+
+Release notes are published on [GitHub Releases](https://github.com/sourjya/viewgraph/releases) and the [Roadmap](../reference/roadmap.md) page.
+
 ## Troubleshooting
 
 | Problem | Solution |
