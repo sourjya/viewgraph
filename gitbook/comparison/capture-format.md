@@ -109,6 +109,12 @@ The format is designed to minimize LLM token consumption:
 
 A typical 500-element page produces a 20-40KB capture. A raw HTML dump of the same page would be 200-400KB. A base64 screenshot would be 500KB+.
 
+## Acknowledgments
+
+ViewGraph's capture format was inspired by [Element to LLM](https://insitu.im/) (E2LLM) by insitu.im - the first browser extension to frame DOM capture as a structured perception layer for AI agents. E2LLM's SiFR format introduced key ideas: salience scoring, action tagging (`[clickable]`, `[fillable]`), and spatial relationship mapping - proving that a purpose-built intermediate representation beats both raw HTML and screenshots for agent consumption.
+
+ViewGraph extended these foundations through [deep format research](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/viewgraph-format-research.md): adding ranked multi-strategy locators, 14 enrichment collectors (network, console, a11y, stacking, focus, etc.), progressive disclosure via MCP tools, human annotation layers, and a columnar structure optimized for token efficiency. But the core insight - that AI agents need a structured perception layer, not raw HTML - came from E2LLM.
+
 ## Format Specification
 
 The full format specification (v2.2.0) with field definitions, coordinate frame conventions, and serialization rules is available at:
