@@ -38,7 +38,7 @@ What's shipped, what's next, and where ViewGraph is heading.
 
 ### Kiro Power
 - 3 hooks: capture-and-audit, fix-annotations, check-testids
-- 8 prompt shortcuts: @vg-audit, @vg-review, @vg-capture, @vg-diff, @vg-testids, @vg-a11y, @vg-tests, @vg-help
+- 9 prompt shortcuts: @vg-audit, @vg-review, @vg-capture, @vg-diff, @vg-testids, @vg-a11y, @vg-tests, @vg-help, @vg-ideate
 - 3 steering docs for agent behavior
 
 ### Distribution
@@ -57,6 +57,9 @@ Context-aware suggestion chips in the annotation panel. When you select an eleme
 
 ### Baseline Management UI (F4)
 Set, view, and compare baselines from the sidebar. See diff summaries inline: "+3 elements, -1 element, 2 moved." Optional auto-compare on new captures.
+
+### Ideation Pipeline (F12)
+Annotate screens with feature ideas instead of bugs. Set category to "idea", send to agent, and use `@vg-ideate` to generate a full feature spec with requirements, user stories, and acceptance criteria - all grounded in the actual UI context from the capture.
 
 ### Capture Timeline (F6)
 Visual timeline in the Inspect tab showing all captures for the current URL with diff indicators between them.

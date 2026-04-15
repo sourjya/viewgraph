@@ -32,7 +32,7 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 | [`server/`](./server/) | MCP server - 36 query/analysis/request tools, WebSocket collab, baselines |
 | [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, annotate, 14 enrichment collectors, multi-export |
 | [`packages/playwright/`](./packages/playwright/) | Playwright fixture - capture structured DOM snapshots during E2E tests |
-| [`power/`](./power/) | Kiro Power assets - 3 hooks, 8 prompts, 3 steering docs, MCP config |
+| [`power/`](./power/) | Kiro Power assets - 3 hooks, 9 prompts, 3 steering docs, MCP config |
 
 ## How It Works
 

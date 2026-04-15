@@ -66,7 +66,7 @@ export async function show(annotation, callbacks = {}) {
   const CHIP_COLORS = {
     critical: '#dc2626', major: '#f59e0b', minor: '#6b7280',
     visual: '#6366f1', functional: '#0ea5e9', content: '#8b5cf6',
-    a11y: '#10b981', performance: '#f97316',
+    a11y: '#10b981', performance: '#f97316', idea: '#eab308',
   };
 
   /**
@@ -136,6 +136,7 @@ export async function show(annotation, callbacks = {}) {
   const CAT_OPTIONS = [
     { value: 'visual', label: 'Visual' }, { value: 'functional', label: 'Functional' },
     { value: 'content', label: 'Content' }, { value: 'a11y', label: 'A11y' }, { value: 'performance', label: 'Perf' },
+    { value: 'idea', label: 'Idea' },
   ];
   const categoryWrapper = document.createElement('div');
   categoryWrapper.setAttribute(ATTR, 'category');

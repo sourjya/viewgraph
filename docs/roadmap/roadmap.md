@@ -41,6 +41,7 @@
 | F2: Project Config | Complete | .viewgraph/config.json, GET/PUT endpoints, extension fetch/cache |
 | F7: CSS Style Diff | Complete | compare_styles MCP tool - diff computed styles between captures |
 | F8: Component Coverage | Complete | get_component_coverage MCP tool - testid coverage per component |
+| F12: Ideation Pipeline | In Progress | Idea category, @vg-ideate prompt, feature spec generation |
 | M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
 
 **Current totals:** 1056 tests (378 server + 678 extension), 36 MCP tools, 14 enrichment collectors

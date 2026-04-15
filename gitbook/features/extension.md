@@ -27,7 +27,7 @@ testid: email-input | role: textbox | 330x38
 When you click an element, a floating panel appears with:
 - **Comment** text area - describe what's wrong
 - **Severity** - Critical (red), Major (yellow), Minor (gray)
-- **Category** - Visual, Functional, Content, A11y, Perf
+- **Category** - Visual, Functional, Content, A11y, Perf, Idea
 - **Smart suggestions** - clickable chips based on detected issues (missing aria-label, no testid, low contrast)
 
 ![Annotation panel with severity, category, and comment](../.gitbook/assets/annotation-panel.png)

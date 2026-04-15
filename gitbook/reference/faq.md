@@ -58,6 +58,9 @@ Yes. Toggle "Auto-Audit" in the Inspect tab. When enabled, the server automatica
 ### How do I compare against a baseline?
 In the Inspect tab, click "Set" to promote the latest capture as your baseline. Click "Compare" to see a structural diff: elements added, removed, moved, or with changed testids.
 
+### Can I use ViewGraph for feature ideation?
+Yes. Set the annotation category to "Idea" instead of a bug category. Write your feature ideas as comments while looking at the actual UI. Then use `@vg-ideate` to generate a structured feature spec with requirements, user stories, and implementation tasks - all grounded in the real UI context from the capture.
+
 ## Security & Privacy
 
 ### Does ViewGraph send data to external servers?

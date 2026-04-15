@@ -54,4 +54,36 @@ describe('generateSpec', () => {
     const spec = generateSpec(annotations);
     expect(spec.requirements).toContain('No open annotations');
   });
+
+  it('(+) generates feature spec from idea annotations', () => {
+    const annotations = [
+      { comment: 'Add dark mode toggle', category: 'idea', selector: 'header.main', page: '/settings' },
+    ];
+    const spec = generateSpec(annotations, { specName: 'dark-mode' });
+    expect(spec.requirements).toContain('FEAT-1');
+    expect(spec.requirements).toContain('Add dark mode toggle');
+    expect(spec.requirements).toContain('User story');
+    expect(spec.tasks).toContain('Feature Tasks');
+  });
+
+  it('(+) separates ideas from bugs in mixed annotations', () => {
+    const annotations = [
+      { comment: 'Button color wrong', severity: 'major', category: 'visual', selector: 'button', page: '/login' },
+      { comment: 'Add export CSV', category: 'idea', selector: 'table.data', page: '/dashboard' },
+    ];
+    const spec = generateSpec(annotations);
+    expect(spec.requirements).toContain('REQ-1');
+    expect(spec.requirements).toContain('FEAT-1');
+    expect(spec.tasks).toContain('Major Priority');
+    expect(spec.tasks).toContain('Feature Tasks');
+  });
+
+  it('(+) idea-only annotations produce no bug sections', () => {
+    const annotations = [
+      { comment: 'Need charts here', category: 'idea', selector: 'div.dashboard', page: '/home' },
+    ];
+    const spec = generateSpec(annotations);
+    expect(spec.requirements).not.toContain('REQ-');
+    expect(spec.requirements).toContain('FEAT-1');
+  });
 });

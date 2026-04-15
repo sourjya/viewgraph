@@ -254,3 +254,29 @@ GitBook updates needed for: F1 (shortcuts page), F3 (auto-audit guide), F4 (base
 
 **Dependencies:** Re-enable ADR-010 auth (gated behind `remote: true` config flag)
 **Effort:** Small (2-3 hours - infrastructure was built and removed)
+
+### F12: Ideation Pipeline - Annotations to Feature Specs
+
+**Problem:** ViewGraph annotations assume bugs. But users also stare at screens and think "this needs a new feature." There's no pipeline from UI-context ideation to structured feature specs.
+
+**UX:**
+- New `idea` category in annotation panel (alongside visual, functional, content, a11y, perf)
+- Page notes with `idea` category treated as feature requests, not bugs
+- `generate_spec` tool detects `idea` annotations and generates feature specs (requirements + user stories) instead of bug-fix tasks
+- New `@vg-ideate` prompt shortcut: reads idea annotations with full DOM context, generates Kiro feature spec
+
+**Pipeline:**
+1. Open app, click ViewGraph
+2. Select elements or use Page mode, write feature ideas as comments
+3. Set category to `idea`
+4. Send to Agent
+5. `@vg-ideate` generates requirements.md with user stories, acceptance criteria, and UI context from the capture
+
+**Files to change:**
+- `extension/lib/annotation-panel.js` - add `idea` to CAT_OPTIONS
+- `server/src/analysis/spec-generator.js` - detect idea annotations, generate feature spec format
+- `power/prompts/vg-ideate.md` - new prompt shortcut
+- `.kiro/prompts/vg-ideate.md` - copy for Kiro Power
+
+**Dependencies:** None
+**Effort:** Small (1-2 hours)

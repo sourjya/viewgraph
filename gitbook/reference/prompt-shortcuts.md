@@ -1,6 +1,6 @@
 # Prompt Shortcuts Reference
 
-8 prompt shortcuts for Kiro CLI. Type `@vg` then Tab to see all options.
+9 prompt shortcuts for Kiro CLI. Type `@vg` then Tab to see all options.
 
 ## @vg-audit
 
@@ -46,4 +46,8 @@ Calls `get_interactive_elements` and `get_page_summary`. Generates a Playwright 
 
 ## @vg-help
 
-List all 34 ViewGraph MCP tools grouped by category with plain-English explanations and example usage.
+List all 36 ViewGraph MCP tools grouped by category with plain-English explanations and example usage.
+
+## @vg-ideate
+
+Generate feature specs from idea annotations. Reads annotations with "Idea" category from the latest capture and creates a Kiro spec with feature requirements, user stories, and implementation tasks - all grounded in the actual UI context from the capture.
