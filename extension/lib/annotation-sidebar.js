@@ -832,14 +832,14 @@ export function create() {
     const noteBtn = document.createElement('button');
     noteBtn.setAttribute(ATTR, 'section-note');
     noteBtn.dataset.section = title;
-    noteBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
-    noteBtn.title = `Create annotation from ${title} data`;
+    noteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>';
+    noteBtn.title = `Add as annotation`;
     Object.assign(noteBtn.style, {
-      border: 'none', background: 'transparent', cursor: 'pointer', color: '#555',
+      border: 'none', background: 'transparent', cursor: 'pointer', color: '#6366f1',
       padding: '2px', borderRadius: '3px', display: 'flex', flexShrink: '0',
     });
-    noteBtn.addEventListener('mouseenter', () => { noteBtn.style.color = '#a5b4fc'; });
-    noteBtn.addEventListener('mouseleave', () => { if (noteBtn.dataset.noted !== 'true') noteBtn.style.color = '#555'; });
+    noteBtn.addEventListener('mouseenter', () => { noteBtn.style.color = '#818cf8'; });
+    noteBtn.addEventListener('mouseleave', () => { if (noteBtn.dataset.noted !== 'true') noteBtn.style.color = '#6366f1'; });
     noteBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       const text = `${title}: ${body.textContent.trim()}`.slice(0, 500);
@@ -1529,6 +1529,7 @@ export function create() {
     { key: 'inspect', label: 'Inspect' },
   ]) {
     const btn = document.createElement('button');
+    btn.setAttribute(ATTR, 'primary-tab');
     btn.dataset.tab = key;
     btn.textContent = label;
     Object.assign(btn.style, {
@@ -1751,6 +1752,13 @@ export function refresh() {
   const list = sidebarEl.querySelector(`[${ATTR}="list"]`);
   const tabContainer = sidebarEl.querySelector(`[${ATTR}="tab-container"]`);
   if (!list || !tabContainer) return;
+
+  // Update Review tab count badge
+  const _reviewTab = hostEl?.shadowRoot?.querySelector(`[${ATTR}="primary-tab"][data-tab="review"]`);
+  if (_reviewTab) {
+    const openCount = getAnnotations().filter((a) => !a.resolved).length;
+    _reviewTab.textContent = openCount > 0 ? `Review (${openCount})` : 'Review';
+  }
 
   // Update header bell indicator
   if (bellBtn) {
