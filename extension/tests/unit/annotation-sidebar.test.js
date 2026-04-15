@@ -36,7 +36,6 @@ beforeEach(() => {
     },
     runtime: {
       sendMessage: vi.fn((msg, cb) => { if (cb) cb({ ok: true }); }),
-      getURL: vi.fn((path) => `chrome-extension://test-id/${path}`),
     },
   };
   // Mock getBoundingClientRect for annotation creation

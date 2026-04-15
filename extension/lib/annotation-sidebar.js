@@ -163,11 +163,9 @@ export function create() {
   const toggle = document.createElement('button');
   toggle.setAttribute(ATTR, 'toggle');
   // VG icon from extension assets + label + connection dot inline
-  const vgIcon = document.createElement('img');
-  vgIcon.src = chrome.runtime.getURL('icon-16.png');
-  vgIcon.width = 16;
-  vgIcon.height = 16;
-  Object.assign(vgIcon.style, { verticalAlign: 'middle', marginRight: '6px' });
+  const vgIcon = document.createElement('span');
+  vgIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
+  Object.assign(vgIcon.style, { display: 'inline-flex', verticalAlign: 'middle', marginRight: '6px' });
   toggle.appendChild(vgIcon);
   toggle.appendChild(document.createTextNode('ViewGraph'));
   Object.assign(toggle.style, {
@@ -1363,11 +1361,9 @@ export function create() {
   });
 
   // VG icon at top of strip
-  const stripIcon = document.createElement('img');
-  stripIcon.src = chrome.runtime.getURL('icon-16.png');
-  stripIcon.width = 20;
-  stripIcon.height = 20;
-  Object.assign(stripIcon.style, { cursor: 'pointer', padding: '2px' });
+  const stripIcon = document.createElement('span');
+  stripIcon.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
+  Object.assign(stripIcon.style, { cursor: 'pointer', padding: '2px', display: 'flex' });
   stripIcon.title = 'ViewGraph';
   stripIcon.addEventListener('click', () => { expand(); setCaptureMode(null); updateModeButtons(); });
   badgeEl.appendChild(stripIcon);
@@ -1461,7 +1457,12 @@ export function create() {
 
   // Wire keyboard shortcuts for annotate mode actions
   startShortcuts({
-    onEscape: () => { if (helpVisible) { hideHelpCard(); } else { collapse(); } },
+    onEscape: () => {
+      if (helpVisible) { hideHelpCard(); return; }
+      hideMarkers();
+      stopAnnotate();
+      destroy();
+    },
     onSend: () => { hostEl?.shadowRoot?.querySelector(`[${ATTR}="send"]`)?.click(); },
     onCopyMd: () => { hostEl?.shadowRoot?.querySelector(`[${ATTR}="copy-md"]`)?.click(); },
     onDelete: () => {
