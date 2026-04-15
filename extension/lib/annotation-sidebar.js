@@ -298,7 +298,7 @@ export function create() {
   helpCard.appendChild(title);
 
   const shortcuts = [
-    ['Esc', 'Dismiss help / deselect'],
+    ['Esc', 'Close current panel or exit'],
     ['Ctrl', 'Enter', 'Send to Agent'],
     ['Ctrl', 'Shift', 'C', 'Copy Markdown'],
     ['1', '2', '3', 'Severity: critical / major / minor'],
