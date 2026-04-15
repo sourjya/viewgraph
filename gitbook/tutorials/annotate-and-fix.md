@@ -1,6 +1,6 @@
 # Annotate and Fix Bugs
 
-The core ViewGraph workflow: see a bug, click it, describe it, agent fixes it.
+The core ViewGraph workflow: see a bug, click it, describe it, agent fixes it. Three bugs annotated and fixed without ever opening DevTools - the agent does the rest.
 
 <!-- Video: See Bug, Fix Bug -->
 [![Watch: Annotate and Fix Bugs](../.gitbook/assets/demo-thumbnail.png)](https://www.youtube.com/watch?v=ociXQLaY2z4)
