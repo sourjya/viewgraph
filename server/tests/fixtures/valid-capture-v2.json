@@ -1,0 +1,297 @@
+{
+  "metadata": {
+    "format": "viewgraph-v2",
+    "captureMode": "sifr-capture",
+    "timestamp": "2026-04-09T12:00:00Z",
+    "url": "http://localhost:8040/projects",
+    "title": "Projects - AI Video Editor",
+    "viewport": {
+      "width": 1696,
+      "height": 799
+    },
+    "screenshot": "viewgraph-localhost-2026-04-08T060815.png",
+    "stats": {
+      "totalNodes": 12,
+      "salience": {
+        "high": 2,
+        "med": 7,
+        "low": 3
+      },
+      "clusters": 3
+    }
+  },
+  "nodes": {
+    "high": [
+      {
+        "id": "btn001",
+        "tag": "button",
+        "text": "Create Project",
+        "bbox": {
+          "x": 100,
+          "y": 50,
+          "w": 150,
+          "h": 40
+        },
+        "actions": [
+          "click"
+        ],
+        "cluster": "c1"
+      },
+      {
+        "id": "nav001",
+        "tag": "a",
+        "text": "Dashboard",
+        "bbox": {
+          "x": 10,
+          "y": 10,
+          "w": 100,
+          "h": 30
+        },
+        "actions": [
+          "click"
+        ],
+        "cluster": "c2"
+      }
+    ],
+    "med": [
+      {
+        "id": "div001",
+        "tag": "div",
+        "text": "",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "w": 1696,
+          "h": 799
+        },
+        "actions": [],
+        "cluster": "c1"
+      },
+      {
+        "id": "h1_001",
+        "tag": "h1",
+        "text": "Projects",
+        "bbox": {
+          "x": 100,
+          "y": 10,
+          "w": 200,
+          "h": 40
+        },
+        "actions": [],
+        "cluster": "c1"
+      },
+      {
+        "id": "tbl001",
+        "tag": "table",
+        "text": "",
+        "bbox": {
+          "x": 100,
+          "y": 100,
+          "w": 800,
+          "h": 400
+        },
+        "actions": [],
+        "cluster": "c1"
+      },
+      {
+        "id": "td001",
+        "tag": "td",
+        "text": "My Project",
+        "bbox": {
+          "x": 100,
+          "y": 140,
+          "w": 200,
+          "h": 30
+        },
+        "actions": [],
+        "cluster": "c1"
+      },
+      {
+        "id": "td002",
+        "tag": "td",
+        "text": "Active",
+        "bbox": {
+          "x": 300,
+          "y": 140,
+          "w": 100,
+          "h": 30
+        },
+        "actions": [],
+        "cluster": "c1"
+      },
+      {
+        "id": "inp001",
+        "tag": "input",
+        "text": "",
+        "bbox": {
+          "x": 500,
+          "y": 50,
+          "w": 200,
+          "h": 35
+        },
+        "actions": [
+          "input"
+        ],
+        "cluster": "c3"
+      },
+      {
+        "id": "spn001",
+        "tag": "span",
+        "text": "Search",
+        "bbox": {
+          "x": 505,
+          "y": 55,
+          "w": 50,
+          "h": 20
+        },
+        "actions": [],
+        "cluster": "c3"
+      }
+    ],
+    "low": [
+      {
+        "id": "div002",
+        "tag": "div",
+        "text": "",
+        "bbox": {
+          "x": 0,
+          "y": 790,
+          "w": 1696,
+          "h": 9
+        },
+        "actions": [],
+        "cluster": "c1"
+      },
+      {
+        "id": "div003",
+        "tag": "div",
+        "text": "",
+        "bbox": {
+          "x": 900,
+          "y": 100,
+          "w": 1,
+          "h": 400
+        },
+        "actions": [],
+        "cluster": "c1"
+      },
+      {
+        "id": "spn002",
+        "tag": "span",
+        "text": "",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        },
+        "actions": [],
+        "cluster": "c1"
+      }
+    ]
+  },
+  "summary": {
+    "layout": "single-column with header nav and data table",
+    "styles": {
+      "primaryColors": [
+        "#6366f1",
+        "#ffffff",
+        "#1e1e2e"
+      ],
+      "fonts": [
+        "Inter",
+        "system-ui"
+      ],
+      "spacing": "16px grid"
+    },
+    "clusters": [
+      {
+        "id": "c1",
+        "label": "Main content",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "w": 1696,
+          "h": 799
+        },
+        "elementCount": 9
+      },
+      {
+        "id": "c2",
+        "label": "Navigation",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "w": 200,
+          "h": 50
+        },
+        "elementCount": 1
+      },
+      {
+        "id": "c3",
+        "label": "Search",
+        "bbox": {
+          "x": 500,
+          "y": 50,
+          "w": 200,
+          "h": 35
+        },
+        "elementCount": 2
+      }
+    ]
+  },
+  "relations": {
+    "parentChild": [
+      {
+        "parent": "div001",
+        "child": "h1_001"
+      },
+      {
+        "parent": "div001",
+        "child": "tbl001"
+      },
+      {
+        "parent": "tbl001",
+        "child": "td001"
+      },
+      {
+        "parent": "tbl001",
+        "child": "td002"
+      }
+    ],
+    "labelFor": [
+      {
+        "label": "spn001",
+        "target": "inp001"
+      }
+    ]
+  },
+  "details": {
+    "btn001": {
+      "selector": "button.btn-primary[data-testid='create-project']",
+      "attributes": {
+        "data-testid": "create-project",
+        "role": "button",
+        "aria-label": "Create new project"
+      },
+      "computedStyles": {
+        "backgroundColor": "#ef4444",
+        "fontSize": "16px",
+        "borderRadius": "8px"
+      }
+    },
+    "inp001": {
+      "selector": "input[data-testid='search-input']",
+      "attributes": {
+        "data-testid": "search-input",
+        "type": "text",
+        "placeholder": "Search projects..."
+      },
+      "computedStyles": {
+        "backgroundColor": "#ffffff",
+        "borderColor": "#d1d5db",
+        "fontSize": "14px"
+      }
+    }
+  }
+}

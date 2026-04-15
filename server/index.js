@@ -58,6 +58,8 @@ import { register as registerAnalyzePatterns } from '#src/tools/analyze-patterns
 import { register as registerAnalyzeJourney } from '#src/tools/analyze-journey.js';
 import { register as registerGetCaptureStats } from '#src/tools/get-capture-stats.js';
 import { register as registerValidateCapture } from '#src/tools/validate-capture.js';
+import { register as registerCompareStyles } from '#src/tools/compare-styles.js';
+import { register as registerGetComponentCoverage } from '#src/tools/get-component-coverage.js';
 import { createRequestQueue } from '#src/request-queue.js';
 import { createHttpReceiver } from '#src/http-receiver.js';
 
@@ -122,6 +124,8 @@ registerAnalyzePatterns(server, indexer, CAPTURES_DIR);
 registerAnalyzeJourney(server, indexer, CAPTURES_DIR);
 registerGetCaptureStats(server, indexer, CAPTURES_DIR);
 registerValidateCapture(server, indexer, CAPTURES_DIR);
+registerCompareStyles(server, indexer, CAPTURES_DIR);
+registerGetComponentCoverage(server, indexer, CAPTURES_DIR);
 
 // ---------------------------------------------------------------------------
 // File indexing  -  parse metadata from a capture file and add to index
