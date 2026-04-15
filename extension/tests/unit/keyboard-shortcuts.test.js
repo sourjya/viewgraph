@@ -66,4 +66,95 @@ describe('keyboard shortcuts', () => {
     startShortcuts({});
     expect(isShortcutsActive()).toBe(true);
   });
+
+  it('(-) does not fire onSend without Ctrl modifier', () => {
+    const onSend = vi.fn();
+    startShortcuts({ onSend });
+    press('Enter');
+    expect(onSend).not.toHaveBeenCalled();
+  });
+
+  it('(-) does not fire onCopyMd without Ctrl+Shift', () => {
+    const onCopyMd = vi.fn();
+    startShortcuts({ onCopyMd });
+    press('c');
+    press('c', { ctrlKey: true });
+    press('c', { shiftKey: true });
+    expect(onCopyMd).not.toHaveBeenCalled();
+  });
+
+  it('(+) fires onCopyMd on Ctrl+Shift+C', () => {
+    const onCopyMd = vi.fn();
+    startShortcuts({ onCopyMd });
+    press('c', { ctrlKey: true, shiftKey: true });
+    expect(onCopyMd).toHaveBeenCalledTimes(1);
+  });
+
+  it('(+) fires onDelete on Delete key', () => {
+    const onDelete = vi.fn();
+    startShortcuts({ onDelete });
+    press('Delete');
+    expect(onDelete).toHaveBeenCalledTimes(1);
+  });
+
+  it('(+) fires onDelete on Backspace key', () => {
+    const onDelete = vi.fn();
+    startShortcuts({ onDelete });
+    press('Backspace');
+    expect(onDelete).toHaveBeenCalledTimes(1);
+  });
+
+  it('(-) severity keys 4-9 do not fire onSeverity', () => {
+    const onSeverity = vi.fn();
+    startShortcuts({ onSeverity });
+    press('4');
+    press('5');
+    press('9');
+    press('0');
+    expect(onSeverity).not.toHaveBeenCalled();
+  });
+
+  it('(-) regular letter keys do not trigger any handler', () => {
+    const handlers = { onEscape: vi.fn(), onSend: vi.fn(), onCopyMd: vi.fn(), onSeverity: vi.fn(), onDelete: vi.fn() };
+    startShortcuts(handlers);
+    press('a');
+    press('z');
+    press(' ');
+    press('Tab');
+    for (const fn of Object.values(handlers)) {
+      expect(fn).not.toHaveBeenCalled();
+    }
+  });
+
+  it('(-) ignores keys when typing in page input', () => {
+    const onEscape = vi.fn();
+    const onSeverity = vi.fn();
+    startShortcuts({ onEscape, onSeverity });
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    const event = new KeyboardEvent('keydown', { key: '1', bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'target', { value: input });
+    document.body.dispatchEvent(event);
+    expect(onSeverity).not.toHaveBeenCalled();
+    input.remove();
+  });
+
+  it('(-) ignores keys when typing in textarea', () => {
+    const onDelete = vi.fn();
+    startShortcuts({ onDelete });
+    const ta = document.createElement('textarea');
+    document.body.appendChild(ta);
+    const event = new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'target', { value: ta });
+    document.body.dispatchEvent(event);
+    expect(onDelete).not.toHaveBeenCalled();
+    ta.remove();
+  });
+
+  it('(+) Cmd+Enter works as alternative to Ctrl+Enter (Mac)', () => {
+    const onSend = vi.fn();
+    startShortcuts({ onSend });
+    press('Enter', { metaKey: true });
+    expect(onSend).toHaveBeenCalledTimes(1);
+  });
 });
