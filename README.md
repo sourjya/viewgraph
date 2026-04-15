@@ -49,119 +49,31 @@ The extension captures the DOM from Chrome or Firefox. The server reads those ca
 
 ## Getting Started
 
-### Prerequisites
-
-| Requirement | Minimum Version | Notes |
-|---|---|---|
-| Node.js | 18.0.0+ (LTS) | Runs the ViewGraph server and builds the extension |
-| npm | 9.0.0+ | Workspaces support required |
-| Chrome | 116+ | Manifest V3 browser extension |
-| Firefox | 109+ | Manifest V3 browser extension |
-
-Build for your browser of choice: `npm run build:ext` (Chrome, default) or `npm run build:ext -- --browser firefox`. See [extension/README.md](./extension/) for details.
-
-### Step 1: Install ViewGraph
+**Prerequisites:** Node.js 18+, npm 9+, Chrome 116+ or Firefox 109+
 
 ```bash
+# 1. Install
 npm install -g @viewgraph/core
-```
 
-<!-- TODO: Uncomment when store listings are approved
-Or install the browser extension directly:
-- [Chrome Web Store](https://chrome.google.com/webstore/detail/viewgraph-capture/PLACEHOLDER)
-- [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
--->
-
-### Step 2: Build and load the browser extension
-
-Build the extension:
-
-```bash
+# 2. Build the browser extension
 npm run build:ext                        # Chrome (default)
 npm run build:ext -- --browser firefox   # Firefox
+# Then load unpacked in chrome://extensions/ or about:debugging
+
+# 3. Initialize in your project
+cd your-project
+viewgraph-init                           # auto-detects your agent, starts server
+viewgraph-init --url localhost:3000      # if using a dev server
+
+# 4. Capture: click the ViewGraph toolbar icon on any page
+# 5. Ask your agent: "Fix the annotations from my last review"
 ```
 
-**Chrome:**
-1. Open `chrome://extensions/`
-2. Enable **Developer mode** (toggle in top-right corner)
-3. Click **Load unpacked**
-4. Select: `<your-viewgraph-path>/extension/.output/chrome-mv3`
+The extension sidebar opens with **Review** (annotate and comment) and **Inspect** (network errors, console issues) tabs. Export via **Send to Agent** (MCP), **Copy Markdown** (Jira/GitHub), or **Download Report** (ZIP).
 
-**Firefox:**
-1. Open `about:debugging#/runtime/this-firefox`
-2. Click **Load Temporary Add-on**
-3. Select any file inside: `<your-viewgraph-path>/extension/.output/firefox-mv3`
+For detailed setup with screenshots, browser-specific instructions, and multi-project configuration, see the [Quick Start Guide](https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start).
 
-The ViewGraph icon appears in your browser toolbar.
-
-### Step 3: Initialize ViewGraph in your project
-
-Open a terminal in **your project's root directory** and run:
-
-```bash
-viewgraph-init
-```
-
-The init script does the following automatically:
-- Detects your AI agent (Kiro, Claude Code, Cursor, etc.) and writes the appropriate MCP config file
-- Creates `.viewgraph/captures/` for storing capture files
-- Installs Kiro Power assets (hooks, prompts, steering docs) if using Kiro
-- Starts the MCP server as a background process
-
-**How to verify it worked:** The extension sidebar shows a green dot when connected to the server. Click the ViewGraph toolbar icon on any page to check.
-
-**Using a dev server or remote URL?** Add `--url` so the extension routes captures to the right project:
-
-```bash
-viewgraph-init --url localhost:3000
-```
-
-For multiple projects, multiple URLs, or editing patterns later, see the [Multi-Project Setup Guide](./docs/runbooks/multi-project-setup.md).
-
-### Step 4: Capture and annotate
-
-1. Navigate to your app in the browser
-2. Click the **ViewGraph** toolbar icon - annotate mode activates
-3. The sidebar opens with two tabs: **Review** (annotations) and **Inspect** (diagnostics)
-
-**Annotating:**
-- **Click** any element to select it and add a comment
-- **Shift+drag** to select a region
-- **Scroll wheel** while hovering to navigate up/down the DOM tree
-- Set **severity** and **category** on each annotation via the floating panel
-
-**Exporting:**
-- **Send to Agent** - pushes annotations + full DOM capture to your AI agent via MCP
-- **Copy MD** - copies a markdown bug report to clipboard (includes network/console data)
-- **Report** - downloads a ZIP with markdown, screenshots, network.json, and console.json
-
-Captures are saved to `.viewgraph/captures/` in your project and pushed to the MCP server automatically.
-
-### Step 5: Let your AI agent act on captures
-
-Your AI agent can now query captures through MCP. You don't call these tools directly - your agent does. Example prompts you'd give your agent:
-
-```
-"Audit the latest capture for accessibility issues"
-"Find all buttons missing data-testid"
-"Fix the annotations from my last review"
-```
-
-Behind the scenes, the agent calls tools like `audit_accessibility`, `find_missing_testids`, and `get_annotations`.
-
-### Starting the server in subsequent sessions
-
-The init script starts the server automatically on first run. For later sessions:
-
-```bash
-npm run dev:server       # run from the ViewGraph directory
-```
-
-Or re-run the init script from your project - it kills any stale server and starts a fresh one.
-
-### Try the demo
-
-Open [`docs/demo/index.html`](./docs/demo/) in your browser - a styled login page with 8 planted UI bugs. Annotate the issues, send to Kiro, and watch them get fixed. See the [demo walkthrough](./docs/demo/README.md) for step-by-step instructions.
+**Try the demo:** Open [`docs/demo/index.html`](./docs/demo/) - a login page with 8 planted bugs. Annotate, send to Kiro, watch them get fixed. [Walkthrough](./docs/demo/README.md).
 
 ## Workflows
 
