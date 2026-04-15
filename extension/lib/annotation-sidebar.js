@@ -1001,6 +1001,17 @@ export function create() {
           Object.assign(size.style, { flexShrink: '0', color: req.failed ? '#f87171' : '#555', fontWeight: req.failed ? '600' : '400' });
           row.append(urlEl, size);
           groupBody.appendChild(row);
+
+          // Failed requests get an expandable detail row
+          if (req.failed) {
+            const detailRow = document.createElement('div');
+            Object.assign(detailRow.style, { display: 'none', paddingLeft: '8px', paddingBottom: '4px', fontSize: '10px', color: '#888', borderLeft: '2px solid #7f1d1d' });
+            const parts = [`Type: ${req.initiatorType || 'unknown'}`, `Duration: ${req.duration || 0}ms`];
+            detailRow.innerHTML = `<div style="word-break:break-all;color:#f87171;margin-bottom:2px">${req.url}</div><div>${parts.join(' - ')}</div>`;
+            row.style.cursor = 'pointer';
+            row.addEventListener('click', () => { detailRow.style.display = detailRow.style.display === 'none' ? 'block' : 'none'; });
+            groupBody.appendChild(detailRow);
+          }
         }
 
         netBody.append(groupRow, groupBody);
@@ -2012,8 +2023,17 @@ export function refresh() {
     // Severity dot - separate indicator after the number
     const numBadge = document.createElement('span');
     const SEV_DOT_COLORS = { critical: '#ef4444', major: '#eab308', minor: '#9ca3af' };
-    const markerColor = ann.type === 'page-note' ? '#0ea5e9' : MARKER_COLORS[(ann.id - 1) % MARKER_COLORS.length];
-    if (ann.type === 'page-note') {
+    const isIdea = (ann.category || '').includes('idea');
+    const markerColor = isIdea ? '#eab308' : ann.type === 'page-note' ? '#0ea5e9' : MARKER_COLORS[(ann.id - 1) % MARKER_COLORS.length];
+    if (isIdea) {
+      numBadge.innerHTML = '#' + ann.id + ' <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg>';
+      Object.assign(numBadge.style, {
+        background: '#eab308', color: '#fff', fontSize: '10px', fontWeight: '700',
+        padding: '1px 5px', borderRadius: '3px', marginRight: '2px',
+        fontFamily: 'system-ui, sans-serif', flexShrink: '0',
+        display: 'inline-flex', alignItems: 'center', gap: '1px',
+      });
+    } else if (ann.type === 'page-note') {
       numBadge.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${ann.id}`;
       Object.assign(numBadge.style, {
         background: markerColor, color: '#fff', fontSize: '10px', fontWeight: '700',
