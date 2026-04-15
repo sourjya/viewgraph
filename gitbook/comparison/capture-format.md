@@ -115,7 +115,25 @@ A typical 500-element page produces a 20-40KB capture. A raw HTML dump of the sa
 
 ViewGraph's capture format was inspired by [Element to LLM](https://insitu.im/) (E2LLM) by insitu.im - the first browser extension to frame DOM capture as a structured perception layer for AI agents. E2LLM's SiFR format introduced key ideas: salience scoring, action tagging (`[clickable]`, `[fillable]`), and spatial relationship mapping - proving that a purpose-built intermediate representation beats both raw HTML and screenshots for agent consumption.
 
-ViewGraph extended these foundations through [deep format research](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/viewgraph-format-research.md): adding ranked multi-strategy locators, 14 enrichment collectors (network, console, a11y, stacking, focus, etc.), progressive disclosure via MCP tools, human annotation layers, and a columnar structure optimized for token efficiency. But the core insight - that AI agents need a structured perception layer, not raw HTML - came from E2LLM.
+ViewGraph extended these foundations through [deep format research](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/viewgraph-format-research.md) that identified 8 weaknesses in SiFR v2 and produced 20 improvement proposals. The core insight - that AI agents need a structured perception layer, not raw HTML - came from E2LLM. ViewGraph's format builds on that insight with significant structural changes:
+
+| Dimension | SiFR v2 (E2LLM) | ViewGraph v2 |
+|---|---|---|
+| **Token delivery** | Full capture to clipboard (~50K+ tokens for styles alone) | Progressive disclosure via MCP - summary is ~500 tokens, full capture on demand (181x savings) |
+| **Style handling** | All computed styles on all nodes (biggest token sink) | Tiered: full styles on high-salience only, layout-only on medium, none on low (30-50% token reduction) |
+| **Tag names** | Abbreviated (`btn`, `spn`, `hdr`) - saves ~600 tokens but requires lookup table | Full HTML tag names - readability over marginal savings |
+| **Node IDs** | Opaque sequential (`btn001`, `div003`) - unstable across captures | Three-layer IDs (nid/alias/backendNodeId) incorporating testid, id, or role |
+| **Locators** | None - consumer must derive selectors | Ranked multi-strategy locators (testId > role > css) per element |
+| **Coordinate frame** | Undeclared (must infer viewport-relative CSS pixels) | Explicit declaration in metadata (unit, origin, scroll offset) |
+| **Accessibility** | ARIA attributes from DOM only | Inline computed AX tree data (role, name, state) + axe-core audit results |
+| **Enrichment** | DOM structure only | 14 collectors: network, console, stacking, focus, scroll, landmarks, components, performance, animations, etc. |
+| **Annotations** | Not supported | W3C-aligned annotation model with severity, category, element references |
+| **Relations** | All spatial relations computed upfront (hundreds of entries) | Semantic relations always included; spatial relations on-demand via MCP tool |
+| **Specification** | No spec - format defined only by source code | Formal JSON Schema 2020-12 spec with semver versioning |
+| **AI integration** | Clipboard paste to any LLM | Bidirectional MCP protocol - agent queries, requests captures, resolves annotations |
+| **License** | BSL 1.1 (proprietary) | AGPL-3.0 (open source) |
+
+Full analysis: [Format Research - SiFR v2 Analysis](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/viewgraph-format-research.md)
 
 ## Format Specification
 
