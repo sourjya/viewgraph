@@ -699,3 +699,90 @@ describe('keyboard shortcuts integration', () => {
     }).not.toThrow();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Collapsed strip
+// ---------------------------------------------------------------------------
+
+describe('collapsed strip', () => {
+  it('(+) strip always shows chat bubble with count 0', () => {
+    start();
+    create();
+    collapse();
+
+    const badge = document.querySelector(`[${ATTR}="collapse-badge"]`);
+    const countEl = badge?.querySelector('[data-vg-badge-count]');
+    expect(countEl).toBeTruthy();
+    expect(countEl.textContent).toContain('0');
+
+    stop();
+    destroy();
+  });
+
+  it('(+) strip shows VG icon as img element', () => {
+    start();
+    create();
+    collapse();
+
+    const badge = document.querySelector(`[${ATTR}="collapse-badge"]`);
+    const img = badge?.querySelector('img');
+    expect(img).toBeTruthy();
+    expect(img.src).toContain('icon-16.png');
+
+    stop();
+    destroy();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Help card
+// ---------------------------------------------------------------------------
+
+describe('help card', () => {
+  it('(+) help card contains keycap-styled shortcut keys', () => {
+    start();
+    create();
+
+    const helpCard = shadowQuery(`[${ATTR}="help-card"]`);
+    expect(helpCard).toBeTruthy();
+    // Card is hidden by default
+    expect(helpCard.style.display).toBe('none');
+
+    stop();
+    destroy();
+  });
+
+  it('(+) help card links have emoji icons', () => {
+    start();
+    create();
+
+    const helpCard = shadowQuery(`[${ATTR}="help-card"]`);
+    const links = helpCard?.querySelectorAll('a') || [];
+    expect(links.length).toBe(3);
+    // Check emoji prefixes
+    expect(links[0].textContent).toMatch(/📖/);
+    expect(links[1].textContent).toMatch(/⌨/);
+    expect(links[2].textContent).toMatch(/🐛/);
+
+    stop();
+    destroy();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Settings footer link
+// ---------------------------------------------------------------------------
+
+describe('settings', () => {
+  it('(+) settings link exists in footer', () => {
+    start();
+    create();
+
+    const link = shadowQuery(`[${ATTR}="settings-link"]`);
+    expect(link).toBeTruthy();
+    expect(link.textContent).toContain('Settings');
+
+    stop();
+    destroy();
+  });
+});

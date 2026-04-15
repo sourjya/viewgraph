@@ -724,12 +724,15 @@ export function create() {
   settingsScreen.append(settingsHeader, settingsBody);
 
   /** Show settings as slide-over overlay. */
+  let settingsVisible = false;
   function showSettings() {
+    settingsVisible = true;
     settingsScreen.style.display = 'block';
   }
 
   /** Hide settings overlay. */
   function hideSettings() {
+    settingsVisible = false;
     settingsScreen.style.display = 'none';
   }
 
@@ -1365,8 +1368,8 @@ export function create() {
   // VG icon at top of strip
   const stripIcon = document.createElement('img');
   stripIcon.src = chrome.runtime.getURL('icon-16.png');
-  stripIcon.width = 20;
-  stripIcon.height = 20;
+  stripIcon.width = 28;
+  stripIcon.height = 28;
   Object.assign(stripIcon.style, { cursor: 'pointer', padding: '2px' });
   stripIcon.title = 'ViewGraph';
   stripIcon.addEventListener('click', () => { expand(); setCaptureMode(null); updateModeButtons(); });
@@ -1463,6 +1466,7 @@ export function create() {
   startShortcuts({
     onEscape: () => {
       if (helpVisible) { hideHelpCard(); return; }
+      if (settingsVisible) { hideSettings(); return; }
       hideMarkers();
       stopAnnotate();
       destroy();
