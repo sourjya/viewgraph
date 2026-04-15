@@ -34,7 +34,7 @@ describe('get_fidelity_report via MCP', () => {
     if (capturesDir) rmSync(capturesDir, { recursive: true, force: true });
   });
 
-  it('returns fidelity report for paired capture + snapshot', async () => {
+  it('(+) returns fidelity report for paired capture + snapshot', async () => {
     const rootDir = path.join(os.tmpdir(), `vg-fid-${Date.now()}`);
     capturesDir = path.join(rootDir, 'captures');
     mkdirSync(capturesDir, { recursive: true });
@@ -50,7 +50,7 @@ describe('get_fidelity_report via MCP', () => {
     expect(data.metrics.overallScore).toBeGreaterThan(0);
   });
 
-  it('returns error when no snapshot exists', async () => {
+  it('(-) returns error when no snapshot exists', async () => {
     capturesDir = path.join(os.tmpdir(), `vg-fid-${Date.now()}`);
     mkdirSync(capturesDir, { recursive: true });
     writeFileSync(path.join(capturesDir, 'viewgraph-test-456.json'), JSON.stringify(SAMPLE_CAPTURE));
@@ -58,6 +58,24 @@ describe('get_fidelity_report via MCP', () => {
     const { client, cleanup: c } = await createTestClient((s) => register(s, capturesDir));
     cleanup = c;
     const result = await client.callTool({ name: 'get_fidelity_report', arguments: { filename: 'viewgraph-test-456.json' } });
+    expect(result.isError).toBe(true);
+  });
+
+  it('(-) returns error for nonexistent capture', async () => {
+    capturesDir = path.join(os.tmpdir(), `vg-fid-${Date.now()}`);
+    mkdirSync(capturesDir, { recursive: true });
+    const { client, cleanup: c } = await createTestClient((s) => register(s, capturesDir));
+    cleanup = c;
+    const result = await client.callTool({ name: 'get_fidelity_report', arguments: { filename: 'nope.json' } });
+    expect(result.isError).toBe(true);
+  });
+
+  it('(-) returns error for path traversal', async () => {
+    capturesDir = path.join(os.tmpdir(), `vg-fid-${Date.now()}`);
+    mkdirSync(capturesDir, { recursive: true });
+    const { client, cleanup: c } = await createTestClient((s) => register(s, capturesDir));
+    cleanup = c;
+    const result = await client.callTool({ name: 'get_fidelity_report', arguments: { filename: '../../../etc/passwd' } });
     expect(result.isError).toBe(true);
   });
 });

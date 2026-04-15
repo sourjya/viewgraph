@@ -32,4 +32,18 @@ describe('get_interactive_elements via MCP', () => {
     expect(btn['data-testid']).toBe('create-project');
     expect(btn['aria-label']).toBe('Create new project');
   });
+
+  it('(-) returns error for nonexistent file', async () => {
+    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    cleanup = c;
+    const result = await client.callTool({ name: 'get_interactive_elements', arguments: { filename: 'nope.json' } });
+    expect(result.isError).toBe(true);
+  });
+
+  it('(-) returns error for path traversal', async () => {
+    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    cleanup = c;
+    const result = await client.callTool({ name: 'get_interactive_elements', arguments: { filename: '../../package.json' } });
+    expect(result.isError).toBe(true);
+  });
 });

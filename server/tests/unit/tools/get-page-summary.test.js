@@ -49,4 +49,14 @@ describe('get_page_summary via MCP', () => {
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('not found');
   });
+
+  it('(-) returns error for path traversal', async () => {
+    const indexer = createIndexer({ maxCaptures: 50 });
+    const { client, cleanup: c } = await createTestClient(
+      (server) => register(server, indexer, FIXTURES_DIR),
+    );
+    cleanup = c;
+    const result = await client.callTool({ name: 'get_page_summary', arguments: { filename: '../../../etc/passwd' } });
+    expect(result.isError).toBe(true);
+  });
 });
