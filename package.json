@@ -27,8 +27,6 @@
   ],
   "scripts": {
     "publish:all": "npm publish --access public && cd packages/playwright && npm publish --access public",
-    "prepublishOnly": "cp README.md README.github.md && cp npm-readme.md README.md",
-    "postpublish": "mv README.github.md README.md",
     "build": "npm run build:ext:chrome && npm run build:ext:firefox && npm run build:playwright",
     "build:ext": "npm run build:ext:chrome",
     "build:ext:chrome": "npm run build --workspace=extension",
