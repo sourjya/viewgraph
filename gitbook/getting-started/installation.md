@@ -74,6 +74,10 @@ The init script detects your agent by looking for config directories:
 
 For Kiro, the init script also installs Power assets: 3 hooks, 8 prompt shortcuts, and 3 steering docs.
 
+Here's how the init output differs - a Kiro project (right) gets hooks, prompts, and steering docs automatically, while a non-Kiro project (left) gets just the MCP config:
+
+![Two projects: generic init vs Kiro init](../.gitbook/assets/two-projects.png)
+
 ---
 
 ## For Developers: Build from Source
