@@ -2,6 +2,8 @@
 
 The ViewGraph extension runs in Chrome and Firefox. Other Chromium-based browsers (Edge, Brave, Opera) can load the extension but are not officially tested.
 
+<a href="https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj"><img src="https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Chrome Web Store"></a>  <a href="https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/"><img src="https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white" alt="Firefox Add-ons"></a>
+
 ## Annotate Mode
 
 Click the ViewGraph toolbar icon to enter annotate mode. The sidebar opens and elements highlight as you hover.
