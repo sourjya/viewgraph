@@ -17,8 +17,11 @@ export const DEFAULT_HTTP_PORT = 9876;
 /** Max ports to scan when discovering servers. */
 export const PORT_SCAN_RANGE = 4;
 
+/** Localhost bind address for all server connections. */
+export const SERVER_HOST = '127.0.0.1';
+
 /** Base URL for the MCP server HTTP receiver. */
-export const SERVER_BASE_URL = `http://127.0.0.1:${DEFAULT_HTTP_PORT}`;
+export const SERVER_BASE_URL = `http://${SERVER_HOST}:${DEFAULT_HTTP_PORT}`;
 
 /**
  * Server registry - all running ViewGraph servers keyed by port.
@@ -57,7 +60,7 @@ async function refreshRegistry() {
   const probes = [];
 
   for (let p = DEFAULT_HTTP_PORT; p < DEFAULT_HTTP_PORT + PORT_SCAN_RANGE; p++) {
-    const url = `http://127.0.0.1:${p}`;
+    const url = `http://${SERVER_HOST}:${p}`;
     probes.push(
       fetch(`${url}/info`, { signal: AbortSignal.timeout(1000) })
         .then((res) => res.ok ? res.json() : null)
