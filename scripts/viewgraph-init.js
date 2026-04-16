@@ -118,10 +118,16 @@ function verifyWritable(dirPath) {
 // Main
 // ---------------------------------------------------------------------------
 
-console.log('\nViewGraph Init\n');
-
 // Check for npm updates (non-blocking)
 const CURRENT_VERSION = JSON.parse(readFileSync(path.join(VIEWGRAPH_ROOT, 'package.json'), 'utf-8')).version;
+
+console.log(`
+  \x1b[38;5;99m╔═══════════════════════════════════════╗\x1b[0m
+  \x1b[38;5;99m║\x1b[0m  \x1b[1m\x1b[38;5;141m</>  V I E W G R A P H\x1b[0m  \x1b[38;5;245mv${CURRENT_VERSION}\x1b[0m  \x1b[38;5;99m║\x1b[0m
+  \x1b[38;5;99m║\x1b[0m  \x1b[38;5;245mThe UI context layer for AI agents\x1b[0m  \x1b[38;5;99m║\x1b[0m
+  \x1b[38;5;99m╚═══════════════════════════════════════╝\x1b[0m
+`);
+
 try {
   const res = await fetch('https://registry.npmjs.org/@viewgraph/core/latest', { signal: AbortSignal.timeout(3000) });
   if (res.ok) {
