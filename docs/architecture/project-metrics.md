@@ -5,32 +5,18 @@ Updated manually at milestones. First entry: v0.1.0 beta launch.
 
 ---
 
-## v0.1.1 (2026-04-14) - Day 6
-
-**Development timeline:** April 8-14, 2026 (6 days from first commit to published beta)
-
-### Codebase
-
-| Metric | Count |
-|---|---|
-| Git commits | 595 |
-| Files tracked | 488 |
-| Lines of source code (JS) | 12,726 |
-| Lines of test code | 11,330 |
-| Lines of documentation (MD) | 22,233 |
-| Test-to-code ratio | 0.89:1 |
-| Doc-to-code ratio | 1.75:1 |
+## v0.3.3 (2026-04-16)
 
 ### Product
 
 | Metric | Count |
 |---|---|
-| MCP tools | 34 |
-| Extension modules | 42 |
+| MCP tools | 36 |
+| Extension modules | 47 (12 root + 35 in 6 subdirectories) |
 | Enrichment collectors | 14 |
-| Prompt templates | 8 |
+| Prompt shortcuts | 9 |
 | Kiro hooks | 3 |
-| Steering docs | 13 |
+| Steering docs | 4 |
 | Demo pages (planted bugs) | 4 (25 bugs) |
 | Capture accuracy (composite) | 92.1% |
 
@@ -39,11 +25,10 @@ Updated manually at milestones. First entry: v0.1.0 beta launch.
 | Metric | Count |
 |---|---|
 | Total tests | 1153 |
-| Server tests | 329 |
-| Extension tests | 653 |
-| Routing tests | 46 |
+| Server tests | 381 |
+| Extension tests | 772 |
+| Test files | 91 (43 extension + 48 server) |
 | Accuracy experiment sites | 145 |
-| Experiment sets | 3 (breadth, depth, real-world) |
 
 ### Architecture
 
@@ -61,10 +46,10 @@ Updated manually at milestones. First entry: v0.1.0 beta launch.
 | Channel | Status |
 |---|---|
 | GitHub | Public (github.com/sourjya/viewgraph) |
-| npm (@viewgraph/core) | Published v0.1.1 |
-| npm (@viewgraph/playwright) | Published v0.1.1 |
-| Chrome Web Store | Submitted v0.2.0, pending review |
-| Firefox Add-ons | Live v0.1.0, v0.3.2 submitted for update |
+| npm (@viewgraph/core) | Published v0.3.0 |
+| npm (@viewgraph/playwright) | Published v0.3.0 |
+| Chrome Web Store | Submitted, pending review |
+| Firefox Add-ons | Live, v0.3.3 submitted |
 | GitBook docs | Live (chaoslabz.gitbook.io/viewgraph) |
 | YouTube channel | Live (Evolving with AI) |
 
