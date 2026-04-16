@@ -6,10 +6,11 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createSettings } from '#lib/sidebar/settings.js';
+import { VERSION } from '../../helpers.js';
 
 beforeEach(() => {
   globalThis.chrome = {
-    runtime: { getManifest: () => ({ version: '0.3.4' }), sendMessage: () => {} },
+    runtime: { getManifest: () => ({ version: VERSION }), sendMessage: () => {} },
     storage: { local: { get: (key, cb) => { if (cb) cb({}); return Promise.resolve({}); }, set: () => Promise.resolve() } },
   };
   globalThis.fetch = () => Promise.reject(new Error('offline'));

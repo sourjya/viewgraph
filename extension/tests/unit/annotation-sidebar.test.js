@@ -420,7 +420,7 @@ describe('inspect tab captures section', () => {
         return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
       }
       if (u.includes('/info')) {
-        return Promise.resolve({ ok: true, json: () => Promise.resolve({ token: 'test', projectRoot: '/home/user/project', urlPatterns: ['localhost:8040'], serverVersion: '0.3.3' }) });
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ token: 'test', projectRoot: '/home/user/project', urlPatterns: ['localhost:8040'], serverVersion: 'test' }) });
       }
       if (u.includes('/captures')) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve({ captures }) });
