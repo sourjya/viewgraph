@@ -1,3 +1,4 @@
+import { WS_MESSAGES } from '#src/ws-message-types.js';
 /**
  * ViewGraph MCP Server  -  Entry Point
  *
@@ -101,7 +102,7 @@ registerGetFidelityReport(server, CAPTURES_DIR);
 registerResolveAnnotation(server, indexer, CAPTURES_DIR, {
   onResolve: ({ uuid, resolution }) => {
     const ws = httpReceiver?.getWsServer?.();
-    if (ws) ws.broadcast({ type: 'annotation:resolved', uuid, resolution });
+    if (ws) ws.broadcast({ type: WS_MESSAGES.ANNOTATION_RESOLVED, uuid, resolution });
   },
 });
 registerGetUnresolved(server, indexer, CAPTURES_DIR);

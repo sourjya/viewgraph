@@ -1,3 +1,4 @@
+import { WS_MESSAGES } from './ws-message-types.js';
 /**
  * WebSocket Client
  *
@@ -53,11 +54,11 @@ function doConnect() {
     let msg;
     try { msg = JSON.parse(event.data); } catch { return; }
 
-    if (msg.type === 'auth:ok') {
+    if (msg.type === WS_MESSAGES.AUTH_OK) {
       handlers.onConnect?.();
       return;
     }
-    if (msg.type === 'auth:fail') {
+    if (msg.type === WS_MESSAGES.AUTH_FAIL) {
       ws.close();
       return;
     }
@@ -97,7 +98,7 @@ export function send(msg) {
  * @param {object} annotation
  */
 export function sendAnnotationCreate(annotation) {
-  send({ type: 'annotation:create', annotation });
+  send({ type: WS_MESSAGES.ANNOTATION_CREATE, annotation });
 }
 
 /**
@@ -106,7 +107,7 @@ export function sendAnnotationCreate(annotation) {
  * @param {object} changes
  */
 export function sendAnnotationUpdate(uuid, changes) {
-  send({ type: 'annotation:update', uuid, changes });
+  send({ type: WS_MESSAGES.ANNOTATION_UPDATE, uuid, changes });
 }
 
 /**
@@ -114,7 +115,7 @@ export function sendAnnotationUpdate(uuid, changes) {
  * @param {string} uuid
  */
 export function sendAnnotationDelete(uuid) {
-  send({ type: 'annotation:delete', uuid });
+  send({ type: WS_MESSAGES.ANNOTATION_DELETE, uuid });
 }
 
 /**

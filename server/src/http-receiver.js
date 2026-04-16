@@ -21,6 +21,7 @@ import { LOG_PREFIX } from './constants.js';
 import { validateCapturePath } from './utils/validate-path.js';
 import { runPostCaptureAudit } from '#src/analysis/post-capture-audit.js';
 import { createWebSocketServer } from './ws-server.js';
+import { WS_MESSAGES } from './ws-message-types.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { diffCaptures } from '#src/analysis/capture-diff.js';
 
@@ -243,7 +244,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         if (cfg.autoAudit) {
           const audit = await runPostCaptureAudit(safePath);
           if (audit && wsServer) {
-            wsServer.broadcast({ type: 'audit:results', filename, audit });
+            wsServer.broadcast({ type: WS_MESSAGES.AUDIT_RESULTS, filename, audit });
           }
         }
       } catch { /* config missing or audit failed - non-blocking */ }

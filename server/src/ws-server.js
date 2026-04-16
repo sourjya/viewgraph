@@ -1,3 +1,4 @@
+import { WS_MESSAGES } from './ws-message-types.js';
 /**
  * WebSocket Server
  *
@@ -63,11 +64,11 @@ export function createWebSocketServer(httpServer, options = {}) {
       try { msg = JSON.parse(data); } catch { return; }
 
       // Route messages
-      if (msg.type === 'annotation:create' || msg.type === 'annotation:update' || msg.type === 'annotation:delete') {
+      if (msg.type === WS_MESSAGES.ANNOTATION_CREATE || msg.type === WS_MESSAGES.ANNOTATION_UPDATE || msg.type === WS_MESSAGES.ANNOTATION_DELETE) {
         if (options.onAnnotation) options.onAnnotation(msg);
         // Broadcast to other clients
         broadcastExcept(ws, msg);
-      } else if (msg.type === 'capture:complete') {
+      } else if (msg.type === WS_MESSAGES.CAPTURE_COMPLETE) {
         if (options.onCapture) options.onCapture(msg);
       }
     });

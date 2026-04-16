@@ -34,6 +34,7 @@ import { isRecording, startSession, stopSession, getState } from './session/sess
 import { startJourney, stopJourney } from './session/journey-recorder.js';
 import { startShortcuts, stopShortcuts } from './ui/keyboard-shortcuts.js';
 import { connect as wsConnect, disconnect as wsDisconnect } from './ws-client.js';
+import { WS_MESSAGES } from './ws-message-types.js';
 import { ATTR } from './selector.js';
 
 // ──────────────────────────────────────────────
@@ -1450,10 +1451,10 @@ export function create() {
       url: serverUrl,
       token,
       onMessage: (msg) => {
-        if (msg.type === 'annotation:resolved') {
+        if (msg.type === WS_MESSAGES.ANNOTATION_RESOLVED) {
           _bus.emit(EVENTS.ANNOTATION_RESOLVED, { uuid: msg.uuid, resolution: msg.resolution });
         }
-        if (msg.type === 'audit:results' && msg.audit) {
+        if (msg.type === WS_MESSAGES.AUDIT_RESULTS && msg.audit) {
           _bus.emit(EVENTS.AUDIT_RESULTS, { audit: msg.audit, filename: msg.filename });
         }
       },
