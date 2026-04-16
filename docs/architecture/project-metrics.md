@@ -63,8 +63,8 @@ Updated manually at milestones. First entry: v0.1.0 beta launch.
 | GitHub | Public (github.com/sourjya/viewgraph) |
 | npm (@viewgraph/core) | Published v0.1.1 |
 | npm (@viewgraph/playwright) | Published v0.1.1 |
-| Chrome Web Store | Submitted, pending review |
-| Firefox Add-ons | Live: https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/ |
+| Chrome Web Store | Submitted v0.2.0, pending review |
+| Firefox Add-ons | Live v0.1.0, v0.3.2 submitted for update |
 | GitBook docs | Live (chaoslabz.gitbook.io/viewgraph) |
 | YouTube channel | Live (Evolving with AI) |
 
