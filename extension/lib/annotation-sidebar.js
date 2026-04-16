@@ -10,13 +10,15 @@
  */
 
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker, updateSeverity } from './annotate.js';
+import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker, updateSeverity, updateComment } from './annotate.js';
 // Annotation type helpers used by sidebar/review.js (no longer needed here)
 import { createHelpCard } from './sidebar/help.js';
 import { createStrip } from './sidebar/strip.js';
 import { createSettings } from './sidebar/settings.js';
 import { createInspectTab } from './sidebar/inspect.js';
 import { renderReviewList } from './sidebar/review.js';
+import { scanForSuggestions } from './sidebar/suggestions.js';
+import { renderSuggestionList } from './sidebar/suggestions-ui.js';
 import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from './sidebar/sync.js';
 import { EVENTS, createEventBus } from './sidebar/events.js';
 import { chevronRightIcon, closeIcon, bellIcon, sendIcon, checkIcon, docIcon, downloadIcon, gearIcon } from './sidebar/icons.js';
@@ -52,6 +54,7 @@ let _bus = null; // Event bus for inter-module communication
 let _hasCaptured = false;
 let pendingRequests = [];
 let activeFilter = 'open';
+let _suggestionsCache = null;
 let activeTypeFilters = new Set(['element', 'region', 'page-note', 'idea', 'diagnostic']);
 let bellBtn = null;
 
@@ -638,6 +641,30 @@ export function refresh() {
 
   const anns = getAnnotations();
 
+  // Auto-inspect suggestions - render at top of list before annotations
+  const existingSugPanel = list.parentElement?.querySelector(`[data-vg-annotate="suggestions-panel"]`);
+  if (existingSugPanel) existingSugPanel.remove();
+  if (!_suggestionsCache) _suggestionsCache = scanForSuggestions();
+  renderSuggestionList(list, _suggestionsCache, {
+    onSend: (selected) => {
+      for (const sug of selected) {
+        const ann = addPageNote();
+        if (ann) {
+          updateComment(ann.id, sug.title + ': ' + sug.detail);
+          ann.diagnostic = { section: sug.tier, data: sug.detail };
+          if (sug.selector && sug.selector !== 'body') {
+            ann.element = { selector: sug.selector };
+          }
+        }
+      }
+      _suggestionsCache = null;
+      save();
+      refresh();
+    },
+    onDismiss: (id) => { _suggestionsCache = _suggestionsCache?.filter((s) => s.id !== id) || null; },
+    onRefresh: () => { _suggestionsCache = null; refresh(); },
+  });
+
   renderReviewList(list, tabContainer, sidebarEl, {
     annotations: anns,
     pendingRequests,
@@ -744,4 +771,5 @@ export function destroy() {
   _hasCaptured = false;
   pendingRequests = [];
   activeFilter = 'open';
+  _suggestionsCache = null;
 }
