@@ -4,7 +4,7 @@ Thanks for your interest in contributing to ViewGraph! This guide covers how to 
 
 ## Prerequisites
 
-- Node.js 20+ (LTS)
+- Node.js 22+ (LTS)
 - npm 9+
 - Chrome 116+ (for extension development)
 - Git

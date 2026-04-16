@@ -24,7 +24,7 @@ npx viewgraph-init
 Then install the browser extension from the Chrome Web Store or Firefox Add-ons. See [Installation](../getting-started/installation.md) for details.
 
 ### Does it work on Windows / macOS / Linux?
-Yes. The MCP server runs on Node.js 20+. The extension works in Chrome and Firefox on all platforms. WSL (Windows Subsystem for Linux) is also supported.
+Yes. The MCP server runs on Node.js 22+. The extension works in Chrome and Firefox on all platforms. WSL (Windows Subsystem for Linux) is also supported.
 
 ### Does it work with cloud IDEs (Codespaces, Gitpod)?
 Partially. The extension runs in your local browser and the MCP server runs in the cloud IDE. They communicate via localhost, so you need port forwarding (Codespaces and Gitpod do this automatically for most ports). The standalone export modes (Copy MD, Download Report) work without any server. The `@viewgraph/playwright` package runs entirely server-side with no extension needed.

@@ -6,7 +6,7 @@ inclusion: always
 
 ## Runtime and Environment
 
-- **MCP Server**: Node.js 20+ (LTS) with `@modelcontextprotocol/sdk`
+- **MCP Server**: Node.js 22+ (LTS) with `@modelcontextprotocol/sdk`
 - **Firefox Extension**: Manifest V3, service worker background, WXT framework
 - **Language**: JavaScript (ES modules) throughout -- no TypeScript initially, add later if needed
 - **Package Manager**: npm
