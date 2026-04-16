@@ -340,3 +340,10 @@ Also: router pattern for `http-receiver.js`, auto-discovery for tool registratio
 
 **Dependencies:** None (pure refactor, no feature changes)
 **Effort:** Large (8-10 hours for sidebar, 3-4 hours for server)
+
+**Post-decomposition checklist:**
+1. Run coverage reports (`npm run coverage:server` + `npm run coverage:ext`)
+2. Compare against pre-decomposition baseline (server: 85% stmts, extension: 71% stmts)
+3. Identify newly testable code paths exposed by smaller modules
+4. Write targeted tests to improve coverage - goal: 80%+ extension statements
+5. Document final coverage numbers in `docs/architecture/project-metrics.md`
