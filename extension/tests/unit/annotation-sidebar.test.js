@@ -22,6 +22,8 @@ import { resetServerCache } from '#lib/constants.js';
 
 beforeEach(() => {
   document.body.innerHTML = '';
+  // Set location to localhost so server discovery works in tests
+  Object.defineProperty(window, 'location', { value: { href: 'http://localhost:8040/projects', hostname: 'localhost', protocol: 'http:' }, writable: true, configurable: true });
   // Mock chrome APIs needed by sidebar
   globalThis.chrome = {
     storage: {
@@ -418,7 +420,7 @@ describe('inspect tab captures section', () => {
         return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
       }
       if (u.includes('/info')) {
-        return Promise.resolve({ ok: true, json: () => Promise.resolve({ token: 'test' }) });
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ token: 'test', projectRoot: '/home/user/project', urlPatterns: ['localhost:8040'], serverVersion: '0.3.3' }) });
       }
       if (u.includes('/captures')) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve({ captures }) });

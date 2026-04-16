@@ -225,11 +225,21 @@ export async function discoverServer(pageUrl = null, targetDir = null) {
     }
   }
 
-  // Single server: no ambiguity, just use it
-  if (reg.size === 1) return [...reg.values()][0].url;
+  // Single server with file:// URL: auto-match (local development)
+  if (reg.size === 1 && pageUrl?.startsWith('file://')) return [...reg.values()][0].url;
 
-  // Fallback: return first available server
-  return [...reg.values()][0].url;
+  // Single server with localhost URL: auto-match (local development)
+  if (reg.size === 1) {
+    try {
+      const u = new URL(pageUrl);
+      if (u.hostname === 'localhost' || u.hostname === '127.0.0.1' || u.hostname === '0.0.0.0' || u.hostname === '[::1]') {
+        return [...reg.values()][0].url;
+      }
+    } catch { /* invalid URL */ }
+  }
+
+  // Remote URLs with no matching pattern: do NOT route to any server
+  return null;
 }
 
 
