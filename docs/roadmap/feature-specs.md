@@ -347,3 +347,22 @@ Also: router pattern for `http-receiver.js`, auto-discovery for tool registratio
 3. Identify newly testable code paths exposed by smaller modules
 4. Write targeted tests to improve coverage - goal: 80%+ extension statements
 5. Document final coverage numbers in `docs/architecture/project-metrics.md`
+
+### F15: Auto-Inspect Suggestions
+
+**Status:** Spec complete, not started
+**Spec:** `.kiro/specs/auto-suggestions/`
+**Priority:** High - user-requested feature for proactive issue detection
+
+**Concept:** When the user opens ViewGraph, automatically scan for UI issues and present a ranked pick-list of 5-10 suggestions. User selects which ones to fix, sends them to the agent in one shot.
+
+**Three detection tiers:**
+- Accessibility: missing alt text, no accessible names, contrast failures, landmark issues
+- Quality: failed API calls, console errors, hidden elements, z-index conflicts
+- Testability: missing data-testid, unlabeled form inputs
+
+**Key differentiator:** Curated (top 10, not 50 violations), actionable (each has a target element), selective (user picks what matters), creates real annotations (agent gets full DOM context).
+
+**Dependencies:** All existing collectors (no new external deps). Builds on F3 (auto-audit) and F5 (smart suggestions).
+
+**Phases:** 3 phases, 19 tasks. Core engine -> sidebar UI -> integration and polish.
