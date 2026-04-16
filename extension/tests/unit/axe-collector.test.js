@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { collectAxeResults } from '#lib/axe-collector.js';
+import { collectAxeResults } from '#lib/collectors/axe-collector.js';
 
 describe('collectAxeResults', () => {
   it('(+) returns results with expected shape', async () => {

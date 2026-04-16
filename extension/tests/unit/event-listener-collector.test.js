@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { collectEventListeners } from '#lib/event-listener-collector.js';
+import { collectEventListeners } from '#lib/collectors/event-listener-collector.js';
 
 beforeEach(() => { document.body.innerHTML = ''; });
 

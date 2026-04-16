@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { collectStackingContexts } from '#lib/stacking-collector.js';
+import { collectStackingContexts } from '#lib/collectors/stacking-collector.js';
 
 beforeEach(() => {
   document.body.innerHTML = '';

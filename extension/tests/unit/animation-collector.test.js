@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { collectAnimations } from '#lib/animation-collector.js';
+import { collectAnimations } from '#lib/collectors/animation-collector.js';
 
 beforeEach(() => { document.body.innerHTML = ''; });
 

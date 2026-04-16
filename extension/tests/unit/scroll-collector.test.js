@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { collectScrollContainers } from '#lib/scroll-collector.js';
+import { collectScrollContainers } from '#lib/collectors/scroll-collector.js';
 
 beforeEach(() => {
   document.body.innerHTML = '';

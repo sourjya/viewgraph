@@ -12,7 +12,7 @@
  * @see docs/roadmap/roadmap.md - M13.8
  */
 
-import { buildSelector, ATTR } from './selector.js';
+import { buildSelector, ATTR } from '../selector.js';
 
 
 /**

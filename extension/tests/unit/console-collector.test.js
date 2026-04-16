@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { installConsoleInterceptor, getConsoleState, resetConsoleCollector } from '../../lib/console-collector.js';
+import { installConsoleInterceptor, getConsoleState, resetConsoleCollector } from '../../lib/collectors/console-collector.js';
 
 describe('console-collector', () => {
   let origError;

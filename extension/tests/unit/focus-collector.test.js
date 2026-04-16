@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { collectFocusChain } from '#lib/focus-collector.js';
+import { collectFocusChain } from '#lib/collectors/focus-collector.js';
 
 beforeEach(() => {
   document.body.innerHTML = '';

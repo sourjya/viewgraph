@@ -11,7 +11,7 @@
  * @see docs/roadmap/roadmap.md - M13.4 scroll containers
  */
 
-import { buildSelector, ATTR } from './selector.js';
+import { buildSelector, ATTR } from '../selector.js';
 
 
 /**
