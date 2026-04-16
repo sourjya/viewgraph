@@ -436,6 +436,11 @@ export function create() {
     // Render diagnostics from extracted inspect module
     inspect.refresh();
 
+    // Separator between diagnostics and toggles
+    const toggleSep = document.createElement('hr');
+    Object.assign(toggleSep.style, { border: 'none', borderTop: '1px solid #333', margin: '8px 0 4px' });
+    inspectContent.appendChild(toggleSep);
+
     // Auto-capture toggle
     const autoRow = document.createElement('div');
     Object.assign(autoRow.style, { display: 'flex', alignItems: 'center', gap: '8px' });
