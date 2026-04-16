@@ -47,15 +47,6 @@ export function createSettings() {
   serverLine.textContent = 'Server: checking...';
   Object.assign(serverLine.style, { marginBottom: '6px' });
 
-  // Version info
-  const versionLine = document.createElement('div');
-  const extVer = chrome.runtime.getManifest?.()?.version || 'unknown';
-  versionLine.textContent = `Extension: v${extVer} | Server: checking...`;
-  Object.assign(versionLine.style, {
-    marginBottom: '10px', padding: '6px 8px', borderRadius: '4px',
-    background: '#16161e', fontSize: '11px', color: '#9ca3af', fontFamily: 'monospace',
-  });
-
   // Project mappings (read-only)
   const mappingsSection = document.createElement('div');
   Object.assign(mappingsSection.style, { marginTop: '12px', borderTop: '1px solid #333', paddingTop: '10px' });
@@ -66,10 +57,11 @@ export function createSettings() {
   autoInfo.textContent = 'Auto-detected from server. Edit via viewgraph-init --url.';
   Object.assign(autoInfo.style, { color: '#666', fontSize: '11px', marginBottom: '8px' });
   const advLink = document.createElement('button');
-  advLink.textContent = 'Advanced Settings';
+  advLink.textContent = 'Advanced Settings \u2192';
   Object.assign(advLink.style, {
-    border: 'none', background: 'transparent', color: '#6366f1', fontSize: '11px',
-    cursor: 'pointer', padding: '0', marginTop: '8px',
+    border: '1px solid #333', background: 'transparent', color: '#6366f1', fontSize: '12px',
+    cursor: 'pointer', padding: '6px 12px', marginTop: '10px', borderRadius: '6px',
+    fontFamily: 'system-ui, sans-serif', fontWeight: '600',
   });
   advLink.addEventListener('click', () => chrome.runtime.sendMessage({ type: 'open-options' }));
   mappingsSection.append(mapLabel, autoInfo, advLink);
@@ -116,7 +108,7 @@ export function createSettings() {
   htmlToggle.input.addEventListener('change', saveSettings);
   ssToggle.input.addEventListener('change', saveSettings);
 
-  body.append(serverLine, versionLine, mappingsSection);
+  body.append(serverLine, mappingsSection);
   body.appendChild(captureOpts);
   screen.append(header, body);
 
@@ -146,12 +138,6 @@ export function createSettings() {
           serverLine.innerHTML = `<span style="color:#4ade80">\u25cf</span> Connected (localhost:${port})`;
           try {
             const info = await fetch(`http://127.0.0.1:${port}/info`, { signal: AbortSignal.timeout(2000) }).then((r) => r.json());
-            versionLine.textContent = `Extension: v${extVer} | Server: v${info.serverVersion || 'unknown'}`;
-            if (info.serverVersion && extVer && extVer < info.serverVersion) {
-              versionLine.style.color = '#f59e0b';
-              versionLine.style.background = '#451a03';
-              versionLine.textContent += ' - rebuild extension';
-            }
             renderProjectInfo(info);
           } catch { /* info failed */ }
           return;
@@ -159,7 +145,6 @@ export function createSettings() {
       } catch { /* try next port */ }
     }
     serverLine.innerHTML = '<span style="color:#f87171">\u25cf</span> MCP server offline';
-    versionLine.textContent = `Extension: v${extVer} | Server: not connected`;
   })();
 
   let visible = false;
