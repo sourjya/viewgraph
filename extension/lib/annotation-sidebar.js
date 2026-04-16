@@ -14,6 +14,7 @@ import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop 
 import { resolveType, getBadgeColor, getBadgeIcon, getFilterIcon } from './annotation-types.js';
 import { createHelpCard } from './sidebar/help.js';
 import { createStrip } from './sidebar/strip.js';
+import { createSettings } from './sidebar/settings.js';
 import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling, pollRequests } from './sidebar/sync.js';
 import { EVENTS, createEventBus } from './sidebar/events.js';
 import { KEYS, get as storageGet, set as storageSet } from './storage.js';
@@ -384,215 +385,26 @@ export function create() {
 
   footer.append(sendBtn, secondaryRow, settingsLink);
 
-  // Settings screen - alternate view replacing the list
-  const settingsScreen = document.createElement('div');
-  settingsScreen.setAttribute(ATTR, 'settings-screen');
-  Object.assign(settingsScreen.style, {
-    display: 'none', padding: '0',
-    position: 'absolute', top: '0', left: '0', right: '0', bottom: '0',
-    background: '#1e1e2e', zIndex: '10', overflowY: 'auto',
-  });
 
-  // Settings header with back arrow
-  const settingsHeader = document.createElement('div');
-  Object.assign(settingsHeader.style, {
-    display: 'flex', alignItems: 'center', gap: '6px',
-    padding: '10px 12px', borderBottom: '1px solid #333',
-  });
-  const backBtn = document.createElement('button');
-  backBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
-  Object.assign(backBtn.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', display: 'flex' });
-  backBtn.addEventListener('click', () => hideSettings());
-  const settingsTitle = document.createElement('span');
-  settingsTitle.textContent = 'Settings';
-  Object.assign(settingsTitle.style, { color: '#a5b4fc', fontSize: '14px', fontWeight: '600' });
-  settingsHeader.append(backBtn, settingsTitle);
+  // Settings screen - extracted to sidebar/settings.js
+  const settings = createSettings();
+  const settingsScreen = settings.element;
+  let settingsVisible = false;
+  function showSettings() { settingsVisible = true; settings.show(); }
+  function hideSettings() { settingsVisible = false; settings.hide(); }
 
-  // Settings body
-  const settingsBody = document.createElement('div');
-  Object.assign(settingsBody.style, { padding: '12px', fontSize: '12px', color: '#9ca3af' });
-
-  const serverLine = document.createElement('div');
-  serverLine.textContent = 'Server: checking...';
-  Object.assign(serverLine.style, { marginBottom: '6px' });
-
-  // Version info - shown in help card
+  // Version info for help card
   const extVer = chrome.runtime.getManifest?.()?.version || 'unknown';
-  help.setVersion(`Extension: v${extVer} | Server: checking...`);
+  help.setVersion(`Extension: v${extVer}`);
   discoverServer(window.location.href).then(async (url) => {
     if (url) {
       try {
         const info = await fetch(`${url}/info`, { signal: AbortSignal.timeout(3000) }).then((r) => r.json());
         const mismatch = info.serverVersion && extVer && extVer < info.serverVersion;
-        help.setVersion(
-          `Extension: v${extVer} | Server: v${info.serverVersion || 'unknown'}${mismatch ? ' - rebuild extension' : ''}`,
-          mismatch,
-        );
+        help.setVersion(`Extension: v${extVer} | Server: v${info.serverVersion || 'unknown'}${mismatch ? ' - rebuild extension' : ''}`, mismatch);
       } catch { help.setVersion(`Extension: v${extVer} | Server: offline`); }
-    } else {
-      help.setVersion(`Extension: v${extVer} | Server: not connected`);
-    }
+    } else { help.setVersion(`Extension: v${extVer} | Server: not connected`); }
   });
-
-  // Auto-detected project mapping (read-only)
-  const mappingsSection = document.createElement('div');
-  Object.assign(mappingsSection.style, { marginTop: '12px', borderTop: '1px solid #333', paddingTop: '10px' });
-  const mapLabel = document.createElement('div');
-  mapLabel.textContent = 'Project';
-  Object.assign(mapLabel.style, { color: '#9ca3af', fontSize: '11px', marginBottom: '6px', fontWeight: '600' });
-
-  const autoInfo = document.createElement('div');
-  autoInfo.textContent = 'Detecting...';
-  Object.assign(autoInfo.style, { color: '#555', fontSize: '11px', fontStyle: 'italic' });
-
-  // Fetch server status and /info - try direct fetch first, fall back to background
-  discoverServer(window.location.href).then(async (url) => {
-    if (!url) {
-      serverLine.innerHTML = '<span style="color:#f87171">\u25cf</span> MCP server offline';
-      autoInfo.textContent = 'No server detected - start the MCP server';
-      return;
-    }
-    const port = new URL(url).port;
-    serverLine.innerHTML = '<span style="color:#4ade80">\u25cf</span> Connected (localhost:' + port + ')';
-    // Try direct fetch (works if /health worked from this context)
-    try {
-      const res = await fetch(`${url}/info`, { signal: AbortSignal.timeout(2000) });
-      if (res.ok) {
-        const data = await res.json();
-        renderProjectInfo(data);
-        return;
-      }
-    } catch { /* direct fetch failed, try background */ }
-    // Fall back to background script proxy
-    try {
-      chrome.runtime.sendMessage({ type: 'fetch-info', serverUrl: url }, (response) => {
-        if (chrome.runtime.lastError || !response || !response.ok) {
-          autoInfo.textContent = 'Could not load project info';
-          return;
-        }
-        renderProjectInfo(response);
-      });
-    } catch {
-      autoInfo.textContent = 'Could not load project info';
-    }
-  });
-
-  /** Render project root and captures dir into the autoInfo element. */
-  function renderProjectInfo(data) {
-    autoInfo.innerHTML = '';
-    autoInfo.style.fontStyle = 'normal';
-    const items = [
-      { label: 'Root', value: data.projectRoot },
-      { label: 'Captures', value: data.capturesDir },
-    ];
-    for (const item of items) {
-      const lbl = document.createElement('div');
-      Object.assign(lbl.style, { color: '#666', fontSize: '10px', marginBottom: '1px' });
-      lbl.textContent = item.label;
-      const val = document.createElement('div');
-      Object.assign(val.style, { color: '#93c5fd', fontFamily: 'SF Mono,Cascadia Code,monospace', fontSize: '10px', wordBreak: 'break-all', marginBottom: '6px' });
-      val.textContent = item.value;
-      autoInfo.append(lbl, val);
-    }
-  }
-
-  const advLink = document.createElement('button');
-  advLink.textContent = 'Advanced settings...';
-  Object.assign(advLink.style, {
-    background: 'transparent', border: 'none', color: '#6366f1', fontSize: '10px',
-    cursor: 'pointer', padding: '0', marginTop: '8px',
-  });
-  advLink.addEventListener('click', () => chrome.runtime.sendMessage({ type: 'open-options' }));
-
-  mappingsSection.append(mapLabel, autoInfo, advLink);
-  settingsBody.append(serverLine, mappingsSection);
-
-  // Capture options - toggle switches
-  const captureOpts = document.createElement('div');
-  Object.assign(captureOpts.style, { marginTop: '12px', borderTop: '1px solid #333', paddingTop: '10px' });
-  const optsLabel = document.createElement('div');
-  optsLabel.textContent = 'Capture includes:';
-  Object.assign(optsLabel.style, { color: '#9ca3af', fontSize: '11px', marginBottom: '8px', fontWeight: '600' });
-  captureOpts.appendChild(optsLabel);
-
-  /** Build a toggle switch row. Returns { row, input }. */
-  function createToggleRow(labelText, opts = {}) {
-    const row = document.createElement('label');
-    Object.assign(row.style, {
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      marginBottom: '6px', color: '#c8c8d0', fontSize: '12px',
-      cursor: opts.disabled ? 'default' : 'pointer',
-      opacity: opts.disabled ? '0.5' : '1',
-    });
-    const text = document.createElement('span');
-    text.textContent = labelText;
-    // Toggle track
-    const track = document.createElement('span');
-    Object.assign(track.style, {
-      position: 'relative', width: '32px', height: '18px', flexShrink: '0',
-      borderRadius: '9px', transition: 'background 0.2s', display: 'inline-block',
-    });
-    // Hidden checkbox drives state
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    Object.assign(input.style, { position: 'absolute', opacity: '0', width: '0', height: '0' });
-    if (opts.checked) input.checked = true;
-    if (opts.disabled) input.disabled = true;
-    // Toggle knob
-    const knob = document.createElement('span');
-    Object.assign(knob.style, {
-      position: 'absolute', top: '2px', width: '14px', height: '14px',
-      borderRadius: '50%', background: '#fff', transition: 'left 0.2s',
-    });
-    function syncToggle() {
-      track.style.background = input.checked ? '#6366f1' : '#444';
-      knob.style.left = input.checked ? '16px' : '2px';
-    }
-    syncToggle();
-    input.addEventListener('change', syncToggle);
-    track.append(input, knob);
-    row.append(text, track);
-    return { row, input };
-  }
-
-  // ViewGraph JSON - always on
-  const jsonToggle = createToggleRow('ViewGraph JSON', { checked: true, disabled: true });
-  // HTML snapshot - optional
-  const htmlToggle = createToggleRow('HTML snapshot');
-  // Screenshot - optional
-  const ssToggle = createToggleRow('Screenshot');
-
-  captureOpts.append(jsonToggle.row, htmlToggle.row, ssToggle.row);
-  settingsBody.appendChild(captureOpts);
-
-  // Load saved settings
-  chrome.storage.local.get('vg-settings', (result) => {
-    const s = result['vg-settings'] || {};
-    htmlToggle.input.checked = !!s.html;
-    ssToggle.input.checked = !!s.screenshot;
-    // Re-sync visuals after loading
-    htmlToggle.input.dispatchEvent(new Event('change'));
-    ssToggle.input.dispatchEvent(new Event('change'));
-  });
-  function saveSettings() {
-    chrome.storage.local.set({ 'vg-settings': { html: htmlToggle.input.checked, screenshot: ssToggle.input.checked } });
-  }
-  htmlToggle.input.addEventListener('change', saveSettings);
-  ssToggle.input.addEventListener('change', saveSettings);
-  settingsScreen.append(settingsHeader, settingsBody);
-
-  /** Show settings as slide-over overlay. */
-  let settingsVisible = false;
-  function showSettings() {
-    settingsVisible = true;
-    settingsScreen.style.display = 'block';
-  }
-
-  /** Hide settings overlay. */
-  function hideSettings() {
-    settingsVisible = false;
-    settingsScreen.style.display = 'none';
-  }
 
   sidebarEl.append(header, modeBar, tabContainer, list, settingsScreen, footer);
 
