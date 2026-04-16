@@ -1,6 +1,6 @@
 # Quick Start (5 minutes)
 
-<figure><img src="../.gitbook/assets/viewgraph-combined.png" alt="ViewGraph" width="480"></figure>
+<figure><img src="../.gitbook/assets/viewgraph-logo.png" alt="ViewGraph" width="420"></figure>
 
 Go from zero to your first AI-assisted bug fix in 5 minutes.
 
