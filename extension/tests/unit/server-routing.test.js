@@ -92,6 +92,48 @@ describe('single server', () => {
 // Two servers - file:// URL routing
 // ---------------------------------------------------------------------------
 
+describe('BUG-014: remote URLs must not route to local servers', () => {
+  beforeEach(() => {
+    addServer(9876, '/home/user/app-one');
+  });
+
+  it('(-) remote website returns null with single server', async () => {
+    const url = await discoverServer('https://mybakestory.com/');
+    expect(url).toBeNull();
+  });
+
+  it('(-) remote HTTPS returns null', async () => {
+    const url = await discoverServer('https://example.com/page');
+    expect(url).toBeNull();
+  });
+
+  it('(-) remote HTTP returns null', async () => {
+    const url = await discoverServer('http://production.myapp.com/dashboard');
+    expect(url).toBeNull();
+  });
+
+  it('(+) localhost still matches single server', async () => {
+    const url = await discoverServer('http://localhost:3000/page');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) 127.0.0.1 still matches single server', async () => {
+    const url = await discoverServer('http://127.0.0.1:8080/api');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) file:// still matches single server', async () => {
+    const url = await discoverServer('file:///home/user/app-one/index.html');
+    expect(url).toBe('http://127.0.0.1:9876');
+  });
+
+  it('(+) remote URL matches when configured as urlPattern', async () => {
+    addServer(9877, '/home/user/staging', ['staging.myapp.com']);
+    const url = await discoverServer('https://staging.myapp.com/login');
+    expect(url).toBe('http://127.0.0.1:9877');
+  });
+});
+
 describe('file:// URL routing with two servers', () => {
   beforeEach(() => {
     addServer(9876, '/home/user/app-one');
