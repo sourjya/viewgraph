@@ -19,6 +19,8 @@
   <a href="https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/"><img src="https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white" alt="Firefox Add-ons"></a>
   &nbsp;
   <a href="https://www.npmjs.com/package/@viewgraph/core"><img src="https://img.shields.io/badge/npm-@viewgraph/core-CB3837?style=for-the-badge&logo=npm&logoColor=white" alt="npm"></a>
+  &nbsp;
+  <a href="https://chaoslabz.gitbook.io/viewgraph"><img src="https://img.shields.io/badge/Docs-GitBook-blue?style=for-the-badge&logo=gitbook&logoColor=white" alt="Documentation"></a>
 </p>
 
 <p align="center">
