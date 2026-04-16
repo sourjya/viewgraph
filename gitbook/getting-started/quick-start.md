@@ -12,10 +12,9 @@ Go from zero to your first AI-assisted bug fix in 5 minutes.
 
 ## 1. Install the extension
 
-<!-- TODO: Replace with actual CWS link when published -->
-Install [ViewGraph Capture](https://chrome.google.com/webstore) from the Chrome Web Store.
+[![Install ViewGraph for Firefox](../.gitbook/assets/download-firefox.svg)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
 
-Or [build from source](installation.md#from-source-for-development) if you prefer.
+Or [build from source](installation.md#from-source-for-development) for Chrome and other browsers.
 
 ## 2. Initialize in your project
 
