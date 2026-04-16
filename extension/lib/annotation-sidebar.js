@@ -11,6 +11,7 @@
 
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
 import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker, MARKER_COLORS, updateSeverity, updateComment } from './annotate.js';
+import { resolveType, getBadgeColor, getBadgeIcon, getFilterIcon } from './annotation-types.js';
 import { KEYS, get as storageGet, set as storageSet } from './storage.js';
 import { groupRequests, smartPath } from './network-grouper.js';
 
@@ -86,6 +87,7 @@ let collapsed = false;
 let _hasCaptured = false;
 let pendingRequests = [];
 let activeFilter = 'open'; // 'all' | 'open' | 'resolved'
+let activeTypeFilters = new Set(['element', 'region', 'page-note', 'idea', 'diagnostic']); // all on by default
 let pollTimer = null;
 let bellBtn = null;
 
@@ -1951,6 +1953,44 @@ export function refresh() {
   tabContainer.innerHTML = '';
   tabContainer.appendChild(tabBar);
 
+  // Type filter toggles: [bug] [idea] [diagnostic] [note]
+  const typeFilterRow = document.createElement('div');
+  Object.assign(typeFilterRow.style, { display: 'flex', gap: '2px', padding: '4px 8px', borderBottom: '1px solid #2a2a3a' });
+  const filterTypes = [
+    { key: 'element', label: 'Bugs', color: '#9ca3af' },
+    { key: 'idea', label: 'Ideas', color: '#eab308' },
+    { key: 'diagnostic', label: 'Diagnostics', color: '#0d9488' },
+    { key: 'page-note', label: 'Notes', color: '#0ea5e9' },
+  ];
+  for (const ft of filterTypes) {
+    const btn = document.createElement('button');
+    btn.setAttribute(ATTR, 'type-filter');
+    btn.dataset.type = ft.key;
+    btn.innerHTML = getFilterIcon(ft.key);
+    btn.title = ft.label;
+    const isOn = activeTypeFilters.has(ft.key) || (ft.key === 'element' && activeTypeFilters.has('region'));
+    Object.assign(btn.style, {
+      border: 'none', borderRadius: '4px', padding: '3px 6px', cursor: 'pointer',
+      display: 'flex', alignItems: 'center', fontFamily: 'system-ui, sans-serif',
+      background: isOn ? 'rgba(255,255,255,0.08)' : 'transparent',
+      color: isOn ? ft.color : '#333', opacity: isOn ? '1' : '0.4',
+      transition: 'opacity 0.15s',
+    });
+    btn.addEventListener('click', () => {
+      if (ft.key === 'element') {
+        // Bug toggle controls both element and region
+        if (activeTypeFilters.has('element')) { activeTypeFilters.delete('element'); activeTypeFilters.delete('region'); }
+        else { activeTypeFilters.add('element'); activeTypeFilters.add('region'); }
+      } else {
+        if (activeTypeFilters.has(ft.key)) activeTypeFilters.delete(ft.key);
+        else activeTypeFilters.add(ft.key);
+      }
+      refresh();
+    });
+    typeFilterRow.appendChild(btn);
+  }
+  tabContainer.appendChild(typeFilterRow);
+
   // Trash icon at end of tab row - clear all annotations
   const trashBtn = document.createElement('button');
   trashBtn.setAttribute(ATTR, 'trash');
@@ -2023,7 +2063,8 @@ export function refresh() {
   tabBar.appendChild(trashBtn);
 
   // Filtered items
-  const visible = activeFilter === 'all' ? anns : activeFilter === 'open' ? open : resolved;
+  const statusFiltered = activeFilter === 'all' ? anns : activeFilter === 'open' ? open : resolved;
+  const visible = statusFiltered.filter((a) => activeTypeFilters.has(resolveType(a)));
   for (const ann of visible) {
     try {
       list.appendChild(createEntry(ann));
@@ -2079,17 +2120,10 @@ export function refresh() {
     // Severity dot - separate indicator after the number
     const numBadge = document.createElement('span');
     const SEV_DOT_COLORS = { critical: '#ef4444', major: '#eab308', minor: '#9ca3af' };
-    const isIdea = (ann.category || '').includes('idea');
-    const isDiagNote = !!ann.diagnostic;
-    const markerColor = isDiagNote ? '#0d9488' : isIdea ? '#eab308' : ann.type === 'page-note' ? '#0ea5e9' : MARKER_COLORS[(ann.id - 1) % MARKER_COLORS.length];
+    const markerColor = getBadgeColor(ann);
+    const iconSvg = getBadgeIcon(ann);
 
     // Type icon - separate element before the number badge
-    const typeIcons = {
-      diagnostic: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
-      idea: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg>',
-      pageNote: '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
-    };
-    const iconSvg = isDiagNote ? typeIcons.diagnostic : isIdea ? typeIcons.idea : ann.type === 'page-note' ? typeIcons.pageNote : '';
     if (iconSvg) {
       const iconEl = document.createElement('span');
       iconEl.innerHTML = iconSvg;
@@ -2097,7 +2131,7 @@ export function refresh() {
       line1.appendChild(iconEl);
     }
 
-    // Number badge - clean, just the number
+    // Number badge
     numBadge.textContent = `#${ann.id}`;
     Object.assign(numBadge.style, {
       background: markerColor, color: '#fff', fontSize: '10px', fontWeight: '700',

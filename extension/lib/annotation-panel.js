@@ -313,7 +313,9 @@ export async function show(annotation, callbacks = {}) {
     if (cached.vg_project_config?.smartSuggestions === false) suggestionsEnabled = false;
   } catch { /* no cache - show suggestions by default */ }
 
-  if (suggestionsEnabled && annotation.element?.selector) {
+  // Suppress diagnostic suggestions in idea mode - ideas are about what to build, not what's broken
+  const isIdeaMode = (annotation.category || '').includes('idea');
+  if (suggestionsEnabled && !isIdeaMode && annotation.element?.selector) {
     try {
       const domEl = document.querySelector(annotation.element.selector);
       if (domEl) {
