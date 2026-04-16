@@ -9,7 +9,7 @@
 
 import { ATTR } from '#lib/selector.js';
 import { chevronLeftIcon } from './icons.js';
-import { discoverServer, DEFAULT_HTTP_PORT } from '#lib/constants.js';
+import { discoverServer } from '#lib/constants.js';
 
 /**
  * Create the settings screen element.
@@ -153,21 +153,13 @@ export function createSettings() {
   (async () => {
     const serverUrl = await discoverServer(window.location.href);
     if (serverUrl) {
-      const port = new URL(serverUrl).port || String(DEFAULT_HTTP_PORT);
-      const dot = document.createElement('span');
-      dot.style.color = '#4ade80';
-      dot.textContent = '\u25cf';
-      serverLine.replaceChildren(dot, document.createTextNode(` Connected (localhost:${port})`));
       try {
         const info = await fetch(`${serverUrl}/info`, { signal: AbortSignal.timeout(2000) }).then((r) => r.json());
         renderProjectInfo(info);
       } catch { /* info failed */ }
-    } else {
-      const offDot = document.createElement('span');
-      offDot.style.color = '#f87171';
-      offDot.textContent = '\u25cf';
-      serverLine.replaceChildren(offDot, document.createTextNode(' MCP server offline'));
     }
+    serverLine.textContent = serverUrl ? 'Project Settings' : 'Server not connected';
+    serverLine.style.color = serverUrl ? '#9ca3af' : '#f87171';
   })();
 
   let visible = false;

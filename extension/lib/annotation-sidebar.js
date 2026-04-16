@@ -404,17 +404,18 @@ export function create() {
   function showSettings() { settingsVisible = true; settings.show(); }
   function hideSettings() { settingsVisible = false; settings.hide(); }
 
-  // Version info for help card
+  // Version + connection info for help card
   const extVer = chrome.runtime.getManifest?.()?.version || 'unknown';
   help.setVersion(`Extension: v${extVer}`);
   discoverServer(window.location.href).then(async (url) => {
     if (url) {
       try {
+        const port = new URL(url).port || '9876';
         const info = await fetch(`${url}/info`, { signal: AbortSignal.timeout(3000) }).then((r) => r.json());
         const mismatch = info.serverVersion && extVer && extVer < info.serverVersion;
-        help.setVersion(`Extension: v${extVer} | Server: v${info.serverVersion || 'unknown'}${mismatch ? ' - rebuild extension' : ''}`, mismatch);
-      } catch { help.setVersion(`Extension: v${extVer} | Server: offline`); }
-    } else { help.setVersion(`Extension: v${extVer} | Server: not connected`); }
+        help.setVersion(`Ext v${extVer} | Server v${info.serverVersion || '?'} | Port ${port}${mismatch ? ' - rebuild extension' : ''}`, mismatch);
+      } catch { help.setVersion(`Ext v${extVer} | Server: offline`); }
+    } else { help.setVersion(`Ext v${extVer} | Server: not connected`); }
   });
 
   sidebarEl.append(header, modeBar, tabContainer, list, settingsScreen, footer);
