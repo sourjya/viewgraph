@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { scoreElement, classifyTier, scoreAll } from '#lib/salience.js';
+import { scoreElement, classifyTier, scoreAll } from '#lib/capture/salience.js';
 
 /** Helper: minimal element record with overrides. */
 function el(overrides = {}) {

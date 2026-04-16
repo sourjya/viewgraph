@@ -18,9 +18,9 @@
  */
 
 import { watchHmr } from './hmr-detector.js';
-import { traverseDOM } from './traverser.js';
-import { scoreAll } from './salience.js';
-import { serialize } from './serializer.js';
+import { traverseDOM } from './capture/traverser.js';
+import { scoreAll } from './capture/salience.js';
+import { serialize } from './capture/serializer.js';
 import { collectEnrichmentSync } from './enrichment.js';
 
 let watcher = null;

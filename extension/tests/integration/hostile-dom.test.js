@@ -9,9 +9,9 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { traverseDOM } from '#lib/traverser.js';
-import { scoreAll } from '#lib/salience.js';
-import { serialize } from '#lib/serializer.js';
+import { traverseDOM } from '#lib/capture/traverser.js';
+import { scoreAll } from '#lib/capture/salience.js';
+import { serialize } from '#lib/capture/serializer.js';
 
 beforeEach(() => {
   document.body.innerHTML = '';
