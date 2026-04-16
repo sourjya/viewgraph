@@ -16,6 +16,7 @@ The primary audience. You see a bug, click it, describe it, send to your agent. 
 - Set baselines and detect structural regressions between deploys
 - Generate Playwright tests from captures with `@vg-tests`
 - Compare pages for design-system consistency drift
+- **Ideate while reviewing** - toggle idea mode to capture feature ideas with full DOM context, then `@vg-ideate` to generate specs
 
 ### Junior developers
 
@@ -26,6 +27,7 @@ You know something looks wrong but can't articulate "the z-index stacking contex
 - Learn from the agent's fixes - see which CSS properties it changed and why
 - Use `find_source` to discover which file renders an element instead of asking a senior dev
 - Build confidence with frontend debugging through structured capture data
+- **Propose improvements** - use idea mode to suggest features while learning the codebase. Your ideas come with UI context that senior devs can evaluate.
 
 ### Bootcamp graduates
 
@@ -113,6 +115,8 @@ Entering the world of agentic coding. Click what looks wrong, describe it in pla
 - Verify design implementation matches the spec using captured computed styles
 - Review UI changes in pull requests with rendered-state evidence
 - Check cross-page consistency for design-system compliance
+- **Generate feature specs from the UI** - toggle idea mode, describe what you want while looking at the actual screen, and let the agent generate structured requirements with user stories. Your ideas are grounded in real UI context, not abstract descriptions.
+- **Propose enhancements during review** - mix bug reports and feature ideas in one session. Bugs get fixed, ideas become specs.
 
 ### Technical writers
 
