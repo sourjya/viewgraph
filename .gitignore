@@ -35,3 +35,7 @@ docs/artifacts/
 # Local config files with machine-specific paths
 .viewgraphrc.json
 .kiro/settings/
+
+# Coverage reports
+server/coverage/
+extension/coverage/

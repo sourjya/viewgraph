@@ -42,6 +42,8 @@
     "test": "npm run test --workspaces --if-present",
     "test:server": "npm run test --workspace=server",
     "test:ext": "npm run test --workspace=extension",
+    "coverage:server": "npm run test:coverage --workspace=server",
+    "coverage:ext": "npm run test:coverage --workspace=extension",
     "lint": "eslint ."
   },
   "engines": {

@@ -1,20 +1,19 @@
 /**
- * Vitest Configuration - Extension
+ * Vitest Configuration - Server
  *
- * Coverage reports generated to extension/coverage/.
+ * Coverage reports generated to server/coverage/.
  */
 
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    environment: 'jsdom',
     coverage: {
       provider: 'v8',
       reporter: ['text', 'text-summary', 'json-summary', 'html'],
       reportsDirectory: './coverage',
-      include: ['lib/**/*.js'],
-      exclude: ['lib/enrichment.js', 'lib/export-zip.js', 'lib/html-snapshot.js'],
+      include: ['src/**/*.js'],
+      exclude: ['src/tools/**/*.js'], // tools are thin wrappers, tested via integration
     },
   },
 });
