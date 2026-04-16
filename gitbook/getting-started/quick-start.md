@@ -6,7 +6,7 @@ Go from zero to your first AI-assisted bug fix in 5 minutes.
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) 18+ (LTS)
+- [Node.js](https://nodejs.org/) 22+ (LTS)
 - Chrome 116+ or Firefox 109+
 - An MCP-compatible AI agent (Kiro, Claude Code, Cursor, Windsurf, Cline, or Aider)
 
@@ -16,41 +16,35 @@ Go from zero to your first AI-assisted bug fix in 5 minutes.
 
 Or [build from source](installation.md#from-source-for-development) for other Chromium browsers.
 
-## 2. Initialize in your project
+## 2. Connect to your AI agent
 
-Open a terminal in **your project** (the app you're building, not a new folder):
+Add ViewGraph to your agent's MCP config. The server runs automatically via `npx` - no install needed.
 
-```bash
-npm install -g @viewgraph/core    # one-time global install
-cd ~/my-project
-viewgraph-init
+**For Kiro** (`~/.kiro/settings/mcp.json`):
+```json
+{
+  "mcpServers": {
+    "viewgraph": {
+      "command": "npx",
+      "args": ["-y", "@viewgraph/core"]
+    }
+  }
+}
 ```
 
-![viewgraph-init terminal output](../.gitbook/assets/init-output.png)
+**For Claude Code** (`~/.claude/mcp.json`), **Cursor**, **Windsurf**, **Cline** - same JSON, different config file location. See [Installation](installation.md) for each agent's config path.
 
-You'll see:
+That's it. Open your project, start your agent, and the server auto-configures on first capture.
 
-```
-ViewGraph Init
-
-  Created .viewgraph/captures/
-  Detected Kiro
-
-  Wrote .kiro/settings/mcp.json
-
-Starting ViewGraph server...
-
-  Started (PID 12345, port 9876)
-  Extension popup should show green dot.
-
-Done.
-```
-
-**Using a dev server?** Add `--url` so captures route correctly:
-
-```bash
-npx viewgraph-init --url localhost:3000
-```
+> **Alternative: npm install**
+> If you prefer explicit control over versions and config, use the traditional setup:
+> ```bash
+> npm install -g @viewgraph/core
+> cd ~/my-project
+> viewgraph-init                        # creates config, starts server
+> viewgraph-init --url localhost:3000   # if using a dev server
+> ```
+> See [Installation](installation.md) for details.
 
 ## 3. Capture and annotate
 

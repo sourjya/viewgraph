@@ -4,6 +4,14 @@ What's new in ViewGraph. User-facing changes only - for the full engineering cha
 
 ---
 
+## v0.3.5 - April 17, 2026
+
+- **Zero-config install** - add 5 lines of MCP config JSON and the server runs automatically via `npx`. No `npm install`, no `viewgraph-init` needed. Server auto-creates directories and learns your URL pattern from the first capture.
+- **innerHTML eliminated** - all SVG icons now use DOM API (createElementNS) instead of innerHTML. Reduces XSS surface and satisfies Firefox store review requirements.
+- **Sidebar decomposition complete** - annotation-sidebar.js reduced from 2,306 to 747 lines (68% smaller). 10 focused modules with clean interfaces.
+- **1,279 tests** (895 extension + 384 server), 75.1% statement coverage
+- **Security comparison matrix** added to docs - compares zero-config, npm install, and build-from-source across 10 security dimensions
+
 ## v0.3.4 - April 16, 2026
 
 - **Chrome Web Store and Firefox Add-ons approved** - install directly from the browser stores

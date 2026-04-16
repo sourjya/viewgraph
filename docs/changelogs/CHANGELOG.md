@@ -10,21 +10,32 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-04-17
+
 ### New Features
+- F16 zero-config install: server auto-creates .viewgraph/, defaults urlPatterns to localhost, auto-generates config.json on first capture
 - `sidebar/icons.js` - 17 SVG icon factories using DOM API (zero innerHTML)
 - `sidebar/styles.js` - 12 shared inline style constants
 - `sidebar/review.js` - extracted review tab rendering (filters, entries, trash, requests)
+- Public changelog page in GitBook (user-facing changes only)
+- Security comparison matrix for install methods (zero-config vs npm vs source)
 
 ### Changed
-- innerHTML cleanup: 45 -> 10 usages, all 4 dangerous interpolations eliminated
-- Sidebar decomposition Phase 3: annotation-sidebar.js 1321 -> 747 lines (68% reduction from original 2306)
-- Inspect tab now owns toggles, session recording, and captures section
-- npm published @viewgraph/core and @viewgraph/playwright at 0.3.4
+- innerHTML cleanup: 45 -> 2 usages, all dangerous interpolations eliminated, DOMParser for trusted SVG
+- Sidebar decomposition Phase 3 complete: annotation-sidebar.js 2306 -> 747 lines (68% reduction)
+- Inspect tab owns toggles, session recording, and captures section
+- Quick-start docs: zero-config as primary install path, npm install as fallback
+- Merged 3 changelog hooks into 1 beforeCommit hook (changelog-maintenance)
+- Renamed code-review.md to review-security.md, added review-maintainability.md
 
 ### Testing
-- 1276 total tests (895 extension + 381 server), 103 test files
+- 1279 total tests (895 extension + 384 server), 103 test files
 - Coverage: 75.1% statements (up from 70.9%)
 - New test files: icons, styles, review, animation-collector, html-snapshot, export-zip
+
+### Specs Added
+- F15: Auto-Inspect Suggestions (requirements, design, tasks)
+- F16: Zero-Config Install (requirements, design, tasks)
 
 ## [0.3.4] - 2026-04-16
 

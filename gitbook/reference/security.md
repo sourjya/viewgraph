@@ -94,6 +94,27 @@ The MCP server binds to `127.0.0.1` only - it is not accessible from the network
 
 Auth tokens were evaluated and removed for beta (see [ADR-010](https://github.com/sourjya/viewgraph/blob/main/docs/decisions/ADR-010-remove-http-auth-beta.md)). Post-beta, native messaging will replace localhost HTTP entirely, providing cryptographic caller identity.
 
+## Install Method Security Comparison
+
+All current install methods run entirely on your machine. No data leaves localhost.
+
+| | Zero-config (npx) | npm install | Build from source |
+|---|---|---|---|
+| **Server runs on** | localhost only | localhost only | localhost only |
+| **Network exposure** | None | None | None |
+| **Data leaves machine** | No | No | No |
+| **Package source** | npm registry | npm registry | GitHub (you audit) |
+| **Version control** | Always latest from npm | Pinned to installed version | Pinned to your clone |
+| **Supply chain risk** | Low - fetches latest on each run | Lower - pinned version | Lowest - you review the code |
+| **Auto-updates** | Yes (npx fetches latest) | No (manual `npm update`) | No (manual `git pull`) |
+| **Offline capable** | Only if npm-cached | Yes | Yes |
+| **Setup effort** | 5 lines of JSON | 2 commands | Clone + build |
+| **Best for** | Quick start, single project | Production teams, version pinning | Contributors, auditors |
+
+**Recommendation:** Use zero-config (npx) to get started. Switch to `npm install` if you need version pinning or offline use. Build from source if your security policy requires code review before execution.
+
+> **Note on npx:** The `npx -y @viewgraph/core` command downloads the package from the npm registry on first run and caches it locally. Subsequent runs use the cache unless a newer version is available. This is the same mechanism used by `npx create-react-app`, `npx eslint`, and other standard Node.js tools. The downloaded code runs with the same permissions as any npm package - no elevated access.
+
 ## Safe for Production Sites
 
 You can safely use ViewGraph on production, staging, or any environment:
