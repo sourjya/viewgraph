@@ -103,7 +103,7 @@ export async function show(annotation, callbacks = {}) {
     Object.assign(wrapper.style, { display: 'inline-block', marginRight: '4px', marginBottom: '6px', verticalAlign: 'top' });
 
     function renderChip(val) {
-      wrapper.innerHTML = '';
+      wrapper.replaceChildren();
       const chip = document.createElement('span');
       const chipColor = CHIP_COLORS[val] || '#555';
       Object.assign(chip.style, {
@@ -123,7 +123,7 @@ export async function show(annotation, callbacks = {}) {
     }
 
     function renderSelect() {
-      wrapper.innerHTML = '';
+      wrapper.replaceChildren();
       const sel = document.createElement('select');
       Object.assign(sel.style, {
         padding: '2px 6px', background: '#16161e', border: '1px solid #333',
@@ -174,7 +174,7 @@ export async function show(annotation, callbacks = {}) {
   }
 
   function renderCategoryChips() {
-    categoryWrapper.innerHTML = '';
+    categoryWrapper.replaceChildren();
     const selected = parseCats();
 
     // Restyle panel when idea category is active
@@ -394,7 +394,9 @@ export async function show(annotation, callbacks = {}) {
 function makeHeaderBtn(svgHtml, title) {
   const btn = document.createElement('button');
   btn.setAttribute(ATTR, 'btn');
-  btn.innerHTML = svgHtml;
+  const doc = new DOMParser().parseFromString(svgHtml, 'image/svg+xml');
+  const svg = doc.documentElement;
+  if (svg.tagName === 'svg') btn.appendChild(document.importNode(svg, true));
   btn.title = title;
   Object.assign(btn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',

@@ -219,7 +219,7 @@ function highlight(el) {
 function updateTooltip(el, rect) {
   const breadcrumb = buildBreadcrumb(el);
   const meta = buildMetaLine(el);
-  tooltipEl.innerHTML = '';
+  tooltipEl.replaceChildren();
 
   const line1 = document.createElement('div');
   Object.assign(line1.style, { display: 'flex', alignItems: 'center', gap: '5px' });
