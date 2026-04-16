@@ -10,6 +10,32 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ## [Unreleased]
 
+### New Features
+- `sidebar/icons.js` - 17 SVG icon factories using DOM API (zero innerHTML)
+- `sidebar/styles.js` - 12 shared inline style constants
+- `sidebar/review.js` - extracted review tab rendering (filters, entries, trash, requests)
+
+### Changed
+- innerHTML cleanup: 45 -> 10 usages, all 4 dangerous interpolations eliminated
+- Sidebar decomposition Phase 3: annotation-sidebar.js 1321 -> 747 lines (68% reduction from original 2306)
+- Inspect tab now owns toggles, session recording, and captures section
+- npm published @viewgraph/core and @viewgraph/playwright at 0.3.4
+
+### Testing
+- 1276 total tests (895 extension + 381 server), 103 test files
+- Coverage: 75.1% statements (up from 70.9%)
+- New test files: icons, styles, review, animation-collector, html-snapshot, export-zip
+
+## [0.3.4] - 2026-04-16
+
+### Fixed
+- Remote URL routing security fix (BUG-014): only localhost/file:// URLs auto-match servers
+- Inspect tab extraction and capture rendering fixes
+
+### Changed
+- Chrome Web Store and Firefox Add-ons approved and live
+- npm published at 0.3.4
+
 ## [0.3.3] - 2026-04-16
 
 ### New Features
