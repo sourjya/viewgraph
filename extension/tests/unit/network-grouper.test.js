@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { groupRequests, smartPath } from '../../lib/network-grouper.js';
+import { groupRequests, smartPath } from '#lib/network-grouper.js';
 
 describe('groupRequests', () => {
   it('(+) groups app sources under "App Sources"', () => {

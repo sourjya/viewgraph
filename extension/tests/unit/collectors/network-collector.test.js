@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { collectNetworkState } from '../../../lib/collectors/network-collector.js';
+import { collectNetworkState } from '#lib/collectors/network-collector.js';
 
 describe('collectNetworkState', () => {
   let originalPerformance;

@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { show, hide, currentAnnotationId } from '../../lib/annotation-panel.js';
+import { show, hide, currentAnnotationId } from '#lib/annotation-panel.js';
 
 const ATTR = 'data-vg-annotate';
 
