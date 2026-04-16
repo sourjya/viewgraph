@@ -12,7 +12,7 @@
  * @see docs/runbooks/multi-project-setup.md
  */
 
-const DEFAULT_PORT = 9876;
+const DEFAULT_PORT = 9876; // TODO: import from constants when options page supports ES modules
 const PORT_RANGE = 4;
 const serversEl = document.getElementById('servers');
 
@@ -41,10 +41,10 @@ async function discoverServers() {
 
 /** Render server cards. */
 function renderServers(servers) {
-  serversEl.innerHTML = '';
+  serversEl.replaceChildren();
 
   if (servers.length === 0) {
-    serversEl.innerHTML = '<div class="no-servers">No servers detected. Run <code>npx viewgraph-init</code> from your project folder.</div>';
+    const noSrv = document.createElement("div"); noSrv.className = "no-servers"; noSrv.textContent = "No servers detected. Run viewgraph-init from your project folder."; serversEl.appendChild(noSrv);
     return;
   }
 
@@ -63,7 +63,7 @@ function renderServers(servers) {
       const div = document.createElement('div');
       div.className = 'server-row';
       if (row.label === 'Server') {
-        div.innerHTML = `<span class="server-dot connected"></span>`;
+        const dot = document.createElement("span"); dot.className = "server-dot connected"; div.appendChild(dot);
       }
       const lbl = document.createElement('span');
       lbl.className = 'server-label';
