@@ -109,8 +109,8 @@ export function createHelpCard() {
   const versionEl = document.createElement('div');
   versionEl.setAttribute(ATTR, 'help-version');
   Object.assign(versionEl.style, {
-    marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #333',
-    fontSize: '10px', color: '#555', fontFamily: 'monospace',
+    marginTop: '12px', padding: '6px 8px', borderRadius: '4px',
+    background: '#16161e', fontSize: '11px', color: '#9ca3af', fontFamily: 'monospace',
   });
   helpCard.appendChild(versionEl);
 
@@ -132,7 +132,7 @@ export function createHelpCard() {
     isVisible() { return visible; },
     setVersion(text, warn) {
       versionEl.textContent = text;
-      if (warn) { versionEl.style.color = '#f59e0b'; }
+      if (warn) { versionEl.style.color = '#f59e0b'; versionEl.style.background = '#451a03'; }
     },
   };
 }
