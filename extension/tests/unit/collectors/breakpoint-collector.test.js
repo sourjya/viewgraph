@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { collectBreakpoints, collectMediaQueries } from '../../lib/collectors/breakpoint-collector.js';
+import { collectBreakpoints, collectMediaQueries } from '../../../lib/collectors/breakpoint-collector.js';
 
 describe('collectBreakpoints', () => {
   let originalMatchMedia;
