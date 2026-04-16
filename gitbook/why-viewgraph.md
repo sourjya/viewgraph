@@ -1,6 +1,6 @@
 # Why ViewGraph?
 
-ViewGraph strengthens UI-heavy workflows across development, testing, QA, review, and release. Here are the 23 problems it solves, organized by workstream.
+ViewGraph strengthens UI-heavy workflows across development, testing, QA, review, and release. Here are the [23 problems](#common-problems) it solves, organized by workstream.
 
 ![A broken login page - the kind of bugs ViewGraph helps fix](.gitbook/assets/demo-login-broken.png)
 
