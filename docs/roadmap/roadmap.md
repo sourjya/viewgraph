@@ -46,7 +46,7 @@
 | F14: Sidebar Decomposition | Phase 1 Complete | Event bus, directory reorg (6 dirs), 3 modules extracted |
 | M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
 
-**Current totals:** 1203 tests (381 server + 822 extension), 36 MCP tools, 14 enrichment collectors
+**Current totals:** 1214 tests (381 server + 833 extension), 36 MCP tools, 14 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and
