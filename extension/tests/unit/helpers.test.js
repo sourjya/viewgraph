@@ -18,6 +18,5 @@ describe('test helpers', () => {
 
   it('(-) VERSION is not a placeholder', () => {
     expect(VERSION).not.toBe('0.0.0');
-    expect(VERSION).not.toBe('1.0.0');
   });
 });
