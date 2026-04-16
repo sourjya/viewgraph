@@ -150,6 +150,10 @@ Full methodology, per-site breakdowns, and run history: [`scripts/experiments/bu
 - [Competitive Analysis](./docs/architecture/competitive-analysis-browser-mcp.md) - browser MCP comparison
 - [Product Analysis](./docs/architecture/product-analysis.md) - user journeys, pain points, competitor matrix
 
+## Acknowledgments
+
+ViewGraph's capture format was inspired by [Element to LLM](https://addons.mozilla.org/en-US/firefox/addon/element-to-llm/) (E2LLM) by [insitu.im](https://insitu.im/) - the first browser extension to frame DOM capture as a structured perception layer for AI agents. The core insight - that agents need a purpose-built intermediate representation, not raw HTML - came from E2LLM. ViewGraph extended these foundations through [deep format research](./docs/architecture/viewgraph-format-research.md) that produced 20 improvement proposals across token efficiency, accessibility, enrichment, and bidirectional MCP integration. [Full comparison](https://chaoslabz.gitbook.io/viewgraph/how-it-compares/capture-format#acknowledgments).
+
 ## License
 
 AGPL-3.0 - see [COPYING](COPYING) for the full license text.
