@@ -122,12 +122,12 @@ export function create() {
         statusBanner.style.display = 'none';
         // Fetch project config and cache locally
         await fetchConfig(url);
-        // Check version mismatch between extension and server
+        // Check version mismatch - only warn if extension is older than server (dev builds)
         try {
           const info = await fetch(`${url}/info`, { signal: AbortSignal.timeout(3000) }).then((r) => r.json());
           const extVersion = chrome.runtime.getManifest?.()?.version;
-          if (info.serverVersion && extVersion && info.serverVersion !== extVersion) {
-            statusBanner.textContent = `Version mismatch: extension v${extVersion}, server v${info.serverVersion}. Rebuild extension.`;
+          if (info.serverVersion && extVersion && extVersion < info.serverVersion) {
+            statusBanner.textContent = `Extension v${extVersion} is behind server v${info.serverVersion}. Rebuild: npm run build:ext`;
             statusBanner.style.display = 'block';
             statusBanner.style.color = '#f59e0b';
           }
