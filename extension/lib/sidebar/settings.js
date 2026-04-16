@@ -76,18 +76,37 @@ export function createSettings() {
 
   /** Build a toggle switch row. */
   function createToggleRow(labelText, opts = {}) {
-    const row = document.createElement('label');
+    const row = document.createElement('div');
     Object.assign(row.style, {
-      display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0', cursor: opts.disabled ? 'default' : 'pointer',
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0',
+      cursor: opts.disabled ? 'default' : 'pointer',
     });
+    const text = document.createElement('span');
+    text.textContent = labelText;
+    Object.assign(text.style, { fontSize: '12px', color: opts.disabled ? '#666' : '#c8c8d0' });
+    // Hidden checkbox for state
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.checked = opts.checked || false;
     input.disabled = opts.disabled || false;
-    const text = document.createElement('span');
-    text.textContent = labelText;
-    Object.assign(text.style, { fontSize: '12px', color: opts.disabled ? '#666' : '#c8c8d0' });
-    row.append(input, text);
+    Object.assign(input.style, { display: 'none' });
+    // Visual toggle button
+    const toggle = document.createElement('span');
+    function syncToggle() {
+      toggle.textContent = input.checked ? 'ON' : 'OFF';
+      Object.assign(toggle.style, {
+        borderRadius: '10px', padding: '2px 10px', fontSize: '10px',
+        fontWeight: '700', fontFamily: 'system-ui, sans-serif',
+        background: input.checked ? '#166534' : '#333',
+        color: input.checked ? '#4ade80' : '#666',
+        border: 'none',
+      });
+    }
+    syncToggle();
+    if (!opts.disabled) {
+      row.addEventListener('click', () => { input.checked = !input.checked; syncToggle(); input.dispatchEvent(new Event('change')); });
+    }
+    row.append(text, input, toggle);
     return { row, input };
   }
 
