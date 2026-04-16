@@ -8,7 +8,7 @@
  * Runs in the content script context (has access to document, window).
  */
 
-import { checkRendered } from './visibility-collector.js';
+import { checkRendered } from '../collectors/visibility-collector.js';
 
 /** Tags that are inherently interactive. */
 const INTERACTIVE_TAGS = new Set(['a', 'button', 'input', 'select', 'textarea', 'details', 'summary']);

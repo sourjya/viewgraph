@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { validateCapture } from '#lib/capture-validator.js';
+import { validateCapture } from '#lib/capture/capture-validator.js';
 
 describe('validateCapture', () => {
   it('(+) passes a good capture', () => {

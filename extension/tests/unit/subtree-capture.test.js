@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { captureSubtree } from '#lib/subtree-capture.js';
+import { captureSubtree } from '#lib/capture/subtree-capture.js';
 
 beforeEach(() => { document.body.innerHTML = ''; });
 

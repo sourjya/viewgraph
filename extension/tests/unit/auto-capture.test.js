@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { startAutoCapture, stopAutoCapture, isAutoCapturing } from '#lib/auto-capture.js';
+import { startAutoCapture, stopAutoCapture, isAutoCapturing } from '#lib/session/auto-capture.js';
 
 // Mock chrome.runtime.sendMessage
 vi.stubGlobal('chrome', {

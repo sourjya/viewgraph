@@ -13,7 +13,7 @@
  * @see docs/roadmap/roadmap.md - M12.4
  */
 
-import { buildSelector, ATTR } from './selector.js';
+import { buildSelector, ATTR } from '../selector.js';
 
 const MAX_ELEMENTS = 2000;
 

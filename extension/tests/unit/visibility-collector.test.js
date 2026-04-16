@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { checkRendered } from '../../lib/visibility-collector.js';
+import { checkRendered } from '../../lib/collectors/visibility-collector.js';
 
 describe('checkRendered', () => {
   beforeEach(() => {

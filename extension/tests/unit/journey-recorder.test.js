@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { startJourney, stopJourney, isJourneyActive } from '#lib/journey-recorder.js';
+import { startJourney, stopJourney, isJourneyActive } from '#lib/session/journey-recorder.js';
 
 beforeEach(() => {
   stopJourney();

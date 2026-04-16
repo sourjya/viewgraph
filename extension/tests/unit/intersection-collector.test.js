@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { collectIntersectionState } from '#lib/intersection-collector.js';
+import { collectIntersectionState } from '#lib/collectors/intersection-collector.js';
 
 beforeEach(() => { document.body.innerHTML = ''; });
 

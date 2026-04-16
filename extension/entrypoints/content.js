@@ -11,22 +11,22 @@
  */
 /* global defineContentScript */
 
-import { traverseDOM } from '../lib/traverser.js';
-import { scoreAll } from '../lib/salience.js';
-import { serialize } from '../lib/serializer.js';
-import { captureSnapshot } from '../lib/html-snapshot.js';
+import { traverseDOM } from '../lib/capture/traverser.js';
+import { scoreAll } from '../lib/capture/salience.js';
+import { serialize } from '../lib/capture/serializer.js';
+import { captureSnapshot } from '../lib/capture/html-snapshot.js';
 import { collectAllEnrichment } from '../lib/enrichment.js';
-import { installConsoleInterceptor } from '../lib/console-collector.js';
-import { startAutoCapture, stopAutoCapture, isAutoCapturing } from '../lib/auto-capture.js';
-import { isRecording, addStep, getCaptureMetadata } from '../lib/session-manager.js';
+import { installConsoleInterceptor } from '../lib/collectors/console-collector.js';
+import { startAutoCapture, stopAutoCapture, isAutoCapturing } from '../lib/session/auto-capture.js';
+import { isRecording, addStep, getCaptureMetadata } from '../lib/session/session-manager.js';
 import {
   start as startAnnotate, stop as stopAnnotate, isActive as isAnnotating,
   getAnnotations, load as loadAnnotations, hideMarkers,
 } from '../lib/annotate.js';
 import { show as showPanel } from '../lib/annotation-panel.js';
 import { create as createSidebar, refresh as refreshSidebar, destroy as destroySidebar } from '../lib/annotation-sidebar.js';
-import { cropRegions } from '../lib/screenshot-crop.js';
-import { buildReportZip } from '../lib/export-zip.js';
+import { cropRegions } from '../lib/capture/screenshot-crop.js';
+import { buildReportZip } from '../lib/export/export-zip.js';
 
 /** Serialize annotations for capture JSON. Used by send-review and annotations-only. */
 function serializeAnnotations(annotations) {

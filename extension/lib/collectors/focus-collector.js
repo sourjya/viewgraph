@@ -11,7 +11,7 @@
  * @see docs/roadmap/roadmap.md - M13.2 focus management chain
  */
 
-import { buildSelector, ATTR } from './selector.js';
+import { buildSelector, ATTR } from '../selector.js';
 
 
 /** Focusable element selectors (matches browser tab-stop behavior). */

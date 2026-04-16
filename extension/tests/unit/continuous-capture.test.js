@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { startWatcher, stopWatcher, isWatcherEnabled, resetWatcher } from '#lib/continuous-capture.js';
+import { startWatcher, stopWatcher, isWatcherEnabled, resetWatcher } from '#lib/session/continuous-capture.js';
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"><p>Hello</p></div>';

@@ -13,19 +13,19 @@
  */
 
 import { safeCollect, safeCollectAsync } from './safe-collect.js';
-import { collectNetworkState } from './network-collector.js';
-import { getConsoleState } from './console-collector.js';
-import { collectBreakpoints, collectMediaQueries } from './breakpoint-collector.js';
-import { collectStackingContexts } from './stacking-collector.js';
-import { collectFocusChain } from './focus-collector.js';
-import { collectScrollContainers } from './scroll-collector.js';
-import { collectLandmarks } from './landmark-collector.js';
-import { collectComponents } from './component-collector.js';
-import { collectAxeResults } from './axe-collector.js';
-import { collectEventListeners } from './event-listener-collector.js';
-import { collectPerformance } from './performance-collector.js';
-import { collectAnimations } from './animation-collector.js';
-import { collectIntersectionState } from './intersection-collector.js';
+import { collectNetworkState } from './collectors/network-collector.js';
+import { getConsoleState } from './collectors/console-collector.js';
+import { collectBreakpoints, collectMediaQueries } from './collectors/breakpoint-collector.js';
+import { collectStackingContexts } from './collectors/stacking-collector.js';
+import { collectFocusChain } from './collectors/focus-collector.js';
+import { collectScrollContainers } from './collectors/scroll-collector.js';
+import { collectLandmarks } from './collectors/landmark-collector.js';
+import { collectComponents } from './collectors/component-collector.js';
+import { collectAxeResults } from './collectors/axe-collector.js';
+import { collectEventListeners } from './collectors/event-listener-collector.js';
+import { collectPerformance } from './collectors/performance-collector.js';
+import { collectAnimations } from './collectors/animation-collector.js';
+import { collectIntersectionState } from './collectors/intersection-collector.js';
 
 /**
  * Collect all enrichment data for a capture.

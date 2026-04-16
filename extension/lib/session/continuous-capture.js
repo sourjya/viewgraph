@@ -15,7 +15,7 @@
  * @see .kiro/specs/continuous-capture/design.md
  */
 
-import { ATTR } from './selector.js';
+import { ATTR } from '../selector.js';
 const MUTATION_DEBOUNCE_MS = 2000;
 const HMR_DEBOUNCE_MS = 1000;
 const MIN_CAPTURE_INTERVAL_MS = 5000;

@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { detectFramework, collectComponents } from '#lib/component-collector.js';
+import { detectFramework, collectComponents } from '#lib/collectors/component-collector.js';
 
 beforeEach(() => {
   document.body.innerHTML = '';

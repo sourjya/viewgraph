@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { cropRegions } from '#lib/screenshot-crop.js';
+import { cropRegions } from '#lib/capture/screenshot-crop.js';
 
 // ---------------------------------------------------------------------------
 // Canvas and Image mocks

@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { startShortcuts, stopShortcuts, isShortcutsActive } from '#lib/keyboard-shortcuts.js';
+import { startShortcuts, stopShortcuts, isShortcutsActive } from '#lib/ui/keyboard-shortcuts.js';
 
 beforeEach(() => { stopShortcuts(); });
 afterEach(() => { stopShortcuts(); });

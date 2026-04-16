@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { collectPerformance } from '#lib/performance-collector.js';
+import { collectPerformance } from '#lib/collectors/performance-collector.js';
 
 describe('collectPerformance', () => {
   it('(+) returns object with expected shape', () => {

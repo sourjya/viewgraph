@@ -9,7 +9,7 @@
  */
 
 import { updateComment, updateSeverity, updateCategory, removeAnnotation, MARKER_COLORS } from './annotate.js';
-import { diagnoseElement } from './element-diagnostics.js';
+import { diagnoseElement } from './ui/element-diagnostics.js';
 
 import { ATTR } from './selector.js';
 let panelEl = null;

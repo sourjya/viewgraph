@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { watchHmr } from '#lib/hmr-detector.js';
+import { watchHmr } from '#lib/session/hmr-detector.js';
 
 beforeEach(() => { vi.useFakeTimers(); });
 afterEach(() => { vi.useRealTimers(); });

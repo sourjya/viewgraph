@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { collectLandmarks } from '#lib/landmark-collector.js';
+import { collectLandmarks } from '#lib/collectors/landmark-collector.js';
 
 beforeEach(() => {
   document.body.innerHTML = '';

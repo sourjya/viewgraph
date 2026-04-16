@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { formatMarkdown } from '#lib/export-markdown.js';
+import { formatMarkdown } from '#lib/export/export-markdown.js';
 
 const META = { title: 'Login Page', url: 'http://localhost:3000/login', timestamp: '2026-04-09T00:40:00Z' };
 

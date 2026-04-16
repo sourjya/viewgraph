@@ -13,7 +13,7 @@
  * @see docs/roadmap/roadmap.md - M13.6 semantic ARIA landmarks
  */
 
-import { buildSelector, ATTR } from './selector.js';
+import { buildSelector, ATTR } from '../selector.js';
 
 
 /**

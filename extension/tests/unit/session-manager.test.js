@@ -11,7 +11,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   startSession, stopSession, addStep, getState,
   isRecording, setName, getCaptureMetadata, reset,
-} from '#lib/session-manager.js';
+} from '#lib/session/session-manager.js';
 
 beforeEach(() => {
   reset();

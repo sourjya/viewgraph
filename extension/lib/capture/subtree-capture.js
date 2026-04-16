@@ -11,7 +11,7 @@
  * @see docs/roadmap/roadmap.md - M14.4
  */
 
-import { buildSelector } from './selector.js';
+import { buildSelector } from '../selector.js';
 
 /**
  * Capture a subtree rooted at the given element.
