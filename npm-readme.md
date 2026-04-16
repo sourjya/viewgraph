@@ -4,18 +4,25 @@ The UI context layer for AI coding agents. A browser extension captures structur
 
 ## Install
 
-```bash
-cd ~/my-project
-npm install @viewgraph/core
-npx viewgraph-init
+Add to your AI agent's MCP config:
+
+```json
+{
+  "mcpServers": {
+    "viewgraph": { "command": "npx", "args": ["-y", "@viewgraph/core"] }
+  }
+}
 ```
 
-The init script creates `.viewgraph/captures/`, detects your AI agent, writes the MCP config, and starts the server.
+The server runs automatically via `npx`, auto-creates `.viewgraph/captures/`, and learns your URL pattern from the first capture.
 
-**Using a dev server?** Add `--url`:
+**Alternative:** For explicit version pinning and config control:
 
 ```bash
-npx viewgraph-init --url localhost:3000
+npm install -g @viewgraph/core
+cd ~/my-project
+viewgraph-init                        # creates config, starts server
+viewgraph-init --url localhost:3000   # if using a dev server
 ```
 
 ## What's Included
@@ -27,7 +34,7 @@ npx viewgraph-init --url localhost:3000
 ## Browser Extension
 
 Install the ViewGraph Capture extension separately:
-- Chrome Web Store (pending review)
+- Chrome Web Store (approved and live)
 - [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
 
 Or [build from source](https://github.com/sourjya/viewgraph#for-developers-build-from-source).

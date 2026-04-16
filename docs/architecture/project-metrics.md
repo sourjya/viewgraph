@@ -24,8 +24,8 @@ Updated manually at milestones. First entry: v0.1.0 beta launch.
 
 | Metric | Count |
 |---|---|
-| Total tests | 1276 |
-| Server tests | 381 |
+| Total tests | 1279 |
+| Server tests | 384 |
 | Extension tests | 895 |
 | Test files | 103 (55 extension + 48 server) |
 | Accuracy experiment sites | 145 |

@@ -1,6 +1,6 @@
 # ViewGraph MCP Server
 
-MCP server that reads ViewGraph capture files from disk and exposes 34 query/analysis/request tools to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
+MCP server that reads ViewGraph capture files from disk and exposes 36 query/analysis/request tools to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
 Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline, Aider.
 
@@ -8,15 +8,21 @@ Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline,
 
 ## Quick Start
 
-Most users don't need to configure the server manually. Run the init script from your project root and it handles everything:
+Add to your AI agent's MCP config:
 
-```bash
-npx viewgraph-init
+```json
+{
+  "mcpServers": {
+    "viewgraph": { "command": "npx", "args": ["-y", "@viewgraph/core"] }
+  }
+}
 ```
 
-This writes the MCP config, creates the captures directory, and starts the server. See the [documentation](https://chaoslabz.gitbook.io/viewgraph/getting-started/installation) for the full setup guide.
+The server runs automatically via `npx`, auto-creates `.viewgraph/captures/`, and learns your URL pattern from the first capture. No `viewgraph-init` needed.
 
-## Tools (34)
+**Alternative:** `npm install -g @viewgraph/core && viewgraph-init` for explicit version pinning and config control.
+
+## Tools (36)
 
 ### Core (4)
 

@@ -57,22 +57,22 @@ The extension captures the DOM from Chrome or Firefox. The server reads those ca
 **Prerequisites:** Node.js 22+, npm 9+, Chrome 116+ or Firefox 109+
 
 ```bash
-# 1. Install
-npm install -g @viewgraph/core
+# 1. Install the browser extension from Chrome Web Store or Firefox Add-ons (links above)
 
-# 2. Build the browser extension
-npm run build:ext                        # Chrome (default)
-npm run build:ext -- --browser firefox   # Firefox
-# Then load unpacked in chrome://extensions/ or about:debugging
+# 2. Add to your AI agent's MCP config (~/.kiro/settings/mcp.json):
+{
+  "mcpServers": {
+    "viewgraph": { "command": "npx", "args": ["-y", "@viewgraph/core"] }
+  }
+}
 
-# 3. Initialize in your project
-cd your-project
-viewgraph-init                           # auto-detects your agent, starts server
-viewgraph-init --url localhost:3000      # if using a dev server
-
-# 4. Capture: click the ViewGraph toolbar icon on any page
-# 5. Ask your agent: "Fix the annotations from my last review"
+# 3. Capture: click the ViewGraph toolbar icon on any page
+# 4. Ask your agent: "Fix the annotations from my last review"
 ```
+
+The server runs automatically via `npx` - no install needed. It auto-creates `.viewgraph/captures/` and learns your URL pattern from the first capture.
+
+**Alternative:** `npm install -g @viewgraph/core && viewgraph-init` for explicit version pinning and config control.
 
 The extension sidebar opens with **Review** (annotate and comment) and **Inspect** (network errors, console issues) tabs. Export via **Send to Agent** (MCP), **Copy Markdown** (Jira/GitHub), or **Download Report** (ZIP).
 

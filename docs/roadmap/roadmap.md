@@ -45,10 +45,10 @@
 | F13: Type Filtering | Complete | Annotation type registry, filter toggles, badge standardization |
 | F14: Sidebar Decomposition | Complete | 2306->747 lines, 10 modules, icons.js + styles.js |
 | F15: Auto-Inspect Suggestions | Spec Complete | Proactive issue detection, ranked pick-list, 3 tiers |
-| F16: Zero-Config Install | Spec Complete | MCP config + extension = done, no viewgraph-init needed |
+| F16: Zero-Config Install | Phase 1 Complete | Server self-configures, default urlPatterns, auto-learn config |
 | M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
 
-**Current totals:** 1276 tests (381 server + 895 extension), 36 MCP tools, 14 enrichment collectors
+**Current totals:** 1279 tests (384 server + 895 extension), 36 MCP tools, 14 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and
