@@ -47,6 +47,28 @@ The extension captures the DOM from Chrome or Firefox. The server reads those ca
 
 ViewGraph works with any web app regardless of backend technology. Python, Ruby, Java, Go, PHP - doesn't matter. If it renders HTML in a browser, ViewGraph can capture it.
 
+## Get Started in 2 Minutes
+
+**1. Install the browser extension:**
+
+[![Chrome - Install](https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj)  [![Firefox - Install](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
+
+**2. Add to your AI agent's MCP config:**
+
+```json
+{
+  "mcpServers": {
+    "viewgraph": { "command": "npx", "args": ["-y", "@viewgraph/core"] }
+  }
+}
+```
+
+**That's it.** The server runs automatically, creates `.viewgraph/captures/`, and learns your project's URL pattern from the first capture. No install commands, no config files.
+
+> **Need version pinning?** Use `npm install -g @viewgraph/core && viewgraph-init` instead. See [Installation](getting-started/installation.md) for details.
+
+For the full walkthrough with screenshots, see the [Quick Start Guide](getting-started/quick-start.md).
+
 ## Who It's For
 
 ### Developers with AI agents
