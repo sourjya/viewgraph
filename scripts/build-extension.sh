@@ -55,11 +55,16 @@ build_firefox() {
   echo "[build] Firefox ZIP: extension/.output/viewgraph-firefox-${VERSION}.zip"
 }
 
+W=42
+LINE1=" </>  ViewGraph Build v${VERSION}"
+LINE2=" Extension packager for Chrome + Firefox"
+PAD1=$(printf '%*s' $((W - ${#LINE1})) '')
+PAD2=$(printf '%*s' $((W - ${#LINE2})) '')
 echo "" | tee "$LOG_FILE"
-echo -e "  \033[38;5;99m┌──────────────────────────────────────────┐\033[0m" | tee -a "$LOG_FILE"
-echo -e "  \033[38;5;99m│\033[0m  \033[1m\033[38;5;141m</>\033[0m  \033[1mViewGraph Build\033[0m \033[38;5;245mv${VERSION}\033[0m" | tee -a "$LOG_FILE"
-echo -e "  \033[38;5;99m│\033[0m  \033[38;5;245mExtension packager for Chrome + Firefox\033[0m" | tee -a "$LOG_FILE"
-echo -e "  \033[38;5;99m└──────────────────────────────────────────┘\033[0m" | tee -a "$LOG_FILE"
+echo "  ┌$(printf '─%.0s' $(seq 1 $W))┐" | tee -a "$LOG_FILE"
+echo -e "  │\033[1m\033[38;5;141m${LINE1}\033[0m${PAD1}│" | tee -a "$LOG_FILE"
+echo -e "  │\033[38;5;245m${LINE2}\033[0m${PAD2}│" | tee -a "$LOG_FILE"
+echo "  └$(printf '─%.0s' $(seq 1 $W))┘" | tee -a "$LOG_FILE"
 echo "" | tee -a "$LOG_FILE"
 echo "Started: $(date -Iseconds)" | tee -a "$LOG_FILE"
 

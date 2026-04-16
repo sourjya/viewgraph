@@ -121,11 +121,14 @@ function verifyWritable(dirPath) {
 // Check for npm updates (non-blocking)
 const CURRENT_VERSION = JSON.parse(readFileSync(path.join(VIEWGRAPH_ROOT, 'package.json'), 'utf-8')).version;
 
+const W = 42;
+const line1 = ` </>  ViewGraph v${CURRENT_VERSION}`;
+const line2 = ' The UI context layer for AI agents';
 console.log(`
-  \x1b[38;5;99m┌──────────────────────────────────────────┐\x1b[0m
-  \x1b[38;5;99m│\x1b[0m  \x1b[1m\x1b[38;5;141m</>\x1b[0m  \x1b[1m\x1b[37mViewGraph\x1b[0m \x1b[38;5;245mv${CURRENT_VERSION}\x1b[0m
-  \x1b[38;5;99m│\x1b[0m  \x1b[38;5;245mThe UI context layer for AI agents\x1b[0m
-  \x1b[38;5;99m└──────────────────────────────────────────┘\x1b[0m
+  \u250c${'\u2500'.repeat(W)}\u2510
+  \u2502\x1b[1m\x1b[38;5;141m${line1}\x1b[0m${' '.repeat(W - line1.length)}\u2502
+  \u2502\x1b[38;5;245m${line2}\x1b[0m${' '.repeat(W - line2.length)}\u2502
+  \u2514${'\u2500'.repeat(W)}\u2518
 `);
 
 try {
