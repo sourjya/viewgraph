@@ -88,3 +88,6 @@ Chrome blocks cross-origin requests for `file://` URLs. Serve the files via HTTP
 
 ### How do I reset project settings?
 Delete `.viewgraph/config.json` and re-run `npx viewgraph-init`. The init script recreates it with defaults.
+
+### Where are screenshots and HTML snapshots saved?
+In `.viewgraph/screenshots/` (PNG) and `.viewgraph/snapshots/` (HTML). Enable them in the sidebar settings (footer link). They're saved alongside the JSON capture on every "Send to Agent" or manual capture.

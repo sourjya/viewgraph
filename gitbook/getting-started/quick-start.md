@@ -96,3 +96,4 @@ The agent reads your annotations with full DOM context, finds the source files, 
 - [Installation guide](installation.md) - detailed setup for Chrome, Firefox, and all agents
 - [Multi-project setup](multi-project.md) - run multiple projects simultaneously
 - Try the demo: open `docs/demo/index.html` in the ViewGraph repo - a login page with 8 planted bugs to practice on
+- **Tip:** Enable HTML snapshots and screenshots in sidebar settings (footer link) for visual evidence alongside your captures

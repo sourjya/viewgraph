@@ -111,6 +111,33 @@ Every diagnostic section has two action buttons:
 
 This turns error reporting into a one-click action. See a red "2 failed" badge on Network? Click the note icon - the failed URLs, request types, and durations are packaged into an annotation automatically. No DevTools, no copy-pasting error messages, no writing technical descriptions. The sidebar surfaces what matters and lets you report it instantly.
 
+## Capture Output
+
+Every capture produces a structured JSON file in `.viewgraph/captures/`. Optionally, you can also save an HTML snapshot and a screenshot alongside it.
+
+### Settings (footer link in sidebar)
+
+| Toggle | What it saves | Location | Use case |
+|---|---|---|---|
+| **ViewGraph JSON** (always on) | Structured DOM capture with enrichment data | `.viewgraph/captures/viewgraph-host-timestamp.json` | Agent consumption via MCP tools |
+| **HTML Snapshot** | Full page HTML at capture time | `.viewgraph/snapshots/viewgraph-host-timestamp.html` | Fidelity comparison, offline replay |
+| **Screenshot** | Viewport PNG at capture time | `.viewgraph/screenshots/viewgraph-host-timestamp.png` | Visual reference, pixel diff |
+
+Toggle these in the sidebar settings (click "Settings" in the footer). The JSON capture is always saved. HTML snapshot and screenshot are optional - enable them when you need visual evidence or fidelity reports.
+
+### Where output goes
+
+```
+your-project/
+  .viewgraph/
+    captures/       <- JSON captures (always)
+    snapshots/      <- HTML snapshots (when enabled)
+    screenshots/    <- PNG screenshots (when enabled)
+    config.json     <- Project settings
+```
+
+The MCP server reads from `captures/`. The `get_fidelity_report` tool compares captures against snapshots. The `compare_screenshots` tool diffs PNG files pixel-by-pixel.
+
 ## Keyboard Shortcuts
 
 Click the `?` button in the sidebar header for the shortcut cheat sheet. See [Keyboard Shortcuts](../reference/keyboard-shortcuts.md) for the full list.
