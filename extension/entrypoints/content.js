@@ -17,8 +17,8 @@ import { serialize } from '../lib/capture/serializer.js';
 import { captureSnapshot } from '../lib/capture/html-snapshot.js';
 import { collectAllEnrichment } from '../lib/enrichment.js';
 import { installConsoleInterceptor } from '../lib/collectors/console-collector.js';
-import { startAutoCapture, stopAutoCapture, isAutoCapturing } from '../lib/auto-capture.js';
-import { isRecording, addStep, getCaptureMetadata } from '../lib/session-manager.js';
+import { startAutoCapture, stopAutoCapture, isAutoCapturing } from '../lib/session/auto-capture.js';
+import { isRecording, addStep, getCaptureMetadata } from '../lib/session/session-manager.js';
 import {
   start as startAnnotate, stop as stopAnnotate, isActive as isAnnotating,
   getAnnotations, load as loadAnnotations, hideMarkers,
