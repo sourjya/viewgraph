@@ -10,6 +10,36 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-04-16
+
+### New Features
+- Event bus system for inter-module communication (CustomEvent on shadow DOM)
+- Annotation type filter toggles (bugs, ideas, diagnostics, notes)
+- Annotation type registry (`annotation-types.js`) with resolveType, badge helpers, serialization
+- Version display in help card and options page with mismatch detection
+- npm update check in viewgraph-init and viewgraph-status
+- Server version in /info endpoint
+- Firefox download SVG button for GitBook
+- GitHub issue templates (bug report, feature request, question)
+- Port allocation and auto-discovery documentation
+
+### Changed
+- Complete directory reorganization: collectors/, capture/, session/, export/, ui/, sidebar/
+- Test files reorganized to mirror source structure
+- All test imports use #lib/ aliases (no relative paths)
+- WS message types use frozen constants (no magic strings)
+- Node.js minimum bumped from 18 to 20
+- CI runs Node 22 only (Node 20 deprecated by GitHub Actions)
+- Build script packages both Chrome + Firefox ZIPs with version numbers
+- Fancy ASCII banners for init and build scripts
+- GitHub README: badges-only navigation (no duplicate text links)
+
+### Fixed
+- matchMedia mock for jsdom (CI breakpoint-collector test failure)
+- Version mismatch only warns when extension is older than server
+- Firefox store description updated with all v0.3.x features
+- Debounce field explanation in advanced settings
+
 ## [0.3.0] - 2026-04-15
 
 ### New Features

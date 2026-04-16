@@ -41,10 +41,12 @@
 | F2: Project Config | Complete | .viewgraph/config.json, GET/PUT endpoints, extension fetch/cache |
 | F7: CSS Style Diff | Complete | compare_styles MCP tool - diff computed styles between captures |
 | F8: Component Coverage | Complete | get_component_coverage MCP tool - testid coverage per component |
-| F12: Ideation Pipeline | In Progress | Idea category, @vg-ideate prompt, feature spec generation |
+| F12: Ideation Pipeline | Complete | Idea category, @vg-ideate prompt, feature spec generation |
+| F13: Type Filtering | Complete | Annotation type registry, filter toggles, badge standardization |
+| F14: Sidebar Decomposition | Phase 1 Complete | Event bus, directory reorg (6 dirs), 3 modules extracted |
 | M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
 
-**Current totals:** 1056 tests (378 server + 678 extension), 36 MCP tools, 14 enrichment collectors
+**Current totals:** 1153 tests (381 server + 772 extension), 36 MCP tools, 14 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and

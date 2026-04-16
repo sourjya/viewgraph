@@ -43,7 +43,7 @@ What's shipped, what's next, and where ViewGraph is heading.
 
 ### Distribution
 - npm: `@viewgraph/core` and `@viewgraph/playwright` published
-- GitHub: public repo with 1056+ tests
+- GitHub: public repo with 1153+ tests
 - GitBook: 28 pages of documentation
 - Firefox Add-ons: approved and live. Chrome Web Store: pending review
 
