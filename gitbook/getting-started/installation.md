@@ -10,10 +10,9 @@ This is the path for developers who want to use ViewGraph with their AI agent. Y
 
 ### Step 1: Install the browser extension
 
-<!-- TODO: Replace with actual CWS link when published -->
-Install [ViewGraph Capture](https://chrome.google.com/webstore) from the Chrome Web Store. Works in Chrome, Edge, Brave, and Opera.
+[![Chrome - Install](https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=flat-square)](https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj) [![Firefox - Install](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=flat-square)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
 
-[![Install ViewGraph for Firefox](../.gitbook/assets/download-firefox.svg)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
+Works in Chrome, Edge, Brave, Opera (Chromium) and Firefox.
 
 Or [build from source](#for-developers-build-from-source) if you prefer.
 

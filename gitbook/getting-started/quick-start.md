@@ -12,9 +12,9 @@ Go from zero to your first AI-assisted bug fix in 5 minutes.
 
 ## 1. Install the extension
 
-[![Install ViewGraph for Firefox](../.gitbook/assets/download-firefox.svg)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
+[![Chrome - Install](https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=flat-square)](https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj) [![Firefox - Install](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=flat-square)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
 
-Or [build from source](installation.md#from-source-for-development) for Chrome and other browsers.
+Or [build from source](installation.md#from-source-for-development) for other Chromium browsers.
 
 ## 2. Initialize in your project
 
