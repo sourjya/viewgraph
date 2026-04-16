@@ -11,9 +11,7 @@ This is the path for developers who want to use ViewGraph with their AI agent. Y
 <!-- TODO: Replace with actual CWS link when published -->
 Install [ViewGraph Capture](https://chrome.google.com/webstore) from the Chrome Web Store. Works in Chrome, Edge, Brave, and Opera.
 
-<!-- TODO: Uncomment when AMO listing is approved
 Or from [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/) for Firefox.
--->
 
 Or [build from source](#for-developers-build-from-source) if you prefer.
 

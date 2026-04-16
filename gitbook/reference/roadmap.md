@@ -45,7 +45,7 @@ What's shipped, what's next, and where ViewGraph is heading.
 - npm: `@viewgraph/core` and `@viewgraph/playwright` published
 - GitHub: public repo with 1056+ tests
 - GitBook: 28 pages of documentation
-- Chrome Web Store and Firefox Add-ons: submitted, pending review
+- Firefox Add-ons: approved and live. Chrome Web Store: pending review
 
 ## Coming Next
 
@@ -68,7 +68,7 @@ Visual timeline in the Inspect tab showing all captures for the current URL with
 Replace localhost HTTP with Chrome/Firefox native messaging for extension-to-server communication. Eliminates the localhost HTTP attack surface.
 
 ### Extension Store Listings
-Chrome Web Store and Firefox Add-ons listings are submitted and pending review. Once approved, installation becomes one click.
+Firefox Add-ons listing is live. Chrome Web Store is pending review.
 
 ## Future
 

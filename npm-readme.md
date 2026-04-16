@@ -28,7 +28,7 @@ npx viewgraph-init --url localhost:3000
 
 Install the ViewGraph Capture extension separately:
 - Chrome Web Store (pending review)
-- Firefox Add-ons (pending review)
+- [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
 
 Or [build from source](https://github.com/sourjya/viewgraph#for-developers-build-from-source).
 
