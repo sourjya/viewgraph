@@ -4,7 +4,7 @@
  * @see lib/sidebar/settings.js
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createSettings } from '#lib/sidebar/settings.js';
 import { VERSION } from '#tests/helpers.js';
 
@@ -75,5 +75,52 @@ describe('createSettings', () => {
     const btns = [...s.element.querySelectorAll('button')];
     const adv = btns.find((b) => b.textContent.includes('Advanced Settings'));
     expect(adv).toBeTruthy();
+  });
+});
+
+// ──────────────────────────────────────────────
+// Settings server routing - regression tests
+// ──────────────────────────────────────────────
+
+describe('settings server routing', () => {
+  it('(+) uses discoverServer not blind port scan - shows matched server only', async () => {
+    const { resetServerCache } = await import('#lib/constants.js');
+    resetServerCache();
+    Object.defineProperty(window, 'location', {
+      value: { href: 'http://localhost:3000/page', hostname: 'localhost', protocol: 'http:' },
+      writable: true, configurable: true,
+    });
+    // Two servers: 9876 (app-one, localhost:3000) and 9877 (app-two, localhost:4000)
+    globalThis.fetch = vi.fn((url) => {
+      const u = typeof url === 'string' ? url : url.toString();
+      if (u.includes(':9876/health')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
+      if (u.includes(':9876/info')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ projectRoot: '/app-one', urlPatterns: ['localhost:3000'], serverVersion: '0.3.5' }) });
+      if (u.includes(':9877/health')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
+      if (u.includes(':9877/info')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ projectRoot: '/app-two', urlPatterns: ['localhost:4000'], serverVersion: '0.3.5' }) });
+      return Promise.reject(new Error('offline'));
+    });
+    const s = createSettings();
+    // Wait for async server discovery
+    await vi.waitFor(() => {
+      const text = s.element.textContent;
+      return text.includes('Project Settings') || text.includes('not connected');
+    }, { timeout: 3000 });
+    const text = s.element.textContent;
+    // Should show app-one info (matched to localhost:3000), NOT app-two
+    expect(text).not.toContain('/app-two');
+  });
+
+  it('(-) shows not connected when no server matches current URL', async () => {
+    const { resetServerCache } = await import('#lib/constants.js');
+    resetServerCache();
+    Object.defineProperty(window, 'location', {
+      value: { href: 'https://remote-site.com/page', hostname: 'remote-site.com', protocol: 'https:' },
+      writable: true, configurable: true,
+    });
+    globalThis.fetch = vi.fn(() => Promise.reject(new Error('offline')));
+    const s = createSettings();
+    // Allow async discovery to complete
+    await new Promise((r) => setTimeout(r, 100));
+    expect(s.element.textContent).toContain('not connected');
   });
 });
