@@ -12,7 +12,7 @@ Updated manually at milestones. First entry: v0.1.0 beta launch.
 | Metric | Count |
 |---|---|
 | MCP tools | 36 |
-| Extension modules | 47 (12 root + 35 in 6 subdirectories) |
+| Extension modules | 49 (12 root + 37 in 6 subdirectories) |
 | Enrichment collectors | 14 |
 | Prompt shortcuts | 9 |
 | Kiro hooks | 3 |
@@ -24,10 +24,10 @@ Updated manually at milestones. First entry: v0.1.0 beta launch.
 
 | Metric | Count |
 |---|---|
-| Total tests | 1153 |
+| Total tests | 1203 |
 | Server tests | 381 |
-| Extension tests | 772 |
-| Test files | 91 (43 extension + 48 server) |
+| Extension tests | 822 |
+| Test files | 98 (50 extension + 48 server) |
 | Accuracy experiment sites | 145 |
 
 ### Architecture
