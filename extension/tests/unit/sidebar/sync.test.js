@@ -53,3 +53,31 @@ describe('polling', () => {
     expect(() => stopRequestPolling()).not.toThrow();
   });
 });
+
+describe('pollRequests', () => {
+  it('(+) calls onRequests with pending requests from server', async () => {
+    const { resetServerCache } = await import('#lib/constants.js');
+    resetServerCache();
+    Object.defineProperty(window, 'location', {
+      value: { href: 'http://localhost:8040/page', hostname: 'localhost', protocol: 'http:' },
+      writable: true, configurable: true,
+    });
+    const { pollRequests } = await import('#lib/sidebar/sync.js');
+    globalThis.fetch = vi.fn((url) => {
+      const u = typeof url === 'string' ? url : url.toString();
+      if (u.includes('/health')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
+      if (u.includes('/info')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ projectRoot: '/t', urlPatterns: ['localhost:8040'], serverVersion: 't' }) });
+      if (u.includes('/requests/pending')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ requests: [{ id: 'r1', url: 'http://localhost:8040' }] }) });
+      return Promise.reject(new Error(`unmocked: ${u}`));
+    });
+    const cb = vi.fn();
+    await pollRequests(cb);
+    expect(cb).toHaveBeenCalledWith([{ id: 'r1', url: 'http://localhost:8040' }]);
+  });
+
+  it('(-) handles offline gracefully', async () => {
+    const { pollRequests } = await import('#lib/sidebar/sync.js');
+    globalThis.fetch = vi.fn(() => Promise.reject(new Error('offline')));
+    await expect(pollRequests(() => {})).resolves.not.toThrow();
+  });
+});

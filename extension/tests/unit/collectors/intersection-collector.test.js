@@ -19,10 +19,40 @@ describe('collectIntersectionState', () => {
   });
 
   it('(+) counts visible elements', () => {
-    document.body.innerHTML = '<button>Click</button><a href="/">Link</a>';
+    const btn = document.createElement('button');
+    btn.textContent = 'Click';
+    document.body.appendChild(btn);
+    // Mock getBoundingClientRect to simulate a visible element
+    btn.getBoundingClientRect = () => ({ top: 10, left: 10, bottom: 50, right: 100, width: 90, height: 40 });
+    Object.defineProperty(window, 'innerWidth', { value: 1024, configurable: true });
+    Object.defineProperty(window, 'innerHeight', { value: 768, configurable: true });
     const result = collectIntersectionState();
-    // In jsdom, getBoundingClientRect returns 0,0,0,0 so elements are skipped
-    expect(result.visible + result.partial + result.offscreen).toBeGreaterThanOrEqual(0);
+    expect(result.visible).toBeGreaterThanOrEqual(1);
+  });
+
+  it('(+) detects offscreen elements', () => {
+    const btn = document.createElement('button');
+    btn.textContent = 'Off';
+    document.body.appendChild(btn);
+    btn.getBoundingClientRect = () => ({ top: -200, left: 0, bottom: -160, right: 100, width: 100, height: 40 });
+    Object.defineProperty(window, 'innerWidth', { value: 1024, configurable: true });
+    Object.defineProperty(window, 'innerHeight', { value: 768, configurable: true });
+    const result = collectIntersectionState();
+    expect(result.offscreen).toBeGreaterThanOrEqual(1);
+    expect(result.elements.length).toBeGreaterThanOrEqual(1);
+    expect(result.elements[0].state).toBe('offscreen');
+  });
+
+  it('(+) detects partially visible elements', () => {
+    const btn = document.createElement('button');
+    btn.textContent = 'Partial';
+    document.body.appendChild(btn);
+    // Top is above viewport, bottom is inside
+    btn.getBoundingClientRect = () => ({ top: -10, left: 0, bottom: 50, right: 100, width: 100, height: 60 });
+    Object.defineProperty(window, 'innerWidth', { value: 1024, configurable: true });
+    Object.defineProperty(window, 'innerHeight', { value: 768, configurable: true });
+    const result = collectIntersectionState();
+    expect(result.partial).toBeGreaterThanOrEqual(1);
   });
 
   it('(-) handles empty DOM', () => {
