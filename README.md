@@ -15,7 +15,7 @@
   &nbsp;
   <a href="https://chaoslabz.gitbook.io/viewgraph"><img src="https://img.shields.io/badge/Docs-GitBook-blue?style=for-the-badge&logo=gitbook&logoColor=white" alt="Documentation"></a>
   &nbsp;
-  <a href="https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start"><img src="https://img.shields.io/badge/Quick_Start-5_minutes-green?style=for-the-badge" alt="Quick Start"></a>
+  <a href="https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start"><img src="https://img.shields.io/badge/Quick_Start-5_minutes-green?style=for-the-badge&logo=clockify&logoColor=white" alt="Quick Start"></a>
 </p>
 
 <p align="center">
