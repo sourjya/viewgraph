@@ -336,3 +336,16 @@ No code may be written without a task list. This is non-negotiable.
 - `docs/changelogs/CHANGELOG.md` should stay under 500 lines
 - When exceeded, roll over to `docs/changelogs/CHANGELOG.YYYY-MM-DD.md`
 - Write consolidated changelog entries grouped by feature
+
+
+## Pre-Commit Lint Check - MANDATORY
+
+**Every commit MUST pass lint with 0 errors before being pushed.**
+
+A git pre-commit hook (`scripts/pre-commit.sh`) runs `npm run lint` automatically. If lint errors are found, the commit is blocked.
+
+### Rules
+1. Run `npm run lint` before committing - the hook does this automatically
+2. Fix all errors before committing - warnings are allowed but errors block
+3. Never use `--no-verify` to bypass the hook
+4. If the hook isn't installed, run: `cp scripts/pre-commit.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit`
