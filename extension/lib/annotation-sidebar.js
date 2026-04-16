@@ -1687,7 +1687,7 @@ export function refresh() {
 
   // Type filter toggles: [bug] [idea] [diagnostic] [note]
   const typeFilterRow = document.createElement('div');
-  Object.assign(typeFilterRow.style, { display: 'flex', gap: '2px', padding: '4px 8px', borderBottom: '1px solid #2a2a3a' });
+  Object.assign(typeFilterRow.style, { display: 'flex', gap: '2px', padding: '4px 8px', borderBottom: '1px solid #2a2a3a', justifyContent: 'flex-end' });
   const filterTypes = [
     { key: 'element', label: 'Bugs', color: '#9ca3af' },
     { key: 'idea', label: 'Ideas', color: '#eab308' },
@@ -1705,7 +1705,7 @@ export function refresh() {
       border: 'none', borderRadius: '4px', padding: '3px 6px', cursor: 'pointer',
       display: 'flex', alignItems: 'center', fontFamily: 'system-ui, sans-serif',
       background: isOn ? 'rgba(255,255,255,0.08)' : 'transparent',
-      color: isOn ? ft.color : '#333', opacity: isOn ? '1' : '0.4',
+      color: isOn ? ft.color : '#555', opacity: isOn ? '1' : '0.5',
       transition: 'opacity 0.15s',
     });
     btn.addEventListener('click', () => {
