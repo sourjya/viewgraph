@@ -55,7 +55,12 @@ build_firefox() {
   echo "[build] Firefox ZIP: extension/.output/viewgraph-firefox-${VERSION}.zip"
 }
 
-echo "=== ViewGraph Extension Build v$VERSION ===" | tee "$LOG_FILE"
+echo "" | tee "$LOG_FILE"
+echo -e "  \033[38;5;99m┌──────────────────────────────────────────┐\033[0m" | tee -a "$LOG_FILE"
+echo -e "  \033[38;5;99m│\033[0m  \033[1m\033[38;5;141m</>\033[0m  \033[1mViewGraph Build\033[0m \033[38;5;245mv${VERSION}\033[0m" | tee -a "$LOG_FILE"
+echo -e "  \033[38;5;99m│\033[0m  \033[38;5;245mExtension packager for Chrome + Firefox\033[0m" | tee -a "$LOG_FILE"
+echo -e "  \033[38;5;99m└──────────────────────────────────────────┘\033[0m" | tee -a "$LOG_FILE"
+echo "" | tee -a "$LOG_FILE"
 echo "Started: $(date -Iseconds)" | tee -a "$LOG_FILE"
 
 case "$TARGET" in
