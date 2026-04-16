@@ -22,6 +22,7 @@ import { flashElement } from './ui/element-flash.js';
 
 /** Attribute used on all annotate-mode DOM elements for cleanup/exclusion. */
 import { ATTR } from './selector.js';
+import { crosshairIcon, tagIcon } from './sidebar/icons.js';
 
 // Re-export ATTR so existing consumers can import from either location
 export { ATTR };
@@ -223,7 +224,7 @@ function updateTooltip(el, rect) {
   const line1 = document.createElement('div');
   Object.assign(line1.style, { display: 'flex', alignItems: 'center', gap: '5px' });
   const icon1 = document.createElement('span');
-  icon1.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>';
+  icon1.appendChild(crosshairIcon(12, '#93c5fd'));
   Object.assign(icon1.style, { flexShrink: '0', display: 'flex' });
   const segments = breadcrumb.split(' > ');
   const text1 = document.createElement('span');
@@ -245,7 +246,7 @@ function updateTooltip(el, rect) {
   const line2 = document.createElement('div');
   Object.assign(line2.style, { display: 'flex', alignItems: 'center', gap: '5px' });
   const icon2 = document.createElement('span');
-  icon2.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1" fill="#6b7280"/></svg>';
+  icon2.appendChild(tagIcon(12, '#6b7280'));
   Object.assign(icon2.style, { flexShrink: '0', display: 'flex' });
   const text2 = document.createElement('span');
   text2.textContent = meta;

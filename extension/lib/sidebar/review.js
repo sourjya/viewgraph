@@ -14,6 +14,8 @@ import { ATTR } from '../selector.js';
 import { resolveType, getBadgeColor, getBadgeIcon, getFilterIcon } from '../annotation-types.js';
 import { discoverServer } from '../constants.js';
 import { KEYS, set as storageSet } from '../storage.js';
+import { trashIcon, cameraIcon, closeIcon, checkIcon, circleIcon } from './icons.js';
+import { FONT } from './styles.js';
 
 /**
  * Render the review list: pending requests, filter tabs, type toggles,
@@ -42,7 +44,7 @@ import { KEYS, set as storageSet } from '../storage.js';
  * @param {function} callbacks.onRequestDecline - Decline a capture request
  */
 export function renderReviewList(list, tabContainer, sidebarEl, state, callbacks) {
-  list.innerHTML = '';
+  list.replaceChildren();
 
   const { annotations: anns, pendingRequests, activeFilter, activeTypeFilters, agentName } = state;
 
@@ -125,7 +127,7 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
     tab.addEventListener('click', () => { callbacks.onFilterChange(key); });
     tabBar.appendChild(tab);
   }
-  tabContainer.innerHTML = '';
+  tabContainer.replaceChildren();
   tabContainer.appendChild(tabBar);
 
   // Type filter toggles: [bug] [idea] [diagnostic] [note]
@@ -159,14 +161,14 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
   // Trash icon - clear all annotations
   const trashBtn = document.createElement('button');
   trashBtn.setAttribute(ATTR, 'trash');
-  trashBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';
+  trashBtn.appendChild(trashIcon(12, '#666'));
   trashBtn.title = 'Clear all annotations';
   Object.assign(trashBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
     padding: '6px 8px', display: 'flex', alignItems: 'center', flexShrink: '0',
   });
-  trashBtn.addEventListener('mouseenter', () => { trashBtn.querySelector('svg').setAttribute('stroke', '#f87171'); });
-  trashBtn.addEventListener('mouseleave', () => { trashBtn.querySelector('svg').setAttribute('stroke', '#666'); });
+  trashBtn.addEventListener('mouseenter', () => { trashBtn.querySelector('svg')?.setAttribute('stroke', '#f87171'); });
+  trashBtn.addEventListener('mouseleave', () => { trashBtn.querySelector('svg')?.setAttribute('stroke', '#666'); });
   trashBtn.addEventListener('click', () => {
     if (!anns.length) return;
     showClearConfirmation(anns.length, callbacks);
@@ -197,7 +199,7 @@ function showClearConfirmation(count, callbacks) {
     fontFamily: 'system-ui, sans-serif', boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
   });
   const icon = document.createElement('div');
-  icon.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';
+  icon.appendChild(trashIcon(28, '#f87171'));
   Object.assign(icon.style, { marginBottom: '8px' });
   const msg = document.createElement('div');
   msg.textContent = `Clear ${count} annotation${count > 1 ? 's' : ''}?`;
@@ -248,7 +250,7 @@ function createRequestEntry(req, callbacks) {
   Object.assign(btnRow.style, { display: 'flex', gap: '4px', marginLeft: 'auto', flexShrink: '0' });
 
   const capBtn = document.createElement('button');
-  capBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>';
+  capBtn.appendChild(cameraIcon(16));
   capBtn.title = 'Capture now';
   Object.assign(capBtn.style, {
     padding: '5px', border: 'none', borderRadius: '6px',
@@ -257,7 +259,7 @@ function createRequestEntry(req, callbacks) {
   capBtn.addEventListener('click', () => { callbacks.onRequestCapture(req, entry, capBtn); });
 
   const decBtn = document.createElement('button');
-  decBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+  decBtn.appendChild(closeIcon(16, 'currentColor'));
   decBtn.title = 'Decline capture request';
   Object.assign(decBtn.style, {
     padding: '5px', border: '1px solid #333', borderRadius: '6px',
@@ -453,13 +455,13 @@ function createEntry(ann, callbacks) {
 
   if (ann.resolved) {
     const check = document.createElement('span');
-    check.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    check.appendChild(checkIcon(12, '#4ade80'));
     Object.assign(check.style, { padding: '2px', flexShrink: '0' });
     entry.append(label, check);
   } else {
     const resolveBtn = document.createElement('button');
     resolveBtn.setAttribute(ATTR, 'btn');
-    resolveBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>';
+    resolveBtn.appendChild(circleIcon(12, '#666'));
     resolveBtn.title = 'Mark resolved';
     Object.assign(resolveBtn.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', flexShrink: '0' });
     resolveBtn.addEventListener('click', (e) => {
@@ -469,7 +471,7 @@ function createEntry(ann, callbacks) {
 
     const del = document.createElement('button');
     del.setAttribute(ATTR, 'btn');
-    del.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+    del.appendChild(closeIcon(12, '#666'));
     Object.assign(del.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', flexShrink: '0' });
     del.addEventListener('click', (e) => { e.stopPropagation(); callbacks.onRemove(ann.id); });
 

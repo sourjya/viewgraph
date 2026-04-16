@@ -8,6 +8,7 @@
  */
 
 import { ATTR } from '../selector.js';
+import { chevronLeftIcon } from './icons.js';
 // import { discoverServer, getAgentName, fetchConfig } from '../constants.js';
 
 /**
@@ -30,7 +31,7 @@ export function createSettings() {
     padding: '10px 12px', borderBottom: '1px solid #333',
   });
   const backBtn = document.createElement('button');
-  backBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+  backBtn.appendChild(chevronLeftIcon(18, '#a5b4fc'));
   Object.assign(backBtn.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '4px', display: 'flex', borderRadius: '4px' });
   backBtn.addEventListener('click', () => hide());
   const title = document.createElement('span');
@@ -154,7 +155,10 @@ export function createSettings() {
       try {
         const res = await fetch(`http://127.0.0.1:${port}/health`, { signal: AbortSignal.timeout(2000) });
         if (res.ok) {
-          serverLine.innerHTML = `<span style="color:#4ade80">\u25cf</span> Connected (localhost:${port})`;
+          const dot = document.createElement('span');
+          dot.style.color = '#4ade80';
+          dot.textContent = '\u25cf';
+          serverLine.replaceChildren(dot, document.createTextNode(` Connected (localhost:${port})`));
           try {
             const info = await fetch(`http://127.0.0.1:${port}/info`, { signal: AbortSignal.timeout(2000) }).then((r) => r.json());
             renderProjectInfo(info);
@@ -163,7 +167,10 @@ export function createSettings() {
         }
       } catch { /* try next port */ }
     }
-    serverLine.innerHTML = '<span style="color:#f87171">\u25cf</span> MCP server offline';
+    const offDot = document.createElement('span');
+    offDot.style.color = '#f87171';
+    offDot.textContent = '\u25cf';
+    serverLine.replaceChildren(offDot, document.createTextNode(' MCP server offline'));
   })();
 
   let visible = false;
