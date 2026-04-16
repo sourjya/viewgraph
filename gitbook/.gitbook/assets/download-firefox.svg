@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 56" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="btn-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+    <linearGradient id="ff-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff9640"/>
+      <stop offset="100%" stop-color="#ff3b30"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Button background -->
+  <rect width="320" height="56" rx="12" fill="url(#btn-bg)" filter="url(#shadow)"/>
+
+  <!-- Firefox logo (simplified flame) -->
+  <circle cx="32" cy="28" r="16" fill="url(#ff-grad)"/>
+  <path d="M28 16c-1 3 0 5 2 7 1-3 4-4 6-3-1-2-3-4-6-4-1 0-2 0-2 0z" fill="#ffbd4f"/>
+  <circle cx="32" cy="30" r="8" fill="#3b1f8e" opacity="0.3"/>
+  <path d="M24 28c0-5 4-9 8-10 0 2 1 4 3 5 2 1 4 0 5-1 1 2 1 4 0 6-1 3-4 5-8 5-5 0-8-3-8-5z" fill="#ff9640"/>
+
+  <!-- ViewGraph icon (code brackets) -->
+  <g transform="translate(60, 14)">
+    <polyline points="10 22 2 14 10 6" fill="none" stroke="#c7d2fe" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="18 6 26 14 18 22" fill="none" stroke="#c7d2fe" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Text -->
+  <text x="96" y="26" fill="#ffffff" font-size="11" font-weight="600" letter-spacing="0.5" opacity="0.85">INSTALL VIEWGRAPH FOR</text>
+  <text x="96" y="44" fill="#ffffff" font-size="16" font-weight="800" letter-spacing="0.3">Firefox</text>
+
+  <!-- Download arrow icon -->
+  <g transform="translate(280, 16)">
+    <line x1="12" y1="4" x2="12" y2="18" stroke="#c7d2fe" stroke-width="2.5" stroke-linecap="round"/>
+    <polyline points="6 13 12 19 18 13" fill="none" stroke="#c7d2fe" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="4" y1="22" x2="20" y2="22" stroke="#c7d2fe" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>
