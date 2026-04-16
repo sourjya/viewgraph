@@ -128,11 +128,11 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         : path.dirname(absCaptures);
       let agent;
       try { agent = readFileSync(path.resolve(projectRoot, '.viewgraph', '.agent'), 'utf-8').trim(); } catch { /* not set */ }
-      let urlPatterns = [];
+      let urlPatterns = ['localhost'];
       try {
         const cfg = JSON.parse(readFileSync(path.resolve(projectRoot, '.viewgraph', 'config.json'), 'utf-8'));
-        urlPatterns = cfg.urlPatterns || [];
-      } catch { /* no config */ }
+        urlPatterns = cfg.urlPatterns || ['localhost'];
+      } catch { /* no config - use default localhost pattern */ }
       return json(res, 200, { capturesDir: absCaptures, projectRoot, agent, urlPatterns, serverVersion: SERVER_VERSION });
     }
 
@@ -232,6 +232,18 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       const filename = generateFilename(capture.metadata);
       const safePath = validateCapturePath(filename, targetDir);
       await writeFile(safePath, JSON.stringify(capture, null, 2));
+
+      // Auto-learn: generate config.json on first capture if none exists
+      try {
+        const configFile = path.resolve(path.dirname(targetDir), 'config.json');
+        if (!existsSync(configFile) && capture.metadata?.url) {
+          const captureUrl = new URL(capture.metadata.url);
+          const pattern = `${captureUrl.hostname}${captureUrl.port ? ':' + captureUrl.port : ''}`;
+          const autoConfig = { urlPatterns: [pattern], autoAudit: false, smartSuggestions: true };
+          writeFileSync(configFile, JSON.stringify(autoConfig, null, 2));
+          console.error(`${LOG_PREFIX} Auto-configured: ${configFile} (pattern: ${pattern})`);
+        }
+      } catch { /* best effort - non-blocking */ }
 
       // Check if this completes a pending request
       const match = queue.findByUrl(capture.metadata.url);
