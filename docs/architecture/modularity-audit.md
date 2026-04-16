@@ -288,3 +288,111 @@ export function serializeAnnotation(ann) {
 6. Grep for remaining `ann.diagnostic` / `ann.category.includes('idea')` checks and replace
 
 This should be done as part of the F14 sidebar decomposition, not as a separate effort.
+
+
+## Extension Directory Reorganization
+
+### Current State
+
+43 files flat in `extension/lib/`. No grouping by domain.
+
+### Proposed Structure
+
+```
+extension/lib/
+  annotate.js              # Core annotation state (stays at root - used everywhere)
+  constants.js             # Server discovery, config helpers
+  selector.js              # ATTR constant, CSS selector builder
+  storage.js               # chrome.storage wrapper
+  safe-collect.js          # Error boundary for collectors
+  enrichment.js            # Collector orchestrator
+  network-grouper.js       # Network request grouping
+  url-checks.js            # URL validation utilities
+  ws-client.js             # WebSocket client
+
+  annotation-types.js      # Type registry (F13)
+  annotation-panel.js      # Floating comment panel
+  annotation-sidebar.js    # Core sidebar orchestrator (shrinking via F14)
+
+  sidebar/                 # Sidebar sub-modules (F14)
+    help.js                # Help card with shortcuts
+    strip.js               # Collapsed strip
+    sync.js                # Resolution/request polling
+    settings.js            # Settings screen (Phase 2)
+    inspect.js             # Inspect tab diagnostics (Phase 2)
+    captures.js            # Captures + baselines (Phase 2)
+    review.js              # Annotation list rendering (Phase 2)
+
+  collectors/              # 14 enrichment collectors
+    animation.js
+    axe.js
+    breakpoint.js
+    component.js
+    console.js
+    event-listener.js
+    focus.js
+    intersection.js
+    landmark.js
+    network.js
+    performance.js
+    scroll.js
+    stacking.js
+    visibility.js
+
+  capture/                 # DOM capture pipeline
+    traverser.js           # DOM tree walker
+    serializer.js          # Capture JSON builder
+    salience.js            # Element scoring
+    subtree.js             # Focused subtree capture
+    html-snapshot.js       # Full page HTML snapshot
+    screenshot-crop.js     # Annotation screenshot cropping
+    validator.js           # Capture quality checks
+
+  session/                 # Recording and auto-capture
+    session-manager.js     # Session state
+    journey-recorder.js    # SPA navigation detection
+    continuous-capture.js  # Mutation observer auto-capture
+    auto-capture.js        # HMR-triggered capture
+    hmr-detector.js        # Vite/webpack HMR detection
+
+  export/                  # Export formats
+    markdown.js            # Markdown report builder
+    zip.js                 # ZIP archive builder
+
+  ui/                      # Reusable UI components (future)
+    chip-select.js         # Chip/dropdown widget (from annotation-panel)
+    diagnostic-preview.js  # Collapsible diagnostic attachment
+    element-flash.js       # Visual feedback on select
+    element-diagnostics.js # Per-element issue detection
+    keyboard-shortcuts.js  # Shortcut handler
+```
+
+### Migration Rules
+
+1. **One directory at a time.** Start with `collectors/` (14 files, all follow same pattern, no cross-imports between them).
+2. **Update imports immediately.** Every file that imports a moved module gets updated in the same commit.
+3. **Run full test suite after each directory.** No batching moves across directories.
+4. **Update subpath imports in package.json** if using `#lib/` aliases.
+5. **Tests mirror source.** `tests/unit/collectors/` mirrors `lib/collectors/`.
+
+### Migration Order
+
+| Step | Directory | Files | Risk | Effort |
+|---|---|---|---|---|
+| 1 | `collectors/` | 14 | Low - no cross-imports | 30 min |
+| 2 | `capture/` | 7 | Low - linear pipeline | 20 min |
+| 3 | `session/` | 5 | Low - self-contained | 15 min |
+| 4 | `export/` | 2 | Low - leaf modules | 10 min |
+| 5 | `ui/` | 5 | Medium - panel imports | 20 min |
+| 6 | `sidebar/` Phase 2 | 4 | High - core coupling | 4-6 hours |
+
+Steps 1-5 are mechanical moves (rename + update imports). Step 6 requires the CustomEvent system.
+
+### Why This Structure
+
+- **Collectors** are the largest group (14 files) with identical patterns. Grouping them makes the `enrichment.js` orchestrator's imports cleaner.
+- **Capture** pipeline is a linear flow (traverse → score → serialize → validate). Grouping shows the data flow.
+- **Session** modules are all about recording state. Grouping separates them from the capture pipeline.
+- **Export** is a clear output concern. Only 2 files but distinct from everything else.
+- **UI** components are reusable widgets extracted from the panel/sidebar. Grouping enables reuse without circular imports.
+- **Root files** stay at root because they're imported by 10+ other files. Moving them would create deep relative paths.
