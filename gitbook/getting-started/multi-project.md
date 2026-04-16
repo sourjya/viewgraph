@@ -11,7 +11,9 @@ Each project gets its own MCP server on a unique port. The init script handles t
 3. **Server starts:** The MCP server binds to `127.0.0.1:<port>` (localhost only - not accessible from the network)
 4. **Port recorded:** The port is saved in the MCP config file so your AI agent knows where to connect
 
-If all 4 ports are in use, the init script reports an error. In practice, 4 simultaneous projects is the maximum.
+If all 4 ports are in use, the init script reports an error.
+
+**Current limit: 4 simultaneous projects.** The port range 9876-9879 supports up to 4 projects running at the same time. This is a deliberate choice to keep the extension's port scanning fast (4 checks vs scanning hundreds). If you need more than 4 simultaneous projects, stop a server you're not actively using (`pkill -f "server/index.js"`) to free a port. Most developers work on 1-2 projects at a time; the 4-port limit is rarely hit. Expanding the range is on the roadmap if demand warrants it.
 
 ### How the extension finds your server
 

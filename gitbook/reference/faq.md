@@ -30,7 +30,7 @@ Yes. The MCP server runs on Node.js 22+. The extension works in Chrome and Firef
 Partially. The extension runs in your local browser and the MCP server runs in the cloud IDE. They communicate via localhost, so you need port forwarding (Codespaces and Gitpod do this automatically for most ports). The standalone export modes (Copy MD, Download Report) work without any server. The `@viewgraph/playwright` package runs entirely server-side with no extension needed.
 
 ### Can I use it with multiple projects?
-Yes. Each project gets its own server on a different port (9876-9879). The extension routes captures to the correct project automatically. See [Multi-Project Setup](../getting-started/multi-project.md).
+Yes. Up to 4 projects can run simultaneously, each on its own port (9876-9879). The extension detects running servers and routes captures to the correct project automatically. See [Multi-Project Setup](../getting-started/multi-project.md) for details and workarounds if you need more.
 
 ## Usage
 
