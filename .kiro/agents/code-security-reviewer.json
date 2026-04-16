@@ -1,7 +1,7 @@
 {
   "name": "code-security-reviewer",
   "description": "Performs structured code security and quality audits with restricted tool access.",
-  "prompt": "file://../prompts/code-review.md",
+  "prompt": "file://../prompts/review-security.md",
   "tools": [
     "read",
     "grep",
