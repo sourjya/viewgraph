@@ -91,4 +91,18 @@ describe('collectMediaQueries', () => {
     expect(result.active.length).toBeLessThanOrEqual(30);
     expect(result.inactive.length).toBeLessThanOrEqual(30);
   });
+
+  it('(+) detects active media queries from stylesheets', () => {
+    const style = document.createElement('style');
+    style.textContent = '@media (min-width: 0px) { body { color: red; } }';
+    document.head.appendChild(style);
+    const result = collectMediaQueries();
+    expect(result.total).toBeGreaterThanOrEqual(1);
+    style.remove();
+  });
+
+  it('(-) handles cross-origin stylesheet errors', () => {
+    // jsdom doesn't have real cross-origin sheets, but verify no throw
+    expect(() => collectMediaQueries()).not.toThrow();
+  });
 });
