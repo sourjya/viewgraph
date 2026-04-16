@@ -7,13 +7,6 @@
 <p align="center"><em>Built with Kiro, for Kiro - and every MCP-compatible agent.</em></p>
 
 <p align="center">
-  <a href="https://chaoslabz.gitbook.io/viewgraph">Documentation</a> -
-  <a href="https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start">Quick Start</a> -
-  <a href="https://github.com/sourjya/viewgraph">GitHub</a> -
-  <a href="https://www.npmjs.com/package/@viewgraph/core">npm</a>
-</p>
-
-<p align="center">
   <a href="https://chromewebstore.google.com/"><img src="https://img.shields.io/badge/Chrome-Pending-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Chrome Web Store"></a>
   &nbsp;
   <a href="https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/"><img src="https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white" alt="Firefox Add-ons"></a>
@@ -21,6 +14,8 @@
   <a href="https://www.npmjs.com/package/@viewgraph/core"><img src="https://img.shields.io/badge/npm-@viewgraph/core-CB3837?style=for-the-badge&logo=npm&logoColor=white" alt="npm"></a>
   &nbsp;
   <a href="https://chaoslabz.gitbook.io/viewgraph"><img src="https://img.shields.io/badge/Docs-GitBook-blue?style=for-the-badge&logo=gitbook&logoColor=white" alt="Documentation"></a>
+  &nbsp;
+  <a href="https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start"><img src="https://img.shields.io/badge/Quick_Start-5_minutes-green?style=for-the-badge" alt="Quick Start"></a>
 </p>
 
 <p align="center">
