@@ -133,3 +133,26 @@ saveAllBtn.addEventListener('click', () => {
     setTimeout(() => { statusAllEl.style.display = 'none'; }, 2000);
   });
 });
+
+// Version info
+const versionEl = document.getElementById('versionInfo');
+const extVer = chrome.runtime.getManifest?.()?.version || 'unknown';
+versionEl.textContent = `Extension: v${extVer} | Server: checking...`;
+(async () => {
+  for (let port = DEFAULT_PORT; port < DEFAULT_PORT + 4; port++) {
+    try {
+      const res = await fetch(`http://127.0.0.1:${port}/info`, { signal: AbortSignal.timeout(2000) });
+      if (res.ok) {
+        const info = await res.json();
+        versionEl.textContent = `Extension: v${extVer} | Server: v${info.serverVersion || 'unknown'} (port ${port})`;
+        if (info.serverVersion && extVer && extVer < info.serverVersion) {
+          versionEl.style.color = '#f59e0b';
+          versionEl.style.borderColor = '#92400e';
+          versionEl.textContent += ' - rebuild extension';
+        }
+        return;
+      }
+    } catch { /* try next port */ }
+  }
+  versionEl.textContent = `Extension: v${extVer} | Server: not running`;
+})();
