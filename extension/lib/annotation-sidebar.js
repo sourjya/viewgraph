@@ -12,56 +12,11 @@
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
 import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker, MARKER_COLORS, updateSeverity, updateComment } from './annotate.js';
 import { resolveType, getBadgeColor, getBadgeIcon, getFilterIcon } from './annotation-types.js';
+import { createHelpCard } from './sidebar/help.js';
+import { createStrip } from './sidebar/strip.js';
+import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling, pollRequests } from './sidebar/sync.js';
 import { KEYS, get as storageGet, set as storageSet } from './storage.js';
 import { groupRequests, smartPath } from './network-grouper.js';
-
-/**
- * Sync resolved state from the server. Polls /annotations/resolved for the
- * current page URL and updates local annotations that were resolved by Kiro.
- */
-async function syncResolved() {
-  try {
-    const serverUrl = await discoverServer(window.location.href);
-    if (!serverUrl) return;
-    const pageUrl = encodeURIComponent(location.href);
-    const res = await fetch(`${serverUrl}/annotations/resolved?url=${pageUrl}`, { signal: AbortSignal.timeout(3000) });
-    if (!res.ok) return;
-    const { resolved } = await res.json();
-    if (!resolved?.length) return;
-    const anns = getAnnotations();
-    let changed = false;
-    for (const { uuid, resolution } of resolved) {
-      const ann = anns.find((a) => a.uuid === uuid && !a.resolved);
-      if (ann) {
-        ann.resolved = true;
-        ann.resolution = resolution;
-        changed = true;
-      }
-    }
-    if (changed) refresh();
-  } catch { /* server offline - no sync */ }
-}
-
-/** Polling interval for resolution sync (5 seconds). */
-const RESOLUTION_POLL_MS = 5000;
-let resolutionPollTimer = null;
-
-/**
- * Start periodic polling for resolved annotations.
- * Polls every 5 seconds while the sidebar is open.
- */
-function startResolutionPolling() {
-  stopResolutionPolling();
-  resolutionPollTimer = setInterval(syncResolved, RESOLUTION_POLL_MS);
-}
-
-/** Stop periodic resolution polling. */
-function stopResolutionPolling() {
-  if (resolutionPollTimer) {
-    clearInterval(resolutionPollTimer);
-    resolutionPollTimer = null;
-  }
-}
 import { formatMarkdown } from './export-markdown.js';
 import { discoverServer, getAgentName, fetchConfig, updateConfig } from './constants.js';
 import { collectNetworkState } from './network-collector.js';
@@ -78,64 +33,22 @@ import { isRecording, startSession, stopSession, getState } from './session-mana
 import { startJourney, stopJourney } from './journey-recorder.js';
 import { startShortcuts, stopShortcuts } from './keyboard-shortcuts.js';
 import { connect as wsConnect, disconnect as wsDisconnect } from './ws-client.js';
-
 import { ATTR } from './selector.js';
+
+// ──────────────────────────────────────────────
+// Module State
+// ──────────────────────────────────────────────
+
 let sidebarEl = null;
 let hostEl = null;
-let badgeEl = null;
 let collapsed = false;
+let badgeEl = null;
+let _strip = null;
 let _hasCaptured = false;
 let pendingRequests = [];
-let activeFilter = 'open'; // 'all' | 'open' | 'resolved'
-let activeTypeFilters = new Set(['element', 'region', 'page-note', 'idea', 'diagnostic']); // all on by default
-let pollTimer = null;
+let activeFilter = 'open';
+let activeTypeFilters = new Set(['element', 'region', 'page-note', 'idea', 'diagnostic']);
 let bellBtn = null;
-
-/**
- * Poll the server for pending Kiro capture requests.
- * Merges server state with locally cached requests so they survive
- * page navigation. Cached requests are pruned when the server confirms
- * they're completed, declined, or expired.
- */
-async function pollRequests() {
-  try {
-    const serverUrl = await discoverServer(window.location.href);
-    if (!serverUrl) return;
-    const res = await fetch(`${serverUrl}/requests/pending`, { signal: AbortSignal.timeout(3000) });
-    if (!res.ok) return;
-    const data = await res.json();
-    const serverReqs = data.requests || [];
-    // Cache any new requests locally
-    if (serverReqs.length > 0) {
-      await storageSet(KEYS.pendingRequests, serverReqs);
-    } else {
-      // Server has none - clear cache
-      await storageSet(KEYS.pendingRequests, []);
-    }
-    const prev = pendingRequests.length;
-    pendingRequests = serverReqs;
-    if (pendingRequests.length !== prev) refresh();
-  } catch {
-    // Server offline - fall back to cached requests
-    const cached = await storageGet(KEYS.pendingRequests);
-    if (cached && cached.length > 0 && pendingRequests.length === 0) {
-      pendingRequests = cached;
-      refresh();
-    }
-  }
-}
-
-/** Start polling for requests every 5s. */
-function startRequestPolling() {
-  stopRequestPolling();
-  pollRequests();
-  pollTimer = setInterval(pollRequests, 5000);
-}
-
-/** Stop polling. */
-function stopRequestPolling() {
-  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
-}
 
 /** Create and mount the sidebar. */
 export function create() {
@@ -282,113 +195,12 @@ export function create() {
   });
   helpBtn.addEventListener('mouseenter', () => { helpBtn.style.background = 'rgba(255,255,255,0.06)'; });
   helpBtn.addEventListener('mouseleave', () => { helpBtn.style.background = 'transparent'; });
-  helpBtn.addEventListener('click', () => toggleHelpCard());
+  helpBtn.addEventListener('click', () => help.toggle());
   header.insertBefore(helpBtn, collapseBtn);
 
-  // Help card - slides down from header, dismissed with X or Escape
-  const helpCard = document.createElement('div');
-  helpCard.setAttribute(ATTR, 'help-card');
-  Object.assign(helpCard.style, {
-    display: 'none', background: '#1a1a2e', borderBottom: '1px solid #333',
-    padding: '14px 12px', fontSize: '12px', fontFamily: 'system-ui, sans-serif',
-    color: '#c8c8d0', flexShrink: '0', overflow: 'hidden',
-    transition: 'max-height 0.2s ease', maxHeight: '0',
-  });
-
-  // Shortcuts table - no close button, dismiss via ? toggle or Escape
-  const title = document.createElement('div');
-  title.textContent = 'Keyboard Shortcuts';
-  Object.assign(title.style, { fontWeight: '700', fontSize: '13px', color: '#a5b4fc', marginBottom: '10px' });
-  helpCard.appendChild(title);
-
-  const shortcuts = [
-    ['Esc', 'Close current panel or exit'],
-    ['Ctrl', 'Enter', 'Send to Agent'],
-    ['Ctrl', 'Shift', 'C', 'Copy Markdown'],
-    ['1', '2', '3', 'Severity: critical / major / minor'],
-    ['Del', 'Delete selected annotation'],
-    ['Ctrl', 'Shift', 'B', 'Toggle collapse sidebar'],
-    ['Ctrl', 'Shift', 'X', 'Close panel entirely'],
-  ];
-
-  /** Render a single keycap-styled span. */
-  function keycap(text) {
-    const k = document.createElement('span');
-    k.textContent = text;
-    Object.assign(k.style, {
-      display: 'inline-block', padding: '2px 6px', borderRadius: '4px',
-      border: '1px solid #555', background: '#2a2a3a', color: '#e2e8f0',
-      fontFamily: 'monospace', fontSize: '11px', fontWeight: '600',
-      lineHeight: '1.4', minWidth: '20px', textAlign: 'center',
-    });
-    return k;
-  }
-
-  const table = document.createElement('div');
-  Object.assign(table.style, { display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '6px 14px', marginBottom: '12px', alignItems: 'center' });
-  for (const row of shortcuts) {
-    const desc = row[row.length - 1];
-    const keys = row.slice(0, -1);
-    const keyCell = document.createElement('span');
-    Object.assign(keyCell.style, { display: 'flex', gap: '3px', alignItems: 'center' });
-    for (let i = 0; i < keys.length; i++) {
-      keyCell.appendChild(keycap(keys[i]));
-      if (i < keys.length - 1) {
-        const plus = document.createElement('span');
-        plus.textContent = '+';
-        Object.assign(plus.style, { color: '#666', fontSize: '10px' });
-        keyCell.appendChild(plus);
-      }
-    }
-    const d = document.createElement('span');
-    d.textContent = desc;
-    Object.assign(d.style, { color: '#9ca3af', fontSize: '12px' });
-    table.append(keyCell, d);
-  }
-  helpCard.appendChild(table);
-
-  // Links
-  const links = [
-    // SVG icons: book, keyboard, bug (Feather-style, 12px)
-    ['<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>',
-      'Documentation', 'https://chaoslabz.gitbook.io/viewgraph'],
-    ['<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a3 3 0 00-3 3v12a3 3 0 003 3 3 3 0 003-3 3 3 0 00-3-3H6a3 3 0 00-3 3 3 3 0 003 3 3 3 0 003-3V6a3 3 0 00-3-3"/></svg>',
-      'All Shortcuts', 'https://chaoslabz.gitbook.io/viewgraph/reference/keyboard-shortcuts'],
-    ['<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
-      'Report a Bug', 'https://github.com/sourjya/viewgraph/issues'],
-  ];
-  const linkRow = document.createElement('div');
-  Object.assign(linkRow.style, { display: 'flex', gap: '12px', flexWrap: 'wrap' });
-  for (const [iconSvg, label, url] of links) {
-    const a = document.createElement('a');
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener';
-    Object.assign(a.style, { color: '#6366f1', fontSize: '11px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' });
-    const ico = document.createElement('span');
-    ico.innerHTML = iconSvg;
-    Object.assign(ico.style, { display: 'inline-flex', flexShrink: '0' });
-    const txt = document.createElement('span');
-    txt.textContent = label;
-    a.append(ico, txt);
-    a.addEventListener('mouseenter', () => { txt.style.textDecoration = 'underline'; });
-    a.addEventListener('mouseleave', () => { txt.style.textDecoration = 'none'; });
-    linkRow.appendChild(a);
-  }
-  helpCard.appendChild(linkRow);
-
-  let helpVisible = false;
-  function toggleHelpCard() { helpVisible ? hideHelpCard() : showHelpCard(); }
-  function showHelpCard() {
-    helpVisible = true;
-    helpCard.style.display = 'block';
-    requestAnimationFrame(() => { helpCard.style.maxHeight = '400px'; });
-  }
-  function hideHelpCard() {
-    helpVisible = false;
-    helpCard.style.maxHeight = '0';
-    setTimeout(() => { if (!helpVisible) helpCard.style.display = 'none'; }, 200);
-  }
+  // Help card - extracted to sidebar/help.js
+  const help = createHelpCard();
+  const helpCard = help.element;
 
   const list = document.createElement('div');
   list.setAttribute(ATTR, 'list');
@@ -1572,59 +1384,12 @@ export function create() {
   shadow.append(scrollStyle, sidebarEl);
   document.documentElement.appendChild(hostEl);
 
-  // Collapsed strip - vertical: VG icon + <, separator, tool icons, separator, chat count
-  badgeEl = document.createElement('div');
-  badgeEl.setAttribute(ATTR, 'collapse-badge');
-  Object.assign(badgeEl.style, {
-    position: 'fixed', top: '60px', right: '0', zIndex: '2147483646',
-    display: 'none', flexDirection: 'column', gap: '2px',
-    padding: '6px 5px', borderRadius: '10px 0 0 10px',
-    background: '#252536', border: '1px solid #333', borderRight: 'none',
-    fontFamily: 'system-ui, sans-serif',
-    boxShadow: '-2px 0 8px rgba(0,0,0,0.3)', alignItems: 'center',
-  });
-
-  // VG icon at top of strip
-  const stripIcon = document.createElement('img');
-  stripIcon.src = chrome.runtime.getURL('icon-16.png');
-  stripIcon.width = 28;
-  stripIcon.height = 28;
-  Object.assign(stripIcon.style, { cursor: 'pointer', padding: '2px' });
-  stripIcon.title = 'ViewGraph';
-  stripIcon.addEventListener('click', () => { expand(); setCaptureMode(null); updateModeButtons(); });
-  badgeEl.appendChild(stripIcon);
-
-  // Expand chevron next to icon
-  const expandBtn = document.createElement('button');
-  expandBtn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
-  Object.assign(expandBtn.style, {
-    border: 'none', background: 'transparent', color: '#a5b4fc',
-    cursor: 'pointer', padding: '2px', borderRadius: '4px', display: 'flex',
-  });
-  expandBtn.title = 'Expand sidebar';
-  expandBtn.addEventListener('click', () => { expand(); setCaptureMode(null); updateModeButtons(); });
-  badgeEl.appendChild(expandBtn);
-
-  // Separator 1
-  const stripSep1 = document.createElement('div');
-  Object.assign(stripSep1.style, { height: '1px', width: '100%', background: '#333', margin: '3px 0' });
-  badgeEl.appendChild(stripSep1);
-
-  // Mode icons in collapsed strip
-  const stripButtons = {};
-  for (const [key, icon] of Object.entries(MODE_ICONS)) {
-    const btn = document.createElement('button');
-    btn.innerHTML = icon.replace(/width="16" height="16"/, 'width="28" height="28"');
-    btn.title = MODE_HINTS[key];
-    btn.dataset.mode = key;
-    Object.assign(btn.style, {
-      border: 'none', background: 'transparent', color: '#9ca3af',
-      cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex',
-    });
-    btn.addEventListener('mouseenter', () => { if (getCaptureMode() !== key) btn.style.background = '#2a2a4a'; });
-    btn.addEventListener('mouseleave', () => { if (getCaptureMode() !== key) btn.style.background = 'transparent'; });
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
+  // Collapsed strip - extracted to sidebar/strip.js
+  const strip = createStrip({
+    onExpand: () => { expand(); setCaptureMode(null); updateModeButtons(); },
+    modeIcons: MODE_ICONS,
+    modeHints: MODE_HINTS,
+    onModeClick: (key) => {
       if (key === 'page') {
         const ann = addPageNote();
         expand();
@@ -1635,33 +1400,18 @@ export function create() {
       const mode = CAPTURE_MODES[key.toUpperCase()];
       setCaptureMode(getCaptureMode() === mode ? null : mode);
       updateModeButtons();
-      updateStripButtons();
-    });
-    stripButtons[key] = btn;
-    badgeEl.appendChild(btn);
-  }
-
-  // Separator 2 (before chat count)
-  const stripSep2 = document.createElement('div');
-  Object.assign(stripSep2.style, { height: '1px', width: '100%', background: '#333', margin: '3px 0' });
-  badgeEl.appendChild(stripSep2);
-
-  /** Sync collapsed strip mode button active states. */
-  function updateStripButtons() {
-    const current = getCaptureMode();
-    for (const [key, btn] of Object.entries(stripButtons)) {
-      const isActive = current === key;
-      btn.style.background = isActive ? '#6366f1' : 'transparent';
-      btn.style.color = isActive ? '#fff' : '#9ca3af';
-    }
-  }
+      strip.updateModeButtons(getCaptureMode());
+    },
+  });
+  badgeEl = strip.element;
+  _strip = strip;
 
   document.documentElement.appendChild(badgeEl);
 
   refresh();
-  syncResolved();
-  startResolutionPolling();
-  startRequestPolling();
+  syncResolved(() => refresh());
+  startResolutionPolling(() => refresh());
+  startRequestPolling((reqs) => { pendingRequests = reqs || []; });
 
   // Connect WebSocket for real-time annotation sync
   (async () => {
@@ -1697,7 +1447,7 @@ export function create() {
   // Wire keyboard shortcuts for annotate mode actions
   startShortcuts({
     onEscape: () => {
-      if (helpVisible) { hideHelpCard(); return; }
+      if (help.isVisible()) { help.hide(); return; }
       if (settingsVisible) { hideSettings(); return; }
       hideMarkers();
       stopAnnotate();
@@ -1743,25 +1493,7 @@ function toggleCollapse() {
 }
 
 function updateBadgeCount() {
-  if (!badgeEl) return;
-  const count = getAnnotations().filter((a) => !a.resolved).length;
-  // Always show chat bubble count indicator at the bottom of the strip
-  let countEl = badgeEl.querySelector('[data-vg-badge-count]');
-  if (!countEl) {
-    countEl = document.createElement('div');
-    countEl.setAttribute('data-vg-badge-count', '');
-    Object.assign(countEl.style, {
-      alignSelf: 'center', marginTop: '2px', position: 'relative',
-      width: '32px', height: '32px',
-    });
-    badgeEl.appendChild(countEl);
-  }
-  const fill = count > 0 ? '#6366f1' : '#333';
-  const stroke = count > 0 ? '#818cf8' : '#555';
-  countEl.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">'
-    + `<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill="${fill}" stroke="${stroke}" stroke-width="1.2"/>`
-    + `<text x="12" y="14" text-anchor="middle" fill="#fff" font-family="system-ui,sans-serif" font-size="10" font-weight="700">${count}</text>`
-    + '</svg>';
+  if (_strip) _strip.updateCount();
 }
 
 /** Refresh the sidebar list from current annotations. */
@@ -2299,6 +2031,7 @@ export function destroy() {
   if (sidebarEl) { sidebarEl = null; }
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }
   bellBtn = null;
+  _strip = null;
   collapsed = false;
   _hasCaptured = false;
   pendingRequests = [];
