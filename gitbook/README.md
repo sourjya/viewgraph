@@ -8,7 +8,7 @@ ViewGraph is the UI context layer for AI coding agents. A browser extension capt
 
 <!-- VIDEO: Add YouTube embed via GitBook editor - do not edit this section from GitHub -->
 
-[![Firefox Extension](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/) [![npm](https://img.shields.io/badge/npm-@viewgraph/core-CB3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/@viewgraph/core) [![GitHub](https://img.shields.io/badge/GitHub-Star_on_GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sourjya/viewgraph)
+[![Chrome Extension](https://img.shields.io/badge/Chrome-Pending-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/) [![Firefox Extension](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/) [![npm](https://img.shields.io/badge/npm-@viewgraph/core-CB3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/@viewgraph/core) [![GitHub](https://img.shields.io/badge/GitHub-Star_on_GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sourjya/viewgraph)
 
 ## The Problem
 
