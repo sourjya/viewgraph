@@ -349,3 +349,44 @@ A git pre-commit hook (`scripts/pre-commit.sh`) runs `npm run lint` automaticall
 2. Fix all errors before committing - warnings are allowed but errors block
 3. Never use `--no-verify` to bypass the hook
 4. If the hook isn't installed, run: `cp scripts/pre-commit.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit`
+
+
+## Centralized Configuration & Constants -- MANDATORY
+
+**ZERO embedded literals.** All configuration values, magic numbers, string constants, and environment-dependent settings must live in dedicated, centralized locations.
+
+### Rules
+
+1. **No string literals in business logic** -- all go in constants files or config.
+2. **No magic numbers** -- every numeric value with business meaning gets a named constant.
+3. **Config reads from environment** -- all environment-dependent values go through a single config module.
+4. **Constants are grouped by domain** -- not one giant constants file.
+5. **Feature-scoped constants stay in the feature** -- graduates to shared when a second consumer appears.
+6. **Enums/const objects over string literals** -- use `as const` or similar for fixed option sets.
+7. **Single source of truth** -- never duplicate constants across server and extension.
+
+### Where Constants Live
+
+| Domain | File | Examples |
+|---|---|---|
+| Server identity | `server/src/constants.js` | `SERVER_VERSION`, `LOG_PREFIX`, `PROJECT_NAME` |
+| WS messages | `extension/lib/ws-message-types.js` + `server/src/ws-message-types.js` | `WS_MESSAGES.ANNOTATION_RESOLVED` |
+| Sidebar events | `extension/lib/sidebar/events.js` | `EVENTS.REFRESH`, `EVENTS.DESTROY` |
+| Annotation types | `extension/lib/annotation-types.js` | `resolveType()`, `getBadgeColor()` |
+| DOM attributes | `extension/lib/selector.js` | `ATTR` constant |
+| Port range | `extension/lib/constants.js` | `SERVER_BASE_URL`, port scan range |
+| Test values | `extension/tests/helpers.js` | `VERSION` from package.json |
+
+### What Counts as a Violation
+
+- `if (msg.type === 'annotation:resolved')` -- use `WS_MESSAGES.ANNOTATION_RESOLVED`
+- `port: 9876` scattered in code -- use constant from config
+- `'0.3.4'` in test files -- use `VERSION` from helpers
+- `'#6366f1'` repeated 20 times -- use style constant
+- `5000` as poll interval -- use named constant `RESOLUTION_POLL_MS`
+
+### Tests Follow the Same Rules
+
+- Test files import constants from `tests/helpers.js` or source constants files
+- No hardcoded version numbers, URLs, or config values in test assertions
+- Mock data uses factories or shared fixtures, not inline objects
