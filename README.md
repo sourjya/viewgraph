@@ -7,7 +7,7 @@
 <p align="center"><em>Built with Kiro, for Kiro - and every MCP-compatible agent.</em></p>
 
 <p align="center">
-  <a href="https://chromewebstore.google.com/"><img src="https://img.shields.io/badge/Chrome-Pending-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Chrome Web Store"></a>
+  <a href="https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj"><img src="https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Chrome Web Store"></a>
   &nbsp;
   <a href="https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/"><img src="https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white" alt="Firefox Add-ons"></a>
   &nbsp;

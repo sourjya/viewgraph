@@ -48,7 +48,7 @@ Updated manually at milestones. First entry: v0.1.0 beta launch.
 | GitHub | Public (github.com/sourjya/viewgraph) |
 | npm (@viewgraph/core) | Published v0.3.0 |
 | npm (@viewgraph/playwright) | Published v0.3.0 |
-| Chrome Web Store | Submitted, pending review |
+| Chrome Web Store | Live: chromewebstore.google.com |
 | Firefox Add-ons | Live, v0.3.3 submitted |
 | GitBook docs | Live (chaoslabz.gitbook.io/viewgraph) |
 | YouTube channel | Live (Evolving with AI) |
