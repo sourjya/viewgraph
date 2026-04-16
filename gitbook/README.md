@@ -8,7 +8,7 @@ ViewGraph is the UI context layer for AI coding agents. A browser extension capt
 
 <!-- VIDEO: Add YouTube embed via GitBook editor - do not edit this section from GitHub -->
 
-[![Chrome - Pending](https://img.shields.io/badge/Chrome_Extension-Pending_Review-blue?style=flat-square)](https://chromewebstore.google.com/) [![Firefox - Install](https://img.shields.io/badge/Firefox_Extension-Install_Now-orange?style=flat-square)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/) [![npm](https://img.shields.io/badge/npm-@viewgraph/core-red?style=flat-square)](https://www.npmjs.com/package/@viewgraph/core) [![GitHub](https://img.shields.io/badge/GitHub-Star_Repo-black?style=flat-square)](https://github.com/sourjya/viewgraph)
+[![Chrome - Pending](https://img.shields.io/badge/Chrome_Extension-Pending_Review-blue?style=flat-square)](https://chromewebstore.google.com/) [![Firefox - Install](https://img.shields.io/badge/Firefox_Extension-Install_Now-orange?style=flat-square)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/) [![npm](https://img.shields.io/badge/npm-@viewgraph/core-red?style=flat-square)](https://www.npmjs.com/package/@viewgraph/core) [![GitHub](https://img.shields.io/badge/GitHub-Source_Code-black?style=flat-square)](https://github.com/sourjya/viewgraph)
 
 ## The Problem
 
