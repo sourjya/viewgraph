@@ -1,5 +1,7 @@
 # Installation
 
+[![Firefox Extension](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/) [![npm](https://img.shields.io/badge/npm-@viewgraph/core-CB3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/@viewgraph/core)
+
 Two ways to set up ViewGraph depending on your goal.
 
 ## For Users: Add ViewGraph to Your Project
