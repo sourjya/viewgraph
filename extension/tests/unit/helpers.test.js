@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { VERSION } from '../helpers.js';
+import { VERSION } from '#tests/helpers.js';
 
 describe('test helpers', () => {
   it('(+) VERSION matches semver format', () => {

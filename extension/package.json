@@ -5,7 +5,9 @@
   "type": "module",
   "imports": {
     "#lib/*.js": "./lib/*.js",
-    "#lib/*": "./lib/*"
+    "#lib/*": "./lib/*",
+    "#tests/*.js": "./tests/*.js",
+    "#tests/*": "./tests/*"
   },
   "scripts": {
     "dev": "wxt",

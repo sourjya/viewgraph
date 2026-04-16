@@ -6,7 +6,7 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createSettings } from '#lib/sidebar/settings.js';
-import { VERSION } from '../../helpers.js';
+import { VERSION } from '#tests/helpers.js';
 
 beforeEach(() => {
   globalThis.chrome = {
