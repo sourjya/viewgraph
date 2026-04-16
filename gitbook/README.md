@@ -20,7 +20,7 @@ AI coding agents can read your source code. They cannot see your rendered UI. Th
 - Visual regressions **slip through** because tests check behavior, not structure
 - QA handoffs require **back-and-forth** to clarify what's actually broken
 
-These problems cost teams hours per bug across development, testing, QA, and release. ViewGraph solves [23 of them](why-viewgraph.md).
+These problems cost teams hours per bug across development, testing, QA, and release. ViewGraph solves [23 of them](why-viewgraph.md#common-problems).
 
 ## How ViewGraph Solves This
 
