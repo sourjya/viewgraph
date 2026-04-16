@@ -157,7 +157,7 @@ async function refreshInspect(container, callbacks) {
   // Breakpoint indicator
   const bp = collectBreakpoints();
   const bpRow = document.createElement('div');
-  Object.assign(bpRow.style, { display: 'flex', alignItems: 'center', gap: '8px' });
+  Object.assign(bpRow.style, { display: 'flex', alignItems: 'center', gap: '8px', background: '#16161e', padding: '6px 10px', borderRadius: '6px', marginBottom: '4px' });
   const bpTitle = document.createElement('span');
   bpTitle.textContent = 'VIEWPORT';
   Object.assign(bpTitle.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px' });
