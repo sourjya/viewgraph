@@ -38,6 +38,7 @@
 * [Keyboard Shortcuts](reference/keyboard-shortcuts.md)
 * [Prompt Shortcuts](reference/prompt-shortcuts.md)
 * [Security](reference/security.md)
+* [Changelog](reference/changelog.md)
 * [Roadmap](reference/roadmap.md)
 * [FAQ](reference/faq.md)
 * [License (AGPL-3.0)](reference/license.md)
