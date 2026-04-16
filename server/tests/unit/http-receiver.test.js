@@ -8,7 +8,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createHttpReceiver } from '#src/http-receiver.js';
 import { createRequestQueue } from '#src/request-queue.js';
-import { readFileSync, mkdirSync, rmSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from 'fs';
 import path from 'path';
 import os from 'os';
 
@@ -431,5 +431,68 @@ describe('config endpoints', () => {
     const raw = readFileSync(configFile, 'utf-8');
     const config = JSON.parse(raw);
     expect(config.autoAudit).toBe(true);
+  });
+});
+
+// ──────────────────────────────────────────────
+// F16: Zero-config install
+// ──────────────────────────────────────────────
+
+describe('zero-config defaults', () => {
+  it('(+) GET /info returns localhost urlPatterns when no config.json', async () => {
+    const projectDir = path.join(os.tmpdir(), `vg-zc-${Date.now()}`);
+    const vgCaptures = path.join(projectDir, '.viewgraph', 'captures');
+    mkdirSync(vgCaptures, { recursive: true });
+    const q = createRequestQueue({ maxSize: 10, ttlMs: 60000 });
+    const r = createHttpReceiver({ queue: q, capturesDir: vgCaptures, port: 0 });
+    const p = await r.start();
+    try {
+      const res = await req(p, 'GET', '/info');
+      expect(res.status).toBe(200);
+      expect(res.body.urlPatterns).toContain('localhost');
+    } finally {
+      r.stop();
+    }
+  });
+
+  it('(+) POST /captures auto-generates config.json on first capture', async () => {
+    const projectDir = path.join(os.tmpdir(), `vg-al-${Date.now()}`);
+    const vgCaptures = path.join(projectDir, '.viewgraph', 'captures');
+    mkdirSync(vgCaptures, { recursive: true });
+    const q = createRequestQueue({ maxSize: 10, ttlMs: 60000 });
+    const r = createHttpReceiver({ queue: q, capturesDir: vgCaptures, port: 0 });
+    const p = await r.start();
+    try {
+      const capture = { metadata: { url: 'http://localhost:3000/page', timestamp: new Date().toISOString() }, nodes: [] };
+      const res = await req(p, 'POST', '/captures', capture);
+      expect(res.status).toBe(201);
+      const configPath = path.join(projectDir, '.viewgraph', 'config.json');
+      expect(existsSync(configPath)).toBe(true);
+      const cfg = JSON.parse(readFileSync(configPath, 'utf-8'));
+      expect(cfg.urlPatterns).toContain('localhost:3000');
+    } finally {
+      r.stop();
+    }
+  });
+
+  it('(-) POST /captures does not overwrite existing config.json', async () => {
+    const projectDir = path.join(os.tmpdir(), `vg-no-${Date.now()}`);
+    const vgCaptures = path.join(projectDir, '.viewgraph', 'captures');
+    mkdirSync(vgCaptures, { recursive: true });
+    const configPath = path.join(projectDir, '.viewgraph', 'config.json');
+    writeFileSync(configPath, JSON.stringify({ urlPatterns: ['myapp.com'], custom: true }));
+    const q = createRequestQueue({ maxSize: 10, ttlMs: 60000 });
+    const r = createHttpReceiver({ queue: q, capturesDir: vgCaptures, port: 0 });
+    const p = await r.start();
+    try {
+      const capture = { metadata: { url: 'http://localhost:5000/page', timestamp: new Date().toISOString() }, nodes: [] };
+      await req(p, 'POST', '/captures', capture);
+      const cfg = JSON.parse(readFileSync(configPath, 'utf-8'));
+      expect(cfg.urlPatterns).toContain('myapp.com');
+      expect(cfg.custom).toBe(true);
+      expect(cfg.urlPatterns).not.toContain('localhost:5000');
+    } finally {
+      r.stop();
+    }
   });
 });
