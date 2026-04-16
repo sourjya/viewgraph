@@ -12,7 +12,7 @@ import {
   updateComment, removeAnnotation, toggleResolved, resolveAnnotation, updateCategory, updateSeverity,
   getAnnotations, clearAnnotations, addPageNote,
   start, stop, isActive, storageKey, save, load,
-  hideHoverUI, ATTR,
+  hideHoverUI, hideMarkers, spotlightMarker, ATTR,
   setCaptureMode, getCaptureMode, CAPTURE_MODES,
 } from '#lib/annotate.js';
 
@@ -1863,5 +1863,99 @@ describe('dedup after save/load cycle', () => {
     copy.push({ id: 999 });
     // Original should not be affected
     expect(getAnnotations()).toHaveLength(1);
+  });
+});
+
+// ──────────────────────────────────────────────
+// Capture mode and lifecycle
+// ──────────────────────────────────────────────
+
+describe('setCaptureMode', () => {
+  afterEach(() => { stop(); });
+
+  it('(+) sets element mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    expect(getCaptureMode()).toBe(CAPTURE_MODES.ELEMENT);
+  });
+
+  it('(+) sets region mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.REGION);
+    expect(getCaptureMode()).toBe(CAPTURE_MODES.REGION);
+  });
+
+  it('(+) toggles off when same mode set twice', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(+) page mode resets to null after firing', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.PAGE);
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(-) ignores invalid mode values', () => {
+    start();
+    setCaptureMode('invalid');
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(-) no-op when not active', () => {
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    expect(getCaptureMode()).toBeNull();
+  });
+
+  it('(+) null resets mode', () => {
+    start();
+    setCaptureMode(CAPTURE_MODES.ELEMENT);
+    setCaptureMode(null);
+    expect(getCaptureMode()).toBeNull();
+  });
+});
+
+describe('hideMarkers', () => {
+  it('(+) removes all data-vg-annotate elements', () => {
+    const m1 = document.createElement('div');
+    m1.setAttribute('data-vg-annotate', 'marker-1');
+    const m2 = document.createElement('div');
+    m2.setAttribute('data-vg-annotate', 'overlay');
+    document.body.append(m1, m2);
+    expect(document.querySelectorAll('[data-vg-annotate]').length).toBe(2);
+    hideMarkers();
+    expect(document.querySelectorAll('[data-vg-annotate]').length).toBe(0);
+  });
+});
+
+describe('spotlightMarker', () => {
+  afterEach(() => { stop(); });
+
+  it('(+) does not throw when no markers exist', () => {
+    expect(() => spotlightMarker(1)).not.toThrow();
+    expect(() => spotlightMarker(null)).not.toThrow();
+  });
+});
+
+describe('start/stop lifecycle', () => {
+  it('(+) start is idempotent', () => {
+    start();
+    start(); // second call should be no-op
+    expect(isActive()).toBe(true);
+    stop();
+  });
+
+  it('(+) stop clears annotations', () => {
+    start();
+    addPageNote();
+    expect(getAnnotations().length).toBe(1);
+    stop();
+    expect(getAnnotations().length).toBe(0);
+  });
+
+  it('(+) stop is safe when not active', () => {
+    expect(() => stop()).not.toThrow();
   });
 });
