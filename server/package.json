@@ -1,6 +1,6 @@
 {
   "name": "viewgraph-mcp-server",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "MCP server exposing ViewGraph capture tools to AI coding assistants",
   "type": "module",
   "main": "index.js",
