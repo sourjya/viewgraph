@@ -416,28 +416,21 @@ export function create() {
   serverLine.textContent = 'Server: checking...';
   Object.assign(serverLine.style, { marginBottom: '6px' });
 
-  // Version info - highlighted box
-  const versionLine = document.createElement('div');
+  // Version info - shown in help card
   const extVer = chrome.runtime.getManifest?.()?.version || 'unknown';
-  versionLine.textContent = `Extension: v${extVer} | Server: checking...`;
-  Object.assign(versionLine.style, {
-    marginBottom: '10px', fontSize: '11px', color: '#9ca3af',
-    background: '#16161e', border: '1px solid #2a2a3a', borderRadius: '6px',
-    padding: '8px 10px', fontFamily: 'monospace',
-  });
+  help.setVersion(`Extension: v${extVer} | Server: checking...`);
   discoverServer(window.location.href).then(async (url) => {
     if (url) {
       try {
         const info = await fetch(`${url}/info`, { signal: AbortSignal.timeout(3000) }).then((r) => r.json());
-        versionLine.textContent = `Extension: v${extVer} | Server: v${info.serverVersion || 'unknown'}`;
-        if (info.serverVersion && extVer && extVer < info.serverVersion) {
-          versionLine.style.color = '#f59e0b';
-          versionLine.style.borderColor = '#92400e';
-          versionLine.textContent += ' - rebuild extension';
-        }
-      } catch { versionLine.textContent = `Extension: v${extVer} | Server: offline`; }
+        const mismatch = info.serverVersion && extVer && extVer < info.serverVersion;
+        help.setVersion(
+          `Extension: v${extVer} | Server: v${info.serverVersion || 'unknown'}${mismatch ? ' - rebuild extension' : ''}`,
+          mismatch,
+        );
+      } catch { help.setVersion(`Extension: v${extVer} | Server: offline`); }
     } else {
-      versionLine.textContent = `Extension: v${extVer} | Server: not connected`;
+      help.setVersion(`Extension: v${extVer} | Server: not connected`);
     }
   });
 
@@ -512,7 +505,7 @@ export function create() {
   advLink.addEventListener('click', () => chrome.runtime.sendMessage({ type: 'open-options' }));
 
   mappingsSection.append(mapLabel, autoInfo, advLink);
-  settingsBody.append(serverLine, versionLine, mappingsSection);
+  settingsBody.append(serverLine, mappingsSection);
 
   // Capture options - toggle switches
   const captureOpts = document.createElement('div');

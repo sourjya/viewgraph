@@ -105,6 +105,15 @@ export function createHelpCard() {
   }
   helpCard.appendChild(linkRow);
 
+  // Version info slot - populated by sidebar core
+  const versionEl = document.createElement('div');
+  versionEl.setAttribute(ATTR, 'help-version');
+  Object.assign(versionEl.style, {
+    marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #333',
+    fontSize: '10px', color: '#555', fontFamily: 'monospace',
+  });
+  helpCard.appendChild(versionEl);
+
   let visible = false;
 
   return {
@@ -121,5 +130,9 @@ export function createHelpCard() {
       setTimeout(() => { if (!visible) helpCard.style.display = 'none'; }, 200);
     },
     isVisible() { return visible; },
+    setVersion(text, warn) {
+      versionEl.textContent = text;
+      if (warn) { versionEl.style.color = '#f59e0b'; }
+    },
   };
 }
