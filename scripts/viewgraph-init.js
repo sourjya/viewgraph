@@ -120,6 +120,18 @@ function verifyWritable(dirPath) {
 
 console.log('\nViewGraph Init\n');
 
+// Check for npm updates (non-blocking)
+const CURRENT_VERSION = JSON.parse(readFileSync(path.join(VIEWGRAPH_ROOT, 'package.json'), 'utf-8')).version;
+try {
+  const res = await fetch('https://registry.npmjs.org/@viewgraph/core/latest', { signal: AbortSignal.timeout(3000) });
+  if (res.ok) {
+    const { version: latest } = await res.json();
+    if (latest !== CURRENT_VERSION && latest > CURRENT_VERSION) {
+      console.log(`  \x1b[33m⚠ ViewGraph ${latest} available (you have ${CURRENT_VERSION}). Run: npm update -g @viewgraph/core\x1b[0m\n`);
+    }
+  }
+} catch { /* offline or timeout - skip silently */ }
+
 // 1. Create captures directory
 const capturesDir = path.join(CWD, '.viewgraph', 'captures');
 ensureDir(capturesDir);

@@ -39,7 +39,21 @@ function check(label, ok, detail) {
 }
 
 async function main() {
-  console.log(`\n  ViewGraph Status\n`);
+  const currentVersion = JSON.parse(readFileSync(path.join(VIEWGRAPH_ROOT, 'package.json'), 'utf-8')).version;
+  console.log(`\n  ViewGraph Status (v${currentVersion})\n`);
+
+  // Version check
+  try {
+    const res = await fetch('https://registry.npmjs.org/@viewgraph/core/latest', { signal: AbortSignal.timeout(3000) });
+    if (res.ok) {
+      const { version: latest } = await res.json();
+      if (latest !== currentVersion && latest > currentVersion) {
+        console.log(`  ${YELLOW}Update available: v${latest} (current: v${currentVersion})${RESET}`);
+        console.log(`  ${YELLOW}Run: npm update -g @viewgraph/core${RESET}\n`);
+      }
+    }
+  } catch { /* offline */ }
+
   let allOk = true;
 
   // 1. .viewgraph directory

@@ -17,7 +17,7 @@ import { createServer } from 'http';
 import { writeFile, mkdir, readFile } from 'fs/promises';
 import { existsSync, accessSync, constants as fsConstants, readFileSync, mkdirSync, writeFileSync } from 'fs';
 import path from 'path';
-import { LOG_PREFIX } from './constants.js';
+import { LOG_PREFIX, SERVER_VERSION } from './constants.js';
 import { validateCapturePath } from './utils/validate-path.js';
 import { runPostCaptureAudit } from '#src/analysis/post-capture-audit.js';
 import { createWebSocketServer } from './ws-server.js';
@@ -133,7 +133,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         const cfg = JSON.parse(readFileSync(path.resolve(projectRoot, '.viewgraph', 'config.json'), 'utf-8'));
         urlPatterns = cfg.urlPatterns || [];
       } catch { /* no config */ }
-      return json(res, 200, { capturesDir: absCaptures, projectRoot, agent, urlPatterns });
+      return json(res, 200, { capturesDir: absCaptures, projectRoot, agent, urlPatterns, serverVersion: SERVER_VERSION });
     }
 
     // GET /config - read project config
