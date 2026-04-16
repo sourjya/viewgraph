@@ -114,3 +114,121 @@ describe('sidebar/icons', () => {
     expect(a).not.toBe(b);
   });
 });
+
+// ──────────────────────────────────────────────
+// Icon rendering in DOM - regression tests for shadow DOM icon bug
+// ──────────────────────────────────────────────
+
+describe('icon DOM rendering', () => {
+  /** Append icon to a container and verify it renders with visible SVG content. */
+  function assertIconRendersInDOM(iconFn, ...args) {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const icon = iconFn(...args);
+    container.appendChild(icon);
+    // Must be an SVG element in the DOM
+    const svg = container.querySelector('svg');
+    expect(svg).not.toBeNull();
+    // Must have child elements (paths, circles, polylines - not empty)
+    expect(svg.children.length).toBeGreaterThan(0);
+    // Must have width/height attributes
+    expect(svg.getAttribute('width')).toBeTruthy();
+    expect(svg.getAttribute('height')).toBeTruthy();
+    // Must have viewBox
+    expect(svg.getAttribute('viewBox')).toBe('0 0 24 24');
+    container.remove();
+  }
+
+  it('(+) checkIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(checkIcon, 12, '#4ade80');
+  });
+
+  it('(+) closeIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(closeIcon, 18, '#666');
+  });
+
+  it('(+) chevronLeftIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(chevronLeftIcon, 22, 'currentColor');
+  });
+
+  it('(+) chevronRightIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(chevronRightIcon, 18, '#666');
+  });
+
+  it('(+) bellIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(bellIcon, 18);
+  });
+
+  it('(+) sendIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(sendIcon, 14);
+  });
+
+  it('(+) copyIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(copyIcon, 12);
+  });
+
+  it('(+) docIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(docIcon, 14);
+  });
+
+  it('(+) downloadIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(downloadIcon, 14);
+  });
+
+  it('(+) trashIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(trashIcon, 12, '#666');
+  });
+
+  it('(+) cameraIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(cameraIcon, 16);
+  });
+
+  it('(+) circleIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(circleIcon, 12, '#666');
+  });
+
+  it('(+) noteIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(noteIcon, 14);
+  });
+
+  it('(+) crosshairIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(crosshairIcon, 12, '#93c5fd');
+  });
+
+  it('(+) tagIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(tagIcon, 12, '#6b7280');
+  });
+
+  it('(+) gearIcon renders with visible children in DOM', () => {
+    assertIconRendersInDOM(gearIcon, 12);
+  });
+
+  it('(+) chatBubbleIcon renders with text in DOM', () => {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    container.appendChild(chatBubbleIcon(3, '#6366f1', '#4f46e5'));
+    const svg = container.querySelector('svg');
+    expect(svg).not.toBeNull();
+    expect(svg.querySelector('text')).not.toBeNull();
+    expect(svg.querySelector('text').textContent).toBe('3');
+    expect(svg.querySelector('path')).not.toBeNull();
+    container.remove();
+  });
+
+  it('(+) icons survive replaceChildren cycle', () => {
+    const btn = document.createElement('button');
+    document.body.appendChild(btn);
+    btn.replaceChildren(sendIcon(14), document.createTextNode('Send'));
+    expect(btn.querySelector('svg')).not.toBeNull();
+    expect(btn.textContent).toContain('Send');
+    // Simulate flash state change
+    btn.replaceChildren(checkIcon(14), document.createTextNode('Sent!'));
+    expect(btn.querySelector('svg')).not.toBeNull();
+    expect(btn.textContent).toContain('Sent!');
+    // Restore original
+    btn.replaceChildren(sendIcon(14), document.createTextNode('Send'));
+    expect(btn.querySelector('svg')).not.toBeNull();
+    expect(btn.querySelector('svg').children.length).toBeGreaterThan(0);
+    btn.remove();
+  });
+});
