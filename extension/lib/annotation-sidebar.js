@@ -253,7 +253,7 @@ export function create() {
   for (const [key, icon] of Object.entries(MODE_ICONS)) {
     const btn = document.createElement('button');
     btn.setAttribute(ATTR, `mode-${key}`);
-    { const d = new DOMParser().parseFromString(icon, "image/svg+xml"); if (d.documentElement.tagName === "svg") btn.appendChild(document.importNode(d.documentElement, true)); }
+    btn.innerHTML = icon;
     const labelSpan = document.createElement('span');
     Object.assign(labelSpan.style, { fontSize: '10px', marginTop: '2px' });
     labelSpan.textContent = key.charAt(0).toUpperCase() + key.slice(1);

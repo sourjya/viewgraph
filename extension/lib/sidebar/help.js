@@ -94,7 +94,7 @@ export function createHelpCard() {
     a.rel = 'noopener';
     Object.assign(a.style, { color: '#6366f1', fontSize: '11px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' });
     const ico = document.createElement('span');
-    { const d = new DOMParser().parseFromString(iconSvg, "image/svg+xml"); if (d.documentElement.tagName === "svg") ico.appendChild(document.importNode(d.documentElement, true)); }
+    ico.innerHTML = iconSvg;
     Object.assign(ico.style, { display: 'inline-flex', flexShrink: '0' });
     const txt = document.createElement('span');
     txt.textContent = label;

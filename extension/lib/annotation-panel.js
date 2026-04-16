@@ -394,9 +394,7 @@ export async function show(annotation, callbacks = {}) {
 function makeHeaderBtn(svgHtml, title) {
   const btn = document.createElement('button');
   btn.setAttribute(ATTR, 'btn');
-  const doc = new DOMParser().parseFromString(svgHtml, 'image/svg+xml');
-  const svg = doc.documentElement;
-  if (svg.tagName === 'svg') btn.appendChild(document.importNode(svg, true));
+  btn.innerHTML = svgHtml;
   btn.title = title;
   Object.assign(btn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',

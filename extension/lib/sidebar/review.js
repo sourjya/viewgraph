@@ -143,7 +143,7 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
     const btn = document.createElement('button');
     btn.setAttribute(ATTR, 'type-filter');
     btn.dataset.type = ft.key;
-    setSvg(btn, getFilterIcon(ft.key));
+    btn.innerHTML = getFilterIcon(ft.key);
     btn.title = ft.label;
     const isOn = activeTypeFilters.has(ft.key) || (ft.key === 'element' && activeTypeFilters.has('region'));
     Object.assign(btn.style, {
@@ -306,18 +306,6 @@ function createRequestEntry(req, callbacks) {
 /** Severity dot color map. */
 const SEV_DOT_COLORS = { critical: '#ef4444', major: '#eab308', minor: '#9ca3af' };
 
-/**
- * Safely set trusted SVG markup on an element using DOMParser.
- * Avoids innerHTML for Firefox store compliance while supporting
- * SVG strings from annotation-types.js icon registry.
- * Only use with trusted internal SVG - never with user input.
- */
-function setSvg(el, svgString) {
-  const doc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
-  const svg = doc.documentElement;
-  if (svg.tagName === 'svg') el.appendChild(document.importNode(svg, true));
-}
-
 /** Create a single timeline entry for an annotation. */
 function createEntry(ann, callbacks) {
   const entry = document.createElement('div');
@@ -355,7 +343,7 @@ function createEntry(ann, callbacks) {
 
   if (iconSvg) {
     const iconEl = document.createElement('span');
-    setSvg(iconEl, iconSvg);
+    iconEl.innerHTML = iconSvg;
     Object.assign(iconEl.style, { display: 'inline-flex', color: markerColor, flexShrink: '0', marginRight: '2px' });
     line1.appendChild(iconEl);
   }
