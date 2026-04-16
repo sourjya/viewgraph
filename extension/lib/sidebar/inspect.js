@@ -154,8 +154,9 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
 async function refreshInspect(container, callbacks) {
   container.innerHTML = '';
 
-  // Breakpoint indicator
-  const bp = collectBreakpoints();
+  // Breakpoint indicator (guarded for test environments without matchMedia)
+  let bp;
+  try { bp = collectBreakpoints(); } catch { bp = { activeRange: 'unknown', viewport: { width: 0 } }; }
   const bpRow = document.createElement('div');
   Object.assign(bpRow.style, { display: 'flex', alignItems: 'center', gap: '8px', background: '#16161e', padding: '6px 10px', borderRadius: '6px', marginBottom: '4px' });
   const bpTitle = document.createElement('span');

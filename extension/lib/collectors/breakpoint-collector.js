@@ -26,12 +26,15 @@ const BREAKPOINTS = [
  * @returns {{ viewport: { width: number }, breakpoints: Array, activeRange: string }}
  */
 export function collectBreakpoints() {
-  const width = window.innerWidth;
+  const width = typeof window !== 'undefined' ? window.innerWidth : 0;
+  // Guard: matchMedia not available in jsdom/test environments
+  const hasMQ = typeof window !== 'undefined' && typeof window.matchMedia === 'function';
+  const mq = hasMQ ? (q) => window.matchMedia(q).matches : () => false;
   const breakpoints = BREAKPOINTS.map((bp) => ({
     name: bp.name,
     px: bp.px,
-    minWidth: window.matchMedia(`(min-width: ${bp.px}px)`).matches,
-    maxWidth: window.matchMedia(`(max-width: ${bp.px}px)`).matches,
+    minWidth: mq(`(min-width: ${bp.px}px)`),
+    maxWidth: mq(`(max-width: ${bp.px}px)`),
   }));
 
   // Determine active range name (highest min-width that matches)
@@ -51,6 +54,7 @@ export function collectBreakpoints() {
 export function collectMediaQueries() {
   const active = new Set();
   const inactive = new Set();
+  const hasMQ = typeof window !== 'undefined' && typeof window.matchMedia === 'function';
 
   try {
     for (const sheet of document.styleSheets) {
@@ -59,7 +63,7 @@ export function collectMediaQueries() {
           if (rule.type === CSSRule.MEDIA_RULE) {
             const mq = rule.conditionText || rule.media?.mediaText;
             if (!mq) continue;
-            if (window.matchMedia(mq).matches) active.add(mq);
+            if (hasMQ && window.matchMedia(mq).matches) active.add(mq);
             else inactive.add(mq);
           }
         }
