@@ -14,7 +14,7 @@
  * @see lib/annotation-sidebar.js - annotation list
  */
 
-import { flashElement } from './element-flash.js';
+import { flashElement } from './ui/element-flash.js';
 
 // ---------------------------------------------------------------------------
 // Constants

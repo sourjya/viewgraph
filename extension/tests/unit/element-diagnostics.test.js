@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { diagnoseElement } from '#lib/element-diagnostics.js';
+import { diagnoseElement } from '#lib/ui/element-diagnostics.js';
 
 beforeEach(() => {
   document.body.innerHTML = '';

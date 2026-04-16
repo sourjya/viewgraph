@@ -31,7 +31,7 @@ import { checkRendered } from './collectors/visibility-collector.js';
 import { startWatcher, stopWatcher, isWatcherEnabled } from './session/continuous-capture.js';
 import { isRecording, startSession, stopSession, getState } from './session/session-manager.js';
 import { startJourney, stopJourney } from './session/journey-recorder.js';
-import { startShortcuts, stopShortcuts } from './keyboard-shortcuts.js';
+import { startShortcuts, stopShortcuts } from './ui/keyboard-shortcuts.js';
 import { connect as wsConnect, disconnect as wsDisconnect } from './ws-client.js';
 import { ATTR } from './selector.js';
 

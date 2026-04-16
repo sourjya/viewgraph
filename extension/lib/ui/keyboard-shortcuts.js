@@ -15,7 +15,7 @@
  * @see docs/roadmap/roadmap.md
  */
 
-import { ATTR } from './selector.js';
+import { ATTR } from '../selector.js';
 
 /**
  * @typedef {Object} ShortcutHandlers

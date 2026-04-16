@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { flashElement } from '#lib/element-flash.js';
+import { flashElement } from '#lib/ui/element-flash.js';
 
 beforeEach(() => { document.body.innerHTML = ''; });
 
