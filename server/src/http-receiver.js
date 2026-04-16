@@ -128,11 +128,11 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         : path.dirname(absCaptures);
       let agent;
       try { agent = readFileSync(path.resolve(projectRoot, '.viewgraph', '.agent'), 'utf-8').trim(); } catch { /* not set */ }
-      let urlPatterns = ['localhost'];
+      let urlPatterns = [];
       try {
         const cfg = JSON.parse(readFileSync(path.resolve(projectRoot, '.viewgraph', 'config.json'), 'utf-8'));
-        urlPatterns = cfg.urlPatterns || ['localhost'];
-      } catch { /* no config - use default localhost pattern */ }
+        urlPatterns = cfg.urlPatterns || [];
+      } catch { /* no config - empty patterns, single-server auto-match handles it */ }
       return json(res, 200, { capturesDir: absCaptures, projectRoot, agent, urlPatterns, serverVersion: SERVER_VERSION });
     }
 

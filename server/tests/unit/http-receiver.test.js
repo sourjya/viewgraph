@@ -439,7 +439,7 @@ describe('config endpoints', () => {
 // ──────────────────────────────────────────────
 
 describe('zero-config defaults', () => {
-  it('(+) GET /info returns localhost urlPatterns when no config.json', async () => {
+  it('(+) GET /info returns empty urlPatterns when no config.json', async () => {
     const projectDir = path.join(os.tmpdir(), `vg-zc-${Date.now()}`);
     const vgCaptures = path.join(projectDir, '.viewgraph', 'captures');
     mkdirSync(vgCaptures, { recursive: true });
@@ -449,7 +449,7 @@ describe('zero-config defaults', () => {
     try {
       const res = await req(p, 'GET', '/info');
       expect(res.status).toBe(200);
-      expect(res.body.urlPatterns).toContain('localhost');
+      expect(res.body.urlPatterns).toEqual([]);
     } finally {
       r.stop();
     }
