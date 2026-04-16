@@ -414,7 +414,27 @@ export function create() {
 
   const serverLine = document.createElement('div');
   serverLine.textContent = 'Server: checking...';
-  Object.assign(serverLine.style, { marginBottom: '10px' });
+  Object.assign(serverLine.style, { marginBottom: '6px' });
+
+  // Version info
+  const versionLine = document.createElement('div');
+  const extVer = chrome.runtime.getManifest?.()?.version || 'unknown';
+  versionLine.textContent = `Extension: v${extVer} | Server: checking...`;
+  Object.assign(versionLine.style, { marginBottom: '10px', fontSize: '11px', color: '#666' });
+  discoverServer(window.location.href).then(async (url) => {
+    if (url) {
+      try {
+        const info = await fetch(`${url}/info`, { signal: AbortSignal.timeout(3000) }).then((r) => r.json());
+        versionLine.textContent = `Extension: v${extVer} | Server: v${info.serverVersion || 'unknown'}`;
+        if (info.serverVersion && extVer && extVer < info.serverVersion) {
+          versionLine.style.color = '#f59e0b';
+          versionLine.textContent += ' (update extension)';
+        }
+      } catch { versionLine.textContent = `Extension: v${extVer} | Server: offline`; }
+    } else {
+      versionLine.textContent = `Extension: v${extVer} | Server: not connected`;
+    }
+  });
 
   // Auto-detected project mapping (read-only)
   const mappingsSection = document.createElement('div');
@@ -487,7 +507,7 @@ export function create() {
   advLink.addEventListener('click', () => chrome.runtime.sendMessage({ type: 'open-options' }));
 
   mappingsSection.append(mapLabel, autoInfo, advLink);
-  settingsBody.append(serverLine, mappingsSection);
+  settingsBody.append(serverLine, versionLine, mappingsSection);
 
   // Capture options - toggle switches
   const captureOpts = document.createElement('div');
