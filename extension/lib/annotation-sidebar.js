@@ -15,6 +15,7 @@ import { resolveType, getBadgeColor, getBadgeIcon, getFilterIcon } from './annot
 import { createHelpCard } from './sidebar/help.js';
 import { createStrip } from './sidebar/strip.js';
 import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling, pollRequests } from './sidebar/sync.js';
+import { EVENTS, createEventBus } from './sidebar/events.js';
 import { KEYS, get as storageGet, set as storageSet } from './storage.js';
 import { groupRequests, smartPath } from './network-grouper.js';
 import { formatMarkdown } from './export/export-markdown.js';
@@ -44,6 +45,7 @@ let hostEl = null;
 let collapsed = false;
 let badgeEl = null;
 let _strip = null;
+let _bus = null; // Event bus for inter-module communication
 let _hasCaptured = false;
 let pendingRequests = [];
 let activeFilter = 'open';
@@ -1379,6 +1381,32 @@ export function create() {
   hostEl.setAttribute(ATTR, 'shadow-host');
   Object.assign(hostEl.style, { all: 'initial', position: 'fixed', top: '0', right: '0', zIndex: '2147483646' });
   const shadow = hostEl.attachShadow({ mode: 'open' });
+
+  // Initialize event bus on shadow root for inter-module communication
+  _bus = createEventBus(shadow);
+
+  // Wire core event listeners
+  _bus.on(EVENTS.REFRESH, () => refresh());
+  _bus.on(EVENTS.COLLAPSE_TOGGLE, () => { if (collapsed) expand(); else collapse(); });
+  _bus.on(EVENTS.DESTROY, () => { hideMarkers(); stopAnnotate(); destroy(); });
+  _bus.on(EVENTS.ANNOTATION_RESOLVED, ({ uuid, resolution }) => {
+    const anns = getAnnotations();
+    const ann = anns.find((a) => a.uuid === uuid && !a.resolved);
+    if (ann) { ann.resolved = true; ann.resolution = resolution; refresh(); }
+  });
+  _bus.on(EVENTS.AUDIT_RESULTS, ({ audit, filename }) => {
+    const badge = hostEl?.shadowRoot?.querySelector(`[${ATTR}="audit-badge"]`);
+    if (badge && audit) {
+      const parts = [];
+      if (audit.a11y) parts.push(`${audit.a11y} a11y`);
+      if (audit.layout) parts.push(`${audit.layout} layout`);
+      if (audit.testids) parts.push(`${audit.testids} testids`);
+      badge.textContent = parts.length ? `Auto-audit: ${parts.join(', ')}` : 'Auto-audit: no issues found';
+      badge.style.display = 'block';
+      badge.style.color = audit.total > 0 ? '#f59e0b' : '#4ade80';
+    }
+  });
+
   const scrollStyle = document.createElement('style');
   scrollStyle.textContent = `:host{scrollbar-color:#2a2a3a transparent}*::-webkit-scrollbar{width:8px}*::-webkit-scrollbar-track{background:transparent}*::-webkit-scrollbar-thumb{background:#2a2a3a;border-radius:4px}*::-webkit-scrollbar-thumb:hover{background:#3a3a4a}@keyframes vg-bell-pulse{0%,100%{transform:rotate(0)}15%{transform:rotate(14deg)}30%{transform:rotate(-14deg)}45%{transform:rotate(8deg)}60%{transform:rotate(-8deg)}75%{transform:rotate(0)}}@keyframes vg-pulse{0%,100%{opacity:1}50%{opacity:0.3}}`;
   shadow.append(scrollStyle, sidebarEl);
@@ -1409,8 +1437,8 @@ export function create() {
   document.documentElement.appendChild(badgeEl);
 
   refresh();
-  syncResolved(() => refresh());
-  startResolutionPolling(() => refresh());
+  syncResolved(() => _bus.emit(EVENTS.REFRESH));
+  startResolutionPolling(() => _bus.emit(EVENTS.REFRESH));
   startRequestPolling((reqs) => { pendingRequests = reqs || []; });
 
   // Connect WebSocket for real-time annotation sync
@@ -1423,22 +1451,10 @@ export function create() {
       token,
       onMessage: (msg) => {
         if (msg.type === 'annotation:resolved') {
-          const anns = getAnnotations();
-          const ann = anns.find((a) => a.uuid === msg.uuid && !a.resolved);
-          if (ann) { ann.resolved = true; ann.resolution = msg.resolution; refresh(); }
+          _bus.emit(EVENTS.ANNOTATION_RESOLVED, { uuid: msg.uuid, resolution: msg.resolution });
         }
         if (msg.type === 'audit:results' && msg.audit) {
-          const badge = hostEl?.shadowRoot?.querySelector(`[${ATTR}="audit-badge"]`);
-          if (badge) {
-            const a = msg.audit;
-            const parts = [];
-            if (a.a11y) parts.push(`${a.a11y} a11y`);
-            if (a.layout) parts.push(`${a.layout} layout`);
-            if (a.testids) parts.push(`${a.testids} testids`);
-            badge.textContent = parts.length ? `Auto-audit: ${parts.join(', ')}` : 'Auto-audit: no issues found';
-            badge.style.display = 'block';
-            badge.style.color = a.total > 0 ? '#f59e0b' : '#4ade80';
-          }
+          _bus.emit(EVENTS.AUDIT_RESULTS, { audit: msg.audit, filename: msg.filename });
         }
       },
     });
@@ -1463,8 +1479,8 @@ export function create() {
       const selected = getAnnotations().find((a) => a.selected);
       if (selected) { updateSeverity(selected.id, sev); refresh(); }
     },
-    onToggleCollapse: () => { if (collapsed) { expand(); } else { collapse(); } },
-    onClose: () => { hideMarkers(); stopAnnotate(); destroy(); },
+    onToggleCollapse: () => { _bus.emit(EVENTS.COLLAPSE_TOGGLE); },
+    onClose: () => { _bus.emit(EVENTS.DESTROY); },
   });
 }
 
@@ -2032,6 +2048,7 @@ export function destroy() {
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }
   bellBtn = null;
   _strip = null;
+  if (_bus) { _bus.destroy(); _bus = null; }
   collapsed = false;
   _hasCaptured = false;
   pendingRequests = [];
