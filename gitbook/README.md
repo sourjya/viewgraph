@@ -121,7 +121,7 @@ Measured automatically against 48 diverse real-world websites:
 | Bbox accuracy | 100.0% |
 | Semantic recall | 88.2% |
 
-Full methodology and per-site breakdowns: [bulk capture experiment](https://github.com/sourjya/viewgraph/tree/main/scripts/experiments/bulk-capture)
+[Full details and per-site breakdowns](https://github.com/sourjya/viewgraph/tree/main/scripts/experiments/bulk-capture)
 
 ## [36 MCP Tools](features/mcp-tools.md)
 
