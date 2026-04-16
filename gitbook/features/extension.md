@@ -28,9 +28,37 @@ When you click an element, a floating panel appears with:
 - **Comment** text area - describe what's wrong
 - **Severity** - Critical (red), Major (yellow), Minor (gray)
 - **Category** - Visual, Functional, Content, A11y, Perf, Idea
+- **Idea toggle** (lightbulb icon in header) - one-click switch to idea mode
 - **Smart suggestions** - clickable chips based on detected issues (missing aria-label, no testid, low contrast)
 
 ![Annotation panel with severity, category, and comment](../.gitbook/assets/annotation-panel.png)
+
+### Idea Mode - Feature Specs from Your Screen
+
+Not every annotation is a bug. Sometimes you're staring at a screen and thinking "this needs a new feature." ViewGraph supports this with **idea mode**.
+
+Click the lightbulb icon in the annotation panel header, or select "Idea" from the category dropdown. The panel changes:
+- Border turns yellow to signal you're in idea mode
+- Severity dropdown hides (ideas don't have severity)
+- Diagnostic suggestions are suppressed (ideas are about what to build, not what's broken)
+- The annotation appears in the sidebar with a yellow lightbulb badge
+
+**The ideation pipeline:**
+1. Open your app, click ViewGraph
+2. Click elements or use Page mode to add notes
+3. Toggle idea mode (lightbulb icon) and describe what you want: "Add a dark mode toggle here", "This table needs export to CSV"
+4. Send to Agent
+5. Tell your agent `@vg-ideate` - it generates a structured feature spec with requirements, user stories, and implementation tasks, all grounded in the actual UI context from the capture
+
+This turns screen-staring into structured specs. The agent has the full DOM context - it knows what elements exist, what the layout looks like, and what components are nearby. The spec it generates isn't generic; it's specific to the page you're looking at.
+
+### Diagnostic Notes
+
+The Inspect tab shows network failures, console errors, accessibility issues, and layout problems. Each section has two action buttons:
+- **Copy** (clipboard icon) - copies section data as text for pasting into chat or tickets
+- **Add as note** (sparkle icon) - creates an annotation with a clean summary and the full diagnostic data as a collapsible attachment
+
+Diagnostic notes appear in the sidebar with a teal terminal icon and a `[Network]` or `[Console]` tag. The full data is preserved for the agent but doesn't clutter the annotation list.
 
 ## Two-Tab Sidebar
 

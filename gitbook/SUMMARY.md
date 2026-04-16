@@ -18,6 +18,7 @@
 * [File a QA Bug Report](tutorials/qa-bug-report.md)
 * [Detect Regressions](tutorials/detect-regressions.md)
 * [Record a User Journey](tutorials/record-journey.md)
+* [Generate Feature Specs from UI](tutorials/ideation.md)
 
 ## Features
 
