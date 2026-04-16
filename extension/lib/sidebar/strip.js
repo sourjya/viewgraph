@@ -9,6 +9,7 @@
 
 import { ATTR } from '../selector.js';
 import { getAnnotations } from '../annotate.js';
+import { chevronLeftIcon, chatBubbleIcon } from './icons.js';
 
 /**
  * Create the collapsed strip element.
@@ -41,7 +42,7 @@ export function createStrip(opts) {
 
   // Expand chevron
   const expandBtn = document.createElement('button');
-  expandBtn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+  expandBtn.appendChild(chevronLeftIcon(22, 'currentColor'));
   Object.assign(expandBtn.style, {
     border: 'none', background: 'transparent', color: '#a5b4fc',
     cursor: 'pointer', padding: '2px', borderRadius: '4px', display: 'flex',
@@ -92,7 +93,7 @@ export function createStrip(opts) {
       }
       const fill = count > 0 ? '#6366f1' : '#333';
       const stroke = count > 0 ? '#818cf8' : '#555';
-      countEl.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill="${fill}" stroke="${stroke}" stroke-width="1.2"/><text x="12" y="14" text-anchor="middle" fill="#fff" font-family="system-ui,sans-serif" font-size="10" font-weight="700">${count}</text></svg>`;
+      countEl.replaceChildren(chatBubbleIcon(count, fill, stroke));
     },
     /** Sync mode button active states. */
     updateModeButtons(currentMode) {

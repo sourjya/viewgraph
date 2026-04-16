@@ -23,6 +23,7 @@ import { groupRequests, smartPath } from '../network-grouper.js';
 import { getAnnotations, addPageNote, updateComment } from '../annotate.js';
 import { discoverServer, updateConfig } from '../constants.js';
 import { renderCaptures } from './captures.js';
+import { copyIcon, checkIcon, noteIcon } from './icons.js';
 
 /**
  * Create the inspect tab content element and its refresh function.
@@ -77,7 +78,7 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
   const copyBtn = document.createElement('button');
   copyBtn.setAttribute(ATTR, 'section-copy');
   copyBtn.dataset.section = title;
-  copyBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+  copyBtn.appendChild(copyIcon(12));
   copyBtn.title = `Copy ${title} data`;
   Object.assign(copyBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer', color: '#555',
@@ -90,11 +91,11 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
     const text = `${title}:\n${body.textContent.trim()}`;
     navigator.clipboard.writeText(text).then(() => {
       copyBtn.dataset.copied = 'true';
-      copyBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      copyBtn.replaceChildren(checkIcon(12, '#4ade80'));
       copyBtn.style.color = '#4ade80';
       setTimeout(() => {
         copyBtn.dataset.copied = 'false';
-        copyBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+        copyBtn.replaceChildren(copyIcon(12));
         copyBtn.style.color = '#555';
       }, 1500);
     }).catch(() => {});
@@ -105,7 +106,7 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
   const noteBtn = document.createElement('button');
   noteBtn.setAttribute(ATTR, 'section-note');
   noteBtn.dataset.section = title;
-  noteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8L19 13M17.8 6.2L19 5M12.2 11.8L11 13M12.2 6.2L11 5"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>';
+  noteBtn.appendChild(noteIcon(14));
   noteBtn.title = 'Add as note for agent';
   const alreadyNoted = getAnnotations().some((a) => a.diagnostic?.section === title);
   Object.assign(noteBtn.style, {
@@ -115,7 +116,7 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
     opacity: alreadyNoted ? '0.4' : '1', pointerEvents: alreadyNoted ? 'none' : 'auto',
   });
   if (alreadyNoted) {
-    noteBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    noteBtn.replaceChildren(checkIcon(12, '#4ade80'));
     noteBtn.title = 'Note added';
   }
   noteBtn.addEventListener('mouseenter', () => { noteBtn.style.color = '#818cf8'; });
@@ -129,7 +130,7 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
       ann.diagnostic = { section: title, data: fullData };
       if (onRefresh) onRefresh();
       noteBtn.dataset.noted = 'true';
-      noteBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      noteBtn.replaceChildren(checkIcon(12, '#4ade80'));
       noteBtn.style.color = '#4ade80';
       noteBtn.style.opacity = '0.4';
       noteBtn.style.pointerEvents = 'none';
@@ -154,7 +155,7 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
  * This is the main rendering function - called on tab switch.
  */
 async function refreshInspect(container, callbacks) {
-  container.innerHTML = '';
+  container.replaceChildren();
 
   // Breakpoint indicator (guarded for test environments without matchMedia)
   let bp;
@@ -231,7 +232,12 @@ async function refreshInspect(container, callbacks) {
           const detailRow = document.createElement('div');
           Object.assign(detailRow.style, { display: 'none', paddingLeft: '8px', paddingBottom: '4px', fontSize: '10px', color: '#888', borderLeft: '2px solid #7f1d1d' });
           const parts = [`Type: ${req.initiatorType || 'unknown'}`, `Duration: ${req.duration || 0}ms`];
-          detailRow.innerHTML = `<div style="word-break:break-all;color:#f87171;margin-bottom:2px">${req.url}</div><div>${parts.join(' - ')}</div>`;
+          const urlDiv = document.createElement('div');
+          Object.assign(urlDiv.style, { wordBreak: 'break-all', color: '#f87171', marginBottom: '2px' });
+          urlDiv.textContent = req.url;
+          const infoDiv = document.createElement('div');
+          infoDiv.textContent = parts.join(' - ');
+          detailRow.append(urlDiv, infoDiv);
           row.style.cursor = 'pointer';
           row.addEventListener('click', () => { detailRow.style.display = detailRow.style.display === 'none' ? 'block' : 'none'; });
           groupBody.appendChild(detailRow);

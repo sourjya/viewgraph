@@ -19,6 +19,7 @@ import { createInspectTab } from './sidebar/inspect.js';
 import { renderReviewList } from './sidebar/review.js';
 import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from './sidebar/sync.js';
 import { EVENTS, createEventBus } from './sidebar/events.js';
+import { chevronRightIcon, closeIcon, bellIcon, sendIcon, checkIcon, docIcon, downloadIcon, gearIcon } from './sidebar/icons.js';
 import { KEYS, set as storageSet } from './storage.js';
 // import { groupRequests, smartPath } from './network-grouper.js';
 import { formatMarkdown } from './export/export-markdown.js';
@@ -148,7 +149,7 @@ export function create() {
   // Collapse chevron
   const collapseBtn = document.createElement('button');
   collapseBtn.setAttribute(ATTR, 'btn');
-  collapseBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+  collapseBtn.appendChild(chevronRightIcon(18, '#666'));
   collapseBtn.title = 'Collapse panel';
   Object.assign(collapseBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
@@ -161,7 +162,7 @@ export function create() {
   // Close button
   const closeBtn = document.createElement('button');
   closeBtn.setAttribute(ATTR, 'close');
-  closeBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+  closeBtn.appendChild(closeIcon(18, '#666'));
   Object.assign(closeBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
     padding: '8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
@@ -178,7 +179,7 @@ export function create() {
   // Notification bell - pulses when agent requests are pending
   bellBtn = document.createElement('button');
   bellBtn.setAttribute(ATTR, 'bell');
-  bellBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>';
+  bellBtn.appendChild(bellIcon(18));
   bellBtn.title = 'Agent requests';
   Object.assign(bellBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
@@ -200,7 +201,7 @@ export function create() {
   // Help button in header - opens slide-down help card
   const helpBtn = document.createElement('button');
   helpBtn.setAttribute(ATTR, 'help-btn');
-  helpBtn.innerHTML = '?';
+  helpBtn.textContent = '?';
   helpBtn.title = 'Help & keyboard shortcuts';
   Object.assign(helpBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
@@ -249,7 +250,14 @@ export function create() {
   for (const [key, icon] of Object.entries(MODE_ICONS)) {
     const btn = document.createElement('button');
     btn.setAttribute(ATTR, `mode-${key}`);
-    btn.innerHTML = `${icon}<span style="font-size:10px;margin-top:2px">${key.charAt(0).toUpperCase() + key.slice(1)}</span><span style="font-size:9px;color:#666;margin-top:1px">${MODE_HINTS[key]}</span>`;
+    btn.innerHTML = icon;
+    const labelSpan = document.createElement('span');
+    Object.assign(labelSpan.style, { fontSize: '10px', marginTop: '2px' });
+    labelSpan.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+    const hintSpan = document.createElement('span');
+    Object.assign(hintSpan.style, { fontSize: '9px', color: '#666', marginTop: '1px' });
+    hintSpan.textContent = MODE_HINTS[key];
+    btn.append(labelSpan, hintSpan);
     Object.assign(btn.style, {
       flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center',
       gap: '2px', padding: '6px 4px', border: '1px solid #333', borderRadius: '6px',
@@ -306,7 +314,7 @@ export function create() {
   // Row 1: Primary CTA - Send to Agent (full width)
   const sendBtn = document.createElement('button');
   sendBtn.setAttribute(ATTR, 'send');
-  sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Agent';
+  sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent'));
   Object.assign(sendBtn.style, { ...btnStyle, background: '#6366f1', width: '100%', padding: '9px 4px', marginBottom: '4px' });
   sendBtn.title = 'Send annotations to your AI coding agent via MCP';
   sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#5558e6'; });
@@ -322,15 +330,15 @@ export function create() {
       if (!ann.resolved) ann.pending = true;
     }
     refresh();
-    sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Sent!';
+    sendBtn.replaceChildren(checkIcon(14), document.createTextNode('Sent!'));
     sendBtn.style.background = '#059669';
-    setTimeout(() => { sendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>Send to Agent'; sendBtn.style.background = '#6366f1'; }, 2000);
+    setTimeout(() => { sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent')); sendBtn.style.background = '#6366f1'; }, 2000);
   });
 
   // Copy Markdown
   const copyBtn = document.createElement('button');
   copyBtn.setAttribute(ATTR, 'copy-md');
-  copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Copy MD';
+  copyBtn.replaceChildren(docIcon(14), document.createTextNode('Copy MD'));
   Object.assign(copyBtn.style, { ...btnStyle, background: '#374151' });
   copyBtn.title = 'Copy as Markdown';
   copyBtn.addEventListener('mouseenter', () => { copyBtn.style.background = 'rgba(255,255,255,0.05)'; });
@@ -340,25 +348,25 @@ export function create() {
     const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents() };
     const md = formatMarkdown(getAnnotations(), meta, { enrichment });
     navigator.clipboard.writeText(md).then(() => {
-      copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
+      copyBtn.replaceChildren(checkIcon(14), document.createTextNode('Copied!'));
       copyBtn.style.background = '#059669';
-      setTimeout(() => { copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Copy MD'; copyBtn.style.background = 'transparent'; }, 2000);
+      setTimeout(() => { copyBtn.replaceChildren(docIcon(14), document.createTextNode('Copy MD')); copyBtn.style.background = 'transparent'; }, 2000);
     });
   });
 
   // Download Report
   const dlBtn = document.createElement('button');
   dlBtn.setAttribute(ATTR, 'download');
-  dlBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Report';
+  dlBtn.replaceChildren(downloadIcon(14), document.createTextNode('Report'));
   Object.assign(dlBtn.style, { ...btnStyle, background: '#374151' });
   dlBtn.title = 'Download Report (Markdown + Screenshots)';
   dlBtn.addEventListener('mouseenter', () => { dlBtn.style.background = 'rgba(255,255,255,0.05)'; });
   dlBtn.addEventListener('mouseleave', () => { dlBtn.style.background = 'transparent'; });
   dlBtn.addEventListener('click', () => {
     chrome.runtime.sendMessage({ type: 'download-report' });
-    dlBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Saved!';
+    dlBtn.replaceChildren(checkIcon(14), document.createTextNode('Saved!'));
     dlBtn.style.background = '#059669';
-    setTimeout(() => { dlBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Report'; dlBtn.style.background = 'transparent'; }, 2000);
+    setTimeout(() => { dlBtn.replaceChildren(downloadIcon(14), document.createTextNode('Report')); dlBtn.style.background = 'transparent'; }, 2000);
   });
 
   // Row 3: Secondary exports [Copy MD] [Report]
@@ -372,7 +380,7 @@ export function create() {
   // Settings link in footer
   const settingsLink = document.createElement('button');
   settingsLink.setAttribute(ATTR, 'settings-link');
-  settingsLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg> Settings';
+  settingsLink.replaceChildren(gearIcon(12), document.createTextNode(' Settings'));
   Object.assign(settingsLink.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
     color: '#666', fontSize: '11px', fontFamily: 'system-ui, sans-serif',
@@ -659,7 +667,7 @@ export function refresh() {
       refresh();
     },
     onRequestCapture: (req, entry, capBtn) => {
-      capBtn.innerHTML = '\u23f3';
+      capBtn.textContent = '\u23f3';
       (async () => {
         try {
           const serverUrl = await discoverServer(window.location.href);
@@ -668,7 +676,7 @@ export function refresh() {
         chrome.runtime.sendMessage({ type: 'capture', includeSnapshot: true, keepSidebar: true }, () => {
           entry.style.transition = 'background 0.3s, opacity 0.5s';
           entry.style.background = 'rgba(74, 222, 128, 0.15)';
-          capBtn.innerHTML = '\u2713';
+          capBtn.textContent = '\u2713';
           capBtn.style.background = '#4ade80';
           setTimeout(() => {
             entry.style.opacity = '0';
