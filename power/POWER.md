@@ -45,7 +45,7 @@ Local MCP server that reads `.viewgraph/captures/*.json` files and exposes 19 qu
 
 ## Step 1: Verify Node.js
 
-ViewGraph requires Node.js 18+ to run the MCP server.
+ViewGraph requires Node.js 20+ to run the MCP server.
 
 Verify with: `node --version`
 

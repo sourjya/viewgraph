@@ -75,7 +75,7 @@ curl http://127.0.0.1:9876/health
 
 | Problem | Solution |
 |---|---|
-| Server won't start | Check Node.js version: `node --version` (must be 18+) |
+| Server won't start | Check Node.js version: `node --version` (must be 20+) |
 | Port already in use | Another server is running. Use `npx viewgraph-init` which auto-finds a free port (9876-9879) |
 | Extension can't connect | Verify server is running. Check sidebar for green/red dot. |
 | No captures appearing | Check `.viewgraph/captures/` exists and is writable |

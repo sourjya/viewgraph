@@ -54,7 +54,7 @@ The extension captures the DOM from Chrome or Firefox. The server reads those ca
 
 ## Getting Started
 
-**Prerequisites:** Node.js 18+, npm 9+, Chrome 116+ or Firefox 109+
+**Prerequisites:** Node.js 20+, npm 9+, Chrome 116+ or Firefox 109+
 
 ```bash
 # 1. Install

@@ -66,7 +66,7 @@ If the dot is red, the server isn't running. Run `npx viewgraph-init` again from
 
 | Requirement | Minimum Version |
 |---|---|
-| [Node.js](https://nodejs.org/) | 18.0.0+ (LTS) |
+| [Node.js](https://nodejs.org/) | 20.0.0+ (LTS recommended: 22) |
 | npm | 9.0.0+ |
 | Chrome | 116+ (or Firefox 109+) |
 
