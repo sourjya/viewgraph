@@ -17,7 +17,7 @@ import { createServer } from 'http';
 import { writeFile, mkdir, readFile } from 'fs/promises';
 import { existsSync, accessSync, constants as fsConstants, readFileSync, mkdirSync, writeFileSync } from 'fs';
 import path from 'path';
-import { LOG_PREFIX, SERVER_VERSION } from './constants.js';
+import { LOG_PREFIX, SERVER_VERSION, DEFAULT_HTTP_PORT } from './constants.js';
 import { validateCapturePath } from './utils/validate-path.js';
 import { runPostCaptureAudit } from '#src/analysis/post-capture-audit.js';
 import { createWebSocketServer } from './ws-server.js';
@@ -87,7 +87,7 @@ function json(res, status, data) {
  *   requests must include an `Authorization: Bearer <secret>` header. GET
  *   endpoints (/health, /requests/pending) remain open so monitoring works.
  */
-export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port = 9876, indexer = null }) {
+export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port = DEFAULT_HTTP_PORT, indexer = null }) {
   let server;
   let wsServer;
 

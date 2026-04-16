@@ -9,7 +9,7 @@
 
 import { ATTR } from '../selector.js';
 import { chevronLeftIcon } from './icons.js';
-import { discoverServer } from '../constants.js';
+import { discoverServer, DEFAULT_HTTP_PORT } from '../constants.js';
 
 /**
  * Create the settings screen element.
@@ -153,7 +153,7 @@ export function createSettings() {
   (async () => {
     const serverUrl = await discoverServer(window.location.href);
     if (serverUrl) {
-      const port = new URL(serverUrl).port || '9876';
+      const port = new URL(serverUrl).port || String(DEFAULT_HTTP_PORT);
       const dot = document.createElement('span');
       dot.style.color = '#4ade80';
       dot.textContent = '\u25cf';
