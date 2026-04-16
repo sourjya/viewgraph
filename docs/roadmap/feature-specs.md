@@ -366,3 +366,22 @@ Also: router pattern for `http-receiver.js`, auto-discovery for tool registratio
 **Dependencies:** All existing collectors (no new external deps). Builds on F3 (auto-audit) and F5 (smart suggestions).
 
 **Phases:** 3 phases, 19 tasks. Core engine -> sidebar UI -> integration and polish.
+
+### F16: Zero-Config Install - MCP Config Only
+
+**Status:** Spec complete, not started
+**Spec:** `.kiro/specs/zero-config-install/`
+**Priority:** High - removes the biggest adoption friction
+
+**Concept:** Users add 5 lines of MCP config JSON + install the browser extension. No `npm install`, no `viewgraph-init`, no config files. The server self-configures on first use via `npx -y @viewgraph/core`.
+
+**Key changes:**
+- Server auto-creates `.viewgraph/captures/` on boot
+- Default config fallback (accept any localhost URL)
+- Transport auto-detection (stdio for MCP clients, HTTP+WS for manual)
+- Auto-learn URL patterns from first capture received
+- Zero-config becomes the primary install path in docs
+
+**Dependencies:** None - builds on existing server and extension. Backward compatible with viewgraph-init.
+
+**Phases:** 4 phases, 18 tasks. Self-config -> auto-learn -> docs -> validation.
