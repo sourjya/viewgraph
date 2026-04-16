@@ -5,19 +5,100 @@
 - Coverage baseline: server 85.1% stmts, extension 71.4% stmts
 - Feature branch: `refactor/sidebar-decomposition-v2`
 
-## Phase 1: Event System (Foundation)
+## Phase 1: Event System (Foundation) - MANDATORY
 
-Before extracting tightly coupled modules, implement the CustomEvent system on the shadow DOM root.
+All inter-module communication MUST use the event system. No direct function imports between sibling modules. Modules only import from shared utilities (selector, constants, storage) and emit/listen for events.
 
-### Step 1.1: Create `sidebar/events.js`
-- Define event names: `vg:refresh`, `vg:tab-switch`, `vg:annotation-added`, `vg:annotation-resolved`, `vg:config-changed`, `vg:help-toggle`, `vg:settings-toggle`, `vg:capture-received`
-- Export `emit(shadowRoot, name, detail)` and `on(shadowRoot, name, handler)` helpers
-- Tests: event dispatch and listener registration
+### Architecture
 
-### Step 1.2: Wire events into existing code
-- Replace direct `refresh()` calls from sub-modules with `emit('vg:refresh')`
-- Core listens for `vg:refresh` and calls `refresh()`
-- Verify all 1133 tests still pass
+```
+                    ┌─────────────────────────┐
+                    │   Shadow DOM Root        │
+                    │   (Event Bus)            │
+                    └────────┬────────────────┘
+                             │ CustomEvents
+        ┌────────┬───────┬───┴───┬────────┬────────┐
+        │        │       │       │        │        │
+     core.js  review.js inspect.js help.js strip.js sync.js
+        │        │       │       │        │        │
+        └────────┴───────┴───┬───┴────────┴────────┘
+                             │
+                    Shared utilities only:
+                    selector.js, constants.js,
+                    storage.js, annotate.js,
+                    annotation-types.js
+```
+
+### Communication Rules
+
+1. **Sibling modules NEVER import each other.** review.js does not import inspect.js.
+2. **All cross-module communication is via events.** If review needs to tell inspect something, it emits an event. Core or the target module listens.
+3. **Shared state modules are the exception.** `annotate.js` (annotation state), `constants.js` (server discovery), `selector.js` (ATTR), `storage.js` (chrome.storage), `annotation-types.js` (type registry) can be imported by any module.
+4. **Core orchestrates.** `core.js` listens for events and coordinates responses. It's the only module that imports all sub-modules.
+5. **Events are namespaced.** All events use `vg:` prefix.
+
+### Step 1.1: Create `lib/sidebar/events.js`
+
+Event bus utilities and complete event catalog:
+
+```js
+// Event names - single source of truth
+export const EVENTS = {
+  REFRESH:             'vg:refresh',
+  TAB_SWITCH:          'vg:tab-switch',
+  ANNOTATION_ADDED:    'vg:annotation-added',
+  ANNOTATION_REMOVED:  'vg:annotation-removed',
+  ANNOTATION_RESOLVED: 'vg:annotation-resolved',
+  ANNOTATION_SELECTED: 'vg:annotation-selected',
+  CONFIG_CHANGED:      'vg:config-changed',
+  HELP_TOGGLE:         'vg:help-toggle',
+  SETTINGS_TOGGLE:     'vg:settings-toggle',
+  CAPTURE_RECEIVED:    'vg:capture-received',
+  AUDIT_RESULTS:       'vg:audit-results',
+  COLLAPSE_TOGGLE:     'vg:collapse-toggle',
+  DESTROY:             'vg:destroy',
+};
+
+/** Emit an event on the shadow root. */
+export function emit(root, name, detail = {}) {
+  root.dispatchEvent(new CustomEvent(name, { detail, bubbles: false }));
+}
+
+/** Listen for an event on the shadow root. Returns cleanup function. */
+export function on(root, name, handler) {
+  const wrapped = (e) => handler(e.detail);
+  root.addEventListener(name, wrapped);
+  return () => root.removeEventListener(name, wrapped);
+}
+```
+
+Tests: emit fires, on receives detail, cleanup removes listener, unknown events don't crash.
+
+### Step 1.2: Wire events into ALL existing cross-module calls
+
+Replace every direct cross-module call with an event:
+
+| Current call | Replaced with |
+|---|---|
+| `refresh()` from sync.js | `emit(root, EVENTS.REFRESH)` |
+| `refresh()` from review.js after delete | `emit(root, EVENTS.REFRESH)` |
+| `showPanel()` from review.js | `emit(root, EVENTS.ANNOTATION_SELECTED, { ann })` |
+| `collapse()`/`expand()` from strip.js | `emit(root, EVENTS.COLLAPSE_TOGGLE)` |
+| `hideHelpCard()` from shortcuts | `emit(root, EVENTS.HELP_TOGGLE, { visible: false })` |
+| `hideSettings()` from shortcuts | `emit(root, EVENTS.SETTINGS_TOGGLE, { visible: false })` |
+| `updateBadgeCount()` from refresh | `emit(root, EVENTS.REFRESH)` → strip listens |
+| WS `annotation:resolved` | `emit(root, EVENTS.ANNOTATION_RESOLVED, { uuid, resolution })` |
+| WS `audit:results` | `emit(root, EVENTS.AUDIT_RESULTS, { audit })` |
+
+Core.js wires the listeners:
+```js
+on(root, EVENTS.REFRESH, () => { renderReview(); updateTabCount(); strip.updateCount(); });
+on(root, EVENTS.ANNOTATION_SELECTED, ({ ann }) => showPanel(ann, { onChange: () => emit(root, EVENTS.REFRESH) }));
+on(root, EVENTS.COLLAPSE_TOGGLE, () => collapsed ? expand() : collapse());
+on(root, EVENTS.DESTROY, () => destroy());
+```
+
+Verify all 1133 tests still pass after wiring.
 
 ## Phase 2: Extract Remaining Sidebar Modules
 

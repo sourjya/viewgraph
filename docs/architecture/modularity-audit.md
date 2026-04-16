@@ -396,3 +396,25 @@ Steps 1-5 are mechanical moves (rename + update imports). Step 6 requires the Cu
 - **Export** is a clear output concern. Only 2 files but distinct from everything else.
 - **UI** components are reusable widgets extracted from the panel/sidebar. Grouping enables reuse without circular imports.
 - **Root files** stay at root because they're imported by 10+ other files. Moving them would create deep relative paths.
+
+
+## Event-Driven Architecture Rule - MANDATORY
+
+**All inter-module communication in the extension MUST use the event system.**
+
+### Rules
+
+1. Sibling modules never import each other. `review.js` does not import `inspect.js`.
+2. Cross-module communication is via `CustomEvent` on the shadow DOM root.
+3. Only shared utility modules can be imported by any module: `selector.js`, `constants.js`, `storage.js`, `annotate.js`, `annotation-types.js`.
+4. `core.js` is the only module that imports all sub-modules and wires event listeners.
+5. All events use `vg:` prefix and are defined in `sidebar/events.js`.
+6. New features that need cross-module communication MUST add an event to the catalog, not a direct import.
+
+### Why
+
+- Prevents circular dependencies (the #1 risk in modular codebases)
+- Makes dependencies explicit and traceable (grep for event name)
+- Enables independent testing (mock events, not module internals)
+- Allows adding/removing modules without touching other modules
+- The shadow DOM root is a natural event bus - no library needed
