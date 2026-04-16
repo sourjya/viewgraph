@@ -147,8 +147,6 @@ ViewGraph is AGPL-3.0 licensed. Full source, issues, and contributions on [GitHu
 | [packages/playwright/](https://github.com/sourjya/viewgraph/tree/main/packages/playwright) | Playwright fixture for E2E test captures |
 | [power/](https://github.com/sourjya/viewgraph/tree/main/power) | Kiro Power assets - hooks, prompts, steering docs |
 
-[![Install ViewGraph for Firefox](.gitbook/assets/download-firefox.svg)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
-
 {% hint style="info" %}
 **GitHub:** [github.com/sourjya/viewgraph](https://github.com/sourjya/viewgraph) - star the repo, report issues, contribute
 
