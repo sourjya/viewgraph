@@ -2,6 +2,41 @@
 
 ViewGraph can run multiple projects simultaneously, each with its own server, captures directory, and URL routing.
 
+## How Port Allocation Works
+
+Each project gets its own MCP server on a unique port. The init script handles this automatically:
+
+1. **Port scanning:** `viewgraph-init` scans ports 9876, 9877, 9878, 9879 in order
+2. **First available:** It picks the first port that isn't already in use by another ViewGraph server
+3. **Server starts:** The MCP server binds to `127.0.0.1:<port>` (localhost only - not accessible from the network)
+4. **Port recorded:** The port is saved in the MCP config file so your AI agent knows where to connect
+
+If all 4 ports are in use, the init script reports an error. In practice, 4 simultaneous projects is the maximum.
+
+### How the extension finds your server
+
+When you click the ViewGraph icon, the extension needs to figure out which server handles the current page:
+
+1. **Port scan:** The extension checks all 4 ports (9876-9879) for running ViewGraph servers
+2. **Server info:** For each running server, it calls `GET /info` to get the project root and URL patterns
+3. **URL matching:** It compares the current page URL against each server's URL patterns
+4. **Best match:** The server whose patterns match the current page receives the capture
+
+This happens in milliseconds. The green dot in the sidebar header confirms a server was found. A red dot means no server matched.
+
+### Example with two projects
+
+```
+Project A: ~/projects/frontend  → port 9876, patterns: [localhost:3000]
+Project B: ~/projects/admin     → port 9877, patterns: [localhost:4000]
+```
+
+- Open `localhost:3000/dashboard` → extension routes to port 9876 (Project A)
+- Open `localhost:4000/users` → extension routes to port 9877 (Project B)
+- Open a `file://` URL inside `~/projects/frontend/` → routes to port 9876 by path match
+
+No manual port configuration needed. The init script and extension handle everything.
+
 ## How URL Routing Works
 
 When you capture a page, the extension matches the page URL against each running server to find the right project:
