@@ -1,226 +1,150 @@
 # Installation
 
-[![Chrome - Install](https://img.shields.io/badge/Chrome_Extension-Install_Now-blue?style=flat-square)](https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj) [![Firefox - Install](https://img.shields.io/badge/Firefox_Extension-Install_Now-orange?style=flat-square)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/) [![npm](https://img.shields.io/badge/npm-@viewgraph/core-red?style=flat-square)](https://www.npmjs.com/package/@viewgraph/core)
+[![Chrome - Install](https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj)  [![Firefox - Install](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
 
-Two ways to set up ViewGraph depending on your goal.
+## Quick Setup (Recommended)
 
-## For Users: Add ViewGraph to Your Project
+Two steps. No install commands.
 
-This is the path for developers who want to use ViewGraph with their AI agent. You install it in **your project**, not in a separate folder.
+### 1. Install the browser extension
 
-### Step 1: Install the browser extension
+Click the Chrome or Firefox button above. Works in Edge, Brave, and Opera too (Chromium-based).
 
-[![Chrome - Install](https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=flat-square)](https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj) [![Firefox - Install](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=flat-square)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
+### 2. Add MCP config
 
-Works in Chrome, Edge, Brave, Opera (Chromium) and Firefox.
+Add to your agent's config file:
 
-Or [build from source](#for-developers-build-from-source) if you prefer.
-
-### Step 2: Install the npm package
-
-**Option A: Global install** (simpler - install once, use in any project)
-
-```bash
-npm install -g @viewgraph/core
+```json
+{
+  "mcpServers": {
+    "viewgraph": { "command": "npx", "args": ["-y", "@viewgraph/core"] }
+  }
+}
 ```
 
-Then in any project, just run `viewgraph-init` (no `npx` needed). One install covers all your projects.
+| Agent | Config file location |
+|---|---|
+| Kiro | `~/.kiro/settings/mcp.json` |
+| Claude Code | `~/.claude/mcp.json` |
+| Cursor | `.cursor/mcp.json` (in project root) |
+| Windsurf | `.windsurf/mcp.json` (in project root) |
+| Cline | `.cline/mcp.json` (in project root) |
 
-**Option B: Per-project install**
+**Done.** The server runs automatically via `npx`, creates `.viewgraph/captures/`, and learns your URL pattern from the first capture.
 
-```bash
-cd ~/my-project
-npm install @viewgraph/core
-```
+### Verify
 
-Then use `npx viewgraph-init` in that project. Use this approach when different projects need different ViewGraph versions, or when your team pins dependencies in `package.json` for reproducible builds.
-
-Package: [@viewgraph/core on npm](https://www.npmjs.com/package/@viewgraph/core)
-
-### Step 3: Initialize
-
-```bash
-npx viewgraph-init
-```
-
-This creates `.viewgraph/captures/` in your project, detects your AI agent, writes the MCP config, and starts the server.
-
-**Using a dev server?** Add `--url` so captures route correctly:
-
-```bash
-npx viewgraph-init --url localhost:3000
-```
-
-### Step 4: Verify
-
-1. Click the ViewGraph icon on any page
-2. The sidebar should show a **green dot** with "Connected"
-3. Hover over elements - blue highlight should follow your cursor
+1. Open your app in the browser
+2. Click the ViewGraph toolbar icon
+3. Green dot in the sidebar header = connected
 
 ![Green connection dot in sidebar](../.gitbook/assets/green-dot.png)
 
-If the dot is red, the server isn't running. Run `npx viewgraph-init` again from your project folder.
-
 ### Requirements
 
-| Requirement | Minimum Version |
+| Requirement | Minimum |
 |---|---|
-| [Node.js](https://nodejs.org/) | 22.0.0+ (LTS) |
-| npm | 9.0.0+ |
+| [Node.js](https://nodejs.org/) | 22+ (LTS) |
+| npm | 9+ |
 | Chrome | 116+ (or Firefox 109+) |
-
-### Agent detection
-
-The init script detects your agent by looking for config directories:
-
-| Agent | Detected by | Config written to |
-|---|---|---|
-| Kiro | `.kiro/` directory exists | `.kiro/settings/mcp.json` |
-| Claude Code | `.claude/` directory exists | `.claude/mcp.json` |
-| Cursor | `.cursor/` directory exists | `.cursor/mcp.json` |
-| Generic | No agent detected | `.viewgraph/mcp.json` |
-
-For Kiro, the init script also installs Power assets: 3 hooks, 8 prompt shortcuts, and 3 steering docs.
-
-Here's how the init output differs - a Kiro project (right) gets hooks, prompts, and steering docs automatically, while a non-Kiro project (left) gets just the MCP config:
-
-![Two projects: generic init vs Kiro init](../.gitbook/assets/two-projects.png)
 
 ---
 
-## For Developers: Build from Source
+## Alternative: npm Install
 
-This is the path for contributors or anyone who wants to build the browser extension themselves.
+Use this if you need version pinning, offline use, or explicit config control.
 
-### Step 1: Clone the repo
+```bash
+npm install -g @viewgraph/core
+cd ~/my-project
+viewgraph-init
+```
+
+**Using a dev server?** Add `--url`:
+
+```bash
+viewgraph-init --url localhost:3000
+```
+
+The init script:
+- Creates `.viewgraph/captures/`
+- Detects your AI agent and writes the MCP config
+- Starts the server on localhost
+- Installs Kiro Power assets (hooks, prompts, steering) if Kiro is detected
+
+### Agent detection
+
+| Agent | Detected by | Config written to | Extras |
+|---|---|---|---|
+| Kiro | `.kiro/` directory | `.kiro/settings/mcp.json` | Hooks, prompts, steering docs |
+| Claude Code | `.claude/` directory | `.claude/mcp.json` | MCP tools only |
+| Cursor | `.cursor/` directory | `.cursor/mcp.json` | MCP tools only |
+| Generic | No agent detected | `.viewgraph/mcp.json` | MCP tools only |
+
+### Starting the server in later sessions
+
+Re-run `viewgraph-init` from your project. It restarts cleanly without duplicating config.
+
+---
+
+## Build from Source
+
+For contributors or anyone who wants to build the extension themselves.
 
 ```bash
 git clone https://github.com/sourjya/viewgraph.git
 cd viewgraph
 npm install
+npm run build                        # Chrome + Firefox
 ```
 
-### Step 2: Build the extension
+**Load in Chrome:** `chrome://extensions/` → Developer mode → Load unpacked → select `extension/.output/chrome-mv3`
 
-```bash
-npm run build                        # Chrome + Firefox + Playwright bundle
-npm run build:ext:chrome             # Chrome only
-npm run build:ext:firefox            # Firefox only
-```
+**Load in Firefox:** `about:debugging#/runtime/this-firefox` → Load Temporary Add-on → select any file in `extension/.output/firefox-mv3`
 
-### Step 3: Load in browser
-
-**Chrome:**
-1. Open `chrome://extensions/`
-2. Enable **Developer mode** (top-right toggle)
-3. Click **Load unpacked**
-4. Select `extension/.output/chrome-mv3`
-
-**Firefox:**
-1. Open `about:debugging#/runtime/this-firefox`
-2. Click **Load Temporary Add-on**
-3. Select any file inside `extension/.output/firefox-mv3`
-
-### Step 4: Run the server
-
-```bash
-npm run dev:server
-```
-
-### Step 5: Initialize in a test project
-
-Open a separate terminal in any project folder:
-
-```bash
-cd ~/some-project
-npx viewgraph-init
-```
-
-This points to the server you started in step 4.
+**Run the server:** `npm run dev:server`
 
 ---
 
-## Starting the server in later sessions
+## Updating
 
-The init script starts the server automatically on first run. For subsequent sessions, either:
+| Component | How to update |
+|---|---|
+| Chrome extension | Auto-updates from Chrome Web Store |
+| Firefox extension | Auto-updates from Firefox Add-ons |
+| MCP server (zero-config) | Automatic - `npx` fetches latest on each run |
+| MCP server (npm install) | `npm update -g @viewgraph/core` |
+| @viewgraph/playwright | `npm update @viewgraph/playwright` |
 
-- Re-run `npx viewgraph-init` from your project (restarts cleanly)
-- Or run `npm run dev:server` from the ViewGraph repo (if building from source)
+Check for updates: `npm outdated -g @viewgraph/core`
 
+---
 
-## Updating ViewGraph
+## Security
 
-ViewGraph has multiple components that update independently:
+All install methods run entirely on your machine. The server binds to `127.0.0.1` only - not accessible from the network. See [Security](../reference/security.md) for the full comparison matrix.
 
-| Component | How it updates | What you do |
-|---|---|---|
-| **Chrome extension** | Auto-updates from Chrome Web Store | Nothing - Chrome handles it automatically (checks every few hours) |
-| **Firefox extension** | Auto-updates from Firefox Add-ons | Nothing - Firefox handles it automatically (checks every 24 hours) |
-| **@viewgraph/core** (MCP server) | npm package | Run `npm update @viewgraph/core` in your project |
-| **@viewgraph/playwright** | npm package | Run `npm update @viewgraph/playwright` in your project |
-| **Power assets** (prompts, hooks, steering) | Re-run init script | Run `npx viewgraph-init` - it automatically updates files that are older than the source |
-| **MCP server process** | Restarts on init | Re-running `npx viewgraph-init` kills the old server and starts the updated one |
-
-### Updating the npm packages
-
-```bash
-cd ~/my-project
-npm update @viewgraph/core
-npx viewgraph-init
-```
-
-The `npm update` pulls the latest server code. The `npx viewgraph-init` restarts the server and updates any power assets (prompts, hooks, steering docs) that have changed since your last init.
-
-### Checking for updates
-
-```bash
-npm outdated @viewgraph/core @viewgraph/playwright
-```
-
-This shows your installed version vs the latest available version.
-
-### What triggers a version bump
-
-| Change type | Version bump | Example |
-|---|---|---|
-| Bug fixes | Patch (0.1.1 → 0.1.2) | Fix routing bug, fix prompt scope |
-| New features | Minor (0.1.2 → 0.2.0) | New MCP tool, sidebar redesign |
-| Breaking changes | Major (0.x → 1.0) | Capture format change, API change |
-
-Release notes are published on [GitHub Releases](https://github.com/sourjya/viewgraph/releases) and the [Roadmap](../reference/roadmap.md) page.
+---
 
 ## Troubleshooting
 
 | Problem | Solution |
 |---|---|
 | Extension icon doesn't appear | Check `chrome://extensions/` - is it enabled? |
-| Sidebar shows red dot | Server isn't running. Run `npx viewgraph-init` from your project. |
-| "Send to Agent" does nothing | Check sidebar connection status. Server must be running. Re-run `npx viewgraph-init` from your project. |
-| Captures not appearing in agent | Verify `.viewgraph/captures/` exists. Run `npx viewgraph-status` for a health check. |
-| Wrong project shown in sidebar | Add `--url` pattern. See [Multi-Project Setup](multi-project.md). |
+| Sidebar shows red dot | Server not running. Check MCP config or re-run `viewgraph-init`. |
+| "Send to Agent" does nothing | Check sidebar connection status. Restart your agent. |
+| Captures not appearing | Verify `.viewgraph/captures/` exists in your project. |
+| Wrong project in sidebar | See [Multi-Project Setup](multi-project.md) for URL patterns. |
 
-## Agent and IDE Compatibility
+## Cloud IDEs
 
-ViewGraph works with any MCP-compatible agent. The init script auto-detects your agent and writes the correct config file.
+The extension runs in your local browser. For remote environments, you need port forwarding:
 
-| Agent | MCP Config Location | Power Assets |
-|---|---|---|
-| Kiro | `.kiro/settings/mcp.json` | Hooks, prompts, steering docs |
-| Claude Code | `~/.claude/mcp.json` | MCP tools only |
-| Cursor | `.cursor/mcp.json` | MCP tools only |
-| Windsurf | `.windsurf/mcp.json` | MCP tools only |
-| Cline | `.cline/mcp.json` | MCP tools only |
-| Other MCP agents | `.viewgraph/mcp.json` | MCP tools only |
+| Environment | Port forwarding |
+|---|---|
+| Local IDE | Not needed |
+| GitHub Codespaces | Automatic |
+| Gitpod | Automatic |
+| SSH remote | `ssh -L 9876:localhost:9876` |
 
-### Cloud IDEs
-
-The extension runs in your local browser. The MCP server runs wherever your code is. For cloud IDEs (GitHub Codespaces, Gitpod, AWS Cloud9), you need port forwarding so the extension can reach the server.
-
-| Environment | MCP Server | Extension | Port Forwarding |
-|---|---|---|---|
-| Local IDE | localhost | localhost | Not needed |
-| Codespaces | Remote | Local browser | Automatic for most ports |
-| Gitpod | Remote | Local browser | Automatic for most ports |
-| SSH remote | Remote | Local browser | `ssh -L 9876:localhost:9876` |
-
-The standalone export modes (Copy MD, Download Report) work without any server connection. The `@viewgraph/playwright` package runs entirely server-side.
+Standalone exports (Copy MD, Download Report) work without any server connection.

@@ -2,6 +2,8 @@
 
 ViewGraph can run multiple projects simultaneously, each with its own server, captures directory, and URL routing.
 
+> **Single project?** You don't need this page. The [Quick Setup](installation.md#quick-setup-recommended) handles everything automatically. This guide is for running 2+ projects at the same time with separate capture directories.
+
 ## How Port Allocation Works
 
 Each project gets its own MCP server on a unique port. The init script handles this automatically:
