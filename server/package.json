@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "node index.js",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage --config vitest.coverage.config.js",
     "test:watch": "vitest"
   },
   "engines": {

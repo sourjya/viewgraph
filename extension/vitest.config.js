@@ -1,7 +1,8 @@
 /**
- * Vitest Configuration - Extension
+ * Vitest Configuration - Extension Unit Tests
  *
- * Coverage reports generated to extension/coverage/.
+ * Uses jsdom environment to simulate DOM APIs for testing traverser,
+ * salience scorer, and serializer without a real browser.
  */
 
 import { defineConfig } from 'vitest/config';
@@ -9,6 +10,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     environment: 'jsdom',
+    include: ['tests/unit/**/*.test.js', 'tests/integration/**/*.test.js'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'text-summary', 'json-summary', 'html'],
