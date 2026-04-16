@@ -9,7 +9,7 @@
 
 import { ATTR } from '../selector.js';
 import { chevronLeftIcon } from './icons.js';
-// import { discoverServer, getAgentName, fetchConfig } from '../constants.js';
+import { discoverServer } from '../constants.js';
 
 /**
  * Create the settings screen element.
@@ -151,26 +151,23 @@ export function createSettings() {
   }
 
   (async () => {
-    for (let port = 9876; port <= 9879; port++) {
+    const serverUrl = await discoverServer(window.location.href);
+    if (serverUrl) {
+      const port = new URL(serverUrl).port || '9876';
+      const dot = document.createElement('span');
+      dot.style.color = '#4ade80';
+      dot.textContent = '\u25cf';
+      serverLine.replaceChildren(dot, document.createTextNode(` Connected (localhost:${port})`));
       try {
-        const res = await fetch(`http://127.0.0.1:${port}/health`, { signal: AbortSignal.timeout(2000) });
-        if (res.ok) {
-          const dot = document.createElement('span');
-          dot.style.color = '#4ade80';
-          dot.textContent = '\u25cf';
-          serverLine.replaceChildren(dot, document.createTextNode(` Connected (localhost:${port})`));
-          try {
-            const info = await fetch(`http://127.0.0.1:${port}/info`, { signal: AbortSignal.timeout(2000) }).then((r) => r.json());
-            renderProjectInfo(info);
-          } catch { /* info failed */ }
-          return;
-        }
-      } catch { /* try next port */ }
+        const info = await fetch(`${serverUrl}/info`, { signal: AbortSignal.timeout(2000) }).then((r) => r.json());
+        renderProjectInfo(info);
+      } catch { /* info failed */ }
+    } else {
+      const offDot = document.createElement('span');
+      offDot.style.color = '#f87171';
+      offDot.textContent = '\u25cf';
+      serverLine.replaceChildren(offDot, document.createTextNode(' MCP server offline'));
     }
-    const offDot = document.createElement('span');
-    offDot.style.color = '#f87171';
-    offDot.textContent = '\u25cf';
-    serverLine.replaceChildren(offDot, document.createTextNode(' MCP server offline'));
   })();
 
   let visible = false;
