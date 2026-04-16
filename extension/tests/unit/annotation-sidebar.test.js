@@ -127,6 +127,21 @@ describe('sidebar creation', () => {
     destroy();
     expect(document.querySelector(`[${ATTR}="shadow-host"]`)).toBeNull();
   });
+  it('(+) mode button hint text is at least 9px', () => {
+    start();
+    create();
+    const modeBar = shadowQuery(`[${ATTR}="mode-bar"]`);
+    if (modeBar) {
+      const hints = modeBar.querySelectorAll('span');
+      const hintSpans = [...hints].filter((s) => s.textContent.match(/Click to select|Shift\+drag|Add a page/));
+      for (const h of hintSpans) {
+        const size = parseInt(h.style.fontSize);
+        expect(size).toBeGreaterThanOrEqual(9);
+      }
+    }
+    stop();
+    destroy();
+  });
 });
 
 // ---------------------------------------------------------------------------
