@@ -26,7 +26,7 @@ import {
 import { show as showPanel } from '../lib/annotation-panel.js';
 import { create as createSidebar, refresh as refreshSidebar, destroy as destroySidebar } from '../lib/annotation-sidebar.js';
 import { cropRegions } from '../lib/capture/screenshot-crop.js';
-import { buildReportZip } from '../lib/export-zip.js';
+import { buildReportZip } from '../lib/export/export-zip.js';
 
 /** Serialize annotations for capture JSON. Used by send-review and annotations-only. */
 function serializeAnnotations(annotations) {

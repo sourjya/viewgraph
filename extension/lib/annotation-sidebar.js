@@ -17,7 +17,7 @@ import { createStrip } from './sidebar/strip.js';
 import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling, pollRequests } from './sidebar/sync.js';
 import { KEYS, get as storageGet, set as storageSet } from './storage.js';
 import { groupRequests, smartPath } from './network-grouper.js';
-import { formatMarkdown } from './export-markdown.js';
+import { formatMarkdown } from './export/export-markdown.js';
 import { discoverServer, getAgentName, fetchConfig, updateConfig } from './constants.js';
 import { collectNetworkState } from './collectors/network-collector.js';
 import { getConsoleState } from './collectors/console-collector.js';
