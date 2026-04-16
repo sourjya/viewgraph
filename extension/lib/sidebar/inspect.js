@@ -48,7 +48,7 @@ export function createInspectTab(callbacks = {}) {
 export { createSection };
 
 /** Create a collapsible section with copy and note buttons. */
-function createSection(title, badgeText, badgeColor) {
+function createSection(title, badgeText, badgeColor, onRefresh) {
   const section = document.createElement('div');
   const headerRow = document.createElement('div');
   Object.assign(headerRow.style, {
@@ -125,7 +125,7 @@ function createSection(title, badgeText, badgeColor) {
     if (ann) {
       updateComment(ann.id, '');
       ann.diagnostic = { section: title, data: fullData };
-      if (callbacks.onRefresh) callbacks.onRefresh();
+      if (onRefresh) onRefresh();
       noteBtn.dataset.noted = 'true';
       noteBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
       noteBtn.style.color = '#4ade80';
@@ -176,7 +176,7 @@ async function refreshInspect(container, callbacks) {
   const failedReqs = allReqs.filter((r) => r.failed);
   const netSummary = `${failedReqs.length ? failedReqs.length + ' failed / ' : ''}${allReqs.length}`;
   const netColor = failedReqs.length > 0 ? '#dc2626' : '#333';
-  const { section: netSection, body: netBody } = createSection('Network', netSummary, netColor);
+  const { section: netSection, body: netBody } = createSection('Network', netSummary, netColor, callbacks.onRefresh);
   if (allReqs.length === 0) {
     netBody.textContent = 'No requests captured';
     Object.assign(netBody.style, { color: '#555', fontStyle: 'italic' });
@@ -248,7 +248,7 @@ async function refreshInspect(container, callbacks) {
   if (warnCount) conBadgeParts.push(`${warnCount} warn`);
   const conBadge = conBadgeParts.length ? conBadgeParts.join(', ') : '\u2713 No errors or warnings';
   const conColor = errCount > 0 ? '#dc2626' : warnCount > 0 ? '#f59e0b' : '#333';
-  const { section: conSection, body: conBody } = createSection('Console', conBadge, conColor);
+  const { section: conSection, body: conBody } = createSection('Console', conBadge, conColor, callbacks.onRefresh);
   for (const entry of (cs.entries || []).slice(0, 20)) {
     const row = document.createElement('div');
     Object.assign(row.style, { padding: '2px 0', color: entry.level === 'error' ? '#f87171' : entry.level === 'warn' ? '#fbbf24' : '#9ca3af' });
@@ -262,12 +262,25 @@ async function refreshInspect(container, callbacks) {
   const lmIssues = lm.issues?.length || 0;
   const lmBadge = lmIssues > 0 ? `\u26a0 ${lmIssues}` : `${lm.landmarks?.length || 0} found`;
   const lmColor = lmIssues > 0 ? '#f59e0b' : '#333';
-  const { section: lmSection, body: lmBody } = createSection('Landmarks', lmBadge, lmColor);
+  const { section: lmSection, body: lmBody } = createSection('Landmarks', lmBadge, lmColor, callbacks.onRefresh);
   if (lm.landmarks?.length) {
+    // Show issues first if any
+    if (lm.issues?.length) {
+      for (const issue of lm.issues) {
+        const row = document.createElement('div');
+        row.textContent = `\u26a0 ${issue.message || issue}`;
+        Object.assign(row.style, { color: '#f59e0b', padding: '2px 0', fontSize: '10px' });
+        lmBody.appendChild(row);
+      }
+      const sep = document.createElement('hr');
+      Object.assign(sep.style, { border: 'none', borderTop: '1px solid #333', margin: '4px 0' });
+      lmBody.appendChild(sep);
+    }
     for (const l of lm.landmarks) {
       const row = document.createElement('div');
-      row.textContent = `<${l.tag}>${l.label ? ` "${l.label}"` : ''}`;
-      Object.assign(row.style, { color: '#9ca3af', padding: '1px 0' });
+      const label = l.label ? ` "${l.label}"` : ' (unlabeled)';
+      row.textContent = `<${l.tag}>${label}`;
+      Object.assign(row.style, { color: '#9ca3af', padding: '2px 0', fontSize: '10px' });
       lmBody.appendChild(row);
     }
   }
@@ -280,11 +293,14 @@ async function refreshInspect(container, callbacks) {
     if (!checkRendered(hiddenEls[i]) && hiddenEls[i].textContent?.trim()) hiddenList.push(hiddenEls[i]);
   }
   if (hiddenList.length > 0) {
-    const { section: visSection, body: visBody } = createSection('Visibility', `${hiddenList.length}`, '#f59e0b');
+    const { section: visSection, body: visBody } = createSection('Visibility', `${hiddenList.length}`, '#f59e0b', callbacks.onRefresh);
     for (const el of hiddenList.slice(0, 10)) {
       const row = document.createElement('div');
-      row.textContent = `${el.tagName.toLowerCase()} - hidden`;
-      Object.assign(row.style, { color: '#f59e0b', padding: '1px 0' });
+      const text = el.textContent?.trim().slice(0, 40) || '';
+      const tag = el.tagName.toLowerCase();
+      const id = el.id ? `#${el.id}` : '';
+      row.textContent = `${tag}${id}${text ? ': "' + text + '"' : ''} - hidden`;
+      Object.assign(row.style, { color: '#f59e0b', padding: '2px 0', fontSize: '10px' });
       visBody.appendChild(row);
     }
     container.appendChild(visSection);
@@ -292,7 +308,7 @@ async function refreshInspect(container, callbacks) {
 
   const stacking = collectStackingContexts();
   if (stacking.issues?.length > 0) {
-    const { section: stackSection, body: stackBody } = createSection('Stacking', `\u26a0 ${stacking.issues.length}`, '#f59e0b');
+    const { section: stackSection, body: stackBody } = createSection('Stacking', `\u26a0 ${stacking.issues.length}`, '#f59e0b', callbacks.onRefresh);
     for (const issue of stacking.issues.slice(0, 10)) {
       const row = document.createElement('div');
       row.textContent = issue.description || `z-index conflict: ${issue.element}`;
@@ -304,7 +320,7 @@ async function refreshInspect(container, callbacks) {
 
   const focus = collectFocusChain();
   if (focus.issues?.length > 0) {
-    const { section: focusSection, body: focusBody } = createSection('Focus', `\u26a0 ${focus.issues.length}`, '#f59e0b');
+    const { section: focusSection, body: focusBody } = createSection('Focus', `\u26a0 ${focus.issues.length}`, '#f59e0b', callbacks.onRefresh);
     for (const issue of focus.issues.slice(0, 10)) {
       const row = document.createElement('div');
       row.textContent = issue.description || issue.type;
@@ -316,7 +332,7 @@ async function refreshInspect(container, callbacks) {
 
   const scroll = collectScrollContainers();
   if (scroll.containers?.length > 0) {
-    const { section: scrollSection, body: scrollBody } = createSection('Scroll', `\u26a0 ${scroll.containers.length}`, '#f59e0b');
+    const { section: scrollSection, body: scrollBody } = createSection('Scroll', `\u26a0 ${scroll.containers.length}`, '#f59e0b', callbacks.onRefresh);
     for (const c of scroll.containers.slice(0, 10)) {
       const row = document.createElement('div');
       row.textContent = c.selector || 'scroll container';
