@@ -271,6 +271,26 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       return json(res, 201, { filename });
     }
 
+    // POST /screenshots - receive PNG screenshot from extension
+    if (method === 'POST' && url === '/screenshots') {
+      const screenshotFilename = req.headers['x-capture-filename'];
+      if (!screenshotFilename) return json(res, 400, { error: 'Missing X-Capture-Filename header' });
+
+      let body;
+      try { body = await readBody(req, MAX_SNAPSHOT); } catch {
+        return json(res, 413, { error: 'Payload too large (max 10MB)' });
+      }
+
+      const screenshotsDir = path.join(capturesDir, '..', 'screenshots');
+      await mkdir(screenshotsDir, { recursive: true });
+      const safeName = path.basename(screenshotFilename);
+      const safePath = path.resolve(screenshotsDir, safeName);
+      if (!safePath.startsWith(path.resolve(screenshotsDir))) return json(res, 400, { error: 'Invalid filename' });
+      await writeFile(safePath, Buffer.from(body, 'binary'));
+
+      return json(res, 201, { filename: safeName });
+    }
+
     // GET /annotations/resolved?url=... - resolved annotations for a URL
     // Extension polls this on sidebar open to sync resolution state from Kiro
     if (method === 'GET' && url.startsWith('/annotations/resolved')) {

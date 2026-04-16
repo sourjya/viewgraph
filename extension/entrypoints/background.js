@@ -148,6 +148,26 @@ async function pushSnapshot(html, filenameStem) {
 }
 
 /**
+ * Push a screenshot PNG to the MCP server. Converts data URL to binary.
+ * @param {string} dataUrl - Base64 PNG data URL from captureVisibleTab
+ * @param {string} filename - Screenshot filename (e.g., viewgraph-host-ts.png)
+ * @param {string} serverUrl - Server base URL
+ */
+async function pushScreenshot(dataUrl, filename) {
+  try {
+    const base64 = dataUrl.split(',')[1];
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    await fetch(`${SERVER_URL}/screenshots`, {
+      method: 'POST',
+      headers: { 'content-type': 'image/png', 'x-capture-filename': filename },
+      body: bytes,
+    });
+  } catch { /* server not running */ }
+}
+
+/**
  * Capture a screenshot of the visible tab area.
  * @param {number} tabId
  * @returns {Promise<string|null>} Base64 PNG data URL, or null on failure
@@ -251,17 +271,27 @@ export default defineBackground(() => {
     // Handle review-mode send - push annotated capture to server
     if (message.type === 'send-review') {
       (async () => {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        console.log('[viewgraph] send-review: tab', tab?.url, 'includeCapture:', message.includeCapture);
-        if (!tab?.id) { sendResponse({ ok: false, error: 'No active tab' }); return; }
+        const [_tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        console.log('[viewgraph] send-review: tab', _tab?.url, 'includeCapture:', message.includeCapture);
+        if (!_tab?.id) { sendResponse({ ok: false, error: 'No active tab' }); return; }
 
-        // Ask content script for annotations (and optionally a full capture)
+        // Ask content script for annotations (and optionally a full capture with snapshot)
         const msgType = message.includeCapture ? 'send-review' : 'send-annotations-only';
-        const result = await chrome.tabs.sendMessage(tab.id, { type: msgType, sessionNote: message.sessionNote });
+        const result = await chrome.tabs.sendMessage(_tab.id, {
+          type: msgType, sessionNote: message.sessionNote,
+          includeSnapshot: message.includeSnapshot !== false,
+        });
         console.log('[viewgraph] send-review: content script result', result?.ok);
         if (!result?.ok) { sendResponse({ ok: false, error: result?.error }); return; }
 
         const pushResult = await pushToServer(result.capture);
+
+        // Push HTML snapshot if available
+        if (result.snapshot && pushResult?.filename) {
+          const snapshotStem = pushResult.filename.replace(/\.json$/, '');
+          await pushSnapshot(result.snapshot, snapshotStem);
+        }
+
         sendResponse({ ok: true, pushed: !!pushResult, filename: pushResult?.filename });
       })();
       return true;
@@ -332,6 +362,10 @@ export default defineBackground(() => {
           await pushSnapshot(result.snapshot, snapshotStem);
         }
 
+        // Push screenshot PNG if captured
+        if (screenshot && capture.metadata.screenshot) {
+          await pushScreenshot(screenshot, capture.metadata.screenshot);
+        }
         sendResponse({
           ok: true,
           filename,

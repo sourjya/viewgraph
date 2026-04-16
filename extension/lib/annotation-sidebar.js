@@ -490,7 +490,7 @@ export function create() {
     const noteInput = hostEl?.shadowRoot?.querySelector(`[${ATTR}="session-note"]`);
     const sessionNote = noteInput?.value?.trim() || undefined;
     if (noteInput) noteInput.value = '';
-    chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true, sessionNote }, () => {});
+    chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true, includeSnapshot: true, sessionNote }, () => {});
     // Mark unresolved annotations as pending (visual feedback while agent works)
     for (const ann of getAnnotations()) {
       if (!ann.resolved) ann.pending = true;
@@ -1846,7 +1846,7 @@ export function refresh() {
             if (serverUrl) await fetch(`${serverUrl}/requests/${req.id}/ack`, { method: 'POST', headers: {} });
           } catch { /* best effort */ }
           // Use capture with keepSidebar to get full DOM without tearing down sidebar
-          chrome.runtime.sendMessage({ type: 'capture', includeSnapshot: false, keepSidebar: true }, () => {
+          chrome.runtime.sendMessage({ type: 'capture', includeSnapshot: true, keepSidebar: true }, () => {
             // Green flash + fade out
             entry.style.transition = 'background 0.3s, opacity 0.5s';
             entry.style.background = 'rgba(74, 222, 128, 0.15)';

@@ -148,7 +148,8 @@ export default defineContentScript({
           const capture = serialize(scored, relations, enrichment);
           capture.metadata.captureMode = 'review';
           capture.annotations = serializeAnnotations(getAnnotations());
-          sendResponse({ ok: true, capture });
+          const snapshot = message.includeSnapshot ? captureSnapshot() : null;
+          sendResponse({ ok: true, capture, snapshot });
         })();
         return true;
       }
