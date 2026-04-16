@@ -10,16 +10,16 @@
  */
 
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker, MARKER_COLORS, updateSeverity, updateComment } from './annotate.js';
+import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker, updateSeverity } from './annotate.js';
 import { resolveType, getBadgeColor, getBadgeIcon, getFilterIcon } from './annotation-types.js';
 import { createHelpCard } from './sidebar/help.js';
 import { createStrip } from './sidebar/strip.js';
 import { createSettings } from './sidebar/settings.js';
-import { createInspectTab, createSection } from './sidebar/inspect.js';
-import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling, pollRequests } from './sidebar/sync.js';
+import { createInspectTab } from './sidebar/inspect.js';
+import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from './sidebar/sync.js';
 import { EVENTS, createEventBus } from './sidebar/events.js';
-import { KEYS, get as storageGet, set as storageSet } from './storage.js';
-import { groupRequests, smartPath } from './network-grouper.js';
+import { KEYS, set as storageSet } from './storage.js';
+// import { groupRequests, smartPath } from './network-grouper.js';
 import { formatMarkdown } from './export/export-markdown.js';
 import { discoverServer, getAgentName, fetchConfig, updateConfig } from './constants.js';
 import { collectNetworkState } from './collectors/network-collector.js';
@@ -30,7 +30,7 @@ import { collectFocusChain } from './collectors/focus-collector.js';
 import { collectScrollContainers } from './collectors/scroll-collector.js';
 import { collectLandmarks } from './collectors/landmark-collector.js';
 import { collectComponents } from './collectors/component-collector.js';
-import { checkRendered } from './collectors/visibility-collector.js';
+// import { checkRendered } from './collectors/visibility-collector.js';
 import { startWatcher, stopWatcher, isWatcherEnabled } from './session/continuous-capture.js';
 import { isRecording, startSession, stopSession, getState } from './session/session-manager.js';
 import { startJourney, stopJourney } from './session/journey-recorder.js';
@@ -859,7 +859,7 @@ export function create() {
     const ann = anns.find((a) => a.uuid === uuid && !a.resolved);
     if (ann) { ann.resolved = true; ann.resolution = resolution; refresh(); }
   });
-  _bus.on(EVENTS.AUDIT_RESULTS, ({ audit, filename }) => {
+  _bus.on(EVENTS.AUDIT_RESULTS, ({ audit, filename: _filename }) => {
     const badge = hostEl?.shadowRoot?.querySelector(`[${ATTR}="audit-badge"]`);
     if (badge && audit) {
       const parts = [];

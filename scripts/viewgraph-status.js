@@ -17,6 +17,9 @@
 
 import { existsSync, readdirSync, readFileSync } from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const VIEWGRAPH_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const CWD = process.cwd();
 const VG_DIR = path.join(CWD, '.viewgraph');

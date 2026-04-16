@@ -8,7 +8,7 @@
  */
 
 import { ATTR } from '../selector.js';
-import { discoverServer, getAgentName, fetchConfig } from '../constants.js';
+// import { discoverServer, getAgentName, fetchConfig } from '../constants.js';
 
 /**
  * Create the settings screen element.

@@ -15,14 +15,14 @@ import { collectStackingContexts } from '../collectors/stacking-collector.js';
 import { collectFocusChain } from '../collectors/focus-collector.js';
 import { collectScrollContainers } from '../collectors/scroll-collector.js';
 import { collectLandmarks } from '../collectors/landmark-collector.js';
-import { collectComponents } from '../collectors/component-collector.js';
+// import { collectComponents } from '../collectors/component-collector.js';
 import { checkRendered } from '../collectors/visibility-collector.js';
-import { startWatcher, stopWatcher, isWatcherEnabled } from '../session/continuous-capture.js';
-import { isRecording, startSession, stopSession, getState } from '../session/session-manager.js';
-import { startJourney, stopJourney } from '../session/journey-recorder.js';
+// import { startWatcher, stopWatcher, isWatcherEnabled } from '../session/continuous-capture.js';
+// import { isRecording, startSession, stopSession, getState } from '../session/session-manager.js';
+// import { startJourney, stopJourney } from '../session/journey-recorder.js';
 import { groupRequests, smartPath } from '../network-grouper.js';
 import { getAnnotations, addPageNote, updateComment } from '../annotate.js';
-import { discoverServer, updateConfig } from '../constants.js';
+// import { discoverServer, updateConfig } from '../constants.js';
 
 /**
  * Create the inspect tab content element and its refresh function.

@@ -15,7 +15,7 @@ describe('EVENTS catalog', () => {
   });
 
   it('(+) all values are vg: prefixed strings', () => {
-    for (const [key, value] of Object.entries(EVENTS)) {
+    for (const [_key, value] of Object.entries(EVENTS)) {
       expect(typeof value).toBe('string');
       expect(value.startsWith('vg:')).toBe(true);
     }

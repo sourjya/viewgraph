@@ -9,7 +9,7 @@
 
 import { discoverServer } from '../constants.js';
 import { getAnnotations } from '../annotate.js';
-import { ATTR } from '../selector.js';
+// import { ATTR } from '../selector.js';
 
 /** Polling interval for resolution sync (5 seconds). */
 const RESOLUTION_POLL_MS = 5000;
