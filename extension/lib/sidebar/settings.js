@@ -7,9 +7,9 @@
  * @see docs/architecture/modularity-audit.md - F14 sidebar decomposition
  */
 
-import { ATTR } from '../selector.js';
+import { ATTR } from '#lib/selector.js';
 import { chevronLeftIcon } from './icons.js';
-import { discoverServer, DEFAULT_HTTP_PORT } from '../constants.js';
+import { discoverServer, DEFAULT_HTTP_PORT } from '#lib/constants.js';
 
 /**
  * Create the settings screen element.

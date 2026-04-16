@@ -7,8 +7,8 @@
  * @see docs/architecture/modularity-audit.md - F14 sidebar decomposition
  */
 
-import { ATTR } from '../selector.js';
-import { getAnnotations } from '../annotate.js';
+import { ATTR } from '#lib/selector.js';
+import { getAnnotations } from '#lib/annotate.js';
 import { chevronLeftIcon, chatBubbleIcon } from './icons.js';
 
 /**

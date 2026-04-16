@@ -7,7 +7,7 @@
  * @see docs/architecture/modularity-audit.md - F14 sidebar decomposition
  */
 
-import { ATTR } from '../selector.js';
+import { ATTR } from '#lib/selector.js';
 
 /**
  * Create the help card element with shortcuts and links.

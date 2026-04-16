@@ -7,21 +7,21 @@
  * @see docs/architecture/modularity-audit.md - F14 sidebar decomposition
  */
 
-import { ATTR } from '../selector.js';
-import { collectNetworkState } from '../collectors/network-collector.js';
-import { getConsoleState } from '../collectors/console-collector.js';
-import { collectBreakpoints } from '../collectors/breakpoint-collector.js';
-import { collectStackingContexts } from '../collectors/stacking-collector.js';
-import { collectFocusChain } from '../collectors/focus-collector.js';
-import { collectScrollContainers } from '../collectors/scroll-collector.js';
-import { collectLandmarks } from '../collectors/landmark-collector.js';
-import { checkRendered } from '../collectors/visibility-collector.js';
-import { startWatcher, stopWatcher, isWatcherEnabled } from '../session/continuous-capture.js';
-import { isRecording, startSession, stopSession, getState } from '../session/session-manager.js';
-import { startJourney, stopJourney } from '../session/journey-recorder.js';
-import { groupRequests, smartPath } from '../network-grouper.js';
-import { getAnnotations, addPageNote, updateComment } from '../annotate.js';
-import { discoverServer, updateConfig } from '../constants.js';
+import { ATTR } from '#lib/selector.js';
+import { collectNetworkState } from '#lib/collectors/network-collector.js';
+import { getConsoleState } from '#lib/collectors/console-collector.js';
+import { collectBreakpoints } from '#lib/collectors/breakpoint-collector.js';
+import { collectStackingContexts } from '#lib/collectors/stacking-collector.js';
+import { collectFocusChain } from '#lib/collectors/focus-collector.js';
+import { collectScrollContainers } from '#lib/collectors/scroll-collector.js';
+import { collectLandmarks } from '#lib/collectors/landmark-collector.js';
+import { checkRendered } from '#lib/collectors/visibility-collector.js';
+import { startWatcher, stopWatcher, isWatcherEnabled } from '#lib/session/continuous-capture.js';
+import { isRecording, startSession, stopSession, getState } from '#lib/session/session-manager.js';
+import { startJourney, stopJourney } from '#lib/session/journey-recorder.js';
+import { groupRequests, smartPath } from '#lib/network-grouper.js';
+import { getAnnotations, addPageNote, updateComment } from '#lib/annotate.js';
+import { discoverServer, updateConfig } from '#lib/constants.js';
 import { renderCaptures } from './captures.js';
 import { copyIcon, checkIcon, noteIcon } from './icons.js';
 

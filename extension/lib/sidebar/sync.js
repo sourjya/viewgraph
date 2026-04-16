@@ -7,9 +7,9 @@
  * @see docs/architecture/modularity-audit.md - F14 sidebar decomposition
  */
 
-import { discoverServer } from '../constants.js';
-import { getAnnotations } from '../annotate.js';
-// import { ATTR } from '../selector.js';
+import { discoverServer } from '#lib/constants.js';
+import { getAnnotations } from '#lib/annotate.js';
+// import { ATTR } from '#lib/selector.js';
 
 /** Polling interval for resolution sync (5 seconds). */
 const RESOLUTION_POLL_MS = 5000;

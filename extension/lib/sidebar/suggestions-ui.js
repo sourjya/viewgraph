@@ -9,7 +9,7 @@
  * @see .kiro/specs/auto-suggestions/design.md
  */
 
-import { ATTR } from '../selector.js';
+import { ATTR } from '#lib/selector.js';
 import { FONT } from './styles.js';
 
 /** Severity icons for display. */

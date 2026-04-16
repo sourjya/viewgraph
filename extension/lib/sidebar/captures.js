@@ -7,8 +7,8 @@
  * @see docs/architecture/modularity-audit.md - F14 sidebar decomposition
  */
 
-import { ATTR } from '../selector.js';
-import { discoverServer } from '../constants.js';
+import { ATTR } from '#lib/selector.js';
+import { discoverServer } from '#lib/constants.js';
 
 /**
  * Fetch captures and baselines from server, render into container.

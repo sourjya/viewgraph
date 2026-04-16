@@ -11,14 +11,14 @@
  * @see .kiro/specs/auto-suggestions/design.md
  */
 
-import { collectNetworkState } from '../collectors/network-collector.js';
-import { getConsoleState } from '../collectors/console-collector.js';
-import { collectLandmarks } from '../collectors/landmark-collector.js';
-import { collectFocusChain } from '../collectors/focus-collector.js';
-import { collectStackingContexts } from '../collectors/stacking-collector.js';
-import { diagnoseElement } from '../ui/element-diagnostics.js';
-import { buildSelector, ATTR } from '../selector.js';
-import { getAnnotations } from '../annotate.js';
+import { collectNetworkState } from '#lib/collectors/network-collector.js';
+import { getConsoleState } from '#lib/collectors/console-collector.js';
+import { collectLandmarks } from '#lib/collectors/landmark-collector.js';
+import { collectFocusChain } from '#lib/collectors/focus-collector.js';
+import { collectStackingContexts } from '#lib/collectors/stacking-collector.js';
+import { diagnoseElement } from '#lib/ui/element-diagnostics.js';
+import { buildSelector, ATTR } from '#lib/selector.js';
+import { getAnnotations } from '#lib/annotate.js';
 
 /** Default cap on suggestions returned. */
 const DEFAULT_MAX = 10;

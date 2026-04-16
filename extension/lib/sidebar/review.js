@@ -10,10 +10,10 @@
  * @see lib/sidebar/events.js - event bus for inter-module communication
  */
 
-import { ATTR } from '../selector.js';
-import { resolveType, getBadgeColor, getBadgeIcon, getFilterIcon } from '../annotation-types.js';
-import { discoverServer } from '../constants.js';
-import { KEYS, set as storageSet } from '../storage.js';
+import { ATTR } from '#lib/selector.js';
+import { resolveType, getBadgeColor, getBadgeIcon, getFilterIcon } from '#lib/annotation-types.js';
+import { discoverServer } from '#lib/constants.js';
+import { KEYS, set as storageSet } from '#lib/storage.js';
 import { trashIcon, cameraIcon, closeIcon, checkIcon, circleIcon } from './icons.js';
 import { FONT } from './styles.js';
 
