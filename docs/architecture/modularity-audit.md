@@ -170,3 +170,121 @@ The sidebar split requires parallel test reorganization. Currently `annotation-s
 3. Run full suite after each move to catch breakage
 4. Delete the monolith only after all tests are migrated
 5. Verify test count matches before and after (currently 58 sidebar tests)
+
+
+## Annotation Type Architecture
+
+### Current Problem
+
+Annotation type detection is scattered across 5+ files using ad-hoc field checks:
+
+```js
+// annotation-sidebar.js (badge rendering)
+if (ann.diagnostic) { ... }
+else if ((ann.category || '').includes('idea')) { ... }
+else if (ann.type === 'page-note') { ... }
+else { ... }
+
+// annotation-panel.js (severity hiding)
+const isIdea = (ann.category || '').includes('idea');
+severityChip.style.display = isIdea ? 'none' : 'inline-block';
+
+// annotate.js (serialization)
+...(diagnostic ? { diagnostic } : {}), ...(pending ? { pending } : {})
+
+// content.js (capture serialization)
+...(a.diagnostic ? { diagnostic: a.diagnostic } : {})
+```
+
+Every new annotation type requires changes in all these locations. The `diagnostic` persistence bug (missing from two serialization points) was a direct consequence of this scattered approach.
+
+### Option A: Class Inheritance (Rejected)
+
+```js
+class Annotation { ... }
+class ElementAnnotation extends Annotation { ... }
+class IdeaAnnotation extends Annotation { ... }
+class DiagnosticAnnotation extends Annotation { ... }
+```
+
+**Why rejected:**
+1. **Serialization boundary** - Annotations cross `chrome.runtime.sendMessage()`, `chrome.storage`, and HTTP POST to the server. All three serialize to plain JSON. Class instances don't survive these boundaries - you'd need `toJSON()` + `fromJSON()` factory methods at every crossing point, adding complexity instead of reducing it.
+2. **Paradigm mismatch** - The entire codebase is functional (pure functions + plain objects). Introducing class hierarchies creates two paradigms that developers must context-switch between.
+3. **Collector/tool compatibility** - 14 enrichment collectors and 36 MCP tools all expect plain objects. Changing the annotation shape ripples across 50+ files.
+4. **Inheritance fragility** - Annotation types aren't a clean hierarchy. An idea can also be a page note. A diagnostic can be resolved. Inheritance forces single-parent classification; annotations have overlapping traits.
+
+### Option B: Type Registry + Factory (Recommended)
+
+A single `annotation-types.js` module that centralizes all type-specific behavior:
+
+```js
+// extension/lib/annotation-types.js
+
+const TYPES = {
+  element:      { badge: (ann) => MARKER_COLORS[(ann.id - 1) % MARKER_COLORS.length],
+                  icon: null, hasSeverity: true, label: 'Bug' },
+  region:       { badge: (ann) => MARKER_COLORS[(ann.id - 1) % MARKER_COLORS.length],
+                  icon: null, hasSeverity: true, label: 'Region' },
+  'page-note':  { badge: () => '#0ea5e9', icon: PAGE_ICON_SVG,
+                  hasSeverity: true, label: 'Note' },
+  idea:         { badge: () => '#eab308', icon: LIGHTBULB_SVG,
+                  hasSeverity: false, label: 'Idea' },
+  diagnostic:   { badge: () => '#0d9488', icon: TERMINAL_SVG,
+                  hasSeverity: false, label: 'Diagnostic' },
+};
+
+/** Resolve annotation type from its properties. Single source of truth. */
+export function resolveType(ann) {
+  if (ann.diagnostic) return 'diagnostic';
+  if ((ann.category || '').includes('idea')) return 'idea';
+  if (ann.type === 'page-note') return 'page-note';
+  if (ann.nids?.length > 1) return 'region';
+  return 'element';
+}
+
+export function getBadgeColor(ann) { return TYPES[resolveType(ann)].badge(ann); }
+export function getBadgeIcon(ann) { return TYPES[resolveType(ann)].icon; }
+export function hasSeverity(ann) { return TYPES[resolveType(ann)].hasSeverity; }
+export function getTypeLabel(ann) { return TYPES[resolveType(ann)].label; }
+
+/** Fields to serialize for each type. Prevents missing-field bugs. */
+const EXTRA_FIELDS = {
+  diagnostic: ['diagnostic'],
+  idea: [],
+  'page-note': [],
+  region: [],
+  element: [],
+};
+
+export function serializeAnnotation(ann) {
+  const base = { id: ann.id, uuid: ann.uuid, type: ann.type, region: ann.region,
+    comment: ann.comment, severity: ann.severity, category: ann.category,
+    nids: ann.nids, ancestor: ann.ancestor, element: ann.element,
+    timestamp: ann.timestamp, resolved: ann.resolved, resolution: ann.resolution };
+  const extras = EXTRA_FIELDS[resolveType(ann)] || [];
+  for (const field of extras) { if (ann[field] !== undefined) base[field] = ann[field]; }
+  if (ann.pending) base.pending = true;
+  return base;
+}
+```
+
+**Why this approach:**
+
+1. **Plain objects preserved** - Annotations remain plain JSON objects. No serialization boundary issues. `chrome.runtime.sendMessage()`, `chrome.storage`, and HTTP POST all work unchanged.
+2. **Single source of truth** - `resolveType()` replaces all scattered `if (ann.diagnostic)` / `if (ann.category.includes('idea'))` checks. One function, one place to update.
+3. **Serialization safety** - `serializeAnnotation()` knows every type's extra fields. The `diagnostic` persistence bug becomes impossible - the type registry declares which fields each type needs.
+4. **New types are one-line additions** - Adding a new annotation type means adding one entry to `TYPES` and optionally one entry to `EXTRA_FIELDS`. No changes to sidebar, panel, or content script.
+5. **Composable traits** - An annotation can be both an idea and a page note. `resolveType()` handles priority ordering. No inheritance diamond problem.
+6. **Testable in isolation** - `resolveType()`, `getBadgeColor()`, `hasSeverity()` are pure functions. Easy to unit test without DOM or chrome mocks.
+7. **Gradual migration** - Can be introduced incrementally. Replace one `if (ann.diagnostic)` check at a time with `resolveType(ann) === 'diagnostic'`. No big-bang refactor needed.
+
+### Migration Plan
+
+1. Create `extension/lib/annotation-types.js` with the type registry
+2. Replace badge rendering in `annotation-sidebar.js` with `getBadgeColor()` / `getBadgeIcon()`
+3. Replace severity hiding in `annotation-panel.js` with `hasSeverity()`
+4. Replace serialization in `annotate.js` and `content.js` with `serializeAnnotation()`
+5. Add comprehensive tests for `annotation-types.js` (type resolution, serialization, edge cases)
+6. Grep for remaining `ann.diagnostic` / `ann.category.includes('idea')` checks and replace
+
+This should be done as part of the F14 sidebar decomposition, not as a separate effort.
