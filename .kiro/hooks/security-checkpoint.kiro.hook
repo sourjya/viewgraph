@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "name": "Security Checkpoint",
+  "description": "Reminds to consider security implications when editing auth, API route, or data access files",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/auth/**",
+      "**/api/**",
+      "**/routes/**",
+      "**/middleware/**",
+      "**/models/**",
+      "**/schemas/**"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A security-sensitive file was just edited (auth, API route, middleware, model, or schema). Silently verify these checks - only speak up if there's an actual issue:\n\n1. No credentials or secrets hardcoded\n2. Input validation present on all user-facing fields\n3. Auth/authorization checks not bypassed or weakened\n4. SQL queries use parameterized statements (no string interpolation)\n5. New endpoints have appropriate auth decorators\n6. Pydantic schemas have max_length on string fields\n7. No PII logged in plain text\n\nIf everything looks fine, say nothing. Only flag concrete violations."
+  }
+}

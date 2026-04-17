@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Lint Python Files",
+  "description": "Runs ruff check on Python files after editing. Uses uvx so ruff doesn't need to be in the project venv.",
+  "version": "2",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.py"
+    ]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "bash -c 'mkdir -p logs && uvx ruff check --fix . 2>&1 | tee logs/ruff_check.log; exit ${PIPESTATUS[0]}'"
+  }
+}

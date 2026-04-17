@@ -7,19 +7,23 @@ description: File naming conventions for test files and source code organization
 
 ## Test Files Must Mirror Source File Names
 
-Test files must use the exact same name as the source file they test, with the appropriate test suffix appended.
+Test files must use the **exact same name** as the source file they test, with the appropriate test suffix.
 
-### JavaScript/TypeScript
+### Backend (Python)
+
 | Source file | Test file |
 |---|---|
-| `src/tools/list-captures.js` | `tests/unit/list-captures.test.js` |
-| `src/indexer.js` | `tests/unit/indexer.test.js` |
-| `lib/inspector.js` | `tests/unit/inspector.test.js` |
+| `src/services/auth.py` | `tests/unit/test_auth.py` |
+| `src/models/user.py` | `tests/unit/test_user.py` |
+
+### Frontend (TypeScript)
+
+| Source file | Test file |
+|---|---|
+| `src/features/auth/auth.service.ts` | `tests/unit/auth.service.test.ts` |
+| `src/shared/hooks/useAuth.ts` | `tests/unit/useAuth.test.ts` |
 
 ### Rules
 
-- kebab-case for all filenames (source and test)
-- Test files use `.test.js` or `.spec.js` suffix
-- Never mix conventions within a component
-- E2E tests use kebab-case descriptive names (e.g., `capture-flow.e2e.js`)
-- Test directory structure mirrors source directory structure
+- Never mix conventions - the test file name is always derived from the source file name
+- E2E tests use kebab-case descriptive names (e.g. `ingredient-analysis-flow.test.ts`)

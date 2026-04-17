@@ -9,14 +9,14 @@ description: Version numbering, git tagging, and release process
 
 Semantic Versioning: `MAJOR.MINOR.PATCH`
 
-- **MAJOR** (1.0.0, 2.0.0): Breaking changes to MCP tool interfaces, capture format, or extension API. Users must update their setup.
-- **MINOR** (0.1.0, 0.2.0): New features, new MCP tools, new enrichment collectors. Backward compatible.
+- **MAJOR** (1.0.0, 2.0.0): Breaking changes to public APIs, data formats, or user-facing contracts. Users must update their setup.
+- **MINOR** (0.1.0, 0.2.0): New features, new capabilities. Backward compatible.
 - **PATCH** (0.1.1, 0.1.2): Bug fixes, documentation updates, performance improvements. No new features.
 
 ## Pre-1.0 Rules (Beta)
 
 While in beta (0.x.y):
-- Minor version bumps for feature additions (new tools, new extension capabilities)
+- Minor version bumps for feature additions
 - Patch bumps for bug fixes
 - Breaking changes are allowed without major bump (beta expectation)
 - Each minor version gets a git tag
@@ -27,10 +27,8 @@ While in beta (0.x.y):
 |---|---|---|
 | Bug fix that affects users | PATCH | `0.1.0` -> `0.1.1` |
 | Security fix | PATCH (immediate) | `0.1.1` -> `0.1.2` |
-| New MCP tool or feature | MINOR | `0.1.2` -> `0.2.0` |
-| Extension store update | MINOR or PATCH | Depends on changes |
-| npm package update | Match the git tag | `0.2.0` everywhere |
-| Breaking format change | MINOR (pre-1.0) | `0.2.0` -> `0.3.0` |
+| New feature | MINOR | `0.1.2` -> `0.2.0` |
+| Breaking change (pre-1.0) | MINOR | `0.2.0` -> `0.3.0` |
 | Stable release | MAJOR | `0.x.y` -> `1.0.0` |
 
 ## When NOT to Tag
@@ -39,39 +37,26 @@ While in beta (0.x.y):
 - Internal refactors with no user-visible change
 - Test additions
 - CI/build changes
-- Experiment scripts
 
+<!-- CUSTOMIZE: List all files that must be updated on version bump -->
 ## Files to Update on Version Bump
 
-All four must match:
+All version references must match:
 
 ```
-package.json                    -> "version": "0.2.0"
-server/package.json             -> "version": "0.2.0"
-packages/playwright/package.json -> "version": "0.2.0"
-extension/wxt.config.js         -> version field in manifest
+pyproject.toml              -> version = "0.2.0"
+package.json                -> "version": "0.2.0"
 ```
 
 ## Release Checklist
 
-1. All tests pass: `npm test`
-2. Lint clean: `npm run lint`
-3. Update version in all 4 files
+1. All tests pass
+2. Lint clean
+3. Update version in all version files
 4. Update `docs/changelogs/CHANGELOG.md` - move Unreleased items under the new version header with date
-5. Update `gitbook/reference/changelog.md` with user-facing changes
-6. Commit: `chore: release vX.X.X`
-7. Tag: `git tag -a vX.X.X -m "vX.X.X - brief description"`
-8. Push: `git push origin main --tags`
-9. Publish npm (if code changed):
-   - `npm publish --access public --otp=YOUR_OTP`
-   - `cd packages/playwright && npm publish --access public --otp=YOUR_OTP`
-10. Rebuild extensions (if extension code changed):
-    - `npm run build:ext` (auto-copies ZIPs to `downloads/`, removes old versions)
-    - Commit the new ZIPs in `downloads/`
-11. Create GitHub Release with extension ZIPs:
-    - `gh release create vX.X.X downloads/*.zip --title "vX.X.X" --notes "release notes"`
-12. Upload to Chrome Web Store and Firefox Add-ons (if extension changed)
-10. Update GitBook roadmap page if features shipped
+5. Commit: `chore: release vX.X.X`
+6. Tag: `git tag -a vX.X.X -m "vX.X.X - brief description"`
+7. Push: `git push origin main --tags`
 
 ## Tag Format
 
@@ -85,7 +70,7 @@ v1.0.0
 
 ```bash
 # Create annotated tag (always use annotated, not lightweight)
-git tag -a v0.1.0 -m "v0.1.0 - Beta: 36 MCP tools, extension, Playwright fixture"
+git tag -a v0.1.0 -m "v0.1.0 - description"
 
 # Push tag
 git push origin v0.1.0

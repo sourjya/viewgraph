@@ -14,7 +14,7 @@
 - **RED -> GREEN -> REFACTOR**: Write failing tests FIRST, then minimal implementation, then refactor
 - NEVER write implementation code before its test
 - Each phase below follows strict TDD ordering: tests before implementation
-- See engineering-standards.md for complete TDD guidelines
+- See testing-standards.md for complete TDD guidelines
 
 **Testing Strategy:**
 - Unit tests for specific examples and edge cases (write FIRST)
@@ -34,7 +34,7 @@
   - Test [specific behavior 2]
   - Test [edge case 1]
   - Test [error handling]
-  - File: `tests/unit/[component].test.js`
+  - File: `tests/unit/test_[component].py`
   - _Requirements: [requirement IDs]_
 
 **GREEN Phase: Implement to Pass Tests**
@@ -53,29 +53,13 @@
   - Optimize performance
   - Ensure all tests still pass
 
-#### Step 2: API/Tool Handlers - TDD Cycle
-
-**RED Phase: Write Handler Tests First**
-- [ ] 2.1 Write unit tests for [handler] routes/tools
-  - Test successful request/response
-  - Test validation errors
-  - Test error handling
-  - File: `tests/unit/[handler].test.js`
-  - _Requirements: [requirement IDs]_
-
-**GREEN Phase: Implement Handlers**
-- [ ] 2.2 Create [handler] implementation
-  - Implement handler logic
-  - Add route-level documentation
-  - _Requirements: [requirement IDs]_
-
 #### Checkpoint: Phase 1 Complete
 
-- [ ] 3. Verify Phase 1 completion
-  - All unit tests passing
-  - No linting errors
-  - Changelog updated
-  - Changes committed and pushed
+- [ ] All tests passing
+- [ ] No linting errors
+- [ ] Security checkpoint passed (no hardcoded secrets, auth intact, inputs validated)
+- [ ] Changelog updated
+- [ ] Changes committed
 
 ---
 

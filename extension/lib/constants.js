@@ -280,15 +280,17 @@ const CONFIG_CACHE_KEY = 'vg_project_config';
  * @param {string} serverUrl - Base URL of the ViewGraph server
  * @returns {Promise<Object>} Config object (empty {} if unavailable)
  */
-export async function fetchConfig(serverUrl) {
+export async function fetchConfig() {
   try {
-    const res = await fetch(`${serverUrl}/config`, { signal: AbortSignal.timeout(3000) });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const config = await res.json();
-    try { await chrome.storage.local.set({ [CONFIG_CACHE_KEY]: config }); } catch { /* tests */ }
-    return config;
+    const config = await transport.getConfig();
+    if (config) {
+      try { await chrome.storage.local.set({ [CONFIG_CACHE_KEY]: config }); } catch { /* tests */ }
+      return config;
+    }
+    // Transport returned null (not initialized) - return cached
+    const data = await chrome.storage.local.get(CONFIG_CACHE_KEY);
+    return data[CONFIG_CACHE_KEY] || {};
   } catch {
-    // Server offline - return cached value
     try {
       const data = await chrome.storage.local.get(CONFIG_CACHE_KEY);
       return data[CONFIG_CACHE_KEY] || {};
@@ -298,20 +300,14 @@ export async function fetchConfig(serverUrl) {
 
 /**
  * Update project config on the server and refresh local cache.
- * @param {string} serverUrl - Base URL of the ViewGraph server
  * @param {Object} updates - Key-value pairs to merge into config
  * @returns {Promise<Object>} Updated config object
  */
-export async function updateConfig(serverUrl, updates) {
-  const res = await fetch(`${serverUrl}/config`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(updates),
-    signal: AbortSignal.timeout(3000),
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const config = await res.json();
-  try { await chrome.storage.local.set({ [CONFIG_CACHE_KEY]: config }); } catch { /* tests */ }
+export async function updateConfig(updates) {
+  const config = await transport.updateConfig(updates);
+  if (config) {
+    try { await chrome.storage.local.set({ [CONFIG_CACHE_KEY]: config }); } catch { /* tests */ }
+  }
   return config;
 }
 
