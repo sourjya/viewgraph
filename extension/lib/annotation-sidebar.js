@@ -141,10 +141,10 @@ export function create() {
           const trust = classifyTrust(window.location.href, info.trustedPatterns || []);
           _trustLevel = trust;
           const TRUST_COLORS = { trusted: '#4ade80', configured: '#60a5fa', untrusted: '#f59e0b' };
-          trustShield.replaceChildren(shieldIcon(12, TRUST_COLORS[trust.level]));
+          trustShield.replaceChildren(shieldIcon(16, TRUST_COLORS[trust.level]));
           trustShield.title = `${trust.level}: ${trust.reason}`;
           trustShield.style.display = 'inline-flex';
-        } catch { /* info fetch failed - skip version check */ }
+        } catch (e) { console.error('[ViewGraph] info/trust error:', e); }
       } else {
         statusDot.style.background = '#f87171';
         statusDot.title = 'MCP server offline';
