@@ -1,6 +1,8 @@
 # Changelog
 
-What's new in ViewGraph. User-facing changes only - for the full engineering changelog, see [GitHub](https://github.com/sourjya/viewgraph/blob/main/docs/changelogs/CHANGELOG.md).
+{% hint style="info" %}
+User-facing changes only. For the full engineering changelog, see [GitHub](https://github.com/sourjya/viewgraph/blob/main/docs/changelogs/CHANGELOG.md).
+{% endhint %}
 
 ---
 
