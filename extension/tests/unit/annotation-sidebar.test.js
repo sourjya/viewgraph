@@ -1325,3 +1325,37 @@ describe('trust indicator', () => {
     }, { timeout: 3000 });
   });
 });
+
+// ──────────────────────────────────────────────
+// F17: Send gate regression tests
+// ──────────────────────────────────────────────
+
+describe('send gate for untrusted URLs', () => {
+  it('(+) send button exists in sidebar', () => {
+    start();
+    create();
+    const sendBtn = shadowQuery(`[${ATTR}="send"]`);
+    expect(sendBtn).not.toBeNull();
+  });
+
+  it('(+) help button has 8px padding matching header buttons', () => {
+    start();
+    create();
+    const helpBtn = shadowQuery(`[${ATTR}="help-btn"]`);
+    expect(helpBtn.style.padding).toBe('8px');
+  });
+
+  it('(+) status dot has border for visibility', () => {
+    start();
+    create();
+    const dot = shadowQuery(`[${ATTR}="status-dot"]`);
+    expect(dot.style.border).toContain('rgba');
+  });
+
+  it('(+) trust shield has background for visibility', () => {
+    start();
+    create();
+    const shield = shadowQuery(`[${ATTR}="trust-shield"]`);
+    expect(shield.style.background).toContain('rgba');
+  });
+});

@@ -10,7 +10,7 @@ import {
   checkIcon, closeIcon, chevronLeftIcon, chevronRightIcon,
   bellIcon, sendIcon, copyIcon, docIcon, downloadIcon,
   trashIcon, cameraIcon, circleIcon, noteIcon,
-  crosshairIcon, tagIcon, gearIcon, chatBubbleIcon,
+  crosshairIcon, tagIcon, gearIcon, chatBubbleIcon, shieldIcon,
 } from '#lib/sidebar/icons.js';
 
 /** Assert an element is an SVG with the expected size. */
@@ -230,5 +230,38 @@ describe('icon DOM rendering', () => {
     expect(btn.querySelector('svg')).not.toBeNull();
     expect(btn.querySelector('svg').children.length).toBeGreaterThan(0);
     btn.remove();
+  });
+});
+
+// ──────────────────────────────────────────────
+// Shield icon inner mark regression tests
+// ──────────────────────────────────────────────
+
+describe('shieldIcon inner marks', () => {
+  it('(+) shieldIcon with check has polyline inside', () => {
+    const s = shieldIcon(16, '#4ade80', 'check');
+    expect(s.querySelector('polyline')).not.toBeNull();
+  });
+
+  it('(+) shieldIcon with x has extra path inside', () => {
+    const s = shieldIcon(16, '#f59e0b', 'x');
+    // Shield path + x path = 2 paths
+    expect(s.querySelectorAll('path').length).toBe(2);
+  });
+
+  it('(+) shieldIcon with none has no inner mark', () => {
+    const s = shieldIcon(16, '#666', 'none');
+    expect(s.querySelector('polyline')).toBeNull();
+    expect(s.querySelectorAll('path').length).toBe(1); // just the shield
+  });
+
+  it('(+) shield renders in DOM with inner mark visible', () => {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    container.appendChild(shieldIcon(16, '#4ade80', 'check'));
+    const svg = container.querySelector('svg');
+    expect(svg).not.toBeNull();
+    expect(svg.children.length).toBeGreaterThan(1); // shield + check
+    container.remove();
   });
 });
