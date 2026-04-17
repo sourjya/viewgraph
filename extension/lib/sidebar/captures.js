@@ -106,6 +106,52 @@ export async function renderCaptures(container) {
     container.appendChild(warn);
   }
 
+  // Capture timeline - collapsible list of all captures
+  if (captures.length > 1) {
+    const timelineRow = document.createElement('div');
+    Object.assign(timelineRow.style, { display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 0', cursor: 'pointer', userSelect: 'none' });
+    const arrow = document.createElement('span');
+    arrow.textContent = '\u25b6';
+    Object.assign(arrow.style, { fontSize: '8px', color: '#666', transition: 'transform 0.15s' });
+    const tlLabel = document.createElement('span');
+    tlLabel.textContent = `${captures.length} captures`;
+    Object.assign(tlLabel.style, { fontSize: '10px', color: '#666', flex: '1' });
+    timelineRow.append(arrow, tlLabel);
+
+    const timelineBody = document.createElement('div');
+    timelineBody.setAttribute(ATTR, 'capture-timeline');
+    Object.assign(timelineBody.style, { display: 'none', maxHeight: '120px', overflowY: 'auto', paddingLeft: '14px' });
+
+    timelineRow.addEventListener('click', () => {
+      const open = timelineBody.style.display !== 'none';
+      timelineBody.style.display = open ? 'none' : 'block';
+      arrow.style.transform = open ? '' : 'rotate(90deg)';
+    });
+
+    for (const cap of captures.slice(0, 20)) {
+      const capRow = document.createElement('div');
+      Object.assign(capRow.style, { display: 'flex', alignItems: 'center', gap: '4px', padding: '1px 0', fontSize: '10px' });
+      const capDot = document.createElement('span');
+      const capTime = cap.timestamp ? new Date(cap.timestamp) : null;
+      const isLatest = cap === latest;
+      Object.assign(capDot.style, { width: '4px', height: '4px', borderRadius: '50%', background: isLatest ? '#4ade80' : '#333', flexShrink: '0' });
+      const capName = document.createElement('span');
+      capName.textContent = cap.filename?.replace(/viewgraph-|\.json$/g, '').slice(-25) || 'unknown';
+      Object.assign(capName.style, { color: isLatest ? '#6366f1' : '#555', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1' });
+      const capAge = document.createElement('span');
+      if (capTime) {
+        const mins = Math.floor((now - capTime.getTime()) / 60000);
+        capAge.textContent = mins < 1 ? 'now' : mins < 60 ? `${mins}m` : mins < 1440 ? `${Math.floor(mins / 60)}h` : `${Math.floor(mins / 1440)}d`;
+      }
+      Object.assign(capAge.style, { color: '#444', flexShrink: '0' });
+      capRow.append(capDot, capName, capAge);
+      timelineBody.appendChild(capRow);
+    }
+
+    container.appendChild(timelineRow);
+    container.appendChild(timelineBody);
+  }
+
   // Baseline section
   const baseRow = document.createElement('div');
   baseRow.setAttribute(ATTR, 'baseline-row');
