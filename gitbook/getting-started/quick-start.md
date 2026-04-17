@@ -20,7 +20,7 @@ Store versions may lag behind the latest release. Check the [Changelog](../refer
 
 ## 2. Connect to your AI agent
 
-Add ViewGraph to your agent's MCP config. The server runs automatically via `npx` - no install needed.
+Add ViewGraph to your agent's MCP config. The server runs automatically via [`npx`](https://docs.npmjs.com/cli/commands/npx) - no install needed.
 
 **For Kiro** (`~/.kiro/settings/mcp.json`):
 ```json
