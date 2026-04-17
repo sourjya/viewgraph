@@ -19,11 +19,11 @@ describe('createHeader', () => {
     expect(h.statusBanner).toBeTruthy();
   });
 
-  it('(+) toggle button calls onToggleCollapse', () => {
+  it('(-) toggle area does not trigger collapse (only chevron does)', () => {
     const fn = vi.fn();
     const h = createHeader({ onToggleCollapse: fn, onClose: vi.fn(), onHelpToggle: vi.fn(), onBellClick: vi.fn() });
     h.element.querySelector('[data-vg-annotate="toggle"]').click();
-    expect(fn).toHaveBeenCalled();
+    expect(fn).not.toHaveBeenCalled();
   });
 
   it('(+) close button calls onClose', () => {

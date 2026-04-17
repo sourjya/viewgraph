@@ -49,9 +49,8 @@ export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellCl
   Object.assign(toggle.style, {
     flex: '1', padding: '10px', border: 'none',
     background: 'transparent', color: '#a5b4fc', fontSize: '13px', fontWeight: '600',
-    cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center',
+    cursor: 'default', textAlign: 'left', display: 'flex', alignItems: 'center',
   });
-  toggle.addEventListener('click', onToggleCollapse);
 
   // Connection status dot
   const statusDot = document.createElement('span');
