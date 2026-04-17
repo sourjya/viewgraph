@@ -67,8 +67,8 @@ export function createStrip(opts) {
       border: 'none', background: 'transparent', color: '#9ca3af',
       cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex',
     });
-    btn.addEventListener('mouseenter', () => { btn.style.background = '#2a2a4a'; });
-    btn.addEventListener('mouseleave', () => { btn.style.background = 'transparent'; });
+    btn.addEventListener('mouseenter', () => { if (btn.style.background !== 'rgb(99, 102, 241)') btn.style.background = '#2a2a4a'; });
+    btn.addEventListener('mouseleave', () => { if (btn.style.background !== 'rgb(99, 102, 241)') btn.style.background = 'transparent'; });
     btn.addEventListener('click', (e) => { e.stopPropagation(); onModeClick(key); });
     stripButtons[key] = btn;
     el.appendChild(btn);

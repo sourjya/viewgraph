@@ -110,6 +110,32 @@ export function renderReviewList(list, tabContainer, sidebarEl, state, callbacks
  * Replaces tabContainer contents entirely.
  */
 function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, activeTypeFilters }, callbacks) {
+  // Reuse existing tab bar if present, only update counts
+  const existingBar = tabContainer.querySelector('div');
+  if (existingBar && existingBar.children.length >= 3) {
+    const tabs = existingBar.querySelectorAll('button');
+    const counts = [`Open (${open.length})`, `Resolved (${resolved.length})`, `All (${anns.length})`];
+    const keys = ['open', 'resolved', 'all'];
+    tabs.forEach((tab, i) => {
+      if (i < 3) {
+        tab.textContent = counts[i];
+        const isActive = activeFilter === keys[i];
+        tab.style.color = isActive ? '#a5b4fc' : '#666';
+        tab.style.borderBottom = isActive ? '2px solid #a5b4fc' : '2px solid transparent';
+      }
+    });
+    // Update type filter toggle states
+    const typeToggles = tabContainer.querySelectorAll(`[${ATTR}="type-filter"]`);
+    typeToggles.forEach((btn) => {
+      const ft = btn.dataset.type;
+      const isOn = activeTypeFilters.has(ft) || (ft === 'element' && activeTypeFilters.has('region'));
+      btn.style.background = isOn ? 'rgba(255,255,255,0.08)' : 'transparent';
+      btn.style.opacity = isOn ? '1' : '0.5';
+    });
+    return;
+  }
+
+  // First render - create tab bar from scratch
   const tabBar = document.createElement('div');
   Object.assign(tabBar.style, {
     display: 'flex', borderBottom: '1px solid #2a2a3a', flexShrink: '0',
@@ -310,19 +336,28 @@ const SEV_DOT_COLORS = { critical: '#ef4444', major: '#eab308', minor: '#9ca3af'
 function createEntry(ann, callbacks) {
   const entry = document.createElement('div');
   entry.setAttribute(ATTR, 'entry');
+  entry.tabIndex = 0;
   Object.assign(entry.style, {
     padding: '8px 12px', borderBottom: '1px solid #2a2a3a',
     cursor: ann.resolved ? 'default' : 'pointer', display: 'flex', justifyContent: 'space-between',
     alignItems: 'center', transition: 'background 0.1s',
     opacity: ann.pending && !ann.resolved ? '0.7' : '1',
+    outline: 'none',
   });
   entry.addEventListener('mouseenter', () => {
     entry.style.background = '#2a2a4a';
     callbacks.onSpotlight(ann.id);
   });
   entry.addEventListener('mouseleave', () => {
-    entry.style.background = 'transparent';
+    if (entry !== entry.ownerDocument.activeElement) entry.style.background = 'transparent';
     callbacks.onSpotlight(null);
+  });
+  entry.addEventListener('focus', () => { entry.style.background = '#2a2a4a'; callbacks.onSpotlight(ann.id); });
+  entry.addEventListener('blur', () => { entry.style.background = 'transparent'; callbacks.onSpotlight(null); });
+  entry.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !ann.resolved) { callbacks.onEntryClick(ann); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); entry.nextElementSibling?.focus(); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); entry.previousElementSibling?.focus(); }
   });
 
   const label = document.createElement('span');

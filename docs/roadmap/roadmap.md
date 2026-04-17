@@ -37,7 +37,7 @@
 | Code Quality Audit | Complete | Deduplication, static import conversion, timeout fixes |
 | Dead Code Elimination | Complete | 16 unused exports/imports/functions removed |
 | Redundancy Centralization | Complete | selector(), ATTR, readAndParse() helpers extracted |
-| M16: Sidebar UX Polish | In Progress | Help overlay, keyboard shortcuts, settings to footer, VG icon, strip redesign |
+| M16: Sidebar UX Polish | Complete | Help overlay, keyboard shortcuts, settings to footer, VG icon, strip redesign |
 | Server Lifecycle | Complete | Stdin close detection, idle timeout, orphan prevention |
 ### Completed Features
 
@@ -63,7 +63,7 @@
 | 1 | F19: Prompt Injection Defense | None | Medium | Mitigates STRIDE threat #2 - highest security impact |
 | 2 | F17: URL Trust Indicator | None | Medium | Complete: trust classification, shield icon, send gate, SPA reclassification |
 | 3 | F18: MCP Agent Guidance | None | Low | Complete: SERVER_INSTRUCTIONS, session status, tool descriptions, fuzzy filename matching |
-| 4 | F6: Capture Timeline | F4 | Low | Inspect tab feature - visual capture history |
+| 4 | F6: Capture Timeline | F4 | Low | Complete: collapsible timeline, consistency checker, baseline comparison |
 | 5 | F16: Zero-Config Phase 2 | F16 P1 | Low | Transport auto-detection, docs as primary install path |
 | 6 | F9: Cross-Page Consistency | F6 | Medium | Compare elements across page captures |
 | 7 | F10: Live DOM Watcher | F2, F3 | Medium | Smart alerts on DOM changes |
