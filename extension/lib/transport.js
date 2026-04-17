@@ -182,7 +182,7 @@ async function _query(endpoint, params = {}) {
     const type = endpoint.replace(/\//g, ':');
     return _nativeRequest({ type, ...params });
   }
-  if (!_serverUrl) throw new Error('Transport not initialized');
+  if (!_serverUrl) return null;
   const qs = Object.entries(params).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
   const url = `${_serverUrl}/${endpoint}${qs ? '?' + qs : ''}`;
   const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
@@ -196,7 +196,7 @@ async function _send(endpoint, data, headers = {}, method = 'POST') {
     const type = endpoint.replace(/\//g, ':');
     return _nativeRequest({ type, payload: data });
   }
-  if (!_serverUrl) throw new Error('Transport not initialized');
+  if (!_serverUrl) return null;
   const res = await fetch(`${_serverUrl}/${endpoint}`, {
     method,
     headers: { 'Content-Type': 'application/json', ...headers },

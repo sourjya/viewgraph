@@ -81,8 +81,9 @@ describe('HTTP fallback', () => {
     expect(globalThis.fetch).toHaveBeenCalledWith(expect.stringContaining('/config'), expect.objectContaining({ method: 'PUT' }));
   });
 
-  it('(-) throws when not initialized', async () => {
-    await expect(transport.getInfo()).rejects.toThrow('not initialized');
+  it('(-) returns null when not initialized', async () => {
+    const result = await transport.getInfo();
+    expect(result).toBeNull();
   });
 });
 
