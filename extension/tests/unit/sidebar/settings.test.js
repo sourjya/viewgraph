@@ -7,13 +7,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createSettings } from '#lib/sidebar/settings.js';
 import { VERSION } from '#tests/helpers.js';
+import { mockChrome } from '../../mocks/chrome.js';
+import { mockServer } from '../../mocks/server.js';
 
 beforeEach(() => {
-  globalThis.chrome = {
-    runtime: { getManifest: () => ({ version: VERSION }), sendMessage: () => {} },
-    storage: { local: { get: (key, cb) => { if (cb) cb({}); return Promise.resolve({}); }, set: () => Promise.resolve() } },
-  };
-  globalThis.fetch = () => Promise.reject(new Error('offline'));
+  mockChrome();
+  mockServer({ offline: true });
 });
 
 afterEach(() => { delete globalThis.chrome; });
@@ -177,12 +176,8 @@ describe('settings card design', () => {
     const transport = await import('#lib/transport.js');
     transport.reset();
     transport.init('http://127.0.0.1:9876');
-    globalThis.chrome = { runtime: { sendNativeMessage: undefined, sendMessage: vi.fn() }, storage: { local: { get: (k, cb) => { if (cb) cb({}); return Promise.resolve({}); }, set: () => Promise.resolve() }, sync: { get: (k, cb) => { if (cb) cb({}); }, set: vi.fn() } } };
-    globalThis.fetch = vi.fn((url) => {
-      const u = typeof url === 'string' ? url : url.toString();
-      if (u.includes('/info')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ projectRoot: '/test', urlPatterns: ['localhost:3000'], serverVersion: '0.3.7', agent: 'Kiro' }) });
-      return Promise.reject(new Error('unmocked'));
-    });
+    mockChrome();
+    mockServer({ info: { projectRoot: '/test', urlPatterns: ['localhost:3000'], serverVersion: '0.3.7', agent: 'Kiro' } });
     const s = createSettings();
     s.show();
     await new Promise((r) => setTimeout(r, 150));
@@ -194,12 +189,8 @@ describe('settings card design', () => {
   it('(+) body shows agent and URL after successful getInfo', async () => {
     const transport = await import('#lib/transport.js');
     transport.reset(); transport.init('http://127.0.0.1:9876');
-    globalThis.chrome = { runtime: { sendNativeMessage: undefined, sendMessage: vi.fn() }, storage: { local: { get: (k, cb) => { if (cb) cb({}); return Promise.resolve({}); }, set: () => Promise.resolve() }, sync: { get: (k, cb) => { if (cb) cb({}); }, set: vi.fn() } } };
-    globalThis.fetch = vi.fn((url) => {
-      const u = typeof url === 'string' ? url : url.toString();
-      if (u.includes('/info')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ projectRoot: '/myproject', urlPatterns: ['localhost:4000'], agent: 'Kiro', serverVersion: '0.3.7' }) });
-      return Promise.reject(new Error('unmocked'));
-    });
+    mockChrome();
+    mockServer({ info: { projectRoot: '/myproject', urlPatterns: ['localhost:4000'], agent: 'Kiro', serverVersion: '0.3.7' } });
     const s = createSettings();
     s.show();
     await new Promise((r) => setTimeout(r, 150));
@@ -211,8 +202,8 @@ describe('settings card design', () => {
   });
 
   it('(+) header shows Not Connected when server offline', async () => {
-    globalThis.fetch = vi.fn(() => Promise.reject(new Error('offline')));
-    globalThis.chrome = { runtime: { sendNativeMessage: undefined, sendMessage: vi.fn() }, storage: { local: { get: (k, cb) => { if (cb) cb({}); return Promise.resolve({}); }, set: () => Promise.resolve() }, sync: { get: (k, cb) => { if (cb) cb({}); }, set: vi.fn() } } };
+    mockServer({ offline: true });
+    mockChrome();
     const s = createSettings();
     s.show();
     await new Promise((r) => setTimeout(r, 150));

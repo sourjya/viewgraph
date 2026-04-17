@@ -5,13 +5,27 @@
  * the viewport. Each entry shows the annotation number, a comment
  * preview, and click-to-scroll behavior.
  *
- * @see lib/review.js - annotation state management
+ * Orchestrates extracted sub-modules:
+ * - sidebar/header.js - top bar (logo, status, trust, bell, help, collapse, close)
+ * - sidebar/footer.js - export actions (send, copy MD, report, settings link)
+ * - sidebar/mode-bar.js - capture mode selector (element, region, page)
+ * - sidebar/trust-gate.js - F17 trust gate for untrusted URLs
+ * - sidebar/help.js - help card overlay
+ * - sidebar/strip.js - collapsed badge strip
+ * - sidebar/settings.js - settings screen
+ * - sidebar/inspect.js - inspect tab (diagnostics)
+ * - sidebar/review.js - review tab (annotation list)
+ * - sidebar/suggestions.js - auto-inspect suggestions engine
+ * - sidebar/suggestions-ui.js - suggestions bar UI
+ * - sidebar/sync.js - resolution/request polling
+ * - sidebar/events.js - inter-module event bus
+ *
+ * @see lib/annotate.js - annotation state management
  * @see lib/annotation-panel.js - comment editing
  */
 
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
 import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker, updateSeverity, updateComment } from './annotate.js';
-// Annotation type helpers used by sidebar/review.js (no longer needed here)
 import { createHelpCard } from './sidebar/help.js';
 import { createStrip } from './sidebar/strip.js';
 import { createSettings } from './sidebar/settings.js';
@@ -21,24 +35,16 @@ import { scanForSuggestions } from './sidebar/suggestions.js';
 import { renderSuggestionBar } from './sidebar/suggestions-ui.js';
 import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from './sidebar/sync.js';
 import { EVENTS, createEventBus } from './sidebar/events.js';
-import { chevronRightIcon, closeIcon, bellIcon, sendIcon, checkIcon, docIcon, downloadIcon, gearIcon, shieldIcon } from './sidebar/icons.js';
+import { createHeader } from './sidebar/header.js';
+import { createFooter } from './sidebar/footer.js';
+import { createModeBar, MODE_ICONS, MODE_HINTS } from './sidebar/mode-bar.js';
+import { showTrustGate } from './sidebar/trust-gate.js';
+import { sendIcon, checkIcon } from './sidebar/icons.js';
 import { KEYS, set as storageSet } from './storage.js';
-// import { groupRequests, smartPath } from './network-grouper.js';
-import { formatMarkdown } from './export/export-markdown.js';
 import { discoverServer, getAgentName, classifyTrust } from './constants.js';
 import * as transport from './transport.js';
-import { collectNetworkState } from './collectors/network-collector.js';
-import { getConsoleState } from './collectors/console-collector.js';
-import { collectBreakpoints } from './collectors/breakpoint-collector.js';
-import { collectStackingContexts } from './collectors/stacking-collector.js';
-import { collectFocusChain } from './collectors/focus-collector.js';
-import { collectScrollContainers } from './collectors/scroll-collector.js';
-import { collectLandmarks } from './collectors/landmark-collector.js';
-import { collectComponents } from './collectors/component-collector.js';
-// import { checkRendered } from './collectors/visibility-collector.js';
 import { stopJourney } from './session/journey-recorder.js';
 import { startShortcuts, stopShortcuts } from './ui/keyboard-shortcuts.js';
-// WS replaced by transport.onEvent
 import { ATTR } from './selector.js';
 
 // ──────────────────────────────────────────────
@@ -50,14 +56,15 @@ let hostEl = null;
 let collapsed = false;
 let badgeEl = null;
 let _strip = null;
-let _bus = null; // Event bus for inter-module communication
-let _hasCaptured = false;
+let _bus = null;
 let pendingRequests = [];
 let activeFilter = 'open';
 let _suggestionsCache = null;
-let _trustLevel = null; // F17: cached trust classification result
+let _trustLevel = null;
 let activeTypeFilters = new Set(['element', 'region', 'page-note', 'idea', 'diagnostic']);
-let bellBtn = null;
+let _header = null;
+let _footer = null;
+let _modeBar = null;
 
 /** Create and mount the sidebar. */
 export function create() {
@@ -76,216 +83,50 @@ export function create() {
     boxSizing: 'border-box', color: '#e0e0e0',
   });
 
-  // Header row: toggle label + collapse chevron + close button
-  const header = document.createElement('div');
-  header.setAttribute(ATTR, 'header');
-  Object.assign(header.style, {
-    display: 'flex', alignItems: 'center', borderBottom: '1px solid #333',
-    padding: '2px 0',
+  // ── Header ──
+  _header = createHeader({
+    onToggleCollapse: () => toggleCollapse(),
+    onClose: () => { hideMarkers(); stopAnnotate(); destroy(); },
+    onHelpToggle: () => help.toggle(),
+    onBellClick: () => switchTab('review'),
   });
 
-  const toggle = document.createElement('button');
-  toggle.setAttribute(ATTR, 'toggle');
-  // VG icon from extension assets + label + connection dot inline
-  const vgIcon = document.createElement('img');
-  vgIcon.src = chrome.runtime.getURL('icon-16.png');
-  vgIcon.width = 16;
-  vgIcon.height = 16;
-  Object.assign(vgIcon.style, { verticalAlign: 'middle', marginRight: '6px' });
-  toggle.appendChild(vgIcon);
-  toggle.appendChild(document.createTextNode('ViewGraph'));
-  Object.assign(toggle.style, {
-    flex: '1', padding: '10px', border: 'none',
-    background: 'transparent', color: '#a5b4fc', fontSize: '13px', fontWeight: '600',
-    cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center',
-  });
-  toggle.addEventListener('click', () => toggleCollapse());
-
-  // Connection status dot - inline after ViewGraph label
-  const statusDot = document.createElement('span');
-  statusDot.setAttribute(ATTR, 'status-dot');
-  Object.assign(statusDot.style, {
-    width: '8px', height: '8px', borderRadius: '50%',
-    background: '#666', flexShrink: '0', transition: 'background 0.3s',
-    marginLeft: '6px', border: '1px solid rgba(255,255,255,0.1)',
-  });
-
-  // Status banner - shown between primary tabs and content when disconnected
-  const statusBanner = document.createElement('div');
-  statusBanner.setAttribute(ATTR, 'status-banner');
-  Object.assign(statusBanner.style, {
-    display: 'none', padding: '6px 12px', fontSize: '11px',
-    fontFamily: 'system-ui, sans-serif', color: '#f59e0b',
-    background: '#2a2a1a', borderBottom: '1px solid #333',
-    flexShrink: '0',
-  });
-
+  // ── Server discovery + trust classification ──
   discoverServer(window.location.href)
     .then(async (url) => {
       if (url) {
-        statusDot.style.background = '#4ade80';
-        statusDot.title = `MCP server: ${url}`;
-        statusBanner.style.display = 'none';
-        // Check version mismatch and trust level via transport
+        _header.statusDot.style.background = '#4ade80';
+        _header.statusDot.title = `MCP server: ${url}`;
+        _header.statusBanner.style.display = 'none';
         try {
           const info = await transport.getInfo();
           const extVersion = chrome.runtime.getManifest?.()?.version;
           if (info.serverVersion && extVersion && extVersion < info.serverVersion) {
-            statusBanner.textContent = `Extension v${extVersion} is behind server v${info.serverVersion}. Rebuild: npm run build:ext`;
-            statusBanner.style.display = 'block';
-            statusBanner.style.color = '#f59e0b';
+            _header.statusBanner.textContent = `Extension v${extVersion} is behind server v${info.serverVersion}. Rebuild: npm run build:ext`;
+            _header.statusBanner.style.display = 'block';
           }
-          // F17: Trust shield based on URL classification
           const trust = classifyTrust(window.location.href, info.trustedPatterns || []);
           _trustLevel = trust;
-          const TRUST_COLORS = { trusted: '#4ade80', configured: '#60a5fa', untrusted: '#f59e0b' };
-          trustShield.replaceChildren(shieldIcon(16, TRUST_COLORS[trust.level], trust.level === 'untrusted' ? 'x' : 'check'));
-          trustShield.title = `${trust.level}: ${trust.reason}`;
-          trustShield.style.display = 'inline-flex';
+          _header.setTrustLevel(trust);
         } catch (e) { console.error('[ViewGraph] info/trust error:', e); }
       } else {
-        statusDot.style.background = '#f87171';
-        statusDot.title = 'MCP server offline';
-        statusBanner.textContent = 'No project connected. Copy MD and Report available.';
-        statusBanner.style.display = 'block';
-        // Adaptive footer: hide Send, promote Copy MD and Report to primary
-        sendBtn.style.display = 'none';
-        Object.assign(copyBtn.style, { background: '#6366f1', color: '#fff', border: 'none', flex: '1' });
-        Object.assign(dlBtn.style, { background: '#374151', color: '#fff', border: 'none', flex: '1' });
+        _header.statusDot.style.background = '#f87171';
+        _header.statusDot.title = 'MCP server offline';
+        _header.statusBanner.textContent = 'No project connected. Copy MD and Report available.';
+        _header.statusBanner.style.display = 'block';
+        _footer.setOfflineMode();
       }
-      // F17: Always show trust shield based on URL, regardless of server connection
-      const trust = classifyTrust(window.location.href, []);
+      // Always classify trust based on URL even without server
       if (!_trustLevel) {
+        const trust = classifyTrust(window.location.href, []);
         _trustLevel = trust;
-        const TRUST_COLORS = { trusted: '#4ade80', configured: '#60a5fa', untrusted: '#f59e0b' };
-        trustShield.replaceChildren(shieldIcon(16, TRUST_COLORS[trust.level], trust.level === 'untrusted' ? 'x' : 'check'));
-        trustShield.title = `${trust.level}: ${trust.reason}`;
-        trustShield.style.display = 'inline-flex';
+        _header.setTrustLevel(trust);
       }
     });
 
-  // Collapse chevron
-  const collapseBtn = document.createElement('button');
-  collapseBtn.setAttribute(ATTR, 'btn');
-  collapseBtn.appendChild(chevronRightIcon(18, '#666'));
-  collapseBtn.title = 'Collapse panel';
-  Object.assign(collapseBtn.style, {
-    border: 'none', background: 'transparent', cursor: 'pointer',
-    padding: '8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
-  });
-  collapseBtn.addEventListener('mouseenter', () => { collapseBtn.style.background = 'rgba(255,255,255,0.06)'; });
-  collapseBtn.addEventListener('mouseleave', () => { collapseBtn.style.background = 'transparent'; });
-  collapseBtn.addEventListener('click', () => toggleCollapse());
-
-  // Close button
-  const closeBtn = document.createElement('button');
-  closeBtn.setAttribute(ATTR, 'close');
-  closeBtn.appendChild(closeIcon(18, '#666'));
-  Object.assign(closeBtn.style, {
-    border: 'none', background: 'transparent', cursor: 'pointer',
-    padding: '8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
-  });
-  closeBtn.title = 'Close review mode';
-  closeBtn.addEventListener('mouseenter', () => { closeBtn.style.background = 'rgba(255,255,255,0.05)'; });
-  closeBtn.addEventListener('mouseleave', () => { closeBtn.style.background = 'transparent'; });
-  closeBtn.addEventListener('click', () => {
-    hideMarkers();
-    stopAnnotate();
-    destroy();
-  });
-
-  // Notification bell - pulses when agent requests are pending
-  bellBtn = document.createElement('button');
-  bellBtn.setAttribute(ATTR, 'bell');
-  bellBtn.appendChild(bellIcon(18));
-  bellBtn.title = 'Agent requests';
-  Object.assign(bellBtn.style, {
-    border: 'none', background: 'transparent', cursor: 'pointer',
-    padding: '8px', display: 'none', alignItems: 'center', borderRadius: '6px',
-    color: '#f59e0b', position: 'relative',
-  });
-  bellBtn.addEventListener('mouseenter', () => { bellBtn.style.background = 'rgba(255,255,255,0.06)'; });
-  bellBtn.addEventListener('mouseleave', () => { bellBtn.style.background = 'transparent'; });
-  bellBtn.addEventListener('click', () => {
-    // Switch to Review tab where request cards are shown
-    if (typeof switchTab === 'function') switchTab('review');
-  });
-
-  // Dot and trust shield go inside toggle
-  const trustShield = document.createElement('span');
-  trustShield.setAttribute(ATTR, 'trust-shield');
-  Object.assign(trustShield.style, { display: 'none', marginLeft: '4px', flexShrink: '0', padding: '2px', borderRadius: '3px', background: 'rgba(255,255,255,0.04)' });
-  toggle.append(statusDot, trustShield);
-
-  header.append(toggle, bellBtn, collapseBtn, closeBtn);
-
-  // Help button in header - opens slide-down help card
-  const helpBtn = document.createElement('button');
-  helpBtn.setAttribute(ATTR, 'help-btn');
-  helpBtn.textContent = '?';
-  helpBtn.title = 'Help & keyboard shortcuts';
-  Object.assign(helpBtn.style, {
-    border: 'none', background: 'transparent', cursor: 'pointer',
-    padding: '8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
-    color: '#666', fontSize: '14px', fontWeight: '700', fontFamily: 'system-ui, sans-serif',
-  });
-  helpBtn.addEventListener('mouseenter', () => { helpBtn.style.background = 'rgba(255,255,255,0.06)'; });
-  helpBtn.addEventListener('mouseleave', () => { helpBtn.style.background = 'transparent'; });
-  helpBtn.addEventListener('click', () => help.toggle());
-  header.insertBefore(helpBtn, collapseBtn);
-
-  // Help card - extracted to sidebar/help.js
-  const help = createHelpCard();
-  const helpCard = help.element;
-
-  const list = document.createElement('div');
-  list.setAttribute(ATTR, 'list');
-  Object.assign(list.style, { flex: '1', overflowY: 'auto', minHeight: '0' });
-
-  // Tab bar container - pinned between header and scrollable list
-  const tabContainer = document.createElement('div');
-  tabContainer.setAttribute(ATTR, 'tab-container');
-  Object.assign(tabContainer.style, { flexShrink: '0' });
-
-  // Capture mode buttons: Element | Region | Page
-  const modeBar = document.createElement('div');
-  modeBar.setAttribute(ATTR, 'mode-bar');
-  Object.assign(modeBar.style, {
-    display: 'flex', gap: '4px', padding: '6px 8px',
-    borderBottom: '1px solid #2a2a3a', flexShrink: '0',
-  });
-
-  // SVG icons for each mode
-  const MODE_ICONS = {
-    element: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="3"/></svg>',
-    region: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"/></svg>',
-    page: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
-  };
-
-  const modeButtons = {};
-  const MODE_HINTS = {
-    element: 'Click to select',
-    region: 'Shift+drag area',
-    page: 'Add a page note',
-  };
-  for (const [key, icon] of Object.entries(MODE_ICONS)) {
-    const btn = document.createElement('button');
-    btn.setAttribute(ATTR, `mode-${key}`);
-    btn.innerHTML = icon;
-    const labelSpan = document.createElement('span');
-    Object.assign(labelSpan.style, { fontSize: '10px', marginTop: '2px' });
-    labelSpan.textContent = key.charAt(0).toUpperCase() + key.slice(1);
-    const hintSpan = document.createElement('span');
-    Object.assign(hintSpan.style, { fontSize: '9px', color: '#666', marginTop: '1px' });
-    hintSpan.textContent = MODE_HINTS[key];
-    btn.append(labelSpan, hintSpan);
-    Object.assign(btn.style, {
-      flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center',
-      gap: '2px', padding: '6px 4px', border: '1px solid #333', borderRadius: '6px',
-      background: 'transparent', color: '#9ca3af', cursor: 'pointer',
-      fontSize: '11px', fontFamily: 'system-ui, sans-serif', transition: 'all 0.15s',
-    });
-    btn.addEventListener('click', () => {
+  // ── Mode Bar ──
+  _modeBar = createModeBar({
+    onModeClick: (key) => {
       if (key === 'page') {
         const ann = addPageNote();
         refresh();
@@ -295,203 +136,37 @@ export function create() {
       const mode = CAPTURE_MODES[key.toUpperCase()];
       const wasActive = getCaptureMode() === mode;
       setCaptureMode(mode);
-      updateModeButtons();
-      if (!wasActive) {
-        // Entering capture mode - collapse sidebar for full page access
-        collapse();
-      } else {
-        // Toggling off - expand sidebar
-        expand();
+      _modeBar.updateActive(getCaptureMode());
+      if (!wasActive) collapse(); else expand();
+    },
+  });
+
+  // ── Footer ──
+  _footer = createFooter({
+    onSend: () => {
+      if (_trustLevel?.level === 'untrusted') {
+        showTrustGate(sidebarEl, _footer.sendBtn, {
+          onSend: (override) => doSend(override),
+          onTrustUpdated: (trust) => { _trustLevel = trust; },
+          shadowRoot: hostEl?.shadowRoot,
+        });
+        return;
       }
-    });
-    modeButtons[key] = btn;
-    modeBar.appendChild(btn);
-  }
-
-  /** Sync mode button active states. */
-  function updateModeButtons() {
-    const current = getCaptureMode();
-    for (const [key, btn] of Object.entries(modeButtons)) {
-      const isActive = current === key;
-      btn.style.background = isActive ? '#6366f1' : 'transparent';
-      btn.style.color = isActive ? '#fff' : '#9ca3af';
-      btn.style.borderColor = isActive ? '#6366f1' : '#333';
-    }
-  }
-
-  // Footer container - holds all footer rows
-  const footer = document.createElement('div');
-  footer.setAttribute(ATTR, 'footer');
-  Object.assign(footer.style, { borderTop: '1px solid #2a2a3a', padding: '6px 8px', flexShrink: '0' });
-
-  const btnStyle = {
-    padding: '7px 4px', border: 'none', borderRadius: '6px',
-    color: '#fff', fontSize: '11px', fontWeight: '600', cursor: 'pointer',
-    fontFamily: 'system-ui, sans-serif', transition: 'background 0.12s',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-  };
-
-  // Row 1: Creation actions [Capture] [Note]
-  // Row 1: Primary CTA - Send to Agent (full width)
-  const sendBtn = document.createElement('button');
-  sendBtn.setAttribute(ATTR, 'send');
-  sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent'));
-  Object.assign(sendBtn.style, { ...btnStyle, background: '#6366f1', width: '100%', padding: '9px 4px', marginBottom: '4px' });
-  sendBtn.title = 'Send annotations to your AI coding agent via MCP';
-  sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#5558e6'; });
-  sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = '#6366f1'; });
-  sendBtn.addEventListener('click', () => {
-    // F17: Block send for untrusted URLs
-    if (_trustLevel?.level === 'untrusted') {
-      showTrustGate(sidebarEl, sendBtn);
-      return;
-    }
-    doSend();
-  });
-
-  /** Execute the actual send-to-agent action. */
-  function doSend(trustOverride = false) {
-    // Read session note from input if recording
-    const noteInput = hostEl?.shadowRoot?.querySelector(`[${ATTR}="session-note"]`);
-    const sessionNote = noteInput?.value?.trim() || undefined;
-    if (noteInput) noteInput.value = '';
-    chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true, includeSnapshot: true, sessionNote, trustOverride }, () => {});
-    // Mark unresolved annotations as pending (visual feedback while agent works)
-    for (const ann of getAnnotations()) {
-      if (!ann.resolved) ann.pending = true;
-    }
-    refresh();
-    sendBtn.replaceChildren(checkIcon(14), document.createTextNode('Sent!'));
-    sendBtn.style.background = '#059669';
-    setTimeout(() => { sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent')); sendBtn.style.background = '#6366f1'; }, 2000);
-  }
-
-  /**
-   * Show inline trust gate when user tries to send from an untrusted URL.
-   * Offers "Add to trusted" (permanent) or "Send anyway" (one-time override).
-   */
-  function showTrustGate(parent, anchorBtn) {
-    // Remove existing gate if any
-    parent.querySelector(`[${ATTR}="trust-gate"]`)?.remove();
-
-    const gate = document.createElement('div');
-    gate.setAttribute(ATTR, 'trust-gate');
-    Object.assign(gate.style, {
-      padding: '10px 12px', background: '#2a2a1a', border: '1px solid #f59e0b',
-      borderRadius: '6px', margin: '4px 0', fontFamily: 'system-ui, sans-serif',
-    });
-
-    const msg = document.createElement('div');
-    msg.textContent = '\u26a0 Untrusted URL - captures from remote sites may contain malicious content.';
-    Object.assign(msg.style, { color: '#f59e0b', fontSize: '11px', marginBottom: '8px', lineHeight: '1.4' });
-
-    const hostname = (() => { try { return new URL(window.location.href).hostname; } catch { return window.location.hostname; } })();
-
-    const btnRow = document.createElement('div');
-    Object.assign(btnRow.style, { display: 'flex', gap: '6px' });
-
-    const addBtn = document.createElement('button');
-    addBtn.textContent = `Add "${hostname}" to trusted`;
-    Object.assign(addBtn.style, {
-      flex: '1', padding: '6px', border: 'none', borderRadius: '4px',
-      background: '#6366f1', color: '#fff', fontSize: '10px', fontWeight: '600',
-      cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
-    });
-    addBtn.addEventListener('click', async () => {
-      try {
-        const cfg = await transport.getConfig().catch(() => ({}));
-        const patterns = cfg.trustedPatterns || [];
-        if (!patterns.includes(hostname)) patterns.push(hostname);
-        await transport.updateConfig({ trustedPatterns: patterns });
-        _trustLevel = { level: 'configured', reason: hostname };
-        const shield = hostEl?.shadowRoot?.querySelector(`[${ATTR}="trust-shield"]`);
-        if (shield) { shield.replaceChildren(shieldIcon(16, '#60a5fa', 'check')); shield.title = `configured: ${hostname}`; }
-      } catch { /* best effort */ }
-      gate.remove();
       doSend();
-    });
-
-    const overrideBtn = document.createElement('button');
-    overrideBtn.textContent = 'Send anyway';
-    Object.assign(overrideBtn.style, {
-      padding: '6px 10px', border: '1px solid #333', borderRadius: '4px',
-      background: 'transparent', color: '#666', fontSize: '10px',
-      cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
-    });
-    overrideBtn.addEventListener('click', () => { gate.remove(); doSend(true); });
-
-    btnRow.append(addBtn, overrideBtn);
-    gate.append(msg, btnRow);
-    anchorBtn.parentElement.insertBefore(gate, anchorBtn);
-  }
-
-  // Copy Markdown
-  const copyBtn = document.createElement('button');
-  copyBtn.setAttribute(ATTR, 'copy-md');
-  copyBtn.replaceChildren(docIcon(14), document.createTextNode('Copy MD'));
-  Object.assign(copyBtn.style, { ...btnStyle, background: '#374151' });
-  copyBtn.title = 'Copy as Markdown';
-  copyBtn.addEventListener('mouseenter', () => { copyBtn.style.background = 'rgba(255,255,255,0.05)'; });
-  copyBtn.addEventListener('mouseleave', () => { copyBtn.style.background = 'transparent'; });
-  copyBtn.addEventListener('click', () => {
-    const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString(), viewport: { width: window.innerWidth, height: window.innerHeight }, browser: navigator.userAgent.match(/Chrome\/[\d.]+|Firefox\/[\d.]+/)?.[0] || 'Unknown' };
-    const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents() };
-    const md = formatMarkdown(getAnnotations(), meta, { enrichment });
-    navigator.clipboard.writeText(md).then(() => {
-      copyBtn.replaceChildren(checkIcon(14), document.createTextNode('Copied!'));
-      copyBtn.style.background = '#059669';
-      setTimeout(() => { copyBtn.replaceChildren(docIcon(14), document.createTextNode('Copy MD')); copyBtn.style.background = 'transparent'; }, 2000);
-    });
+    },
+    onShowSettings: () => showSettings(),
   });
 
-  // Download Report
-  const dlBtn = document.createElement('button');
-  dlBtn.setAttribute(ATTR, 'download');
-  dlBtn.replaceChildren(downloadIcon(14), document.createTextNode('Report'));
-  Object.assign(dlBtn.style, { ...btnStyle, background: '#374151' });
-  dlBtn.title = 'Download Report (Markdown + Screenshots)';
-  dlBtn.addEventListener('mouseenter', () => { dlBtn.style.background = 'rgba(255,255,255,0.05)'; });
-  dlBtn.addEventListener('mouseleave', () => { dlBtn.style.background = 'transparent'; });
-  dlBtn.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'download-report' });
-    dlBtn.replaceChildren(checkIcon(14), document.createTextNode('Saved!'));
-    dlBtn.style.background = '#059669';
-    setTimeout(() => { dlBtn.replaceChildren(downloadIcon(14), document.createTextNode('Report')); dlBtn.style.background = 'transparent'; }, 2000);
-  });
+  // ── Help Card ──
+  const help = createHelpCard();
 
-  // Row 3: Secondary exports [Copy MD] [Report]
-  const secondaryRow = document.createElement('div');
-  Object.assign(secondaryRow.style, { display: 'flex', gap: '4px', alignItems: 'center' });
-  Object.assign(copyBtn.style, { ...btnStyle, background: 'transparent', color: '#9ca3af', flex: '1', border: '1px solid #333' });
-  Object.assign(dlBtn.style, { ...btnStyle, background: 'transparent', color: '#9ca3af', flex: '1', border: '1px solid #333' });
-
-  secondaryRow.append(copyBtn, dlBtn);
-
-  // Settings link in footer
-  const settingsLink = document.createElement('button');
-  settingsLink.setAttribute(ATTR, 'settings-link');
-  settingsLink.replaceChildren(gearIcon(12), document.createTextNode(' Settings'));
-  Object.assign(settingsLink.style, {
-    border: 'none', background: 'transparent', cursor: 'pointer',
-    color: '#666', fontSize: '11px', fontFamily: 'system-ui, sans-serif',
-    padding: '6px 0', display: 'flex', alignItems: 'center', gap: '5px',
-    width: '100%', justifyContent: 'center', marginTop: '4px',
-  });
-  settingsLink.addEventListener('mouseenter', () => { settingsLink.style.color = '#9ca3af'; });
-  settingsLink.addEventListener('mouseleave', () => { settingsLink.style.color = '#555'; });
-  settingsLink.addEventListener('click', () => showSettings());
-
-  footer.append(sendBtn, secondaryRow, settingsLink);
-
-
-  // Settings screen - extracted to sidebar/settings.js
+  // ── Settings ──
   const settings = createSettings();
-  const settingsScreen = settings.element;
   let settingsVisible = false;
   function showSettings() { settingsVisible = true; settings.show(); }
   function hideSettings() { settingsVisible = false; settings.hide(); }
 
-  // Version + connection info for help card
+  // Version info for help card
   const extVer = chrome.runtime.getManifest?.()?.version || 'unknown';
   help.setVersion(`Extension: v${extVer}`);
   discoverServer(window.location.href).then(async (url) => {
@@ -505,32 +180,28 @@ export function create() {
     } else { help.setVersion(`Ext v${extVer} | Server: not connected`); }
   });
 
-  sidebarEl.append(header, modeBar, tabContainer, list, settingsScreen, footer);
+  // ── Scrollable list ──
+  const list = document.createElement('div');
+  list.setAttribute(ATTR, 'list');
+  Object.assign(list.style, { flex: '1', overflowY: 'auto', minHeight: '0' });
 
-  // ---------------------------------------------------------------------------
-  // Two-tab sidebar: Review (annotations) and Inspect (page diagnostics)
-  // ---------------------------------------------------------------------------
+  const tabContainer = document.createElement('div');
+  tabContainer.setAttribute(ATTR, 'tab-container');
+  Object.assign(tabContainer.style, { flexShrink: '0' });
 
-  // Primary tab bar: Review | Inspect
+  // ── Two-tab layout: Review | Inspect ──
   const primaryTabs = document.createElement('div');
   primaryTabs.setAttribute(ATTR, 'primary-tabs');
-  Object.assign(primaryTabs.style, {
-    display: 'flex', borderBottom: '1px solid #333', flexShrink: '0',
-  });
+  Object.assign(primaryTabs.style, { display: 'flex', borderBottom: '1px solid #333', flexShrink: '0' });
 
-  // Review tab content wrapper - holds mode bar, filter tabs, list, footer
   const reviewContent = document.createElement('div');
   reviewContent.setAttribute(ATTR, 'review-content');
-  Object.assign(reviewContent.style, {
-    display: 'flex', flexDirection: 'column', flex: '1', minHeight: '0',
-  });
-  reviewContent.append(modeBar, tabContainer, list, statusBanner, footer);
+  Object.assign(reviewContent.style, { display: 'flex', flexDirection: 'column', flex: '1', minHeight: '0' });
+  reviewContent.append(_modeBar.element, tabContainer, list, _header.statusBanner, _footer.element);
 
-  // Inspect tab - extracted to sidebar/inspect.js
   const inspect = createInspectTab({ onRefresh: () => refresh() });
   const inspectContent = inspect.element;
 
-  /** Switch between Review and Inspect tabs. */
   function switchTab(tab) {
     reviewContent.style.display = tab === 'review' ? 'flex' : 'none';
     inspectContent.style.display = tab === 'inspect' ? 'flex' : 'none';
@@ -542,10 +213,7 @@ export function create() {
     }
   }
 
-  for (const { key, label } of [
-    { key: 'review', label: 'Review' },
-    { key: 'inspect', label: 'Inspect' },
-  ]) {
+  for (const { key, label } of [{ key: 'review', label: 'Review' }, { key: 'inspect', label: 'Inspect' }]) {
     const btn = document.createElement('button');
     btn.setAttribute(ATTR, 'primary-tab');
     btn.dataset.tab = key;
@@ -562,27 +230,23 @@ export function create() {
     primaryTabs.appendChild(btn);
   }
 
-  sidebarEl.append(header, helpCard, primaryTabs, reviewContent, inspectContent, settingsScreen);
+  sidebarEl.append(_header.element, help.element, primaryTabs, reviewContent, inspectContent, settings.element);
 
-  // Shadow DOM isolates sidebar from page CSS (prevents * { margin:0 } etc.)
+  // ── Shadow DOM ──
   hostEl = document.createElement('div');
   hostEl.setAttribute(ATTR, 'shadow-host');
   Object.assign(hostEl.style, { all: 'initial', position: 'fixed', top: '0', right: '0', zIndex: '2147483646' });
   const shadow = hostEl.attachShadow({ mode: 'open' });
 
-  // Initialize event bus on shadow root for inter-module communication
   _bus = createEventBus(shadow);
-
-  // Wire core event listeners
   _bus.on(EVENTS.REFRESH, () => refresh());
-  _bus.on(EVENTS.COLLAPSE_TOGGLE, () => { if (collapsed) expand(); else collapse(); });
+  _bus.on(EVENTS.COLLAPSE_TOGGLE, () => toggleCollapse());
   _bus.on(EVENTS.DESTROY, () => { hideMarkers(); stopAnnotate(); destroy(); });
   _bus.on(EVENTS.ANNOTATION_RESOLVED, ({ uuid, resolution }) => {
-    const anns = getAnnotations();
-    const ann = anns.find((a) => a.uuid === uuid && !a.resolved);
+    const ann = getAnnotations().find((a) => a.uuid === uuid && !a.resolved);
     if (ann) { ann.resolved = true; ann.resolution = resolution; refresh(); }
   });
-  _bus.on(EVENTS.AUDIT_RESULTS, ({ audit, filename: _filename }) => {
+  _bus.on(EVENTS.AUDIT_RESULTS, ({ audit }) => {
     const badge = hostEl?.shadowRoot?.querySelector(`[${ATTR}="audit-badge"]`);
     if (badge && audit) {
       const parts = [];
@@ -600,9 +264,9 @@ export function create() {
   shadow.append(scrollStyle, sidebarEl);
   document.documentElement.appendChild(hostEl);
 
-  // Collapsed strip - extracted to sidebar/strip.js
+  // ── Collapsed strip ──
   const strip = createStrip({
-    onExpand: () => { expand(); setCaptureMode(null); updateModeButtons(); },
+    onExpand: () => { expand(); setCaptureMode(null); _modeBar.updateActive(null); },
     modeIcons: MODE_ICONS,
     modeHints: MODE_HINTS,
     onModeClick: (key) => {
@@ -615,13 +279,12 @@ export function create() {
       }
       const mode = CAPTURE_MODES[key.toUpperCase()];
       setCaptureMode(getCaptureMode() === mode ? null : mode);
-      updateModeButtons();
+      _modeBar.updateActive(getCaptureMode());
       strip.updateModeButtons(getCaptureMode());
     },
   });
   badgeEl = strip.element;
   _strip = strip;
-
   document.documentElement.appendChild(badgeEl);
 
   refresh();
@@ -629,7 +292,6 @@ export function create() {
   startResolutionPolling(() => _bus.emit(EVENTS.REFRESH));
   startRequestPolling((reqs) => { pendingRequests = reqs || []; });
 
-  // Real-time events via transport (native messaging or WebSocket)
   transport.onEvent('annotation:resolved', (msg) => {
     _bus.emit(EVENTS.ANNOTATION_RESOLVED, { uuid: msg.uuid, resolution: msg.resolution });
   });
@@ -637,14 +299,12 @@ export function create() {
     if (msg.audit) _bus.emit(EVENTS.AUDIT_RESULTS, { audit: msg.audit, filename: msg.filename });
   });
 
-  // Wire keyboard shortcuts for annotate mode actions
+  // ── Keyboard shortcuts ──
   startShortcuts({
     onEscape: () => {
       if (help.isVisible()) { help.hide(); return; }
       if (settingsVisible) { hideSettings(); return; }
-      hideMarkers();
-      stopAnnotate();
-      destroy();
+      hideMarkers(); stopAnnotate(); destroy();
     },
     onSend: () => { hostEl?.shadowRoot?.querySelector(`[${ATTR}="send"]`)?.click(); },
     onCopyMd: () => { hostEl?.shadowRoot?.querySelector(`[${ATTR}="copy-md"]`)?.click(); },
@@ -656,12 +316,32 @@ export function create() {
       const selected = getAnnotations().find((a) => a.selected);
       if (selected) { updateSeverity(selected.id, sev); refresh(); }
     },
-    onToggleCollapse: () => { _bus.emit(EVENTS.COLLAPSE_TOGGLE); },
-    onClose: () => { _bus.emit(EVENTS.DESTROY); },
+    onToggleCollapse: () => _bus.emit(EVENTS.COLLAPSE_TOGGLE),
+    onClose: () => _bus.emit(EVENTS.DESTROY),
   });
 }
 
-/** Collapse sidebar to strip. Exported for capture mode integration. */
+// ──────────────────────────────────────────────
+// Send Logic
+// ──────────────────────────────────────────────
+
+/** Execute the actual send-to-agent action. */
+function doSend(trustOverride = false) {
+  const noteInput = hostEl?.shadowRoot?.querySelector(`[${ATTR}="session-note"]`);
+  const sessionNote = noteInput?.value?.trim() || undefined;
+  if (noteInput) noteInput.value = '';
+  chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true, includeSnapshot: true, sessionNote, trustOverride }, () => {});
+  for (const ann of getAnnotations()) {
+    if (!ann.resolved) ann.pending = true;
+  }
+  refresh();
+  _footer.flashSend();
+}
+
+// ──────────────────────────────────────────────
+// Collapse / Expand
+// ──────────────────────────────────────────────
+
 export function collapse() {
   if (collapsed || !sidebarEl) return;
   collapsed = true;
@@ -670,7 +350,6 @@ export function collapse() {
   updateBadgeCount();
 }
 
-/** Expand sidebar from strip. Exported for capture mode integration. */
 export function expand() {
   if (!collapsed || !sidebarEl) return;
   collapsed = false;
@@ -689,7 +368,10 @@ function updateBadgeCount() {
   if (_strip) _strip.updateCount();
 }
 
-/** Refresh the sidebar list from current annotations. */
+// ──────────────────────────────────────────────
+// Refresh
+// ──────────────────────────────────────────────
+
 export function refresh() {
   if (!sidebarEl) return;
   const list = sidebarEl.querySelector(`[${ATTR}="list"]`);
@@ -703,22 +385,11 @@ export function refresh() {
     _reviewTab.textContent = openCount > 0 ? `Review (${openCount})` : 'Review';
   }
 
-  // Update header bell indicator
-  if (bellBtn) {
-    if (pendingRequests.length > 0) {
-      bellBtn.style.display = 'flex';
-      bellBtn.style.animation = 'none';
-      // Trigger reflow then apply pulse
-      void bellBtn.offsetWidth;
-      bellBtn.style.animation = 'vg-bell-pulse 1s ease-in-out 3';
-    } else {
-      bellBtn.style.display = 'none';
-    }
-  }
+  // Update bell
+  if (_header) _header.updateBell(pendingRequests.length);
 
   const anns = getAnnotations();
 
-  // Render annotation list first (clears list contents)
   renderReviewList(list, tabContainer, sidebarEl, {
     annotations: anns,
     pendingRequests,
@@ -750,9 +421,7 @@ export function refresh() {
     onRequestCapture: (req, entry, capBtn) => {
       capBtn.textContent = '\u23f3';
       (async () => {
-        try {
-          await transport.ackRequest(req.id);
-        } catch { /* best effort */ }
+        try { await transport.ackRequest(req.id); } catch { /* best effort */ }
         chrome.runtime.sendMessage({ type: 'capture', includeSnapshot: true, keepSidebar: true }, () => {
           entry.style.transition = 'background 0.3s, opacity 0.5s';
           entry.style.background = 'rgba(74, 222, 128, 0.15)';
@@ -771,9 +440,7 @@ export function refresh() {
     },
     onRequestDecline: (req, entry) => {
       (async () => {
-        try {
-          await transport.declineRequest(req.id, 'User declined from extension');
-        } catch { /* best effort */ }
+        try { await transport.declineRequest(req.id, 'User declined from extension'); } catch { /* best effort */ }
         entry.style.transition = 'background 0.3s, opacity 0.5s';
         entry.style.background = 'rgba(248, 113, 113, 0.15)';
         setTimeout(() => {
@@ -789,9 +456,8 @@ export function refresh() {
     getSidebarEl: () => sidebarEl,
   });
 
-  // Auto-inspect suggestions - prepend to list AFTER renderReviewList (which clears list)
+  // Suggestions bar
   if (!_suggestionsCache) _suggestionsCache = scanForSuggestions();
-  /** Convert a suggestion into an annotation in the timeline. */
   function addSuggestionToReview(sug) {
     const ann = addPageNote();
     if (ann) {
@@ -810,17 +476,13 @@ export function refresh() {
   });
 
   updateBadgeCount();
-
-  // Disable export buttons when no annotations
-  const hasNotes = anns.length > 0;
-  sidebarEl.querySelectorAll(`[${ATTR}="send"], [${ATTR}="copy-md"], [${ATTR}="download"]`).forEach((btn) => {
-    btn.disabled = !hasNotes;
-    btn.style.opacity = hasNotes ? '1' : '0.4';
-    btn.style.cursor = hasNotes ? 'pointer' : 'default';
-  });
+  _footer.updateDisabledState(anns.length > 0);
 }
 
-/** Remove the sidebar from the DOM. */
+// ──────────────────────────────────────────────
+// Destroy
+// ──────────────────────────────────────────────
+
 export function destroy() {
   stopShortcuts();
   stopJourney();
@@ -830,11 +492,12 @@ export function destroy() {
   if (hostEl) { hostEl.remove(); hostEl = null; }
   if (sidebarEl) { sidebarEl = null; }
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }
-  bellBtn = null;
+  _header = null;
+  _footer = null;
+  _modeBar = null;
   _strip = null;
   if (_bus) { _bus.destroy(); _bus = null; }
   collapsed = false;
-  _hasCaptured = false;
   pendingRequests = [];
   activeFilter = 'open';
   _suggestionsCache = null;

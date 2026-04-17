@@ -76,4 +76,42 @@ describe('native messaging protocol', () => {
     chunks.pop(); // remove last chunk
     expect(reassembleChunks(chunks)).toBeNull();
   });
+
+  // ──────────────────────────────────────────────
+  // Stdin buffer accumulation (used by server/index.js native host mode)
+  // ──────────────────────────────────────────────
+
+  it('(+) multiple messages in one buffer are decoded correctly', () => {
+    const msg1 = encodeMessage({ type: 'health' });
+    const msg2 = encodeMessage({ type: 'info' });
+    const combined = Buffer.concat([msg1, msg2]);
+
+    let buf = combined;
+    const decoded = [];
+    while (buf.length >= 4) {
+      const msgLen = buf.readUInt32LE(0);
+      if (buf.length < 4 + msgLen) break;
+      const msgBuf = buf.subarray(0, 4 + msgLen);
+      buf = buf.subarray(4 + msgLen);
+      decoded.push(decodeMessage(msgBuf));
+    }
+    expect(decoded).toEqual([{ type: 'health' }, { type: 'info' }]);
+    expect(buf.length).toBe(0);
+  });
+
+  it('(+) partial message waits for more data', () => {
+    const full = encodeMessage({ type: 'health' });
+    const partial = full.subarray(0, 6);
+
+    let buf = partial;
+    const decoded = [];
+    while (buf.length >= 4) {
+      const msgLen = buf.readUInt32LE(0);
+      if (buf.length < 4 + msgLen) break;
+      decoded.push(decodeMessage(buf.subarray(0, 4 + msgLen)));
+      buf = buf.subarray(4 + msgLen);
+    }
+    expect(decoded).toEqual([]);
+    expect(buf.length).toBe(6);
+  });
 });
