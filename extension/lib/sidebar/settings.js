@@ -80,18 +80,18 @@ export function createSettings() {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
   });
   const helpLink = document.createElement('a');
-  helpLink.textContent = 'URL mapping docs';
+  helpLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>URL mapping docs';
   helpLink.href = 'https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project';
   helpLink.target = '_blank';
-  Object.assign(helpLink.style, { color: '#666', fontSize: '10px', textDecoration: 'none' });
-  helpLink.addEventListener('mouseenter', () => { helpLink.style.color = '#6366f1'; });
-  helpLink.addEventListener('mouseleave', () => { helpLink.style.color = '#666'; });
+  Object.assign(helpLink.style, { color: '#818cf8', fontSize: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' });
+  helpLink.addEventListener('mouseenter', () => { helpLink.style.textDecoration = 'underline'; });
+  helpLink.addEventListener('mouseleave', () => { helpLink.style.textDecoration = 'none'; });
   const advLink = document.createElement('a');
-  advLink.textContent = 'All servers \u2192';
+  advLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>All servers \u2192';
   advLink.href = '#';
-  Object.assign(advLink.style, { color: '#666', fontSize: '10px', textDecoration: 'none' });
-  advLink.addEventListener('mouseenter', () => { advLink.style.color = '#6366f1'; });
-  advLink.addEventListener('mouseleave', () => { advLink.style.color = '#666'; });
+  Object.assign(advLink.style, { color: '#818cf8', fontSize: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' });
+  advLink.addEventListener('mouseenter', () => { advLink.style.textDecoration = 'underline'; });
+  advLink.addEventListener('mouseleave', () => { advLink.style.textDecoration = 'none'; });
   advLink.addEventListener('click', (e) => { e.preventDefault(); chrome.runtime.sendMessage({ type: 'open-options' }); });
   cardFooter.append(helpLink, advLink);
 

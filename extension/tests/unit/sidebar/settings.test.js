@@ -210,4 +210,35 @@ describe('settings card design', () => {
     const card = s.element.querySelector('[data-vg-annotate="server-card"]');
     expect(card.textContent).toContain('Not Connected');
   });
+
+  it('(+) URL mapping docs link has visible link color', () => {
+    const s = createSettings();
+    const links = [...s.element.querySelectorAll('a')];
+    const docsLink = links.find((a) => a.textContent.includes('URL mapping'));
+    // Must not be invisible gray (#666) - should be a recognizable link color
+    expect(docsLink.style.color).not.toBe('#666');
+    expect(docsLink.style.color).toMatch(/818cf8|rgb\(129,\s*140,\s*248\)/);
+  });
+
+  it('(+) All servers link has visible link color', () => {
+    const s = createSettings();
+    const links = [...s.element.querySelectorAll('a')];
+    const allLink = links.find((a) => a.textContent.includes('All servers'));
+    expect(allLink.style.color).not.toBe('#666');
+    expect(allLink.style.color).toMatch(/818cf8|rgb\(129,\s*140,\s*248\)/);
+  });
+
+  it('(+) URL mapping docs link has an SVG icon', () => {
+    const s = createSettings();
+    const links = [...s.element.querySelectorAll('a')];
+    const docsLink = links.find((a) => a.textContent.includes('URL mapping'));
+    expect(docsLink.querySelector('svg')).not.toBeNull();
+  });
+
+  it('(+) All servers link has an SVG icon', () => {
+    const s = createSettings();
+    const links = [...s.element.querySelectorAll('a')];
+    const allLink = links.find((a) => a.textContent.includes('All servers'));
+    expect(allLink.querySelector('svg')).not.toBeNull();
+  });
 });

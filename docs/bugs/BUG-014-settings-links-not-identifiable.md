@@ -2,9 +2,9 @@
 
 - **ID**: BUG-014
 - **Severity**: Low
-- **Status**: OPEN
+- **Status**: FIXED
 - **Reported**: 2026-04-17
-- **Fixed**: —
+- **Fixed**: 2026-04-18
 
 ## Description
 
@@ -23,15 +23,20 @@ Links styled as plain text without `color`, `text-decoration`, or icon indicator
 
 ## Fix Description
 
-- Apply standard link color (e.g., `color: var(--link-color)` or `#3b82f6`)
-- Add subtle underline or underline-on-hover
-- Add external-link icon (↗) for links that open new tabs
-- Add internal navigation icon for "All servers" if it navigates within the extension
+- Changed link color from `#666` (invisible gray) to `#818cf8` (indigo, matches theme)
+- Replaced color-change hover with underline hover (link stays visible at rest)
+- Added book icon (SVG) before "URL mapping docs"
+- Added monitor icon (SVG) before "All servers"
+- Links use `display: inline-flex` with `align-items: center` for icon alignment
 
 ## Files Changed
 
-—
+- `extension/lib/sidebar/settings.js`
+- `extension/tests/unit/sidebar/settings.test.js`
 
 ## Regression Tests
 
-—
+- `(+) URL mapping docs link has visible link color`
+- `(+) All servers link has visible link color`
+- `(+) URL mapping docs link has an SVG icon`
+- `(+) All servers link has an SVG icon`
