@@ -12,6 +12,7 @@ import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
+import { wrapComment } from '#src/utils/sanitize.js';
 
 /**
  * Register the get_unresolved MCP tool.
@@ -44,7 +45,7 @@ export function register(server, indexer, capturesDir) {
           if (!parsed.ok) continue;
           const anns = (parsed.data.annotations || []).filter((a) => !a.resolved);
           for (const a of anns) {
-            results.push({ filename: f, ...a });
+            results.push({ filename: f, ...a, comment: wrapComment(a.comment) });
             if (results.length >= limit) break;
           }
         } catch { continue; }

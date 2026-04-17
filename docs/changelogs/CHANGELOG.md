@@ -16,6 +16,13 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - Idle timer resets on MCP tool calls, HTTP requests, and WebSocket messages
 - Prevents orphaned server processes from exhausting the 4-port range (9876-9879)
 
+### F19: Prompt Injection Defense (Layers 1-4)
+- Layer 1: Traverser strips HTML comments, caps data-* attrs at 100 chars, clears hidden element text
+- Layer 2: MCP tools wrap text in `[CAPTURED_TEXT]` delimiters, comments in `[USER_COMMENT]` delimiters
+- Layer 3: `detectSuspicious()` flags instruction-like patterns with `_warning` field
+- Layer 4: SERVER_INSTRUCTIONS, steering docs, and all @vg-* prompts include injection defense guidance
+- 22 new tests: 16 sanitize unit tests + 6 tool wrapping integration tests
+
 ## [0.3.7] - 2026-04-17
 
 ### New Features

@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { readAndParse } from '#src/utils/tool-helpers.js';
 import { flattenNodes, filterInteractive, getNodeDetails, isInViewport } from '#src/analysis/node-queries.js';
+import { wrapCapturedText } from '#src/utils/sanitize.js';
 
 /**
  * Register the get_interactive_elements MCP tool.
@@ -34,7 +35,7 @@ export function register(server, _indexer, capturesDir) {
       const elements = nodes.map((n) => {
         const details = getNodeDetails(parsed, n.id);
         return {
-          id: n.id, tag: n.tag, text: n.text, actions: n.actions,
+          id: n.id, tag: n.tag, text: wrapCapturedText(n.text), actions: n.actions,
           inViewport: isInViewport(n.bbox, viewport),
           selector: details?.selector,
           'data-testid': details?.attributes?.['data-testid'] ?? null,
