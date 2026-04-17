@@ -21,6 +21,7 @@ Local MCP server that reads `.viewgraph/captures/*.json` files and exposes 19 qu
 | Tool | What it does |
 |---|---|
 | `list_captures` | List available captures with URL filter |
+| `get_session_status` | Session overview: capture/annotation/baseline counts with suggestions |
 | `get_capture` | Full capture JSON by filename |
 | `get_latest_capture` | Most recent capture (summary if large) |
 | `get_page_summary` | URL, title, viewport, element counts, clusters |
