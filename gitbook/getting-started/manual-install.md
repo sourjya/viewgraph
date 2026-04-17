@@ -8,18 +8,18 @@ The Chrome Web Store and Firefox Add-ons versions may be behind the latest relea
 
 ## Why is the store version behind?
 
-Both the Chrome Web Store and Firefox Add-ons require a manual review process before publishing updates. This is a good thing — it protects users from malicious extensions. However, it means updates can take anywhere from a few hours to several weeks to appear in the store, depending on reviewer availability and queue length.
+Both the Chrome Web Store and Firefox Add-ons require a manual review process before publishing updates. This is a good thing - it protects users from malicious extensions. However, it means updates can take anywhere from a few hours to several weeks to appear in the store, depending on reviewer availability and queue length.
 
-This is outside our control and affects all browser extensions, not just ViewGraph. During active development, the GitHub release will often be ahead of the store version. Both are safe to use — the store version is simply an older, already-reviewed build.
+This is outside our control and affects all browser extensions, not just ViewGraph. During active development, the GitHub release will often be ahead of the store version. Both are safe to use - the store version is simply an older, already-reviewed build.
 
 ## Are the GitHub ZIPs safe?
 
 Yes. The ZIP files on GitHub are built from the same open-source code you can see in the repository:
 
-- The extension source code is in [`extension/`](https://github.com/sourjya/viewgraph/tree/main/extension) — fully readable, no obfuscation
+- The extension source code is in [`extension/`](https://github.com/sourjya/viewgraph/tree/main/extension) - fully readable, no obfuscation
 - ZIPs are produced by the [`scripts/build-extension.sh`](https://github.com/sourjya/viewgraph/blob/main/scripts/build-extension.sh) build script, which runs the standard build toolchain and packages the output
 - Each release is [tagged in git](https://github.com/sourjya/viewgraph/tags) (e.g., `v0.3.7`) so you can verify exactly which code produced the ZIP
-- The extension [manifest](https://github.com/sourjya/viewgraph/blob/main/extension/manifest.json) lists every permission it requests — nothing hidden
+- The extension [manifest](https://github.com/sourjya/viewgraph/blob/main/extension/manifest.json) lists every permission it requests - nothing hidden
 - You can always [build from source](installation.md#build-from-source) yourself if you prefer full control
 
 The extension runs entirely on your machine. No data is sent to any external server. See [Security](../reference/security.md) for the full security model.
@@ -44,7 +44,7 @@ This means `npx` pulled the latest server, but your browser extension hasn't rec
 
 ## Chrome / Edge / Brave
 
-Chrome-based installs are **persistent** — the extension survives browser restarts.
+Chrome-based installs are **persistent** - the extension survives browser restarts.
 
 ### Step by step
 
@@ -71,7 +71,7 @@ When a new version is released:
 
 ## Firefox
 
-Firefox sideloaded extensions are **temporary** — they are removed when the browser closes.
+Firefox sideloaded extensions are **temporary** - they are removed when the browser closes.
 
 ### Step by step
 

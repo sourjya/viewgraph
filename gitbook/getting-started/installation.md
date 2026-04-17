@@ -1,6 +1,6 @@
 # Installation
 
-All install methods — from zero-config to building from source.
+All install methods - from zero-config to building from source.
 
 ## Standard Setup
 
