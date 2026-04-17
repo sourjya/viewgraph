@@ -87,6 +87,28 @@ Re-run `viewgraph-init` from your project. It restarts cleanly without duplicati
 
 ---
 
+## Download Pre-Built Extension
+
+If the store version is outdated or you prefer manual installation, download the latest pre-built extension from [GitHub Releases](https://github.com/sourjya/viewgraph/releases).
+
+**Chrome (persistent):**
+1. Download `viewgraph-chrome-x.x.x.zip` from the latest release
+2. Unzip to a folder
+3. Open `chrome://extensions/`
+4. Enable **Developer mode** (top-right toggle)
+5. Click **Load unpacked** and select the unzipped folder
+
+The extension stays installed across browser restarts. You'll need to manually update by downloading new releases.
+
+**Firefox (temporary):**
+1. Download `viewgraph-firefox-x.x.x.zip` from the latest release
+2. Open `about:debugging#/runtime/this-firefox`
+3. Click **Load Temporary Add-on** and select the ZIP file
+
+> **Note:** Firefox temporary add-ons are removed when the browser closes. For persistent Firefox installs, use the [Firefox Add-ons store](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/) or build from source with [web-ext](https://extensionworkshop.com/documentation/develop/getting-started-with-web-ext/).
+
+---
+
 ## Build from Source
 
 For contributors or anyone who wants to build the extension themselves.
