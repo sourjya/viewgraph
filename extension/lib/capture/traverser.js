@@ -31,6 +31,22 @@ const STYLE_PROPS = {
  * @param {CSSStyleDeclaration} computed
  * @returns {boolean}
  */
+
+/**
+ * Get text content excluding HTML comment nodes.
+ * In real browsers, textContent includes comment text which is a prompt injection vector.
+ * This walks only TEXT_NODE children (nodeType 3), skipping COMMENT_NODE (nodeType 8).
+ */
+function getCleanText(el) {
+  let text = '';
+  for (const node of el.childNodes) {
+    if (node.nodeType === 3) text += node.textContent;
+    else if (node.nodeType === 1) text += getCleanText(node);
+    // nodeType 8 (comments) are intentionally skipped
+  }
+  return text.trim();
+}
+
 function isVisible(el, computed) {
   if (computed.display === 'none' || computed.visibility === 'hidden') return false;
   const rect = el.getBoundingClientRect();
@@ -178,8 +194,12 @@ export function traverseDOM(root = document.body) {
       htmlId: el.id || null,
       role: el.getAttribute('role') || null,
       ariaLabel: el.getAttribute('aria-label') || null,
-      text: el.textContent?.trim().slice(0, 200) || '',
-      visibleText: el.innerText?.trim().slice(0, 200) || '',
+      // F19: Strip HTML comment content from text fields to prevent prompt injection.
+      // textContent includes comment node text in real browsers (not jsdom).
+      // Use a helper that walks child text nodes only, skipping comment nodes.
+      text: getCleanText(el).slice(0, 200),
+      visibleText: (el.isConnected && computed.display !== 'none' && computed.visibility !== 'hidden' && el.getAttribute('aria-hidden') !== 'true')
+        ? (el.innerText?.trim().slice(0, 200) || '') : '',
       bbox,
       isInteractive: INTERACTIVE_TAGS.has(tag) || el.getAttribute('role') === 'button' || el.onclick != null,
       isSemantic: SEMANTIC_TAGS.has(tag),
@@ -188,10 +208,11 @@ export function traverseDOM(root = document.body) {
       attributes: {},
     };
 
-    // Collect relevant attributes
+    // Collect relevant attributes. F19: cap data-* values at 100 chars to limit injection payload.
     for (const attr of el.attributes) {
       if (attr.name.startsWith('data-') || attr.name.startsWith('aria-')) {
-        record.attributes[attr.name] = attr.value;
+        const val = attr.value;
+        record.attributes[attr.name] = (attr.name.startsWith('data-') && val.length > 100) ? val.slice(0, 100) + '...' : val;
       }
     }
 
