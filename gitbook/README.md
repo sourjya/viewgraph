@@ -53,6 +53,7 @@ ViewGraph works with any web app regardless of backend technology. Python, Ruby,
 
 [![Chrome - Install](https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj)  [![Firefox - Install](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
 
+Store version outdated? [Download latest ZIPs directly](https://github.com/sourjya/viewgraph/tree/main/downloads).
 **2. Add to your AI agent's MCP config:**
 
 ```json
