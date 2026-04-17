@@ -238,10 +238,14 @@ async function main() {
         }
       }
     });
+    // Detect browser/parent death: when stdin closes, exit gracefully
+    process.stdin.on('end', () => shutdown('stdin-closed'));
     console.error(`${LOG_PREFIX} Native messaging host mode + HTTP (port ${HTTP_PORT ?? 9876})`);
   } else if (!process.stdin.isTTY) {
     const transport = new StdioServerTransport();
     await server.connect(transport);
+    // Detect parent agent death: when stdin closes, exit gracefully
+    process.stdin.on('end', () => shutdown('stdin-closed'));
     console.error(`${LOG_PREFIX} MCP server running on stdio + HTTP (port ${HTTP_PORT ?? 9876})`);
   } else {
     console.error(`${LOG_PREFIX} Standalone mode - HTTP only (port ${HTTP_PORT ?? 9876}). No MCP client detected.`);
