@@ -388,12 +388,24 @@ Also: router pattern for `http-receiver.js`, auto-discovery for tool registratio
 
 ### F17: URL Trust Indicator
 
-**Status:** Spec needed
+**Status:** Spec complete, not started
+**Spec:** `.kiro/specs/url-trust-indicator/`
 **Priority:** High - directly mitigates top 3 STRIDE threats (spoofing, prompt injection, info disclosure)
 
-**Concept:** Visual trust badge in sidebar header. Green shield for localhost/configured URLs, amber shield for unknown/remote URLs. Send-to-agent blocked for untrusted URLs unless user explicitly adds the pattern. Copy MD and Download Report still work (no agent involved).
+**Concept:** Visual trust badge in sidebar header. Three trust levels:
+- Green shield: localhost, 127.0.0.1, file:// (always trusted)
+- Blue shield: URLs matching `trustedPatterns` in config.json
+- Amber shield: all other URLs (send-to-agent blocked)
 
-**Threat model justification:** Threats #1 (spoofing), #2 (prompt injection), #8 (sensitive data) are all mitigated by preventing untrusted captures from reaching the agent.
+**Send gate:** Disabled Send button for untrusted URLs. Inline gate offers "Add to trusted" (permanent, writes config.json) or "Send anyway" (one-time, flagged in metadata). Copy MD and Download Report always work.
+
+**Key design decisions:**
+- `trustedPatterns` is separate from `urlPatterns` (routing != trust)
+- Localhost always trusted, cannot be disabled
+- "Send anyway" adds `trustOverride: true` to capture metadata so agent can see the override
+- SPA navigation triggers re-classification
+
+**Phases:** 4 phases, 18 tasks. Classification -> visual indicator -> send gate -> edge cases.
 
 ### F18: MCP Agent Guidance - Server Instructions, State Tracking, Workflow Awareness
 
