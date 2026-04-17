@@ -125,6 +125,10 @@ You can safely use ViewGraph on production, staging, or any environment:
 - The capture happens in a single pass - no persistent monitoring
 - Closing the sidebar stops all ViewGraph activity on the page
 
+**Connection-aware behavior:**
+- **No server connected:** Send to Agent is disabled. Copy MD and Download Report work normally. A status banner explains what's available.
+- **Untrusted URL (planned, F17):** Send to Agent will be blocked for remote/unknown URLs unless explicitly added to trusted patterns. This prevents malicious page content from reaching your AI agent. See [Threat Model](threat-model.md) for the full analysis.
+
 ## Common Concerns
 
 **"Will it slow down my site?"**
