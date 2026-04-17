@@ -125,3 +125,98 @@ describe('settings server routing', () => {
     expect(s.element.textContent).toContain('Not Connected');
   });
 });
+
+// ──────────────────────────────────────────────
+// Settings card UI regression tests
+// ──────────────────────────────────────────────
+
+describe('settings card design', () => {
+  it('(+) card has header, body, and footer sections', () => {
+    const s = createSettings();
+    const card = s.element.querySelector('[data-vg-annotate="server-card"]');
+    expect(card).not.toBeNull();
+    expect(card.children.length).toBe(3); // header, body, footer
+  });
+
+  it('(+) body is always visible (never display:none)', () => {
+    const s = createSettings();
+    const body = s.element.querySelector('[data-vg-annotate="project-details"]');
+    expect(body).not.toBeNull();
+    expect(body.style.display).not.toBe('none');
+  });
+
+  it('(+) body shows fallback text when no server info', () => {
+    const s = createSettings();
+    const body = s.element.querySelector('[data-vg-annotate="project-details"]');
+    expect(body.textContent).toContain('No project mapping');
+  });
+
+  it('(+) footer has URL mapping docs link', () => {
+    const s = createSettings();
+    const links = [...s.element.querySelectorAll('a')];
+    const docsLink = links.find((a) => a.textContent.includes('URL mapping'));
+    expect(docsLink).toBeTruthy();
+    expect(docsLink.href).toContain('multi-project');
+  });
+
+  it('(+) footer has All servers link', () => {
+    const s = createSettings();
+    const links = [...s.element.querySelectorAll('a')];
+    const allLink = links.find((a) => a.textContent.includes('All servers'));
+    expect(allLink).toBeTruthy();
+  });
+
+  it('(+) header shows checking status initially', () => {
+    const s = createSettings();
+    const card = s.element.querySelector('[data-vg-annotate="server-card"]');
+    const header = card.firstElementChild;
+    expect(header.textContent).toContain('Checking');
+  });
+
+  it('(+) header updates to Connected after successful getInfo', async () => {
+    const transport = await import('#lib/transport.js');
+    transport.reset();
+    transport.init('http://127.0.0.1:9876');
+    globalThis.chrome = { runtime: { sendNativeMessage: undefined, sendMessage: vi.fn() }, storage: { local: { get: (k, cb) => { if (cb) cb({}); return Promise.resolve({}); }, set: () => Promise.resolve() }, sync: { get: (k, cb) => { if (cb) cb({}); }, set: vi.fn() } } };
+    globalThis.fetch = vi.fn((url) => {
+      const u = typeof url === 'string' ? url : url.toString();
+      if (u.includes('/info')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ projectRoot: '/test', urlPatterns: ['localhost:3000'], serverVersion: '0.3.7', agent: 'Kiro' }) });
+      return Promise.reject(new Error('unmocked'));
+    });
+    const s = createSettings();
+    s.show();
+    await new Promise((r) => setTimeout(r, 150));
+    const card = s.element.querySelector('[data-vg-annotate="server-card"]');
+    expect(card.textContent).toContain('Connected');
+    transport.reset();
+  });
+
+  it('(+) body shows agent and URL after successful getInfo', async () => {
+    const transport = await import('#lib/transport.js');
+    transport.reset(); transport.init('http://127.0.0.1:9876');
+    globalThis.chrome = { runtime: { sendNativeMessage: undefined, sendMessage: vi.fn() }, storage: { local: { get: (k, cb) => { if (cb) cb({}); return Promise.resolve({}); }, set: () => Promise.resolve() }, sync: { get: (k, cb) => { if (cb) cb({}); }, set: vi.fn() } } };
+    globalThis.fetch = vi.fn((url) => {
+      const u = typeof url === 'string' ? url : url.toString();
+      if (u.includes('/info')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ projectRoot: '/myproject', urlPatterns: ['localhost:4000'], agent: 'Kiro', serverVersion: '0.3.7' }) });
+      return Promise.reject(new Error('unmocked'));
+    });
+    const s = createSettings();
+    s.show();
+    await new Promise((r) => setTimeout(r, 150));
+    const body = s.element.querySelector('[data-vg-annotate="project-details"]');
+    expect(body.textContent).toContain('Kiro');
+    expect(body.textContent).toContain('localhost:4000');
+    expect(body.textContent).toContain('/myproject');
+    transport.reset();
+  });
+
+  it('(+) header shows Not Connected when server offline', async () => {
+    globalThis.fetch = vi.fn(() => Promise.reject(new Error('offline')));
+    globalThis.chrome = { runtime: { sendNativeMessage: undefined, sendMessage: vi.fn() }, storage: { local: { get: (k, cb) => { if (cb) cb({}); return Promise.resolve({}); }, set: () => Promise.resolve() }, sync: { get: (k, cb) => { if (cb) cb({}); }, set: vi.fn() } } };
+    const s = createSettings();
+    s.show();
+    await new Promise((r) => setTimeout(r, 150));
+    const card = s.element.querySelector('[data-vg-annotate="server-card"]');
+    expect(card.textContent).toContain('Not Connected');
+  });
+});
