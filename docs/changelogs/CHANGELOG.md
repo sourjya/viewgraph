@@ -13,18 +13,22 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 ### New Features
 - F15 Auto-Inspect Suggestions: 3-tier scan engine (a11y, quality, testability), checklist UI, send-to-agent conversion
 - F16 Phase 1: zero-config server boot, auto-learn config.json on first capture
+- F18 Phase 1: SERVER_INSTRUCTIONS constant with workflow, categories, security, performance, delimiter docs (ADR-011)
+- F19 Phase 1: traverser sanitization - getCleanText strips comment nodes, hidden visibleText cleared, data-* attrs capped at 100 chars
 - STRIDE threat model: 8 threats, 8 mitigations, 5 assumptions, 4 relevant threat actors
-- GitBook threat model page with roadmap mitigation plan
-- GitBook public changelog page (user-facing changes only)
+- GitBook: threat model page, public changelog page, pre-built extension download section
+- GitHub Release v0.3.5 with Chrome + Firefox extension ZIPs
 
 ### Changed
 - Settings screen uses discoverServer for URL-aware routing (was blind port scan)
 - Status banner moved from below tabs to above footer (closer to buttons it references)
 - Connection info consolidated into help card (ext version + server version + port)
-- All ../  imports in sidebar/ replaced with #lib/ path aliases
+- All ../ imports in sidebar/ replaced with #lib/ path aliases
 - Centralized SERVER_HOST and DEFAULT_HTTP_PORT constants (zero hardcoded values)
 - innerHTML reduced to 6 (was 10), DOMParser reverted (broke shadow DOM icons)
-- Options page innerHTML cleaned up
+- Security page: export behavior matrix table replacing vague text
+- Installation page: download pre-built extension section added
+- Roadmap reorganized: completed features + prioritized implementation timeline
 
 ### Fixed
 - Icon rendering in shadow DOM: DOMParser + importNode loses SVG namespace, reverted to innerHTML for trusted SVGs
@@ -34,16 +38,15 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 ### Documentation
 - ADR-011: MCP server instructions (inspired by threat-modeling MCP)
 - ADR-012: Prompt injection defense (5-layer strategy)
-- F17 spec: URL trust indicator (18 tasks)
-- F18 spec: MCP agent guidance (19 tasks)
-- F19 spec: Prompt injection defense (19 tasks)
-- Roadmap reorganized: completed features + prioritized implementation timeline
-- GitBook: installation rewrite, security matrix, extension export docs, threat model page
-- All READMEs updated with zero-config as primary install path
+- F17 spec: URL trust indicator (18 tasks, 4 phases)
+- F18 spec: MCP agent guidance (19 tasks, 5 phases)
+- F19 spec: Prompt injection defense (19 tasks, 5 phases)
 
 ### Testing
-- 1314 total tests (930 extension + 384 server)
+- 1330 total tests (937 extension + 393 server)
 - 18 icon DOM rendering regression tests
+- 7 traverser injection defense tests
+- 9 server instructions tests
 - 2 settings server routing tests
 - 2 status banner position tests
 - 13 suggestion engine tests
