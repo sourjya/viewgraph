@@ -25,7 +25,8 @@ import { chevronRightIcon, closeIcon, bellIcon, sendIcon, checkIcon, docIcon, do
 import { KEYS, set as storageSet } from './storage.js';
 // import { groupRequests, smartPath } from './network-grouper.js';
 import { formatMarkdown } from './export/export-markdown.js';
-import { discoverServer, getAgentName, fetchConfig, classifyTrust, updateConfig } from './constants.js';
+import { discoverServer, getAgentName, classifyTrust } from './constants.js';
+import * as transport from './transport.js';
 import { collectNetworkState } from './collectors/network-collector.js';
 import { getConsoleState } from './collectors/console-collector.js';
 import { collectBreakpoints } from './collectors/breakpoint-collector.js';
@@ -37,8 +38,7 @@ import { collectComponents } from './collectors/component-collector.js';
 // import { checkRendered } from './collectors/visibility-collector.js';
 import { stopJourney } from './session/journey-recorder.js';
 import { startShortcuts, stopShortcuts } from './ui/keyboard-shortcuts.js';
-import { connect as wsConnect, disconnect as wsDisconnect } from './ws-client.js';
-import { WS_MESSAGES } from './ws-message-types.js';
+// WS replaced by transport.onEvent
 import { ATTR } from './selector.js';
 
 // ──────────────────────────────────────────────
@@ -126,11 +126,9 @@ export function create() {
         statusDot.style.background = '#4ade80';
         statusDot.title = `MCP server: ${url}`;
         statusBanner.style.display = 'none';
-        // Fetch project config and cache locally
-        await fetchConfig(url);
-        // Check version mismatch - only warn if extension is older than server (dev builds)
+        // Check version mismatch and trust level via transport
         try {
-          const info = await fetch(`${url}/info`, { signal: AbortSignal.timeout(3000) }).then((r) => r.json());
+          const info = await transport.getInfo();
           const extVersion = chrome.runtime.getManifest?.()?.version;
           if (info.serverVersion && extVersion && extVersion < info.serverVersion) {
             statusBanner.textContent = `Extension v${extVersion} is behind server v${info.serverVersion}. Rebuild: npm run build:ext`;
@@ -401,17 +399,13 @@ export function create() {
     });
     addBtn.addEventListener('click', async () => {
       try {
-        const serverUrl = await discoverServer(window.location.href);
-        if (serverUrl) {
-          const cfg = await fetch(`${serverUrl}/config`, { signal: AbortSignal.timeout(3000) }).then((r) => r.json()).catch(() => ({}));
-          const patterns = cfg.trustedPatterns || [];
-          if (!patterns.includes(hostname)) patterns.push(hostname);
-          await updateConfig(serverUrl, { trustedPatterns: patterns });
-          _trustLevel = { level: 'configured', reason: hostname };
-          // Update shield
-          const shield = hostEl?.shadowRoot?.querySelector(`[${ATTR}="trust-shield"]`);
-          if (shield) { shield.replaceChildren(shieldIcon(16, '#60a5fa', 'check')); shield.title = `configured: ${hostname}`; }
-        }
+        const cfg = await transport.getConfig().catch(() => ({}));
+        const patterns = cfg.trustedPatterns || [];
+        if (!patterns.includes(hostname)) patterns.push(hostname);
+        await transport.updateConfig({ trustedPatterns: patterns });
+        _trustLevel = { level: 'configured', reason: hostname };
+        const shield = hostEl?.shadowRoot?.querySelector(`[${ATTR}="trust-shield"]`);
+        if (shield) { shield.replaceChildren(shieldIcon(16, '#60a5fa', 'check')); shield.title = `configured: ${hostname}`; }
       } catch { /* best effort */ }
       gate.remove();
       doSend();
@@ -504,7 +498,7 @@ export function create() {
     if (url) {
       try {
         const port = new URL(url).port || '9876';
-        const info = await fetch(`${url}/info`, { signal: AbortSignal.timeout(3000) }).then((r) => r.json());
+        const info = await transport.getInfo();
         const mismatch = info.serverVersion && extVer && extVer < info.serverVersion;
         help.setVersion(`Ext v${extVer} | Server v${info.serverVersion || '?'} | Port ${port}${mismatch ? ' - rebuild extension' : ''}`, mismatch);
       } catch { help.setVersion(`Ext v${extVer} | Server: offline`); }
@@ -635,24 +629,13 @@ export function create() {
   startResolutionPolling(() => _bus.emit(EVENTS.REFRESH));
   startRequestPolling((reqs) => { pendingRequests = reqs || []; });
 
-  // Connect WebSocket for real-time annotation sync
-  (async () => {
-    const serverUrl = await discoverServer(window.location.href);
-    if (!serverUrl) return;
-    const token = '';
-    wsConnect({
-      url: serverUrl,
-      token,
-      onMessage: (msg) => {
-        if (msg.type === WS_MESSAGES.ANNOTATION_RESOLVED) {
-          _bus.emit(EVENTS.ANNOTATION_RESOLVED, { uuid: msg.uuid, resolution: msg.resolution });
-        }
-        if (msg.type === WS_MESSAGES.AUDIT_RESULTS && msg.audit) {
-          _bus.emit(EVENTS.AUDIT_RESULTS, { audit: msg.audit, filename: msg.filename });
-        }
-      },
-    });
-  })();
+  // Real-time events via transport (native messaging or WebSocket)
+  transport.onEvent('annotation:resolved', (msg) => {
+    _bus.emit(EVENTS.ANNOTATION_RESOLVED, { uuid: msg.uuid, resolution: msg.resolution });
+  });
+  transport.onEvent('audit:results', (msg) => {
+    if (msg.audit) _bus.emit(EVENTS.AUDIT_RESULTS, { audit: msg.audit, filename: msg.filename });
+  });
 
   // Wire keyboard shortcuts for annotate mode actions
   startShortcuts({
@@ -768,8 +751,7 @@ export function refresh() {
       capBtn.textContent = '\u23f3';
       (async () => {
         try {
-          const serverUrl = await discoverServer(window.location.href);
-          if (serverUrl) await fetch(`${serverUrl}/requests/${req.id}/ack`, { method: 'POST', headers: {} });
+          await transport.ackRequest(req.id);
         } catch { /* best effort */ }
         chrome.runtime.sendMessage({ type: 'capture', includeSnapshot: true, keepSidebar: true }, () => {
           entry.style.transition = 'background 0.3s, opacity 0.5s';
@@ -790,14 +772,7 @@ export function refresh() {
     onRequestDecline: (req, entry) => {
       (async () => {
         try {
-          const serverUrl = await discoverServer(window.location.href);
-          if (serverUrl) {
-            await fetch(`${serverUrl}/requests/${req.id}/decline`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ reason: 'User declined from extension' }),
-            });
-          }
+          await transport.declineRequest(req.id, 'User declined from extension');
         } catch { /* best effort */ }
         entry.style.transition = 'background 0.3s, opacity 0.5s';
         entry.style.background = 'rgba(248, 113, 113, 0.15)';
@@ -851,7 +826,7 @@ export function destroy() {
   stopJourney();
   stopRequestPolling();
   stopResolutionPolling();
-  wsDisconnect();
+  transport.reset();
   if (hostEl) { hostEl.remove(); hostEl = null; }
   if (sidebarEl) { sidebarEl = null; }
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }

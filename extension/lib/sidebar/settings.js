@@ -9,7 +9,7 @@
 
 import { ATTR } from '#lib/selector.js';
 import { chevronLeftIcon } from './icons.js';
-import { discoverServer } from '#lib/constants.js';
+import * as transport from '#lib/transport.js';
 
 /**
  * Create the settings screen element.
@@ -151,15 +151,15 @@ export function createSettings() {
   }
 
   (async () => {
-    const serverUrl = await discoverServer(window.location.href);
-    if (serverUrl) {
-      try {
-        const info = await fetch(`${serverUrl}/info`, { signal: AbortSignal.timeout(2000) }).then((r) => r.json());
-        renderProjectInfo(info);
-      } catch { /* info failed */ }
+    try {
+      const info = await transport.getInfo();
+      renderProjectInfo(info);
+      serverLine.textContent = 'Project Settings';
+      serverLine.style.color = '#9ca3af';
+    } catch {
+      serverLine.textContent = 'Server not connected';
+      serverLine.style.color = '#f87171';
     }
-    serverLine.textContent = serverUrl ? 'Project Settings' : 'Server not connected';
-    serverLine.style.color = serverUrl ? '#9ca3af' : '#f87171';
   })();
 
   let visible = false;

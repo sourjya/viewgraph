@@ -15,6 +15,7 @@ import {
 } from '#lib/annotate.js';
 import { create, destroy, refresh, expand, collapse, isCollapsed } from '#lib/annotation-sidebar.js';
 import { resetServerCache } from '#lib/constants.js';
+import * as transport from '#lib/transport.js';
 
 // ---------------------------------------------------------------------------
 // Chrome API mocks
@@ -491,6 +492,7 @@ describe('inspect tab captures section', () => {
   beforeEach(() => {
     origFetch = globalThis.fetch;
     resetServerCache();
+    transport.init('http://127.0.0.1:9876');
     // jsdom lacks matchMedia - mock it for collectBreakpoints
     window.matchMedia = vi.fn((query) => ({
       matches: false, media: query, addEventListener: vi.fn(), removeEventListener: vi.fn(),

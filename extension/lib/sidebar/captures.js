@@ -8,26 +8,23 @@
  */
 
 import { ATTR } from '#lib/selector.js';
-import { discoverServer } from '#lib/constants.js';
+import * as transport from '#lib/transport.js';
 
 /**
  * Fetch captures and baselines from server, render into container.
  * @param {HTMLElement} container - The inspect tab content element
  */
 export async function renderCaptures(container) {
-  const serverUrl = await discoverServer(window.location.href);
-  if (!serverUrl) return;
   const pageUrl = location.href;
 
-  let captures = [];
+  let captures;
   try {
-    const res = await fetch(`${serverUrl}/health`, { signal: AbortSignal.timeout(3000) });
-    if (!res.ok) return;
-    const listRes = await fetch(`${serverUrl}/captures?url=${encodeURIComponent(pageUrl)}`, { signal: AbortSignal.timeout(3000) });
-    if (listRes.ok) captures = (await listRes.json()).captures || [];
+    await transport.getHealth();
+    const data = await transport.getCaptures(pageUrl);
+    captures = data?.captures || [];
   } catch { return; }
 
-  if (captures.length === 0) return;
+  if (!captures || captures.length === 0) return;
 
   const now = Date.now();
   const latest = captures[0];
@@ -132,55 +129,44 @@ export async function renderCaptures(container) {
 
   // Fetch baseline status
   try {
-    const baseRes = await fetch(`${serverUrl}/baselines?url=${encodeURIComponent(pageUrl)}`, { signal: AbortSignal.timeout(3000) });
-    if (baseRes.ok) {
-      const { baselines } = await baseRes.json();
-      const current = baselines?.[0];
-      if (current) {
-        baseInfo.textContent = current.filename?.replace(/\.json$/, '').slice(-20) || 'set';
+    const { baselines } = await transport.getBaselines(pageUrl);
+    const current = baselines?.[0];
+    if (current) {
+      baseInfo.textContent = current.filename?.replace(/\.json$/, '').slice(-20) || 'set';
+      baseBtn.textContent = 'Compare';
+      baseBtn.style.background = '#1e3a5f';
+      baseBtn.style.color = '#60a5fa';
+      baseBtn.addEventListener('click', async () => {
+        baseBtn.textContent = '...';
+        try {
+          const data = await transport.compareBaseline(pageUrl);
+          if (data.diff) {
+            const dd = data.diff;
+            const parts = [];
+            if (dd.added) parts.push(`+${dd.added} added`);
+            if (dd.removed) parts.push(`-${dd.removed} removed`);
+            if (dd.moved) parts.push(`${dd.moved} moved`);
+            if (dd.testidChanges) parts.push(`${dd.testidChanges} testid changes`);
+            baseDiff.textContent = parts.length ? parts.join(', ') : 'No structural changes';
+            baseDiff.style.display = 'block';
+            baseDiff.style.color = parts.length ? '#f59e0b' : '#4ade80';
+          }
+        } catch { /* timeout */ }
         baseBtn.textContent = 'Compare';
-        baseBtn.style.background = '#1e3a5f';
-        baseBtn.style.color = '#60a5fa';
-        baseBtn.addEventListener('click', async () => {
-          baseBtn.textContent = '...';
-          try {
-            const cmpRes = await fetch(`${serverUrl}/baselines/compare?url=${encodeURIComponent(pageUrl)}`, { signal: AbortSignal.timeout(5000) });
-            if (cmpRes.ok) {
-              const data = await cmpRes.json();
-              if (data.diff) {
-                const dd = data.diff;
-                const parts = [];
-                if (dd.added) parts.push(`+${dd.added} added`);
-                if (dd.removed) parts.push(`-${dd.removed} removed`);
-                if (dd.moved) parts.push(`${dd.moved} moved`);
-                if (dd.testidChanges) parts.push(`${dd.testidChanges} testid changes`);
-                baseDiff.textContent = parts.length ? parts.join(', ') : 'No structural changes';
-                baseDiff.style.display = 'block';
-                baseDiff.style.color = parts.length ? '#f59e0b' : '#4ade80';
-              }
-            }
-          } catch { /* timeout */ }
+      });
+    } else {
+      baseInfo.textContent = 'none set';
+      baseBtn.textContent = 'Set';
+      baseBtn.addEventListener('click', async () => {
+        baseBtn.textContent = '...';
+        try {
+          await transport.setBaseline(latest.filename);
+          baseInfo.textContent = latest.filename.replace(/\.json$/, '').slice(-20);
           baseBtn.textContent = 'Compare';
-        });
-      } else {
-        baseInfo.textContent = 'none set';
-        baseBtn.textContent = 'Set';
-        baseBtn.addEventListener('click', async () => {
-          baseBtn.textContent = '...';
-          try {
-            await fetch(`${serverUrl}/baselines`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ filename: latest.filename }),
-              signal: AbortSignal.timeout(3000),
-            });
-            baseInfo.textContent = latest.filename.replace(/\.json$/, '').slice(-20);
-            baseBtn.textContent = 'Compare';
-            baseBtn.style.background = '#1e3a5f';
-            baseBtn.style.color = '#60a5fa';
-          } catch { baseBtn.textContent = 'Set'; }
-        });
-      }
+          baseBtn.style.background = '#1e3a5f';
+          baseBtn.style.color = '#60a5fa';
+        } catch { baseBtn.textContent = 'Set'; }
+      });
     }
   } catch { baseInfo.textContent = 'unavailable'; }
 }

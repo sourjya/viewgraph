@@ -2,14 +2,13 @@
  * Sidebar Sync Module
  *
  * Handles periodic polling for resolved annotations and pending capture
- * requests. Runs independently of the sidebar UI.
+ * requests. Uses transport abstraction for server communication.
  *
  * @see docs/architecture/modularity-audit.md - F14 sidebar decomposition
  */
 
-import { discoverServer } from '#lib/constants.js';
+import * as transport from '#lib/transport.js';
 import { getAnnotations } from '#lib/annotate.js';
-// import { ATTR } from '#lib/selector.js';
 
 /** Polling interval for resolution sync (5 seconds). */
 const RESOLUTION_POLL_MS = 5000;
@@ -20,18 +19,13 @@ let resolutionPollTimer = null;
 let requestPollTimer = null;
 
 /**
- * Sync resolved state from the server. Polls /annotations/resolved for the
- * current page URL and updates local annotations that were resolved by Kiro.
+ * Sync resolved state from the server. Polls for resolved annotations
+ * and updates local annotations that were resolved by the agent.
  * @param {function} onChanged - Called when any annotation was updated
  */
 export async function syncResolved(onChanged) {
   try {
-    const serverUrl = await discoverServer(window.location.href);
-    if (!serverUrl) return;
-    const pageUrl = encodeURIComponent(location.href);
-    const res = await fetch(`${serverUrl}/annotations/resolved?url=${pageUrl}`, { signal: AbortSignal.timeout(3000) });
-    if (!res.ok) return;
-    const { resolved } = await res.json();
+    const { resolved } = await transport.getResolved(location.href);
     if (!resolved?.length) return;
     const anns = getAnnotations();
     let changed = false;
@@ -53,11 +47,7 @@ export async function syncResolved(onChanged) {
  */
 export async function pollRequests(onRequests) {
   try {
-    const serverUrl = await discoverServer(window.location.href);
-    if (!serverUrl) return;
-    const res = await fetch(`${serverUrl}/requests/pending`, { signal: AbortSignal.timeout(3000) });
-    if (!res.ok) return;
-    const { requests } = await res.json();
+    const { requests } = await transport.getPendingRequests();
     if (onRequests) onRequests(requests || []);
   } catch { /* server offline */ }
 }

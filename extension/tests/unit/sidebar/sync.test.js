@@ -57,7 +57,10 @@ describe('polling', () => {
 describe('pollRequests', () => {
   it('(+) calls onRequests with pending requests from server', async () => {
     const { resetServerCache } = await import('#lib/constants.js');
+    const transport = await import('#lib/transport.js');
     resetServerCache();
+    transport.init('http://127.0.0.1:9876');
+    globalThis.chrome = { runtime: { sendNativeMessage: undefined } };
     Object.defineProperty(window, 'location', {
       value: { href: 'http://localhost:8040/page', hostname: 'localhost', protocol: 'http:' },
       writable: true, configurable: true,
@@ -65,8 +68,6 @@ describe('pollRequests', () => {
     const { pollRequests } = await import('#lib/sidebar/sync.js');
     globalThis.fetch = vi.fn((url) => {
       const u = typeof url === 'string' ? url : url.toString();
-      if (u.includes('/health')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
-      if (u.includes('/info')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ projectRoot: '/t', urlPatterns: ['localhost:8040'], serverVersion: 't' }) });
       if (u.includes('/requests/pending')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ requests: [{ id: 'r1', url: 'http://localhost:8040' }] }) });
       return Promise.reject(new Error(`unmocked: ${u}`));
     });
