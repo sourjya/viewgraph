@@ -95,6 +95,27 @@ Re-run `viewgraph-init` from your project. It restarts cleanly without duplicati
 
 If the store version is outdated or you prefer manual control, install the latest extension directly from GitHub. This is the fastest way to get the newest features and fixes.
 
+### Why is the store version behind?
+
+Both the Chrome Web Store and Firefox Add-ons require a manual review process before publishing updates. This is a good thing - it protects users from malicious extensions. However, it means updates can take anywhere from a few hours to several weeks to appear in the store, depending on reviewer availability and queue length. This is outside our control and affects all browser extensions, not just ViewGraph.
+
+During active development, the GitHub release will often be ahead of the store version. Both are safe to use - the store version is simply an older, already-reviewed build.
+
+### Are the GitHub ZIPs safe?
+
+Yes. The ZIP files on GitHub are built from the same open-source code you can see in the repository:
+
+- The extension source code is in [`extension/`](https://github.com/sourjya/viewgraph/tree/main/extension) - fully readable
+- ZIPs are produced by the [`scripts/build-extension.sh`](https://github.com/sourjya/viewgraph/blob/main/scripts/build-extension.sh) build script, which runs the standard build toolchain and packages the output
+- Each release is tagged in git (e.g., `v0.3.7`) so you can verify exactly which code produced the ZIP
+- You can always [build from source](#build-from-source) yourself if you prefer
+
+The extension requests only the permissions it needs (listed in the [manifest](https://github.com/sourjya/viewgraph/blob/main/extension/manifest.json)) and runs entirely on your machine. No data is sent to any external server.
+
+### Version mismatch warning
+
+When the MCP server version is newer than your extension, ViewGraph shows a banner in the sidebar with a link to update. This means the server (installed via npm) has been updated but your browser extension hasn't received the store update yet. Follow the link to install the latest ZIP.
+
 **Latest ZIPs:** [github.com/sourjya/viewgraph/tree/main/downloads](https://github.com/sourjya/viewgraph/tree/main/downloads)
 
 ### Chrome / Edge / Brave (persistent install)

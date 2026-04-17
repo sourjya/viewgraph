@@ -104,7 +104,8 @@ export function create() {
           const info = await transport.getInfo();
           const extVersion = chrome.runtime.getManifest?.()?.version;
           if (info.serverVersion && extVersion && extVersion < info.serverVersion) {
-            _header.statusBanner.textContent = `Extension v${extVersion} is behind server v${info.serverVersion}. Rebuild: npm run build:ext`;
+            if (!_header) return;
+            _header.statusBanner.innerHTML = `Extension v${extVersion} is behind server v${info.serverVersion}. <a href="https://chaoslabz.gitbook.io/viewgraph/getting-started/installation#install-from-github-zip" target="_blank" rel="noopener" style="color:#818cf8;text-decoration:underline">Update extension</a>`;
             _header.statusBanner.style.display = 'block';
           }
           const trust = classifyTrust(window.location.href, info.trustedPatterns || []);
