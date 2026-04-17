@@ -103,7 +103,7 @@ describe('settings server routing', () => {
     // Wait for async server discovery
     await vi.waitFor(() => {
       const text = s.element.textContent;
-      return text.includes('Project Settings') || text.includes('not connected');
+      return text.includes('Project Settings') || text.includes('Not connected') || text.includes('Connected');
     }, { timeout: 3000 });
     const text = s.element.textContent;
     // Should show app-one info (matched to localhost:3000), NOT app-two
@@ -122,6 +122,6 @@ describe('settings server routing', () => {
     s.show();
     // Allow async server check to complete
     await new Promise((r) => setTimeout(r, 100));
-    expect(s.element.textContent).toContain('not connected');
+    expect(s.element.textContent).toContain('Not connected');
   });
 });

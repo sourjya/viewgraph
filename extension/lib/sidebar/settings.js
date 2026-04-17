@@ -44,16 +44,23 @@ export function createSettings() {
   Object.assign(body.style, { padding: '12px', fontSize: '12px', color: '#9ca3af' });
 
   // Server status
+  // Server + project status (single box, no redundant headers)
   const serverLine = document.createElement('div');
-  serverLine.textContent = 'Server: checking...';
-  Object.assign(serverLine.style, { marginBottom: '6px' });
+  serverLine.setAttribute(ATTR, 'server-status');
+  Object.assign(serverLine.style, { display: 'flex', gap: '6px', fontSize: '11px', marginBottom: '4px' });
+  const srvLabel = document.createElement('span');
+  srvLabel.textContent = 'Server:';
+  Object.assign(srvLabel.style, { color: '#666' });
+  const srvValue = document.createElement('span');
+  srvValue.textContent = 'checking...';
+  Object.assign(srvValue.style, { color: '#9ca3af' });
+  serverLine.append(srvLabel, srvValue);
 
-  // Project mappings (read-only)
   const mappingsSection = document.createElement('div');
-  Object.assign(mappingsSection.style, { marginTop: '12px', borderTop: '1px solid #333', paddingTop: '10px' });
-  const mapLabel = document.createElement('div');
-  mapLabel.textContent = 'Project Mapping';
-  Object.assign(mapLabel.style, { fontWeight: '600', marginBottom: '6px' });
+  Object.assign(mappingsSection.style, {
+    background: '#16161e', border: '1px solid #2a2a3a', borderRadius: '6px',
+    padding: '10px', marginBottom: '8px',
+  });
 
   // Info box with code-styled command and help link
   const infoBox = document.createElement('div');
@@ -90,7 +97,7 @@ export function createSettings() {
     fontFamily: 'system-ui, sans-serif', fontWeight: '600',
   });
   advLink.addEventListener('click', () => chrome.runtime.sendMessage({ type: 'open-options' }));
-  mappingsSection.append(mapLabel, infoBox, detailsBox, advLink);
+  mappingsSection.append(serverLine, infoBox, detailsBox, advLink);
 
   // Capture options
   const captureOpts = document.createElement('div');
@@ -153,7 +160,7 @@ export function createSettings() {
   htmlToggle.input.addEventListener('change', saveSettings);
   ssToggle.input.addEventListener('change', saveSettings);
 
-  body.append(serverLine, mappingsSection);
+  body.append(mappingsSection);
   body.appendChild(captureOpts);
   screen.append(header, body);
 
@@ -193,15 +200,12 @@ export function createSettings() {
       const info = await transport.getInfo();
       if (info) {
         renderProjectInfo(info);
-        serverLine.textContent = 'Project Settings';
-        serverLine.style.color = '#9ca3af';
+        srvValue.textContent = 'Connected'; srvValue.style.color = '#4ade80';
       } else {
-        serverLine.textContent = 'Server not connected';
-        serverLine.style.color = '#f87171';
+        srvValue.textContent = 'Not connected'; srvValue.style.color = '#f87171';
       }
     } catch {
-      serverLine.textContent = 'Server not connected';
-      serverLine.style.color = '#f87171';
+      srvValue.textContent = 'Not connected'; srvValue.style.color = '#f87171';
     }
   }
 
