@@ -1,7 +1,7 @@
 # Changelog
 
 {% hint style="info" %}
-User-facing changes only. For the full engineering changelog, see [GitHub](https://github.com/sourjya/viewgraph/blob/main/docs/changelogs/CHANGELOG.md).
+User-facing changes only. For the full engineering changelog, see [GitHub](https://github.com/sourjya/viewgraph/blob/main/docs/changelogs/CHANGELOG.md). Extension ZIPs and release notes on [GitHub Releases](https://github.com/sourjya/viewgraph/releases).
 {% endhint %}
 
 ---
