@@ -3,7 +3,20 @@
  *
  * Single source of truth for values shared between the extension and
  * the MCP server. Keep in sync with server/src/constants.js.
- *
+ */
+
+import { createTransport } from './transport.js';
+
+/** Singleton transport instance, created when server is discovered. */
+let _transport = null;
+
+/**
+ * Get the transport for the current server connection.
+ * Returns null if no server has been discovered yet.
+ */
+export function getTransport() { return _transport; }
+
+/**
  * Multi-project support: scans ports 9876-9879 and builds a registry
  * of all running servers with their capturesDir and projectRoot.
  * The background script matches page URLs to the correct server.
@@ -38,6 +51,7 @@ const REGISTRY_TTL = 15000;
 export function resetServerCache() {
   _serverRegistry = new Map();
   _registryExpiry = 0;
+  _transport = null;
 }
 
 
@@ -184,6 +198,15 @@ function extractPort(url) {
  * @returns {Promise<string|null>} Server base URL
  */
 export async function discoverServer(pageUrl = null, targetDir = null) {
+  const url = await _discoverServerImpl(pageUrl, targetDir);
+  // F11: Create transport singleton when server is found
+  if (url && !_transport) _transport = createTransport(url);
+  if (!url) _transport = null;
+  return url;
+}
+
+/** Internal implementation - finds the best server URL. */
+async function _discoverServerImpl(pageUrl = null, targetDir = null) {
   const reg = await refreshRegistry();
   if (reg.size === 0) return null;
 
