@@ -23,6 +23,14 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - Layer 4: SERVER_INSTRUCTIONS, steering docs, and all @vg-* prompts include injection defense guidance
 - 22 new tests: 16 sanitize unit tests + 6 tool wrapping integration tests
 
+### F17: URL Trust Indicator (Complete)
+- SPA navigation re-classification via popstate listener
+
+### F18: MCP Agent Guidance (Complete)
+- Fuzzy filename matching with "did you mean" suggestions (Levenshtein distance)
+- Integrated into all filename-accepting tools via readAndParse
+- 8 new tests: typo matching, partial filenames, missing extensions, integration
+
 ## [0.3.7] - 2026-04-17
 
 ### New Features

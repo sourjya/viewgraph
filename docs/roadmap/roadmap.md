@@ -61,8 +61,8 @@
 | Priority | Feature | Dependencies | Effort | Impact |
 |---|---|---|---|---|
 | 1 | F19: Prompt Injection Defense | None | Medium | Mitigates STRIDE threat #2 - highest security impact |
-| 2 | F17: URL Trust Indicator | None | Medium | Phase 1+3 shipped: trust classification, shield icon, send gate |
-| 3 | F18: MCP Agent Guidance | None | Low | Server instructions, session status - biggest UX improvement |
+| 2 | F17: URL Trust Indicator | None | Medium | Complete: trust classification, shield icon, send gate, SPA reclassification |
+| 3 | F18: MCP Agent Guidance | None | Low | Complete: SERVER_INSTRUCTIONS, session status, tool descriptions, fuzzy filename matching |
 | 4 | F6: Capture Timeline | F4 | Low | Inspect tab feature - visual capture history |
 | 5 | F16: Zero-Config Phase 2 | F16 P1 | Low | Transport auto-detection, docs as primary install path |
 | 6 | F9: Cross-Page Consistency | F6 | Medium | Compare elements across page captures |
@@ -72,7 +72,7 @@
 **Rationale:** F19 and F17 are security-first (threat model driven). F18 is low-effort, high-impact UX. F6/F9/F10 are feature work. F11 is the big architectural change that eliminates most localhost threats.
 | M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
 
-**Current totals:** 1471 tests (1005 extension + 455 server + 11 playwright), 37 MCP tools, 14 enrichment collectors
+**Current totals:** 1480 tests (1009 extension + 463 server + 8 playwright), 37 MCP tools, 14 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and
