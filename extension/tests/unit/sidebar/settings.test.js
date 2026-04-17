@@ -70,10 +70,10 @@ describe('createSettings', () => {
     expect(offSpans.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('(+) Advanced Settings button exists', () => {
+  it('(+) Advanced Settings link exists', () => {
     const s = createSettings();
-    const btns = [...s.element.querySelectorAll('button')];
-    const adv = btns.find((b) => b.textContent.includes('Advanced Settings'));
+    const links = [...s.element.querySelectorAll('a')];
+    const adv = links.find((a) => a.textContent.includes('Advanced'));
     expect(adv).toBeTruthy();
   });
 });
@@ -122,6 +122,6 @@ describe('settings server routing', () => {
     s.show();
     // Allow async server check to complete
     await new Promise((r) => setTimeout(r, 100));
-    expect(s.element.textContent).toContain('Not connected');
+    expect(s.element.textContent).toContain('Not Connected');
   });
 });

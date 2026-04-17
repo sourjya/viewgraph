@@ -43,61 +43,55 @@ export function createSettings() {
   const body = document.createElement('div');
   Object.assign(body.style, { padding: '12px', fontSize: '12px', color: '#9ca3af' });
 
-  // Server status
-  // Server + project status (single box, no redundant headers)
-  const serverLine = document.createElement('div');
-  serverLine.setAttribute(ATTR, 'server-status');
-  Object.assign(serverLine.style, { display: 'flex', gap: '6px', fontSize: '11px', marginBottom: '4px' });
-  const srvLabel = document.createElement('span');
-  srvLabel.textContent = 'Server:';
-  Object.assign(srvLabel.style, { color: '#666' });
-  const srvValue = document.createElement('span');
-  srvValue.textContent = 'checking...';
-  Object.assign(srvValue.style, { color: '#9ca3af' });
-  serverLine.append(srvLabel, srvValue);
-
-  const mappingsSection = document.createElement('div');
-  Object.assign(mappingsSection.style, {
-    background: '#16161e', border: '1px solid #2a2a3a', borderRadius: '6px',
-    padding: '10px', marginBottom: '8px',
+  // Single server card: header (status) + body (details) + footer (links)
+  const serverCard = document.createElement('div');
+  serverCard.setAttribute(ATTR, 'server-card');
+  Object.assign(serverCard.style, {
+    background: '#16161e', border: '1px solid #2a2a3a', borderRadius: '8px',
+    marginBottom: '10px', overflow: 'hidden',
   });
 
-  // Info box with code-styled command and help link
-  const infoBox = document.createElement('div');
-  Object.assign(infoBox.style, {
-    background: '#16161e', border: '1px solid #2a2a3a', borderRadius: '6px',
-    padding: '8px 10px', marginBottom: '8px', fontSize: '11px', color: '#9ca3af', lineHeight: '1.5',
+  // Card header - connection status
+  const cardHeader = document.createElement('div');
+  Object.assign(cardHeader.style, {
+    padding: '8px 10px', borderBottom: '1px solid #2a2a3a',
+    display: 'flex', alignItems: 'center', gap: '6px',
   });
-  const infoText = document.createElement('span');
-  infoText.textContent = 'Auto-detected from server. Edit via ';
-  const codeEl = document.createElement('code');
-  codeEl.textContent = 'viewgraph-init --url';
-  Object.assign(codeEl.style, { background: '#1e1e2e', padding: '1px 4px', borderRadius: '3px', color: '#a5b4fc', fontSize: '10px' });
-  infoBox.append(infoText, codeEl);
+  const statusDotEl = document.createElement('span');
+  Object.assign(statusDotEl.style, { width: '6px', height: '6px', borderRadius: '50%', background: '#666', flexShrink: '0' });
+  const statusText = document.createElement('span');
+  statusText.textContent = 'Checking...';
+  Object.assign(statusText.style, { fontSize: '11px', fontWeight: '600', color: '#9ca3af' });
+  cardHeader.append(statusDotEl, statusText);
+
+  // Card body - project details (populated by renderProjectInfo)
+  const cardBody = document.createElement('div');
+  cardBody.setAttribute(ATTR, 'project-details');
+  Object.assign(cardBody.style, { padding: '8px 10px', fontSize: '11px', display: 'none' });
+
+  // Card footer - help link (left) + advanced settings (right)
+  const cardFooter = document.createElement('div');
+  Object.assign(cardFooter.style, {
+    padding: '6px 10px', borderTop: '1px solid #2a2a3a',
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+  });
   const helpLink = document.createElement('a');
-  helpLink.textContent = 'Multi-project setup guide';
+  helpLink.textContent = '\u2753 Setup guide';
   helpLink.href = 'https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project';
   helpLink.target = '_blank';
-  Object.assign(helpLink.style, { display: 'block', marginTop: '4px', color: '#6366f1', fontSize: '10px', textDecoration: 'none' });
-  infoBox.appendChild(helpLink);
+  Object.assign(helpLink.style, { color: '#666', fontSize: '10px', textDecoration: 'none' });
+  helpLink.addEventListener('mouseenter', () => { helpLink.style.color = '#6366f1'; });
+  helpLink.addEventListener('mouseleave', () => { helpLink.style.color = '#666'; });
+  const advLink = document.createElement('a');
+  advLink.textContent = 'Advanced \u2192';
+  advLink.href = '#';
+  Object.assign(advLink.style, { color: '#666', fontSize: '10px', textDecoration: 'none' });
+  advLink.addEventListener('mouseenter', () => { advLink.style.color = '#6366f1'; });
+  advLink.addEventListener('mouseleave', () => { advLink.style.color = '#666'; });
+  advLink.addEventListener('click', (e) => { e.preventDefault(); chrome.runtime.sendMessage({ type: 'open-options' }); });
+  cardFooter.append(helpLink, advLink);
 
-  // Project details box (agent, patterns rendered here)
-  const detailsBox = document.createElement('div');
-  detailsBox.setAttribute(ATTR, 'project-details');
-  Object.assign(detailsBox.style, {
-    background: '#1a1a2e', border: '1px solid #2a2a3a', borderRadius: '6px',
-    padding: '8px 10px', marginBottom: '8px', display: 'none',
-  });
-
-  const advLink = document.createElement('button');
-  advLink.textContent = 'Advanced Settings →';
-  Object.assign(advLink.style, {
-    border: '1px solid #333', background: 'transparent', color: '#6366f1', fontSize: '12px',
-    cursor: 'pointer', padding: '6px 12px', marginTop: '10px', borderRadius: '6px',
-    fontFamily: 'system-ui, sans-serif', fontWeight: '600',
-  });
-  advLink.addEventListener('click', () => chrome.runtime.sendMessage({ type: 'open-options' }));
-  mappingsSection.append(serverLine, infoBox, detailsBox, advLink);
+  serverCard.append(cardHeader, cardBody, cardFooter);
 
   // Capture options
   const captureOpts = document.createElement('div');
@@ -160,38 +154,54 @@ export function createSettings() {
   htmlToggle.input.addEventListener('change', saveSettings);
   ssToggle.input.addEventListener('change', saveSettings);
 
-  body.append(mappingsSection);
+  body.append(serverCard);
   body.appendChild(captureOpts);
   screen.append(header, body);
 
   // Populate server info async
   function renderProjectInfo(data) {
-    detailsBox.replaceChildren();
+    cardBody.replaceChildren();
     let hasContent = false;
     if (data.agent) {
-      const agentLine = document.createElement('div');
-      agentLine.textContent = `Agent: ${data.agent}`;
-      Object.assign(agentLine.style, { color: '#9ca3af', fontSize: '11px', marginBottom: '4px' });
-      detailsBox.appendChild(agentLine);
+      const row = document.createElement('div');
+      Object.assign(row.style, { display: 'flex', gap: '6px', marginBottom: '2px' });
+      const lbl = document.createElement('span');
+      lbl.textContent = 'Agent:';
+      Object.assign(lbl.style, { color: '#666' });
+      const val = document.createElement('span');
+      val.textContent = data.agent;
+      Object.assign(val.style, { color: '#4ade80' });
+      row.append(lbl, val);
+      cardBody.appendChild(row);
       hasContent = true;
     }
     if (data.urlPatterns?.length) {
-      for (const p of data.urlPatterns) {
-        const patLine = document.createElement('div');
-        patLine.textContent = `Pattern: ${p}`;
-        Object.assign(patLine.style, { color: '#6366f1', fontSize: '11px', fontFamily: 'monospace', marginBottom: '2px' });
-        detailsBox.appendChild(patLine);
-        hasContent = true;
-      }
-    }
-    if (data.projectRoot) {
-      const rootLine = document.createElement('div');
-      rootLine.textContent = `Root: ${data.projectRoot}`;
-      Object.assign(rootLine.style, { color: '#666', fontSize: '10px', marginTop: '4px', fontFamily: 'monospace' });
-      detailsBox.appendChild(rootLine);
+      const row = document.createElement('div');
+      Object.assign(row.style, { display: 'flex', gap: '6px', marginBottom: '2px' });
+      const lbl = document.createElement('span');
+      lbl.textContent = 'URL:';
+      Object.assign(lbl.style, { color: '#666' });
+      const val = document.createElement('span');
+      val.textContent = data.urlPatterns.join(', ');
+      Object.assign(val.style, { color: '#6366f1', fontFamily: 'monospace', fontSize: '10px' });
+      row.append(lbl, val);
+      cardBody.appendChild(row);
       hasContent = true;
     }
-    detailsBox.style.display = hasContent ? 'block' : 'none';
+    if (data.projectRoot) {
+      const row = document.createElement('div');
+      Object.assign(row.style, { display: 'flex', gap: '6px' });
+      const lbl = document.createElement('span');
+      lbl.textContent = 'Root:';
+      Object.assign(lbl.style, { color: '#666' });
+      const val = document.createElement('span');
+      val.textContent = data.projectRoot;
+      Object.assign(val.style, { color: '#555', fontFamily: 'monospace', fontSize: '10px' });
+      row.append(lbl, val);
+      cardBody.appendChild(row);
+      hasContent = true;
+    }
+    cardBody.style.display = hasContent ? 'block' : 'none';
   }
 
   /** Fetch server info and update the settings display. */
@@ -200,12 +210,18 @@ export function createSettings() {
       const info = await transport.getInfo();
       if (info) {
         renderProjectInfo(info);
-        srvValue.textContent = 'Connected'; srvValue.style.color = '#4ade80';
+        statusDotEl.style.background = '#4ade80';
+        statusText.textContent = 'Server Connected';
+        statusText.style.color = '#4ade80';
       } else {
-        srvValue.textContent = 'Not connected'; srvValue.style.color = '#f87171';
+        statusDotEl.style.background = '#f87171';
+        statusText.textContent = 'Server Not Connected';
+        statusText.style.color = '#f87171';
       }
     } catch {
-      srvValue.textContent = 'Not connected'; srvValue.style.color = '#f87171';
+      statusDotEl.style.background = '#f87171';
+      statusText.textContent = 'Server Not Connected';
+      statusText.style.color = '#f87171';
     }
   }
 
