@@ -31,6 +31,7 @@ If you need to configure the server manually (custom ports, multiple captures di
 | `VIEWGRAPH_CAPTURES_DIR` | `.viewgraph/captures` | Where capture JSON files are stored |
 | `VIEWGRAPH_HTTP_PORT` | `9876` | HTTP receiver port for extension communication |
 | `VIEWGRAPH_MAX_CAPTURES` | `100` | Max captures to index |
+| `VIEWGRAPH_IDLE_TIMEOUT_MINUTES` | `30` | Minutes of inactivity before auto-shutdown. `0` = disabled |
 
 ### Start the server manually
 
