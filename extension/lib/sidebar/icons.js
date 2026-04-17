@@ -198,3 +198,10 @@ export function chatBubbleIcon(count, fill, stroke) {
   s.appendChild(text);
   return s;
 }
+
+/** Shield icon for trust indicator. Color indicates trust level. */
+export function shieldIcon(size = 14, color = '#4ade80') {
+  const s = svg(size, { stroke: color, fill: 'none' });
+  s.appendChild(el('path', { d: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' }));
+  return s;
+}

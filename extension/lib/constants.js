@@ -294,3 +294,35 @@ export async function updateConfig(serverUrl, updates) {
   try { await chrome.storage.local.set({ [CONFIG_CACHE_KEY]: config }); } catch { /* tests */ }
   return config;
 }
+
+// ──────────────────────────────────────────────
+// F17: URL Trust Classification
+// ──────────────────────────────────────────────
+
+/**
+ * Check if a URL is a local development URL (always trusted).
+ * Covers localhost, 127.0.0.1, 0.0.0.0, [::1], file://, wsl.localhost.
+ */
+function isLocalUrl(url) {
+  try {
+    const u = new URL(url);
+    if (u.protocol === 'file:') return true;
+    const h = u.hostname;
+    return h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0' || h === '[::1]' || h === 'wsl.localhost';
+  } catch { return false; }
+}
+
+/**
+ * Classify a URL's trust level for send-to-agent gating.
+ * @param {string} pageUrl - The current page URL
+ * @param {string[]} [trustedPatterns] - From config.json trustedPatterns
+ * @returns {{ level: 'trusted'|'configured'|'untrusted', reason: string }}
+ */
+export function classifyTrust(pageUrl, trustedPatterns = []) {
+  if (!pageUrl) return { level: 'untrusted', reason: 'empty URL' };
+  if (isLocalUrl(pageUrl)) return { level: 'trusted', reason: 'localhost' };
+  for (const pattern of trustedPatterns) {
+    if (pageUrl.includes(pattern)) return { level: 'configured', reason: pattern };
+  }
+  return { level: 'untrusted', reason: 'remote URL' };
+}
