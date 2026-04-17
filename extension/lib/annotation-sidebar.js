@@ -155,6 +155,15 @@ export function create() {
         Object.assign(copyBtn.style, { background: '#6366f1', color: '#fff', border: 'none', flex: '1' });
         Object.assign(dlBtn.style, { background: '#374151', color: '#fff', border: 'none', flex: '1' });
       }
+      // F17: Always show trust shield based on URL, regardless of server connection
+      const trust = classifyTrust(window.location.href, []);
+      if (!_trustLevel) {
+        _trustLevel = trust;
+        const TRUST_COLORS = { trusted: '#4ade80', configured: '#60a5fa', untrusted: '#f59e0b' };
+        trustShield.replaceChildren(shieldIcon(16, TRUST_COLORS[trust.level]));
+        trustShield.title = `${trust.level}: ${trust.reason}`;
+        trustShield.style.display = 'inline-flex';
+      }
     });
 
   // Collapse chevron
