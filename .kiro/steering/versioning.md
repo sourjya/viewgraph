@@ -58,16 +58,19 @@ extension/wxt.config.js         -> version field in manifest
 2. Lint clean: `npm run lint`
 3. Update version in all 4 files
 4. Update `docs/changelogs/CHANGELOG.md` - move Unreleased items under the new version header with date
-5. Commit: `chore: release v0.2.0`
-6. Tag: `git tag -a v0.2.0 -m "v0.2.0 - brief description"`
-7. Push: `git push origin main --tags`
-8. Publish npm (if code changed):
-   - `cd packages/playwright && npm publish --access public`
-   - `npm publish --access public` (root package)
-9. Rebuild extensions (if extension code changed):
-   - `npm run build`
-   - `npm run pack:all`
-   - Upload new ZIPs to Chrome Web Store and Firefox Add-ons
+5. Update `gitbook/reference/changelog.md` with user-facing changes
+6. Commit: `chore: release vX.X.X`
+7. Tag: `git tag -a vX.X.X -m "vX.X.X - brief description"`
+8. Push: `git push origin main --tags`
+9. Publish npm (if code changed):
+   - `npm publish --access public --otp=YOUR_OTP`
+   - `cd packages/playwright && npm publish --access public --otp=YOUR_OTP`
+10. Rebuild extensions (if extension code changed):
+    - `npm run build:ext` (auto-copies ZIPs to `downloads/`, removes old versions)
+    - Commit the new ZIPs in `downloads/`
+11. Create GitHub Release with extension ZIPs:
+    - `gh release create vX.X.X downloads/*.zip --title "vX.X.X" --notes "release notes"`
+12. Upload to Chrome Web Store and Firefox Add-ons (if extension changed)
 10. Update GitBook roadmap page if features shipped
 
 ## Tag Format
