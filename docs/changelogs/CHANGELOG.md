@@ -13,6 +13,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 ### New Features
 - F15 Auto-Inspect Suggestions: 3-tier scan engine (a11y, quality, testability), checklist UI, send-to-agent conversion
 - F16 Phase 1: zero-config server boot, auto-learn config.json on first capture
+- F17 Phase 1+3: URL trust indicator - classifyTrust function, shield icon (green/blue/amber), send gate for untrusted URLs, add-to-trusted + send-anyway override
 - F18 Phase 1: SERVER_INSTRUCTIONS constant with workflow, categories, security, performance, delimiter docs (ADR-011)
 - F19 Phase 1: traverser sanitization - getCleanText strips comment nodes, hidden visibleText cleared, data-* attrs capped at 100 chars
 - F19 Phase 2+3: sanitize.js with [CAPTURED_TEXT] and [USER_COMMENT] delimiters, 11-pattern injection detection, integrated into annotation tools

@@ -60,7 +60,7 @@
 | Priority | Feature | Dependencies | Effort | Impact |
 |---|---|---|---|---|
 | 1 | F19: Prompt Injection Defense | None | Medium | Mitigates STRIDE threat #2 - highest security impact |
-| 2 | F17: URL Trust Indicator | None | Medium | Mitigates STRIDE threats #1, #2, #8 - blocks untrusted captures |
+| 2 | F17: URL Trust Indicator | None | Medium | Phase 1+3 shipped: trust classification, shield icon, send gate |
 | 3 | F18: MCP Agent Guidance | None | Low | Server instructions, session status - biggest UX improvement |
 | 4 | F6: Capture Timeline | F4 | Low | Inspect tab feature - visual capture history |
 | 5 | F16: Zero-Config Phase 2 | F16 P1 | Low | Transport auto-detection, docs as primary install path |

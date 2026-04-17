@@ -47,9 +47,18 @@ Nation-state actors, organized crime, hacktivists, and insider threats were eval
 
 ## Roadmap: How We're Addressing Remaining Risks
 
-### F17: URL Trust Indicator (planned)
+### F17: URL Trust Indicator (implemented)
 
-Blocks send-to-agent for untrusted URLs. Green/blue/amber shield in sidebar header. Users must explicitly add remote URLs to a trusted list before captures can reach the AI agent.
+Blocks send-to-agent for untrusted URLs. A shield icon in the sidebar header shows the trust level:
+
+| URL type | Shield | Send to Agent |
+|---|---|---|
+| localhost, 127.0.0.1, file:// | Green (trusted) | Enabled |
+| Matches `trustedPatterns` in config | Blue (configured) | Enabled |
+| Remote/unknown URL | Amber (untrusted) | Blocked - "Add to trusted" or "Send anyway" |
+| No server connected | Green/Amber (based on URL) | Hidden (no server) |
+
+The shield is always visible regardless of server connection. "Add to trusted" writes the hostname to `config.json` permanently. "Send anyway" is a one-time override flagged in capture metadata.
 
 **Mitigates:** Threats #1 (spoofing), #2 (prompt injection), #8 (sensitive data)
 

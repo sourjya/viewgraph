@@ -7,11 +7,12 @@ What's new in ViewGraph. User-facing changes only - for the full engineering cha
 ## v0.3.5 - April 17, 2026
 
 - **Auto-inspect suggestions (F15)** - ViewGraph now scans pages automatically and presents a ranked checklist of issues: missing alt text, failed network requests, unlabeled inputs, missing testids. Select which ones to fix and send to your agent in one click.
-- **Prompt injection defense (F19)** - 4-layer protection against malicious content in captured pages: HTML comments stripped, hidden text cleared, text wrapped in `[CAPTURED_TEXT]` delimiters, suspicious patterns flagged with warnings. A 5th layer (URL trust gate) is coming next.
+- **Prompt injection defense (F19)** - 4-layer protection against malicious content in captured pages: HTML comments stripped, hidden text cleared, text wrapped in `[CAPTURED_TEXT]` delimiters, suspicious patterns flagged with warnings.
+- **URL trust indicator (F17)** - a shield icon in the sidebar header shows whether the current page is trusted (green), configured (blue), or untrusted (amber). Send to Agent is blocked for untrusted URLs with options to add to trusted list or override.
 - **MCP agent guidance (F18)** - the server now tells your AI agent the recommended workflow, tool categories, security rules, and performance tips on connection. Agents make better tool choices automatically.
 - **Zero-config install** - add 5 lines of MCP config JSON and the server runs via `npx`. No install commands needed.
 - **STRIDE threat model** - 8 threats identified and mitigated. Published on the [Threat Model](threat-model.md) page.
-- **1,343 tests**, pre-built extension ZIPs available for [direct download](https://github.com/sourjya/viewgraph/tree/main/downloads)
+- **1,388 tests**, pre-built extension ZIPs available for [direct download](https://github.com/sourjya/viewgraph/tree/main/downloads)
 
 ## v0.3.4 - April 16, 2026
 

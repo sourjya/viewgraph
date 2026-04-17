@@ -131,10 +131,10 @@ You can safely use ViewGraph on production, staging, or any environment:
 |---|---|---|---|
 | MCP server connected, localhost URL | Enabled | Enabled | Enabled |
 | MCP server connected, trusted URL | Enabled | Enabled | Enabled |
-| MCP server connected, untrusted URL (planned, F17) | Blocked (override available) | Enabled | Enabled |
+| MCP server connected, untrusted URL | Blocked (override available) | Enabled | Enabled |
 | No MCP server connected | Hidden | Enabled (promoted) | Enabled |
 
-When no server is connected, a status banner appears above the export buttons explaining that Copy MD and Report are available. When an untrusted URL is detected (F17, planned), Send to Agent will require the user to explicitly add the URL to their trusted list or use a one-time override. See [Threat Model](threat-model.md) for the security rationale.
+When no server is connected, a status banner appears above the export buttons explaining that Copy MD and Report are available. When an untrusted URL is detected, Send to Agent requires the user to explicitly add the URL to their trusted list or use a one-time override. See [Threat Model](threat-model.md) for the security rationale.
 
 ## Common Concerns
 

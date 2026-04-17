@@ -100,7 +100,7 @@ Three export modes, available based on connection status:
 
 When no MCP server is connected, the sidebar shows a status banner above the export buttons: "No project connected. Copy MD and Report available." The Send button is hidden and Copy MD is promoted as the primary action.
 
-**Planned (F17):** When connected to a server but viewing an untrusted URL (remote site not in your trusted patterns), Send to Agent will be blocked with an option to add the URL to your trusted list or send with an explicit override. Copy MD and Download Report always work regardless of trust level. See [Threat Model](../reference/threat-model.md) for details.
+**URL Trust Indicator:** A shield icon in the sidebar header shows the trust level of the current page. On untrusted URLs (remote sites not in your trusted patterns), Send to Agent is blocked with an option to add the URL to your trusted list or send with an explicit override. Copy MD and Download Report always work regardless of trust level. See [Threat Model](../reference/threat-model.md) for details.
 
 ### Send to Agent
 
