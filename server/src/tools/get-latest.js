@@ -23,9 +23,10 @@ const MAX_INLINE_SIZE = 100 * 1024;
 export function register(server, indexer, capturesDir) {
   server.tool(
     'get_latest_capture',
-    `Get the most recent ${PROJECT_NAME} DOM capture. Returns the full capture JSON ` +
-    'if under 100KB, otherwise returns a compact summary. Use url_filter to ' +
-    'narrow to a specific site (e.g., "localhost:8040").',
+    `Get the most recent ${PROJECT_NAME} DOM capture. Returns full JSON if under 100KB, otherwise a compact summary. ` +
+    'WHEN TO USE: Start here for quick access to the latest capture. Use url_filter for multi-project setups. ' +
+    'NEXT: Use get_page_summary for a lightweight overview, or get_annotations to read user feedback. ' +
+    'PERFORMANCE: Auto-summarizes large captures to save tokens.',
     {
       url_filter: z.string().optional()
         .describe('Filter to captures whose URL contains this substring'),
