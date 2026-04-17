@@ -14,7 +14,9 @@ Go from zero to your first AI-assisted bug fix in 5 minutes.
 
 [![Chrome - Install](https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=flat-square)](https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj) [![Firefox - Install](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=flat-square)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
 
-Store version outdated? Check the [Changelog](../reference/changelog.md) for the current version, then [download the latest ZIPs directly](https://github.com/sourjya/viewgraph/tree/main/downloads). Or [build from source](installation.md#build-from-source) for other Chromium browsers.
+{% hint style="info" %}
+Store versions may lag behind the latest release. Check the [Changelog](../reference/changelog.md) for the current version and [download ZIPs directly](https://github.com/sourjya/viewgraph/tree/main/downloads) if needed. Or [build from source](installation.md#build-from-source) for other Chromium browsers.
+{% endhint %}
 
 ## 2. Connect to your AI agent
 
