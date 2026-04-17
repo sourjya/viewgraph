@@ -10,6 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { fork } from 'child_process';
+import http from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -94,5 +95,109 @@ describe('server lifecycle', () => {
     const result = await Promise.race([exitPromise, timeout]);
     expect(result.code).toBe(0);
     expect(getStderr()).toContain('stdin-closed');
+  }, 10000);
+
+  it('exits after idle timeout', async () => {
+    // Set a very short idle timeout (0.05 min = 3 seconds)
+    const { child, exitPromise, getStderr } = spawnServer({
+      VIEWGRAPH_HTTP_PORT: '19878',
+      VIEWGRAPH_IDLE_TIMEOUT_MINUTES: '0.05',
+    });
+
+    // Wait for server to start
+    await new Promise((resolve) => {
+      child.stderr.on('data', (chunk) => {
+        if (chunk.toString().includes('MCP server running') || chunk.toString().includes('Native messaging')) resolve();
+      });
+      setTimeout(resolve, 3000);
+    });
+
+    // Don't close stdin - just wait for idle timeout to fire
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Server did not exit within 8s from idle timeout')), 8000),
+    );
+
+    const result = await Promise.race([exitPromise, timeout]);
+    expect(result.code).toBe(0);
+    expect(getStderr()).toContain('idle-timeout');
+  }, 12000);
+
+  it('resets idle timer on HTTP activity', async () => {
+    // 3-second idle timeout
+    const port = '19879';
+    const { child, exitPromise, getStderr } = spawnServer({
+      VIEWGRAPH_HTTP_PORT: port,
+      VIEWGRAPH_IDLE_TIMEOUT_MINUTES: '0.05',
+    });
+
+    // Wait for server to start
+    await new Promise((resolve) => {
+      child.stderr.on('data', (chunk) => {
+        if (chunk.toString().includes('HTTP receiver listening')) resolve();
+      });
+      setTimeout(resolve, 3000);
+    });
+
+    // Send HTTP requests every 1.5s to keep the server alive past the 3s timeout
+    let keepAlive = true;
+    const ping = async () => {
+      while (keepAlive) {
+        await new Promise((resolve) => {
+          const req = http.get(`http://127.0.0.1:${port}/health`, (res) => {
+            res.resume();
+            res.on('end', resolve);
+          });
+          req.on('error', resolve);
+        });
+        await new Promise((r) => setTimeout(r, 1500));
+      }
+    };
+    const pingLoop = ping();
+
+    // Wait 5s - longer than the 3s idle timeout
+    await new Promise((r) => setTimeout(r, 5000));
+
+    // Server should still be alive (HTTP activity kept resetting the timer)
+    const isAlive = !child.killed && child.exitCode === null;
+    expect(isAlive).toBe(true);
+
+    // Stop pinging and let it die
+    keepAlive = false;
+    await pingLoop;
+
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Server did not exit after activity stopped')), 6000),
+    );
+
+    const result = await Promise.race([exitPromise, timeout]);
+    expect(result.code).toBe(0);
+    expect(getStderr()).toContain('idle-timeout');
+  }, 15000);
+
+  it('does not exit when idle timeout is disabled (0)', async () => {
+    const { child, exitPromise, getStderr } = spawnServer({
+      VIEWGRAPH_HTTP_PORT: '19880',
+      VIEWGRAPH_IDLE_TIMEOUT_MINUTES: '0',
+    });
+
+    // Wait for server to start
+    await new Promise((resolve) => {
+      child.stderr.on('data', (chunk) => {
+        if (chunk.toString().includes('MCP server running') || chunk.toString().includes('Native messaging')) resolve();
+      });
+      setTimeout(resolve, 3000);
+    });
+
+    // Wait 4 seconds - longer than the 3s timeout used in other tests
+    await new Promise((r) => setTimeout(r, 4000));
+
+    // Server should still be alive
+    const isAlive = !child.killed && child.exitCode === null;
+    expect(isAlive).toBe(true);
+    expect(getStderr()).not.toContain('idle-timeout');
+
+    // Clean up - close stdin to trigger shutdown
+    child.stdin.end();
+    await exitPromise;
   }, 10000);
 });
