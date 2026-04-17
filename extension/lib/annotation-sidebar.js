@@ -437,7 +437,7 @@ export function create() {
   Object.assign(reviewContent.style, {
     display: 'flex', flexDirection: 'column', flex: '1', minHeight: '0',
   });
-  reviewContent.append(modeBar, tabContainer, list, footer);
+  reviewContent.append(modeBar, tabContainer, list, statusBanner, footer);
 
   // Inspect tab - extracted to sidebar/inspect.js
   const inspect = createInspectTab({ onRefresh: () => refresh() });
@@ -475,7 +475,7 @@ export function create() {
     primaryTabs.appendChild(btn);
   }
 
-  sidebarEl.append(header, helpCard, primaryTabs, statusBanner, reviewContent, inspectContent, settingsScreen);
+  sidebarEl.append(header, helpCard, primaryTabs, reviewContent, inspectContent, settingsScreen);
 
   // Shadow DOM isolates sidebar from page CSS (prevents * { margin:0 } etc.)
   hostEl = document.createElement('div');
