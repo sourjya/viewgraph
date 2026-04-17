@@ -125,9 +125,16 @@ You can safely use ViewGraph on production, staging, or any environment:
 - The capture happens in a single pass - no persistent monitoring
 - Closing the sidebar stops all ViewGraph activity on the page
 
-**Connection-aware behavior:**
-- **No server connected:** Send to Agent is disabled. Copy MD and Download Report work normally. A status banner explains what's available.
-- **Untrusted URL (planned, F17):** Send to Agent will be blocked for remote/unknown URLs unless explicitly added to trusted patterns. This prevents malicious page content from reaching your AI agent. See [Threat Model](threat-model.md) for the full analysis.
+**Connection-aware export behavior:**
+
+| Scenario | Send to Agent | Copy MD | Download Report |
+|---|---|---|---|
+| MCP server connected, localhost URL | Enabled | Enabled | Enabled |
+| MCP server connected, trusted URL | Enabled | Enabled | Enabled |
+| MCP server connected, untrusted URL (planned, F17) | Blocked (override available) | Enabled | Enabled |
+| No MCP server connected | Hidden | Enabled (promoted) | Enabled |
+
+When no server is connected, a status banner appears above the export buttons explaining that Copy MD and Report are available. When an untrusted URL is detected (F17, planned), Send to Agent will require the user to explicitly add the URL to their trusted list or use a one-time override. See [Threat Model](threat-model.md) for the security rationale.
 
 ## Common Concerns
 
