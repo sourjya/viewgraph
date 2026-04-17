@@ -66,7 +66,7 @@ The shield is always visible regardless of server connection. "Add to trusted" w
 
 **Mitigates:** Threats #1 (spoofing), #2 (prompt injection), #8 (sensitive data)
 
-### Native Messaging (planned, post-beta)
+### Native Messaging (in progress - Phase 1-5 complete)
 
 Replaces localhost HTTP with Chrome native messaging for extension-to-server communication. Provides cryptographic caller identity - only the registered ViewGraph extension can talk to the server.
 

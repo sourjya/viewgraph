@@ -66,12 +66,12 @@
 | 5 | F16: Zero-Config Phase 2 | F16 P1 | Low | Transport auto-detection, docs as primary install path |
 | 6 | F9: Cross-Page Consistency | F6 | Medium | Compare elements across page captures |
 | 7 | F10: Live DOM Watcher | F2, F3 | Medium | Smart alerts on DOM changes |
-| 8 | F11: Remote MCP + Native Messaging | F17 | High | Native messaging (eliminates 5/8 threats), remote mode with auth |
+| 8 | F11: Remote MCP + Native Messaging | F17 | High | Phase 1-5 shipped: protocol, registration, transport abstraction, message handler |
 
 **Rationale:** F19 and F17 are security-first (threat model driven). F18 is low-effort, high-impact UX. F6/F9/F10 are feature work. F11 is the big architectural change that eliminates most localhost threats.
 | M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
 
-**Current totals:** 1401 tests (937 extension + 406 server), 37 MCP tools, 14 enrichment collectors
+**Current totals:** 1444 tests (1005 extension + 439 server), 37 MCP tools, 14 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and

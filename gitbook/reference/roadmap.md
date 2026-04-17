@@ -43,7 +43,7 @@ What's shipped, what's next, and where ViewGraph is heading.
 
 ### Distribution
 - npm: `@viewgraph/core` and `@viewgraph/playwright` published
-- GitHub: public repo with 1401+ tests
+- GitHub: public repo with 1444+ tests
 - GitBook: 28 pages of documentation
 - Firefox Add-ons: approved and live. Chrome Web Store: live
 
@@ -87,12 +87,13 @@ Extract reusable design tokens (colors, fonts, spacing, radii) from captures. Us
 ### Power Packages for Other Agents
 Dedicated hooks, prompts, and steering docs for Claude Code, Cursor, Windsurf, and Cline. The MCP tools already work with all agents - Power packages add agent-specific automation.
 
-## Recently Shipped (v0.3.5)
+## Recently Shipped (v0.3.6)
 
 - **URL Trust Indicator (F17)** - shield icon with check/x showing trusted/configured/untrusted. Send gate blocks untrusted URLs.
 - **Prompt Injection Defense (F19)** - 5-layer defense: capture sanitization, text delimiters, suspicious content detection, prompt hardening, trust gate.
 - **MCP Agent Guidance (F18)** - server instructions + `get_session_status` tool (37 MCP tools total).
 - **Auto-Inspect Suggestions (F15)** - proactive issue detection with collapsed badge, tier tags, add-to-review flow.
+- **Native Messaging Foundation (F11)** - transport abstraction (17 methods), native host protocol, message handler, host registration. Extension migration in progress.
 - **STRIDE Threat Model** - 8 threats, 8 mitigations, published on [Threat Model](threat-model.md) page.
 
 ## Accuracy
