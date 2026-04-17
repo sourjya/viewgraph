@@ -6,6 +6,12 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ---
 
+## v0.3.7 - April 17, 2026
+
+- **Capture timeline (F6)** - collapsible list of all captures in the Inspect tab with timestamps and green dot for latest.
+- **Cross-page consistency (F9)** - when 2+ pages are captured, a "Compare" button copies an agent prompt to check for style differences across pages.
+- **Transport abstraction (F11)** - all extension-server communication now goes through `transport.js`. Native messaging, HTTP, and WebSocket unified behind one API. No more direct `fetch()` calls in sidebar modules.
+
 ## v0.3.6 - April 17, 2026
 
 - **URL trust indicator (F17)** - shield icon with check/x mark in sidebar header. Green (trusted localhost), blue (configured pattern), amber (untrusted remote). Send to Agent blocked for untrusted URLs with "Add to trusted" or "Send anyway" options.

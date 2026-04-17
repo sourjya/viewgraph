@@ -10,7 +10,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ## [Unreleased]
 
-## [0.3.6] - 2026-04-17
+## [0.3.7] - 2026-04-17
 
 ### New Features
 - F15 Auto-Inspect Suggestions: 3-tier scan engine (a11y, quality, testability), checklist UI, send-to-agent conversion
