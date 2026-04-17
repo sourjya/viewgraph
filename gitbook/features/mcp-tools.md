@@ -1,6 +1,6 @@
-# MCP Tools (36)
+# MCP Tools (37)
 
-ViewGraph exposes 36 tools to your AI agent via the Model Context Protocol. The agent discovers them automatically - you don't call them directly.
+ViewGraph exposes 37 tools to your AI agent via the Model Context Protocol. The agent discovers them automatically - you don't call them directly.
 
 ![Kiro using ViewGraph MCP tools](../.gitbook/assets/mcp-tools-kiro.png)
 

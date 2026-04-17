@@ -48,7 +48,7 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - **Component coverage** - `get_component_coverage` reports testid coverage per framework component
 - **Project config** - `config.json` with GET/PUT endpoints for server-side settings
 - **Keyboard shortcuts** - full shortcut system with help overlay (press `?`)
-- **36 MCP tools** total
+- **37 MCP tools** total
 
 ## v0.2.0 - April 10, 2026
 

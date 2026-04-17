@@ -1,6 +1,6 @@
 # ViewGraph MCP Server
 
-MCP server that reads ViewGraph capture files from disk and exposes 36 query/analysis/request tools to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
+MCP server that reads ViewGraph capture files from disk and exposes 37 query/analysis/request tools to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
 Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline, Aider.
 
@@ -22,7 +22,7 @@ The server runs automatically via `npx`, auto-creates `.viewgraph/captures/`, an
 
 **Alternative:** `npm install -g @viewgraph/core && viewgraph-init` for explicit version pinning and config control.
 
-## Tools (36)
+## Tools (37)
 
 ### Core (4)
 

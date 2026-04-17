@@ -125,7 +125,7 @@ Measured automatically against 48 diverse real-world websites:
 
 [Full details and per-site breakdowns](https://github.com/sourjya/viewgraph/tree/main/scripts/experiments/bulk-capture)
 
-## [36 MCP Tools](features/mcp-tools.md)
+## [37 MCP Tools](features/mcp-tools.md)
 
 Your agent discovers these automatically via the MCP protocol:
 

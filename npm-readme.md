@@ -27,7 +27,7 @@ viewgraph-init --url localhost:3000   # if using a dev server
 
 ## What's Included
 
-- **MCP Server** with 36 tools for querying captures, auditing accessibility, detecting regressions, and more
+- **MCP Server** with 37 tools for querying captures, auditing accessibility, detecting regressions, and more
 - **Init script** that auto-detects Kiro, Claude Code, Cursor, and other MCP agents
 - **Kiro Power assets** - 3 hooks, 8 prompt shortcuts, 3 steering docs (installed automatically for Kiro projects)
 

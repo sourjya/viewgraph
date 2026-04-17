@@ -19,7 +19,7 @@ What's shipped, what's next, and where ViewGraph is heading.
 - Real-time resolution sync (annotations turn green as agent fixes them)
 - Settings moved to footer, cleaner header with VG icon
 
-### MCP Server (36 tools)
+### MCP Server (37 tools)
 - Core: list, get, summarize captures
 - Analysis: accessibility audit (axe-core), layout audit, missing testids, interactive elements
 - Annotations: resolve, track, diff, detect patterns, generate specs
