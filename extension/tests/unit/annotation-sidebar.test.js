@@ -1218,3 +1218,55 @@ describe('suggestions panel survives refresh', () => {
     expect(panels?.length).toBe(1);
   });
 });
+
+// ──────────────────────────────────────────────
+// F17: Trust indicator and send gate
+// ──────────────────────────────────────────────
+
+describe('trust indicator', () => {
+  it('(+) trust-shield element exists in sidebar header', () => {
+    start();
+    create();
+    const shield = shadowQuery(`[${ATTR}="trust-shield"]`);
+    expect(shield).not.toBeNull();
+  });
+
+  it('(+) trust-shield is inside the toggle/header area', () => {
+    start();
+    create();
+    const toggle = shadowQuery(`[${ATTR}="toggle"]`);
+    const shield = toggle?.querySelector(`[${ATTR}="trust-shield"]`);
+    expect(shield).not.toBeNull();
+  });
+
+  it('(+) trust-shield starts hidden (shown after server connect)', () => {
+    start();
+    create();
+    const shield = shadowQuery(`[${ATTR}="trust-shield"]`);
+    expect(shield.style.display).toBe('none');
+  });
+
+  it('(+) trust-shield shows after server connection with green for localhost', async () => {
+    const { resetServerCache } = await import('#lib/constants.js');
+    resetServerCache();
+    Object.defineProperty(window, 'location', {
+      value: { href: 'http://localhost:3000/page', hostname: 'localhost', protocol: 'http:' },
+      writable: true, configurable: true,
+    });
+    globalThis.fetch = vi.fn((url) => {
+      const u = typeof url === 'string' ? url : url.toString();
+      if (u.includes('/health')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
+      if (u.includes('/info')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ projectRoot: '/test', urlPatterns: ['localhost:3000'], trustedPatterns: [], serverVersion: '0.3.5' }) });
+      return Promise.reject(new Error('unmocked'));
+    });
+    start();
+    create();
+    await vi.waitFor(() => {
+      const shield = shadowQuery(`[${ATTR}="trust-shield"]`);
+      expect(shield?.style.display).toBe('inline-flex');
+    }, { timeout: 3000 });
+    const shield = shadowQuery(`[${ATTR}="trust-shield"]`);
+    expect(shield.querySelector('svg')).not.toBeNull();
+    expect(shield.title).toContain('trusted');
+  });
+});
