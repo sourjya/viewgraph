@@ -18,7 +18,7 @@ import { createSettings } from './sidebar/settings.js';
 import { createInspectTab } from './sidebar/inspect.js';
 import { renderReviewList } from './sidebar/review.js';
 import { scanForSuggestions } from './sidebar/suggestions.js';
-import { renderSuggestionList } from './sidebar/suggestions-ui.js';
+import { renderSuggestionBar } from './sidebar/suggestions-ui.js';
 import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from './sidebar/sync.js';
 import { EVENTS, createEventBus } from './sidebar/events.js';
 import { chevronRightIcon, closeIcon, bellIcon, sendIcon, checkIcon, docIcon, downloadIcon, gearIcon } from './sidebar/icons.js';
@@ -723,23 +723,21 @@ export function refresh() {
 
   // Auto-inspect suggestions - prepend to list AFTER renderReviewList (which clears list)
   if (!_suggestionsCache) _suggestionsCache = scanForSuggestions();
-  renderSuggestionList(list, _suggestionsCache, {
-    onSend: (selected) => {
-      for (const sug of selected) {
-        const ann = addPageNote();
-        if (ann) {
-          updateComment(ann.id, sug.title + ': ' + sug.detail);
-          ann.diagnostic = { section: sug.tier, data: sug.detail };
-          if (sug.selector && sug.selector !== 'body') {
-            ann.element = { selector: sug.selector };
-          }
-        }
-      }
-      _suggestionsCache = null;
-      save();
-      refresh();
-    },
-    onDismiss: (id) => { _suggestionsCache = _suggestionsCache?.filter((s) => s.id !== id) || null; },
+  /** Convert a suggestion into an annotation in the timeline. */
+  function addSuggestionToReview(sug) {
+    const ann = addPageNote();
+    if (ann) {
+      const tierLabel = sug.tier === 'accessibility' ? 'A11Y' : sug.tier === 'quality' ? 'QUAL' : 'TEST';
+      updateComment(ann.id, `${tierLabel}: ${sug.title} - ${sug.detail || ''}`);
+      ann.diagnostic = { section: sug.tier, data: sug.detail };
+      ann.severity = sug.severity || 'minor';
+      if (sug.selector && sug.selector !== 'body') ann.element = { selector: sug.selector };
+    }
+  }
+  renderSuggestionBar(list, _suggestionsCache, {
+    onAdd: (sug) => { addSuggestionToReview(sug); _suggestionsCache = _suggestionsCache?.filter((s) => s.id !== sug.id) || null; save(); refresh(); },
+    onAddAll: (sugs) => { for (const s of sugs) addSuggestionToReview(s); _suggestionsCache = []; save(); refresh(); },
+    onDismissAll: () => { _suggestionsCache = []; refresh(); },
     onRefresh: () => { _suggestionsCache = null; refresh(); },
   });
 

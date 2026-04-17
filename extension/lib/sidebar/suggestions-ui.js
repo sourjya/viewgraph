@@ -1,191 +1,210 @@
 /**
- * Suggestions UI - Checklist Rendering
+ * Suggestions UI - Collapsed Badge + Expandable Checklist
  *
- * Renders the auto-inspect suggestion checklist at the top of the
- * Review tab. Users select suggestions and send them to the agent
- * as annotations.
+ * Renders a one-line suggestion indicator that expands into a checklist.
+ * Users add suggestions to the annotation timeline (not send directly).
+ * Redesigned per design-v2.md: collapsed by default, add-to-review flow.
  *
- * @see lib/sidebar/suggestions.js - scan engine
- * @see .kiro/specs/auto-suggestions/design.md
+ * @see .kiro/specs/auto-suggestions/design-v2.md
  */
 
 import { ATTR } from '#lib/selector.js';
 import { FONT } from './styles.js';
 
-/** Severity icons for display. */
+/** Tier display config: label, background color, text color. */
+const TIERS = {
+  accessibility: { label: 'A11Y', bg: '#92400e', color: '#fbbf24' },
+  quality: { label: 'QUAL', bg: '#7f1d1d', color: '#fca5a5' },
+  testability: { label: 'TEST', bg: '#1e3a5f', color: '#93c5fd' },
+};
+
+/** Severity icons. */
 const SEV_ICONS = { error: '\ud83d\udd34', warning: '\u26a0\ufe0f', info: '\ud83d\udca1' };
 
+/** Map suggestion severity to annotation severity. */
+const SEV_MAP = { error: 'critical', warning: 'major', info: 'minor' };
+
 /**
- * Render the suggestion checklist into a container element.
- * @param {HTMLElement} container - Element to render into
+ * Render the suggestion bar: collapsed badge or expanded checklist.
+ * @param {HTMLElement} container - Element to prepend into
  * @param {Array} suggestions - From scanForSuggestions()
- * @param {{ onSend: function(Array), onDismiss: function(string), onRefresh: function }} callbacks
- * @returns {{ element: HTMLElement, getSelected: function }}
+ * @param {{ onAdd: function, onAddAll: function, onDismissAll: function, onRefresh: function }} callbacks
+ * @returns {{ element: HTMLElement }}
  */
-export function renderSuggestionList(container, suggestions, callbacks) {
+export function renderSuggestionBar(container, suggestions, callbacks) {
   const wrapper = document.createElement('div');
   wrapper.setAttribute(ATTR, 'suggestions-panel');
+  Object.assign(wrapper.style, { borderBottom: '1px solid #2a2a3a', fontFamily: FONT });
 
   if (suggestions.length === 0) {
-    Object.assign(wrapper.style, { padding: '8px 12px', borderBottom: '1px solid #2a2a3a' });
-    const clean = document.createElement('div');
-    Object.assign(clean.style, { fontSize: '11px', color: '#4ade80', fontFamily: FONT, display: 'flex', alignItems: 'center', gap: '6px' });
-    clean.textContent = '\u2713 No issues detected';
-    wrapper.appendChild(clean);
-    container.prepend(wrapper);
-    return { element: wrapper, getSelected: () => [] };
+    renderClean(wrapper);
+  } else {
+    renderCollapsed(wrapper, suggestions, callbacks);
   }
 
-  Object.assign(wrapper.style, {
-    borderBottom: '2px solid #2a2a3a', paddingBottom: '8px', marginBottom: '4px',
-  });
+  container.prepend(wrapper);
+  return { element: wrapper };
+}
 
-  // Header row: count + refresh + select all
+/** Green checkmark - no issues found. */
+function renderClean(wrapper) {
+  Object.assign(wrapper.style, { padding: '8px 12px' });
+  const row = document.createElement('div');
+  Object.assign(row.style, { fontSize: '11px', color: '#4ade80', display: 'flex', alignItems: 'center', gap: '6px' });
+  row.textContent = '\u2713 No issues detected';
+  wrapper.appendChild(row);
+}
+
+/** One-line badge with count and Review button. */
+function renderCollapsed(wrapper, suggestions, callbacks) {
+  wrapper.replaceChildren();
+  Object.assign(wrapper.style, { padding: '6px 12px' });
+
+  const row = document.createElement('div');
+  Object.assign(row.style, { display: 'flex', alignItems: 'center', gap: '6px' });
+
+  const icon = document.createElement('span');
+  icon.textContent = '\ud83d\udca1';
+  Object.assign(icon.style, { fontSize: '13px' });
+
+  const label = document.createElement('span');
+  label.textContent = `${suggestions.length} suggestion${suggestions.length > 1 ? 's' : ''}`;
+  Object.assign(label.style, { fontSize: '11px', fontWeight: '700', color: '#f59e0b', flex: '1' });
+
+  const reviewBtn = document.createElement('button');
+  reviewBtn.textContent = 'Review';
+  Object.assign(reviewBtn.style, {
+    border: '1px solid #f59e0b', borderRadius: '4px', background: 'transparent',
+    color: '#f59e0b', fontSize: '10px', padding: '2px 8px', cursor: 'pointer', fontFamily: FONT,
+  });
+  reviewBtn.addEventListener('click', () => renderExpanded(wrapper, suggestions, callbacks));
+
+  row.append(icon, label, reviewBtn);
+  wrapper.appendChild(row);
+}
+
+/** Expanded checklist with tier tags and add buttons. */
+function renderExpanded(wrapper, suggestions, callbacks) {
+  wrapper.replaceChildren();
+  Object.assign(wrapper.style, { padding: '6px 12px' });
+
+  // Header
   const header = document.createElement('div');
-  Object.assign(header.style, {
-    display: 'flex', alignItems: 'center', gap: '6px',
-    padding: '6px 12px', fontFamily: FONT,
-  });
-
-  const countBadge = document.createElement('span');
-  countBadge.textContent = `${suggestions.length} Suggestion${suggestions.length > 1 ? 's' : ''}`;
-  Object.assign(countBadge.style, {
-    fontSize: '11px', fontWeight: '700', color: '#f59e0b',
-    flex: '1',
-  });
-
-  const refreshBtn = document.createElement('button');
-  refreshBtn.textContent = '\u21bb';
-  refreshBtn.title = 'Refresh suggestions';
-  Object.assign(refreshBtn.style, {
-    border: 'none', background: 'transparent', color: '#666',
-    cursor: 'pointer', fontSize: '14px', padding: '2px',
-  });
-  refreshBtn.addEventListener('click', () => { if (callbacks.onRefresh) callbacks.onRefresh(); });
-
-  const selectAllBtn = document.createElement('button');
-  selectAllBtn.textContent = 'Select All';
-  Object.assign(selectAllBtn.style, {
+  Object.assign(header.style, { display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' });
+  const icon = document.createElement('span');
+  icon.textContent = '\ud83d\udca1';
+  Object.assign(icon.style, { fontSize: '13px' });
+  const label = document.createElement('span');
+  label.textContent = `${suggestions.length} suggestion${suggestions.length > 1 ? 's' : ''}`;
+  Object.assign(label.style, { fontSize: '11px', fontWeight: '700', color: '#f59e0b', flex: '1' });
+  const collapseBtn = document.createElement('button');
+  collapseBtn.textContent = 'Collapse';
+  Object.assign(collapseBtn.style, {
     border: '1px solid #333', borderRadius: '4px', background: 'transparent',
-    color: '#9ca3af', fontSize: '10px', padding: '2px 6px', cursor: 'pointer',
-    fontFamily: FONT,
+    color: '#666', fontSize: '10px', padding: '2px 8px', cursor: 'pointer', fontFamily: FONT,
   });
-
-  header.append(countBadge, refreshBtn, selectAllBtn);
+  collapseBtn.addEventListener('click', () => renderCollapsed(wrapper, suggestions, callbacks));
+  header.append(icon, label, collapseBtn);
   wrapper.appendChild(header);
 
-  // Suggestion items
-  const selected = new Set();
-  const items = [];
+  // Suggestion rows
+  const remaining = [...suggestions];
 
   for (const sug of suggestions) {
     const row = document.createElement('div');
-    row.setAttribute(ATTR, 'suggestion-item');
+    row.setAttribute(ATTR, 'suggestion-row');
     Object.assign(row.style, {
-      display: 'flex', alignItems: 'flex-start', gap: '6px',
-      padding: '4px 12px', cursor: 'pointer', fontFamily: FONT,
-      transition: 'background 0.1s',
+      display: 'flex', alignItems: 'center', gap: '6px',
+      padding: '4px 0', cursor: 'pointer', transition: 'background 0.1s', borderRadius: '4px',
     });
     row.addEventListener('mouseenter', () => { row.style.background = '#1a1a2e'; });
     row.addEventListener('mouseleave', () => { row.style.background = 'transparent'; });
 
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.style.marginTop = '2px';
-    checkbox.style.cursor = 'pointer';
-    checkbox.addEventListener('change', () => {
-      if (checkbox.checked) selected.add(sug.id);
-      else selected.delete(sug.id);
-      updateSendBtn();
+    // Severity icon
+    const sevEl = document.createElement('span');
+    sevEl.textContent = SEV_ICONS[sug.severity] || '\ud83d\udca1';
+    Object.assign(sevEl.style, { fontSize: '11px', flexShrink: '0' });
+
+    // Tier pill
+    const tier = TIERS[sug.tier] || TIERS.quality;
+    const pill = document.createElement('span');
+    pill.textContent = tier.label;
+    Object.assign(pill.style, {
+      fontSize: '9px', fontWeight: '700', textTransform: 'uppercase',
+      padding: '1px 5px', borderRadius: '3px', flexShrink: '0',
+      background: tier.bg, color: tier.color,
     });
 
-    const content = document.createElement('div');
-    Object.assign(content.style, { flex: '1', minWidth: '0' });
-
-    const titleRow = document.createElement('div');
-    Object.assign(titleRow.style, { fontSize: '11px', color: '#e0e0e0', lineHeight: '1.3' });
-    titleRow.textContent = `${SEV_ICONS[sug.severity] || ''} ${sug.title}`;
-
-    const detailRow = document.createElement('div');
-    Object.assign(detailRow.style, { fontSize: '10px', color: '#666', marginTop: '1px' });
-    detailRow.textContent = sug.detail;
-
-    content.append(titleRow, detailRow);
-
-    const dismissBtn = document.createElement('button');
-    dismissBtn.textContent = '\u00d7';
-    dismissBtn.title = 'Dismiss';
-    Object.assign(dismissBtn.style, {
-      border: 'none', background: 'transparent', color: '#555',
-      cursor: 'pointer', fontSize: '14px', padding: '0 2px', flexShrink: '0',
+    // Title
+    const title = document.createElement('span');
+    title.textContent = sug.title;
+    Object.assign(title.style, {
+      fontSize: '11px', color: '#c8c8d0', flex: '1',
+      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
     });
-    dismissBtn.addEventListener('click', (e) => {
+
+    // Add button
+    const addBtn = document.createElement('button');
+    addBtn.textContent = '+';
+    addBtn.title = 'Add to review';
+    Object.assign(addBtn.style, {
+      width: '20px', height: '20px', borderRadius: '50%',
+      border: '1px solid #333', background: 'transparent',
+      color: '#9ca3af', fontSize: '14px', cursor: 'pointer',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      flexShrink: '0', transition: 'all 0.15s',
+    });
+    addBtn.addEventListener('mouseenter', () => { addBtn.style.borderColor = '#4ade80'; addBtn.style.color = '#4ade80'; });
+    addBtn.addEventListener('mouseleave', () => { addBtn.style.borderColor = '#333'; addBtn.style.color = '#9ca3af'; });
+    addBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       row.style.opacity = '0';
       row.style.transition = 'opacity 0.2s';
       setTimeout(() => {
         row.remove();
-        selected.delete(sug.id);
-        updateSendBtn();
-        if (callbacks.onDismiss) callbacks.onDismiss(sug.id);
+        const idx = remaining.indexOf(sug);
+        if (idx >= 0) remaining.splice(idx, 1);
+        if (callbacks.onAdd) callbacks.onAdd({ ...sug, severity: SEV_MAP[sug.severity] || 'minor' });
+        if (remaining.length === 0) renderClean(wrapper);
+        else label.textContent = `${remaining.length} suggestion${remaining.length > 1 ? 's' : ''}`;
       }, 200);
     });
 
-    row.addEventListener('click', (e) => {
-      if (e.target !== checkbox && e.target !== dismissBtn) {
-        checkbox.checked = !checkbox.checked;
-        checkbox.dispatchEvent(new Event('change'));
-      }
-    });
+    // Click row to add
+    row.addEventListener('click', () => addBtn.click());
 
-    row.append(checkbox, content, dismissBtn);
+    row.append(sevEl, pill, title, addBtn);
     wrapper.appendChild(row);
-    items.push({ sug, checkbox, row });
   }
 
-  // Select All toggle
-  let allSelected = false;
-  selectAllBtn.addEventListener('click', () => {
-    allSelected = !allSelected;
-    for (const item of items) {
-      if (item.row.parentNode) {
-        item.checkbox.checked = allSelected;
-        if (allSelected) selected.add(item.sug.id);
-        else selected.delete(item.sug.id);
-      }
-    }
-    selectAllBtn.textContent = allSelected ? 'Deselect All' : 'Select All';
-    updateSendBtn();
+  // Bottom actions
+  const actions = document.createElement('div');
+  Object.assign(actions.style, { display: 'flex', gap: '6px', marginTop: '6px' });
+
+  const addAllBtn = document.createElement('button');
+  addAllBtn.textContent = 'Add All to Review';
+  Object.assign(addAllBtn.style, {
+    flex: '1', padding: '5px', border: 'none', borderRadius: '4px',
+    background: '#6366f1', color: '#fff', fontSize: '10px', fontWeight: '600',
+    cursor: 'pointer', fontFamily: FONT,
+  });
+  addAllBtn.addEventListener('click', () => {
+    if (callbacks.onAddAll) callbacks.onAddAll(remaining.map((s) => ({ ...s, severity: SEV_MAP[s.severity] || 'minor' })));
+    renderClean(wrapper);
   });
 
-  // Send button
-  const sendBtn = document.createElement('button');
-  sendBtn.setAttribute(ATTR, 'send-suggestions');
-  Object.assign(sendBtn.style, {
-    display: 'block', width: 'calc(100% - 24px)', margin: '6px 12px',
-    padding: '6px', border: 'none', borderRadius: '6px',
-    background: '#333', color: '#666', fontSize: '11px', fontWeight: '600',
-    cursor: 'default', fontFamily: FONT, textAlign: 'center',
+  const dismissBtn = document.createElement('button');
+  dismissBtn.textContent = 'Dismiss All';
+  Object.assign(dismissBtn.style, {
+    padding: '5px 10px', border: '1px solid #333', borderRadius: '4px',
+    background: 'transparent', color: '#666', fontSize: '10px',
+    cursor: 'pointer', fontFamily: FONT,
   });
-  sendBtn.textContent = 'Send 0 to Agent';
-
-  /** Update send button state based on selection count. */
-  function updateSendBtn() {
-    const count = selected.size;
-    sendBtn.textContent = `Send ${count} to Agent`;
-    sendBtn.style.background = count > 0 ? '#6366f1' : '#333';
-    sendBtn.style.color = count > 0 ? '#fff' : '#666';
-    sendBtn.style.cursor = count > 0 ? 'pointer' : 'default';
-  }
-
-  sendBtn.addEventListener('click', () => {
-    if (selected.size === 0) return;
-    const selectedSugs = suggestions.filter((s) => selected.has(s.id));
-    if (callbacks.onSend) callbacks.onSend(selectedSugs);
+  dismissBtn.addEventListener('click', () => {
+    if (callbacks.onDismissAll) callbacks.onDismissAll();
+    renderClean(wrapper);
   });
 
-  wrapper.appendChild(sendBtn);
-  container.prepend(wrapper);
-
-  return { element: wrapper, getSelected: () => suggestions.filter((s) => selected.has(s.id)) };
+  actions.append(addAllBtn, dismissBtn);
+  wrapper.appendChild(actions);
 }
