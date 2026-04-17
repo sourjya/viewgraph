@@ -42,6 +42,10 @@ Nation-state actors, organized crime, hacktivists, and insider threats were eval
 | Shadow DOM isolation | Prevents page CSS/JS from affecting extension UI | Implemented |
 | innerHTML elimination | Reduces XSS surface in extension | Implemented (45 -> 6 usages) |
 | Untrusted data documentation | Warns agents not to follow instructions in captures | Implemented |
+| URL trust indicator (F17) | Blocks send-to-agent for untrusted URLs, shield icon | Implemented |
+| Prompt injection defense (F19) | 5-layer: sanitize, wrap, detect, harden, gate | Implemented |
+| Server instructions (F18) | Agents receive workflow + security guidance on connection | Implemented |
+| Session status tool (F18) | Agents get context-aware next-step suggestions | Implemented |
 | npm 2FA + package-lock | Reduces supply chain risk | Implemented |
 | .gitignore for .viewgraph/ | Prevents accidental commit of captures | Implemented |
 
@@ -75,11 +79,11 @@ Replaces localhost HTTP with Chrome native messaging for extension-to-server com
 
 **Result:** 5 of 8 threats eliminated. The 3 that remain (prompt injection, supply chain, sensitive data) are inherent to the product, not the transport.
 
-### F18: MCP Agent Guidance (planned)
+### F18: MCP Agent Guidance (partially implemented)
 
-Server instructions that explicitly warn agents to treat all capture data as untrusted input. Reduces prompt injection effectiveness by hardening the agent's behavior at the protocol level.
+Server instructions (Phase 1) and session status tool (Phase 2) are shipped. Agents receive workflow guidance, security warnings, and performance tips on connection. The `get_session_status` tool gives agents a quick overview of available captures, annotations, and baselines with actionable suggestions.
 
-**Mitigates:** Threat #2 (prompt injection)
+**Mitigates:** Threat #2 (prompt injection) - agents are warned at the protocol level to treat capture data as untrusted.
 
 ## Prompt Injection Defense (Implemented)
 
@@ -91,7 +95,7 @@ ViewGraph uses a 5-layer defense-in-depth strategy against prompt injection (thr
 | 2. Transport wrapping | Wraps text in `[CAPTURED_TEXT]` delimiters in MCP tool responses | Implemented |
 | 3. Suspicious detection | Flags text containing "ignore above", "system:", etc. with `_warning` field | Implemented |
 | 4. Prompt hardening | Steering docs + server instructions warn agents to never follow delimited text | Implemented |
-| 5. Trust gate (F17) | Blocks send-to-agent for untrusted URLs entirely | Planned |
+| 5. Trust gate (F17) | Blocks send-to-agent for untrusted URLs entirely | Implemented |
 
 ## What You Can Do Today
 
