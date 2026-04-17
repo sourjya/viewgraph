@@ -27,7 +27,11 @@ export function renderSuggestionList(container, suggestions, callbacks) {
   wrapper.setAttribute(ATTR, 'suggestions-panel');
 
   if (suggestions.length === 0) {
-    wrapper.style.display = 'none';
+    Object.assign(wrapper.style, { padding: '8px 12px', borderBottom: '1px solid #2a2a3a' });
+    const clean = document.createElement('div');
+    Object.assign(clean.style, { fontSize: '11px', color: '#4ade80', fontFamily: FONT, display: 'flex', alignItems: 'center', gap: '6px' });
+    clean.textContent = '\u2713 No issues detected';
+    wrapper.appendChild(clean);
     container.prepend(wrapper);
     return { element: wrapper, getSelected: () => [] };
   }
