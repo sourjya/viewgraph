@@ -184,9 +184,17 @@ async function main() {
     onRemove: (filename) => indexer.remove(filename),
   });
 
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error(`${LOG_PREFIX} MCP server running on stdio`);
+  // Transport auto-detection (F16 Phase 2, ADR-013):
+  // - stdin is pipe: MCP client launched us -> start stdio transport
+  // - stdin is TTY: manual start -> HTTP-only mode (no MCP)
+  if (!process.stdin.isTTY) {
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    console.error(`${LOG_PREFIX} MCP server running on stdio + HTTP (port ${HTTP_PORT ?? 9876})`);
+  } else {
+    console.error(`${LOG_PREFIX} Standalone mode - HTTP only (port ${HTTP_PORT ?? 9876}). No MCP client detected.`);
+    console.error(`${LOG_PREFIX} To connect an agent, add to MCP config: { "command": "npx", "args": ["-y", "@viewgraph/core"] }`);
+  }
 }
 
 // ---------------------------------------------------------------------------
