@@ -132,7 +132,7 @@ describe('renderSuggestionBar', () => {
     const onAdd = vi.fn();
     renderSuggestionBar(container, [makeSug({ severity: 'warning' })], { onAdd });
     container.querySelector('button').click(); // expand
-    const addBtn = [...container.querySelectorAll('button')].find((b) => b.textContent === '+');
+    const addBtn = [...container.querySelectorAll('button')].find((b) => b.textContent === 'Add');
     addBtn.click();
     // onAdd fires after 200ms fade
     await new Promise((r) => setTimeout(r, 250));

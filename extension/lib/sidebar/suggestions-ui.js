@@ -143,19 +143,18 @@ function renderExpanded(wrapper, suggestions, callbacks) {
       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
     });
 
-    // Add button
+    // Add button - text style to distinguish from annotation action icons
     const addBtn = document.createElement('button');
-    addBtn.textContent = '+';
-    addBtn.title = 'Add to review';
+    addBtn.textContent = 'Add';
+    addBtn.title = 'Add to review list';
     Object.assign(addBtn.style, {
-      width: '20px', height: '20px', borderRadius: '50%',
-      border: '1px solid #333', background: 'transparent',
-      color: '#9ca3af', fontSize: '14px', cursor: 'pointer',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      flexShrink: '0', transition: 'all 0.15s',
+      border: 'none', background: 'transparent',
+      color: '#6366f1', fontSize: '10px', fontWeight: '600', cursor: 'pointer',
+      padding: '2px 6px', flexShrink: '0', fontFamily: FONT,
+      transition: 'color 0.15s',
     });
-    addBtn.addEventListener('mouseenter', () => { addBtn.style.borderColor = '#4ade80'; addBtn.style.color = '#4ade80'; });
-    addBtn.addEventListener('mouseleave', () => { addBtn.style.borderColor = '#333'; addBtn.style.color = '#9ca3af'; });
+    addBtn.addEventListener('mouseenter', () => { addBtn.style.color = '#818cf8'; });
+    addBtn.addEventListener('mouseleave', () => { addBtn.style.color = '#6366f1'; });
     addBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       row.style.opacity = '0';
@@ -169,9 +168,6 @@ function renderExpanded(wrapper, suggestions, callbacks) {
         else label.textContent = `${remaining.length} suggestion${remaining.length > 1 ? 's' : ''}`;
       }, 200);
     });
-
-    // Click row to add
-    row.addEventListener('click', () => addBtn.click());
 
     row.append(sevEl, pill, title, addBtn);
     wrapper.appendChild(row);
