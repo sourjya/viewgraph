@@ -152,6 +152,40 @@ export async function renderCaptures(container) {
     container.appendChild(timelineBody);
   }
 
+  // Cross-page consistency - show when multiple pages captured
+  const uniquePages = [...new Set(captures.map((c) => {
+    try { const u = new URL(c.url); return u.pathname; } catch { return c.url; }
+  }).filter(Boolean))];
+  if (uniquePages.length > 1) {
+    const consistRow = document.createElement('div');
+    Object.assign(consistRow.style, { display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 0', borderTop: '1px solid #2a2a3a', marginTop: '4px' });
+    const consistLabel = document.createElement('span');
+    consistLabel.textContent = 'CONSISTENCY';
+    Object.assign(consistLabel.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', flex: '1' });
+    const consistInfo = document.createElement('span');
+    consistInfo.textContent = `${uniquePages.length} pages`;
+    Object.assign(consistInfo.style, { color: '#666', fontSize: '11px' });
+    const consistBtn = document.createElement('button');
+    consistBtn.textContent = 'Compare';
+    Object.assign(consistBtn.style, {
+      border: 'none', borderRadius: '10px', padding: '2px 10px', fontSize: '10px',
+      fontWeight: '700', cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+      background: '#1e3a5f', color: '#60a5fa',
+    });
+    consistBtn.addEventListener('click', () => {
+      const filenames = captures.slice(0, 5).map((c) => c.filename).join(', ');
+      const prompt = `Run check_consistency on these captures to find style differences across pages: ${filenames}`;
+      navigator.clipboard.writeText(prompt).then(() => {
+        consistBtn.textContent = 'Copied!';
+        consistBtn.style.background = '#059669';
+        consistBtn.style.color = '#fff';
+        setTimeout(() => { consistBtn.textContent = 'Compare'; consistBtn.style.background = '#1e3a5f'; consistBtn.style.color = '#60a5fa'; }, 2000);
+      }).catch(() => {});
+    });
+    consistRow.append(consistLabel, consistInfo, consistBtn);
+    container.appendChild(consistRow);
+  }
+
   // Baseline section
   const baseRow = document.createElement('div');
   baseRow.setAttribute(ATTR, 'baseline-row');
