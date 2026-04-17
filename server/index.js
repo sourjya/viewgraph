@@ -17,7 +17,7 @@ import { readFile } from 'fs/promises';
 import { existsSync, mkdirSync } from 'fs';
 
 import {
-  SERVER_NAME, SERVER_VERSION, SERVER_DESCRIPTION, LOG_PREFIX,
+  SERVER_NAME, SERVER_VERSION, SERVER_DESCRIPTION, SERVER_INSTRUCTIONS, LOG_PREFIX,
 } from '#src/constants.js';
 import { resolveConfig } from '#src/config.js';
 import { createWatcher } from '#src/watcher.js';
@@ -76,7 +76,7 @@ const { capturesDir: CAPTURES_DIR, maxCaptures: MAX_CAPTURES, httpPort: HTTP_POR
 const server = new McpServer({
   name: SERVER_NAME,
   version: SERVER_VERSION,
-  description: SERVER_DESCRIPTION,
+  description: `${SERVER_DESCRIPTION}\n\n${SERVER_INSTRUCTIONS}`,
 });
 
 const requestQueue = createRequestQueue();

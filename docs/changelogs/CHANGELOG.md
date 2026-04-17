@@ -10,6 +10,44 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ## [Unreleased]
 
+### New Features
+- F15 Auto-Inspect Suggestions: 3-tier scan engine (a11y, quality, testability), checklist UI, send-to-agent conversion
+- F16 Phase 1: zero-config server boot, auto-learn config.json on first capture
+- STRIDE threat model: 8 threats, 8 mitigations, 5 assumptions, 4 relevant threat actors
+- GitBook threat model page with roadmap mitigation plan
+- GitBook public changelog page (user-facing changes only)
+
+### Changed
+- Settings screen uses discoverServer for URL-aware routing (was blind port scan)
+- Status banner moved from below tabs to above footer (closer to buttons it references)
+- Connection info consolidated into help card (ext version + server version + port)
+- All ../  imports in sidebar/ replaced with #lib/ path aliases
+- Centralized SERVER_HOST and DEFAULT_HTTP_PORT constants (zero hardcoded values)
+- innerHTML reduced to 6 (was 10), DOMParser reverted (broke shadow DOM icons)
+- Options page innerHTML cleaned up
+
+### Fixed
+- Icon rendering in shadow DOM: DOMParser + importNode loses SVG namespace, reverted to innerHTML for trusted SVGs
+- Multi-project routing: default urlPatterns reverted to empty (was 'localhost' which matched all servers)
+- Settings screen showed wrong server in multi-project setup
+
+### Documentation
+- ADR-011: MCP server instructions (inspired by threat-modeling MCP)
+- ADR-012: Prompt injection defense (5-layer strategy)
+- F17 spec: URL trust indicator (18 tasks)
+- F18 spec: MCP agent guidance (19 tasks)
+- F19 spec: Prompt injection defense (19 tasks)
+- Roadmap reorganized: completed features + prioritized implementation timeline
+- GitBook: installation rewrite, security matrix, extension export docs, threat model page
+- All READMEs updated with zero-config as primary install path
+
+### Testing
+- 1314 total tests (930 extension + 384 server)
+- 18 icon DOM rendering regression tests
+- 2 settings server routing tests
+- 2 status banner position tests
+- 13 suggestion engine tests
+
 ## [0.3.5] - 2026-04-17
 
 ### New Features
