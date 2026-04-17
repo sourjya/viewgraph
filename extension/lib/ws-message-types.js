@@ -5,7 +5,7 @@
  * Must stay in sync with server/src/ws-message-types.js.
  *
  * @see server/src/ws-server.js
- * @see extension/lib/ws-client.js
+ * @see extension/lib/transport.js - onEvent/offEvent
  */
 
 export const WS_MESSAGES = Object.freeze({

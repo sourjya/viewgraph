@@ -21,7 +21,7 @@ import { isRecording, startSession, stopSession, getState } from '#lib/session/s
 import { startJourney, stopJourney } from '#lib/session/journey-recorder.js';
 import { groupRequests, smartPath } from '#lib/network-grouper.js';
 import { getAnnotations, addPageNote, updateComment } from '#lib/annotate.js';
-import { discoverServer, updateConfig } from '#lib/constants.js';
+import * as transport from '#lib/transport.js';
 import { renderCaptures } from './captures.js';
 import { copyIcon, checkIcon, noteIcon } from './icons.js';
 
@@ -413,13 +413,11 @@ async function refreshInspect(container, callbacks) {
     background: auditEnabled ? '#166534' : '#333', color: auditEnabled ? '#4ade80' : '#666',
   });
   auditToggle.addEventListener('click', async () => {
-    const serverUrl = await discoverServer(window.location.href);
-    if (!serverUrl) return;
     auditEnabled = !auditEnabled;
     auditToggle.textContent = auditEnabled ? 'ON' : 'OFF';
     auditToggle.style.background = auditEnabled ? '#166534' : '#333';
     auditToggle.style.color = auditEnabled ? '#4ade80' : '#666';
-    try { await updateConfig(serverUrl, { autoAudit: auditEnabled }); } catch { /* offline */ }
+    try { await transport.updateConfig({ autoAudit: auditEnabled }); } catch { /* offline */ }
   });
   auditRow.append(auditLabel, auditToggle);
   container.appendChild(auditRow);

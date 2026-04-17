@@ -1,8 +1,8 @@
 {
   "enabled": true,
   "name": "Comment Standards Check",
-  "description": "Before a git commit, verifies staged source files meet code-commenting-standards.md.",
-  "version": "1",
+  "description": "Before a git commit, verifies staged source files meet code-commenting-standards.md",
+  "version": "3",
   "when": {
     "type": "preToolUse",
     "toolTypes": [
@@ -11,6 +11,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Check if the shell command about to run is exactly 'git commit' or starts with 'git commit' or calls 'scripts/git-commit.sh'. If it does NOT match any of these patterns, respond with just 'OK' and take no further action.\n\nOnly if the command IS a git commit: run 'git diff --cached --name-only' to get staged files, filter to .js and .ts source files only (skip .md, .json, .html, .css, .log, .lock, .test.js, .spec.js files), and for each source file verify it meets code-commenting-standards.md. Fix any violations before allowing the commit."
+    "prompt": "Check if the shell command about to run is exactly 'git commit' or starts with 'git commit' or calls any git-commit script. If it does NOT match any of these patterns, respond with just 'OK' and take no further action.\n\nOnly if the command IS a git commit: run 'git diff --cached --name-only' to get staged files, filter to .py, .js, .ts, .tsx, .jsx source files only (skip .md, .json, .html, .css, .log, .lock, .test.*, .spec.* files), and for each source file verify it meets code-commenting-standards.md. Fix any violations before allowing the commit."
   }
 }

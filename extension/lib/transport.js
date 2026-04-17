@@ -143,7 +143,7 @@ export async function declineRequest(id, reason) {
 }
 
 // ──────────────────────────────────────────────
-// Events (replaces ws-client.js)
+// Events (WebSocket handled internally)
 // ──────────────────────────────────────────────
 
 /**

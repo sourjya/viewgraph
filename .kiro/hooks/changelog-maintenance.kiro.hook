@@ -1,13 +1,13 @@
 {
   "enabled": true,
   "name": "Changelog Maintenance",
-  "description": "Pre-commit: ensures changelog is updated, rolls if over 500 lines, syncs user-facing changes to GitBook",
-  "version": "1",
+  "description": "Pre-commit: ensures changelog is updated and rolls if over 500 lines",
+  "version": "2.0.0",
   "when": {
     "type": "beforeCommit"
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Before this commit, perform three changelog checks:\n\n1. **Changelog updated?** Check if any source files (.js, .ts) were modified in this session. If so, verify docs/changelogs/CHANGELOG.md has been updated. If not, add a consolidated entry describing the change.\n\n2. **Rolling archive?** Run `wc -l docs/changelogs/CHANGELOG.md`. If it exceeds 500 lines, rename it to `docs/changelogs/CHANGELOG.YYYY-MM-DD.md` (today's date) and create a fresh CHANGELOG.md with just the standard header.\n\n3. **Public changelog sync?** If the internal changelog has user-facing changes (new features, bug fixes users see, new MCP tools, store/npm releases, breaking changes), update gitbook/reference/changelog.md with a concise entry (3-5 bullets, plain language). Skip internal-only changes (refactors, tests, coverage, specs, CI)."
+    "prompt": "Before this commit, perform two changelog checks:\n\n1. **Changelog updated?** Check if any source files (.py, .ts, .tsx, .js, .jsx) were modified in this session. If so, verify docs/changelogs/CHANGELOG.md has been updated. If not, add a consolidated entry describing the change.\n\n2. **Rolling archive?** Run `wc -l docs/changelogs/CHANGELOG.md`. If it exceeds 500 lines, rename it to `docs/changelogs/CHANGELOG.YYYY-MM-DD.md` (today's date) and create a fresh CHANGELOG.md with just the standard header."
   }
 }
