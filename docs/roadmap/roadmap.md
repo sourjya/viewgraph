@@ -38,7 +38,7 @@
 | Dead Code Elimination | Complete | 16 unused exports/imports/functions removed |
 | Redundancy Centralization | Complete | selector(), ATTR, readAndParse() helpers extracted |
 | M16: Sidebar UX Polish | In Progress | Help overlay, keyboard shortcuts, settings to footer, VG icon, strip redesign |
-| Server Lifecycle | Specced | Stdin close detection, idle timeout, orphan prevention |
+| Server Lifecycle | Complete | Stdin close detection, idle timeout, orphan prevention |
 ### Completed Features
 
 | Feature | Status | Description |
@@ -72,7 +72,7 @@
 **Rationale:** F19 and F17 are security-first (threat model driven). F18 is low-effort, high-impact UX. F6/F9/F10 are feature work. F11 is the big architectural change that eliminates most localhost threats.
 | M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
 
-**Current totals:** 1444 tests (1005 extension + 439 server), 37 MCP tools, 14 enrichment collectors
+**Current totals:** 1449 tests (1005 extension + 446 server), 37 MCP tools, 14 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and
@@ -679,7 +679,7 @@ to specific ViewGraph features, tools, workflows, and remaining gaps.
 **Goal:** Prevent orphaned server processes from exhausting the 4-port range. Server exits when parent agent dies and auto-shuts down after idle period.
 
 **Spec:** [`.kiro/specs/server-lifecycle/`](../../.kiro/specs/server-lifecycle/)
-**Status:** Specced
+**Status:** Complete
 
 | # | Task | Details |
 |---|---|---|

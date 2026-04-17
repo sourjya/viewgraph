@@ -60,6 +60,7 @@ export function createWebSocketServer(httpServer, options = {}) {
     ws.on('pong', () => { ws.isAlive = true; });
 
     ws.on('message', (data) => {
+      if (options.onActivity) options.onActivity();
       let msg;
       try { msg = JSON.parse(data); } catch { return; }
 

@@ -71,7 +71,7 @@ import { createMessageHandler } from '#src/native-message-handler.js';
 // ---------------------------------------------------------------------------
 
 const config = resolveConfig();
-const { capturesDir: CAPTURES_DIR, maxCaptures: MAX_CAPTURES, httpPort: HTTP_PORT, allowedDirs: ALLOWED_DIRS } = config;
+const { capturesDir: CAPTURES_DIR, maxCaptures: MAX_CAPTURES, httpPort: HTTP_PORT, allowedDirs: ALLOWED_DIRS, idleTimeoutMinutes: IDLE_TIMEOUT_MINUTES } = config;
 
 // ---------------------------------------------------------------------------
 // Server setup
@@ -178,8 +178,11 @@ async function main() {
   // Server binds to localhost only. Format validation provides defense.
 
   // Start HTTP receiver for extension communication
-  httpReceiver = createHttpReceiver({ queue: requestQueue, capturesDir: CAPTURES_DIR, allowedDirs: ALLOWED_DIRS, port: HTTP_PORT ?? 9876, indexer });
+  httpReceiver = createHttpReceiver({ queue: requestQueue, capturesDir: CAPTURES_DIR, allowedDirs: ALLOWED_DIRS, port: HTTP_PORT ?? 9876, indexer, onActivity: resetIdleTimer });
   await httpReceiver.start();
+
+  // Start idle timeout (resets on any activity)
+  resetIdleTimer();
 
   watcher = createWatcher(CAPTURES_DIR, {
     onAdd: indexFile,
@@ -238,15 +241,38 @@ async function main() {
         }
       }
     });
+    // Detect browser/parent death: when stdin closes, exit gracefully
+    process.stdin.on('end', () => shutdown('stdin-closed'));
     console.error(`${LOG_PREFIX} Native messaging host mode + HTTP (port ${HTTP_PORT ?? 9876})`);
   } else if (!process.stdin.isTTY) {
     const transport = new StdioServerTransport();
     await server.connect(transport);
+    // Detect parent agent death: when stdin closes, exit gracefully
+    process.stdin.on('end', () => shutdown('stdin-closed'));
     console.error(`${LOG_PREFIX} MCP server running on stdio + HTTP (port ${HTTP_PORT ?? 9876})`);
   } else {
     console.error(`${LOG_PREFIX} Standalone mode - HTTP only (port ${HTTP_PORT ?? 9876}). No MCP client detected.`);
     console.error(`${LOG_PREFIX} To connect an agent, add to MCP config: { "command": "npx", "args": ["-y", "@viewgraph/core"] }`);
   }
+}
+
+// ---------------------------------------------------------------------------
+// Idle timeout  -  auto-shutdown after inactivity
+// ---------------------------------------------------------------------------
+
+const IDLE_TIMEOUT_MS = IDLE_TIMEOUT_MINUTES > 0 ? IDLE_TIMEOUT_MINUTES * 60_000 : 0;
+let idleTimer = null;
+
+/**
+ * Reset the idle shutdown timer. Called on any activity (MCP tool call,
+ * HTTP request, WebSocket message). Uses unref() so the timer alone
+ * won't keep the process alive.
+ */
+function resetIdleTimer() {
+  if (IDLE_TIMEOUT_MS <= 0) return;
+  if (idleTimer) clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => shutdown('idle-timeout'), IDLE_TIMEOUT_MS);
+  idleTimer.unref();
 }
 
 // ---------------------------------------------------------------------------

@@ -21,7 +21,7 @@
 
 import { readFileSync, existsSync } from 'fs';
 import path from 'path';
-import { ENV_CAPTURES_DIR, ENV_MAX_CAPTURES, ENV_HTTP_PORT, LOG_PREFIX, PROJECT_PREFIX, DEFAULT_HTTP_PORT } from './constants.js';
+import { ENV_CAPTURES_DIR, ENV_MAX_CAPTURES, ENV_HTTP_PORT, ENV_IDLE_TIMEOUT, LOG_PREFIX, PROJECT_PREFIX, DEFAULT_HTTP_PORT } from './constants.js';
 
 const CONFIG_FILENAME = `.${PROJECT_PREFIX}rc.json`;
 
@@ -130,5 +130,12 @@ export function resolveConfig(cwd = process.cwd()) {
   // The default capturesDir is always allowed
   if (!allowedDirs.includes(capturesDir)) allowedDirs.push(capturesDir);
 
-  return { capturesDir, maxCaptures, httpPort, allowedDirs };
+  // Idle timeout: minutes of inactivity before auto-shutdown. 0 = disabled. Default 30.
+  const idleTimeoutMinutes = parseFloat(
+    process.env[ENV_IDLE_TIMEOUT]
+    ?? fileConfig.idleTimeoutMinutes
+    ?? '30',
+  );
+
+  return { capturesDir, maxCaptures, httpPort, allowedDirs, idleTimeoutMinutes };
 }

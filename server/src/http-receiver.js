@@ -87,7 +87,7 @@ function json(res, status, data) {
  *   requests must include an `Authorization: Bearer <secret>` header. GET
  *   endpoints (/health, /requests/pending) remain open so monitoring works.
  */
-export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port = DEFAULT_HTTP_PORT, indexer = null }) {
+export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port = DEFAULT_HTTP_PORT, indexer = null, onActivity = null }) {
   let server;
   let wsServer;
 
@@ -99,6 +99,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
 
   async function handleRequest(req, res) {
     const { method, url } = req;
+    if (onActivity) onActivity();
 
     // CORS preflight
     if (method === 'OPTIONS') {
@@ -437,7 +438,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
           server.timeout = 30000;
           server.requestTimeout = 10000;
           // WebSocket server for real-time annotation sync
-          wsServer = createWebSocketServer(server);
+          wsServer = createWebSocketServer(server, { onActivity });
           process.stderr.write(`${LOG_PREFIX} HTTP receiver listening on 127.0.0.1:${actualPort}\n`);
           resolve(actualPort);
         });

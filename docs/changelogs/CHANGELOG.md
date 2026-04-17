@@ -10,6 +10,12 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ## [Unreleased]
 
+### Server Lifecycle Management
+- Server exits gracefully when parent agent dies (stdin close detection in MCP stdio and native messaging modes)
+- Auto-shutdown after 30 minutes of inactivity (configurable via `VIEWGRAPH_IDLE_TIMEOUT_MINUTES`, `0` to disable)
+- Idle timer resets on MCP tool calls, HTTP requests, and WebSocket messages
+- Prevents orphaned server processes from exhausting the 4-port range (9876-9879)
+
 ## [0.3.7] - 2026-04-17
 
 ### New Features
