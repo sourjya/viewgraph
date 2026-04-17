@@ -81,7 +81,7 @@ The server isn't running. Run `npx viewgraph-init` from your project folder.
 Kill all servers and re-init: `pkill -f "node.*server/index.js"` then `npx viewgraph-init`.
 
 ### Wrong project shown in sidebar
-Add a URL pattern: `npx viewgraph-init --url localhost:3000`. See [Multi-Project Setup](../getting-started/multi-project.md).
+Add a URL pattern so ViewGraph routes captures to the correct project: `npx viewgraph-init --url localhost:3000`. See [Multi-Project Setup](../getting-started/multi-project.md).
 
 ### The page looks unstyled when opened as a file
 Chrome blocks cross-origin requests for `file://` URLs. Serve the files via HTTP instead: `npx serve .`

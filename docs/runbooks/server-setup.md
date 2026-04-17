@@ -14,7 +14,7 @@ npx viewgraph-init
 
 This creates `.viewgraph/captures/`, detects your AI agent, writes the MCP config, and starts the server. You're done.
 
-**Using a dev server?** Add `--url`:
+**Custom URL?** If your app runs on a specific host:port (e.g., `localhost:3000`), add `--url` so ViewGraph knows which pages belong to this project:
 
 ```bash
 npx viewgraph-init --url localhost:3000

@@ -22,7 +22,7 @@ The server runs automatically via `npx`, auto-creates `.viewgraph/captures/`, an
 npm install -g @viewgraph/core
 cd ~/my-project
 viewgraph-init                        # creates config, starts server
-viewgraph-init --url localhost:3000   # if using a dev server
+viewgraph-init --url localhost:3000   # match your app's URL for auto-detection
 ```
 
 ## What's Included

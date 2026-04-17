@@ -60,7 +60,7 @@ cd ~/my-project
 viewgraph-init
 ```
 
-**Using a dev server?** Add `--url`:
+**Custom URL?** If your app runs on a specific host:port (e.g., `localhost:3000`), add `--url` so ViewGraph knows which pages belong to this project:
 
 ```bash
 viewgraph-init --url localhost:3000
