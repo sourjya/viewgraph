@@ -150,7 +150,8 @@ export function createSettings() {
     }
   }
 
-  (async () => {
+  /** Fetch server info and update the settings display. */
+  async function refreshServerInfo() {
     try {
       const info = await transport.getInfo();
       if (info) {
@@ -165,10 +166,10 @@ export function createSettings() {
       serverLine.textContent = 'Server not connected';
       serverLine.style.color = '#f87171';
     }
-  })();
+  }
 
   let visible = false;
-  function show() { visible = true; screen.style.display = 'block'; }
+  function show() { visible = true; screen.style.display = 'block'; refreshServerInfo(); }
   function hide() { visible = false; screen.style.display = 'none'; }
 
   return {

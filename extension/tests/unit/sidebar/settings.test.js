@@ -119,7 +119,8 @@ describe('settings server routing', () => {
     });
     globalThis.fetch = vi.fn(() => Promise.reject(new Error('offline')));
     const s = createSettings();
-    // Allow async discovery to complete
+    s.show();
+    // Allow async server check to complete
     await new Promise((r) => setTimeout(r, 100));
     expect(s.element.textContent).toContain('not connected');
   });
