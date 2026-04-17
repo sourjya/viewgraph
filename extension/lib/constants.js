@@ -5,16 +5,13 @@
  * the MCP server. Keep in sync with server/src/constants.js.
  */
 
-import { createTransport } from './transport.js';
-
-/** Singleton transport instance, created when server is discovered. */
-let _transport = null;
+import * as transport from './transport.js';
 
 /**
- * Get the transport for the current server connection.
- * Returns null if no server has been discovered yet.
+ * Get the transport module for server communication.
+ * @returns {typeof transport}
  */
-export function getTransport() { return _transport; }
+export function getTransport() { return transport; }
 
 /**
  * Multi-project support: scans ports 9876-9879 and builds a registry
@@ -51,7 +48,7 @@ const REGISTRY_TTL = 15000;
 export function resetServerCache() {
   _serverRegistry = new Map();
   _registryExpiry = 0;
-  _transport = null;
+  transport.reset();
 }
 
 
@@ -199,9 +196,9 @@ function extractPort(url) {
  */
 export async function discoverServer(pageUrl = null, targetDir = null) {
   const url = await _discoverServerImpl(pageUrl, targetDir);
-  // F11: Create transport singleton when server is found
-  if (url && !_transport) _transport = createTransport(url);
-  if (!url) _transport = null;
+  // F11: Initialize transport when server is found
+  if (url) transport.init(url);
+  else transport.reset();
   return url;
 }
 
