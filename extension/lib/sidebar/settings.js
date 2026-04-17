@@ -67,7 +67,11 @@ export function createSettings() {
   // Card body - project details (populated by renderProjectInfo)
   const cardBody = document.createElement('div');
   cardBody.setAttribute(ATTR, 'project-details');
-  Object.assign(cardBody.style, { padding: '8px 10px', fontSize: '11px', display: 'none' });
+  Object.assign(cardBody.style, { padding: '8px 10px', fontSize: '11px' });
+  const noDetailsMsg = document.createElement('div');
+  noDetailsMsg.textContent = 'No project mapping available. Start a server to see details.';
+  Object.assign(noDetailsMsg.style, { color: '#555', fontStyle: 'italic', fontSize: '10px' });
+  cardBody.appendChild(noDetailsMsg);
 
   // Card footer - help link (left) + advanced settings (right)
   const cardFooter = document.createElement('div');
@@ -76,14 +80,14 @@ export function createSettings() {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
   });
   const helpLink = document.createElement('a');
-  helpLink.textContent = '\u2753 Setup guide';
+  helpLink.textContent = 'URL mapping docs';
   helpLink.href = 'https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project';
   helpLink.target = '_blank';
   Object.assign(helpLink.style, { color: '#666', fontSize: '10px', textDecoration: 'none' });
   helpLink.addEventListener('mouseenter', () => { helpLink.style.color = '#6366f1'; });
   helpLink.addEventListener('mouseleave', () => { helpLink.style.color = '#666'; });
   const advLink = document.createElement('a');
-  advLink.textContent = 'Advanced \u2192';
+  advLink.textContent = 'All servers \u2192';
   advLink.href = '#';
   Object.assign(advLink.style, { color: '#666', fontSize: '10px', textDecoration: 'none' });
   advLink.addEventListener('mouseenter', () => { advLink.style.color = '#6366f1'; });
@@ -201,7 +205,7 @@ export function createSettings() {
       cardBody.appendChild(row);
       hasContent = true;
     }
-    cardBody.style.display = hasContent ? 'block' : 'none';
+    cardBody.style.display = 'block';
   }
 
   /** Fetch server info and update the settings display. */

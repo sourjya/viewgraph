@@ -70,10 +70,10 @@ describe('createSettings', () => {
     expect(offSpans.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('(+) Advanced Settings link exists', () => {
+  it('(+) All servers link exists', () => {
     const s = createSettings();
     const links = [...s.element.querySelectorAll('a')];
-    const adv = links.find((a) => a.textContent.includes('Advanced'));
+    const adv = links.find((a) => a.textContent.includes('All servers'));
     expect(adv).toBeTruthy();
   });
 });
