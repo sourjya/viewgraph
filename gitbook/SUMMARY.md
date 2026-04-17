@@ -38,6 +38,7 @@
 * [Keyboard Shortcuts](reference/keyboard-shortcuts.md)
 * [Prompt Shortcuts](reference/prompt-shortcuts.md)
 * [Security](reference/security.md)
+* [Threat Model](reference/threat-model.md)
 * [Changelog](reference/changelog.md)
 * [Roadmap](reference/roadmap.md)
 * [FAQ](reference/faq.md)
