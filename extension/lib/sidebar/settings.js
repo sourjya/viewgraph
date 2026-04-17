@@ -153,9 +153,14 @@ export function createSettings() {
   (async () => {
     try {
       const info = await transport.getInfo();
-      renderProjectInfo(info);
-      serverLine.textContent = 'Project Settings';
-      serverLine.style.color = '#9ca3af';
+      if (info) {
+        renderProjectInfo(info);
+        serverLine.textContent = 'Project Settings';
+        serverLine.style.color = '#9ca3af';
+      } else {
+        serverLine.textContent = 'Server not connected';
+        serverLine.style.color = '#f87171';
+      }
     } catch {
       serverLine.textContent = 'Server not connected';
       serverLine.style.color = '#f87171';
