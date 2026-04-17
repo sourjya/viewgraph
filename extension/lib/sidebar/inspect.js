@@ -352,6 +352,28 @@ async function refreshInspect(container, callbacks) {
   }
 
   // ──────────────────────────────────────────────
+  // Empty state: all diagnostics clean
+  // ──────────────────────────────────────────────
+
+  const hasIssues = failedReqs.length > 0 || errCount > 0 || lmIssues > 0
+    || hiddenList.length > 0 || (stacking.issues?.length > 0) || (focus.issues?.length > 0);
+  if (!hasIssues) {
+    const cleanRow = document.createElement('div');
+    cleanRow.setAttribute(ATTR, 'inspect-clean');
+    Object.assign(cleanRow.style, {
+      display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 10px',
+      background: 'rgba(74, 222, 128, 0.08)', borderRadius: '6px', margin: '4px 0',
+    });
+    const dot = document.createElement('span');
+    Object.assign(dot.style, { width: '8px', height: '8px', borderRadius: '50%', background: '#4ade80', flexShrink: '0' });
+    const text = document.createElement('span');
+    text.textContent = 'No issues detected';
+    Object.assign(text.style, { color: '#4ade80', fontSize: '11px', fontWeight: '600' });
+    cleanRow.append(dot, text);
+    container.appendChild(cleanRow);
+  }
+
+  // ──────────────────────────────────────────────
   // Toggles and session recording
   // ──────────────────────────────────────────────
 

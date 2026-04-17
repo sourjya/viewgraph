@@ -361,6 +361,7 @@ export function collapse() {
   sidebarEl.style.transform = 'translateX(100%)';
   badgeEl.style.display = 'flex';
   updateBadgeCount();
+  if (_strip) _strip.updateModeButtons(getCaptureMode());
 }
 
 export function expand() {
