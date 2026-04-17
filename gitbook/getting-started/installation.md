@@ -117,7 +117,9 @@ For contributors or anyone who wants to build the extension themselves.
 git clone https://github.com/sourjya/viewgraph.git
 cd viewgraph
 npm install
-npm run build                        # Chrome + Firefox
+npm run build                        # Chrome + Firefox + Playwright
+npm run build:ext                    # Chrome only
+npm run build:ext:firefox            # Firefox only
 ```
 
 **Load in Chrome:** `chrome://extensions/` → Developer mode → Load unpacked → select `extension/.output/chrome-mv3`
