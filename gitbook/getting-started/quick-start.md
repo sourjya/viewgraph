@@ -7,8 +7,8 @@ Go from zero to your first AI-assisted bug fix in 5 minutes.
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) 22+ (LTS)
-- Chrome 116+ or Firefox 109+
-- An MCP-compatible AI agent (Kiro, Claude Code, Cursor, Windsurf, Cline, or Aider)
+- [Chrome](https://www.google.com/chrome/) 116+ or [Firefox](https://www.mozilla.org/firefox/) 109+
+- An MCP-compatible AI agent ([Kiro](https://kiro.dev/), [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview), [Cursor](https://www.cursor.com/), [Windsurf](https://windsurf.com/), [Cline](https://cline.bot/), or [Aider](https://aider.chat/))
 
 ## 1. Install the extension
 
