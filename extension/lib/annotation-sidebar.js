@@ -94,6 +94,8 @@ export function create() {
   // ── Server discovery + trust classification ──
   discoverServer(window.location.href)
     .then(async (url) => {
+      // Guard: sidebar may have been destroyed while discovery was in flight
+      if (!_header) return;
       if (url) {
         _header.statusDot.style.background = '#4ade80';
         _header.statusDot.title = `MCP server: ${url}`;
@@ -117,7 +119,7 @@ export function create() {
         _footer.setOfflineMode();
       }
       // Always classify trust based on URL even without server
-      if (!_trustLevel) {
+      if (!_trustLevel && _header) {
         const trust = classifyTrust(window.location.href, []);
         _trustLevel = trust;
         _header.setTrustLevel(trust);
