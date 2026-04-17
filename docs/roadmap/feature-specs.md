@@ -385,3 +385,30 @@ Also: router pattern for `http-receiver.js`, auto-discovery for tool registratio
 **Dependencies:** None - builds on existing server and extension. Backward compatible with viewgraph-init.
 
 **Phases:** 4 phases, 18 tasks. Self-config -> auto-learn -> docs -> validation.
+
+### F17: URL Trust Indicator
+
+**Status:** Spec needed
+**Priority:** High - directly mitigates top 3 STRIDE threats (spoofing, prompt injection, info disclosure)
+
+**Concept:** Visual trust badge in sidebar header. Green shield for localhost/configured URLs, amber shield for unknown/remote URLs. Send-to-agent blocked for untrusted URLs unless user explicitly adds the pattern. Copy MD and Download Report still work (no agent involved).
+
+**Threat model justification:** Threats #1 (spoofing), #2 (prompt injection), #8 (sensitive data) are all mitigated by preventing untrusted captures from reaching the agent.
+
+### F18: MCP Agent Guidance - Server Instructions, State Tracking, Workflow Awareness
+
+**Status:** Spec complete, not started
+**Spec:** `.kiro/specs/mcp-agent-guidance/`
+**Priority:** High - biggest improvement to agent interaction quality
+
+**Concept:** Make the MCP server self-documenting. Agents get workflow guidance on connection, a session status tool for context-aware decisions, and improved tool descriptions with cross-references.
+
+**Inspired by:** AWS threat-modeling MCP server's `SERVER_INSTRUCTIONS` pattern, `state_collector.py`, and `step_orchestrator.py`.
+
+**Key components:**
+- `SERVER_INSTRUCTIONS` constant with workflow, categories, security warnings, performance tips
+- `get_session_status` tool returning capture/annotation/baseline counts with actionable suggestions
+- All 36 tool descriptions updated with "when to use" and "what next" guidance
+- Fuzzy filename matching with "did you mean" suggestions on errors
+
+**Phases:** 5 phases, 19 tasks. Instructions -> status tool -> descriptions -> validation -> docs.

@@ -46,6 +46,8 @@
 | F14: Sidebar Decomposition | Complete | 2306->747 lines, 10 modules, icons.js + styles.js |
 | F15: Auto-Inspect Suggestions | Spec Complete | Proactive issue detection, ranked pick-list, 3 tiers |
 | F16: Zero-Config Install | Phase 1 Complete | Server self-configures, default urlPatterns, auto-learn config |
+| F17: URL Trust Indicator | Spec Needed | Block send-to-agent for untrusted URLs, visual trust badge |
+| F18: MCP Agent Guidance | Spec Complete | Server instructions, session status tool, workflow-aware descriptions |
 | M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
 
 **Current totals:** 1279 tests (384 server + 895 extension), 36 MCP tools, 14 enrichment collectors
