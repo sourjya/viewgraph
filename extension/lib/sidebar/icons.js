@@ -199,9 +199,19 @@ export function chatBubbleIcon(count, fill, stroke) {
   return s;
 }
 
-/** Shield icon for trust indicator. Color indicates trust level. */
-export function shieldIcon(size = 14, color = '#4ade80') {
+/**
+ * Shield icon for trust indicator.
+ * @param {number} size
+ * @param {string} color
+ * @param {'check'|'x'|'none'} inner - check for trusted, x for untrusted
+ */
+export function shieldIcon(size = 14, color = '#4ade80', inner = 'none') {
   const s = svg(size, { stroke: color, fill: 'none' });
   s.appendChild(el('path', { d: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' }));
+  if (inner === 'check') {
+    s.appendChild(el('polyline', { points: '9 12 11 14 15 10', 'stroke-width': '2.5' }));
+  } else if (inner === 'x') {
+    s.appendChild(el('path', { d: 'M10 10l4 4M14 10l-4 4', 'stroke-width': '2.5' }));
+  }
   return s;
 }

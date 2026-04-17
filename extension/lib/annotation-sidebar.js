@@ -105,9 +105,9 @@ export function create() {
   const statusDot = document.createElement('span');
   statusDot.setAttribute(ATTR, 'status-dot');
   Object.assign(statusDot.style, {
-    width: '7px', height: '7px', borderRadius: '50%',
+    width: '8px', height: '8px', borderRadius: '50%',
     background: '#666', flexShrink: '0', transition: 'background 0.3s',
-    marginLeft: '6px',
+    marginLeft: '6px', border: '1px solid rgba(255,255,255,0.1)',
   });
 
   // Status banner - shown between primary tabs and content when disconnected
@@ -141,7 +141,7 @@ export function create() {
           const trust = classifyTrust(window.location.href, info.trustedPatterns || []);
           _trustLevel = trust;
           const TRUST_COLORS = { trusted: '#4ade80', configured: '#60a5fa', untrusted: '#f59e0b' };
-          trustShield.replaceChildren(shieldIcon(16, TRUST_COLORS[trust.level]));
+          trustShield.replaceChildren(shieldIcon(16, TRUST_COLORS[trust.level], trust.level === 'untrusted' ? 'x' : 'check'));
           trustShield.title = `${trust.level}: ${trust.reason}`;
           trustShield.style.display = 'inline-flex';
         } catch (e) { console.error('[ViewGraph] info/trust error:', e); }
@@ -160,7 +160,7 @@ export function create() {
       if (!_trustLevel) {
         _trustLevel = trust;
         const TRUST_COLORS = { trusted: '#4ade80', configured: '#60a5fa', untrusted: '#f59e0b' };
-        trustShield.replaceChildren(shieldIcon(16, TRUST_COLORS[trust.level]));
+        trustShield.replaceChildren(shieldIcon(16, TRUST_COLORS[trust.level], trust.level === 'untrusted' ? 'x' : 'check'));
         trustShield.title = `${trust.level}: ${trust.reason}`;
         trustShield.style.display = 'inline-flex';
       }
@@ -216,7 +216,7 @@ export function create() {
   // Dot and trust shield go inside toggle
   const trustShield = document.createElement('span');
   trustShield.setAttribute(ATTR, 'trust-shield');
-  Object.assign(trustShield.style, { display: 'none', marginLeft: '4px', flexShrink: '0' });
+  Object.assign(trustShield.style, { display: 'none', marginLeft: '4px', flexShrink: '0', padding: '2px', borderRadius: '3px', background: 'rgba(255,255,255,0.04)' });
   toggle.append(statusDot, trustShield);
 
   header.append(toggle, bellBtn, collapseBtn, closeBtn);
@@ -228,7 +228,7 @@ export function create() {
   helpBtn.title = 'Help & keyboard shortcuts';
   Object.assign(helpBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
-    padding: '4px 8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
+    padding: '8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
     color: '#666', fontSize: '14px', fontWeight: '700', fontFamily: 'system-ui, sans-serif',
   });
   helpBtn.addEventListener('mouseenter', () => { helpBtn.style.background = 'rgba(255,255,255,0.06)'; });
@@ -410,7 +410,7 @@ export function create() {
           _trustLevel = { level: 'configured', reason: hostname };
           // Update shield
           const shield = hostEl?.shadowRoot?.querySelector(`[${ATTR}="trust-shield"]`);
-          if (shield) { shield.replaceChildren(shieldIcon(12, '#60a5fa')); shield.title = `configured: ${hostname}`; }
+          if (shield) { shield.replaceChildren(shieldIcon(16, '#60a5fa', 'check')); shield.title = `configured: ${hostname}`; }
         }
       } catch { /* best effort */ }
       gate.remove();
