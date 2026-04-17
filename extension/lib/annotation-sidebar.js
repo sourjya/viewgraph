@@ -65,6 +65,7 @@ let activeTypeFilters = new Set(['element', 'region', 'page-note', 'idea', 'diag
 let _header = null;
 let _footer = null;
 let _modeBar = null;
+let _popstateHandler = null;
 
 /** Create and mount the sidebar. */
 export function create() {
@@ -126,6 +127,15 @@ export function create() {
         _header.setTrustLevel(trust);
       }
     });
+
+  // Re-classify trust on SPA navigation (URL changes without page reload)
+  _popstateHandler = () => {
+    if (!_header) return;
+    const trust = classifyTrust(window.location.href, []);
+    _trustLevel = trust;
+    _header.setTrustLevel(trust);
+  };
+  window.addEventListener('popstate', _popstateHandler);
 
   // ── Mode Bar ──
   _modeBar = createModeBar({
@@ -499,6 +509,7 @@ export function destroy() {
   _footer = null;
   _modeBar = null;
   _strip = null;
+  if (_popstateHandler) { window.removeEventListener('popstate', _popstateHandler); _popstateHandler = null; }
   if (_bus) { _bus.destroy(); _bus = null; }
   collapsed = false;
   pendingRequests = [];

@@ -21,7 +21,7 @@
 - [x] 14. Write tests: send blocked for untrusted, send allowed for trusted/configured, override adds metadata flag
 
 ## Phase 4: Edge cases and polish
-- [ ] 15. Handle SPA navigation: listen for `popstate` and re-classify on URL change
+- [x] 15. Handle SPA navigation: listen for `popstate` and re-classify on URL change
 - [x] 16. Handle no server connected: shield hidden, send already disabled
 - [x] 17. Verify Copy MD and Download Report are NOT gated
 - [x] 18. Update docs: security page, extension page, changelog
