@@ -129,11 +129,13 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       let agent;
       try { agent = readFileSync(path.resolve(projectRoot, '.viewgraph', '.agent'), 'utf-8').trim(); } catch { /* not set */ }
       let urlPatterns = [];
+      let trustedPatterns = [];
       try {
         const cfg = JSON.parse(readFileSync(path.resolve(projectRoot, '.viewgraph', 'config.json'), 'utf-8'));
         urlPatterns = cfg.urlPatterns || [];
-      } catch { /* no config - empty patterns, single-server auto-match handles it */ }
-      return json(res, 200, { capturesDir: absCaptures, projectRoot, agent, urlPatterns, serverVersion: SERVER_VERSION });
+        trustedPatterns = cfg.trustedPatterns || [];
+      } catch { /* no config */ }
+      return json(res, 200, { capturesDir: absCaptures, projectRoot, agent, urlPatterns, trustedPatterns, serverVersion: SERVER_VERSION });
     }
 
     // GET /config - read project config

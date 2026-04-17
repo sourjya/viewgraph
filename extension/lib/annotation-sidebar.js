@@ -21,11 +21,11 @@ import { scanForSuggestions } from './sidebar/suggestions.js';
 import { renderSuggestionBar } from './sidebar/suggestions-ui.js';
 import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from './sidebar/sync.js';
 import { EVENTS, createEventBus } from './sidebar/events.js';
-import { chevronRightIcon, closeIcon, bellIcon, sendIcon, checkIcon, docIcon, downloadIcon, gearIcon } from './sidebar/icons.js';
+import { chevronRightIcon, closeIcon, bellIcon, sendIcon, checkIcon, docIcon, downloadIcon, gearIcon, shieldIcon } from './sidebar/icons.js';
 import { KEYS, set as storageSet } from './storage.js';
 // import { groupRequests, smartPath } from './network-grouper.js';
 import { formatMarkdown } from './export/export-markdown.js';
-import { discoverServer, getAgentName, fetchConfig } from './constants.js';
+import { discoverServer, getAgentName, fetchConfig, classifyTrust } from './constants.js';
 import { collectNetworkState } from './collectors/network-collector.js';
 import { getConsoleState } from './collectors/console-collector.js';
 import { collectBreakpoints } from './collectors/breakpoint-collector.js';
@@ -136,6 +136,12 @@ export function create() {
             statusBanner.style.display = 'block';
             statusBanner.style.color = '#f59e0b';
           }
+          // F17: Trust shield based on URL classification
+          const trust = classifyTrust(window.location.href, info.trustedPatterns || []);
+          const TRUST_COLORS = { trusted: '#4ade80', configured: '#60a5fa', untrusted: '#f59e0b' };
+          trustShield.replaceChildren(shieldIcon(12, TRUST_COLORS[trust.level]));
+          trustShield.title = `${trust.level}: ${trust.reason}`;
+          trustShield.style.display = 'inline-flex';
         } catch { /* info fetch failed - skip version check */ }
       } else {
         statusDot.style.background = '#f87171';
@@ -196,8 +202,11 @@ export function create() {
     if (typeof switchTab === 'function') switchTab('review');
   });
 
-  // Dot goes inside toggle, after the label text
-  toggle.appendChild(statusDot);
+  // Dot and trust shield go inside toggle
+  const trustShield = document.createElement('span');
+  trustShield.setAttribute(ATTR, 'trust-shield');
+  Object.assign(trustShield.style, { display: 'none', marginLeft: '4px', flexShrink: '0' });
+  toggle.append(statusDot, trustShield);
 
   header.append(toggle, bellBtn, collapseBtn, closeBtn);
 
