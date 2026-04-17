@@ -735,7 +735,7 @@ export function refresh() {
     }
   }
   renderSuggestionBar(list, _suggestionsCache, {
-    onAdd: (sug) => { addSuggestionToReview(sug); _suggestionsCache = _suggestionsCache?.filter((s) => s.id !== sug.id) || null; save(); },
+    onAdd: (sug) => { addSuggestionToReview(sug); _suggestionsCache = _suggestionsCache?.filter((s) => s.id !== sug.id) || null; save(); refresh(); },
     onAddAll: (sugs) => { for (const s of sugs) addSuggestionToReview(s); _suggestionsCache = []; save(); refresh(); },
     onDismissAll: () => { _suggestionsCache = []; refresh(); },
     onRefresh: () => { _suggestionsCache = null; refresh(); },
