@@ -722,12 +722,8 @@ In any project's `.kiro/settings/mcp.json`:
 {
   "mcpServers": {
     "viewgraph": {
-      "command": "node",
-      "args": ["/home/sourjya/coding/viewgraph-mcp-server/index.js"],
-      "env": {
-        "VIEWGRAPH_CAPTURES_DIR": "/mnt/c/Users/sourj/Downloads/viewgraph-captures",
-        "VIEWGRAPH_HTTP_PORT": "9090"
-      }
+      "command": "npx",
+      "args": ["-y", "@viewgraph/core"]
     }
   }
 }

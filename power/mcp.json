@@ -1,11 +1,8 @@
 {
   "mcpServers": {
     "viewgraph": {
-      "command": "node",
-      "args": ["${VIEWGRAPH_SERVER_PATH:-./server/index.js}"],
-      "env": {
-        "VIEWGRAPH_CAPTURES_DIR": ".viewgraph/captures"
-      }
+      "command": "npx",
+      "args": ["-y", "@viewgraph/core"]
     }
   }
 }

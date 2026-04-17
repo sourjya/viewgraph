@@ -38,6 +38,7 @@
 | Dead Code Elimination | Complete | 16 unused exports/imports/functions removed |
 | Redundancy Centralization | Complete | selector(), ATTR, readAndParse() helpers extracted |
 | M16: Sidebar UX Polish | In Progress | Help overlay, keyboard shortcuts, settings to footer, VG icon, strip redesign |
+| Server Lifecycle | Specced | Stdin close detection, idle timeout, orphan prevention |
 ### Completed Features
 
 | Feature | Status | Description |
@@ -670,6 +671,25 @@ to specific ViewGraph features, tools, workflows, and remaining gaps.
 | 16.8 | Inspect tab empty state | Show green "No issues detected" when all diagnostic sections are clean. |
 | 16.9 | Report button feedback | Change "Saving..." to "Saved!" with checkmark, matching Send/Copy pattern. |
 | 16.10 | Collapsed strip active state | Highlight active mode icon in strip (indigo background) when mode is set. |
+
+---
+
+## Server Lifecycle Management (Pre-Beta)
+
+**Goal:** Prevent orphaned server processes from exhausting the 4-port range. Server exits when parent agent dies and auto-shuts down after idle period.
+
+**Spec:** [`.kiro/specs/server-lifecycle/`](../../.kiro/specs/server-lifecycle/)
+**Status:** Specced
+
+| # | Task | Details |
+|---|---|---|
+| L.1 | Stdin close detection | `process.stdin.on('end', shutdown)` in stdio and native messaging modes |
+| L.2 | Idle timeout | Auto-shutdown after 30 min of no MCP/WS/HTTP activity. Configurable via `VIEWGRAPH_IDLE_TIMEOUT_MINUTES` |
+| L.3 | Documentation | Env var docs, changelog entry |
+
+**Exit criteria:** Restarting Kiro CLI never leaves orphaned ViewGraph processes. Idle servers self-terminate.
+
+**Effort:** 0.5 days
 
 ---
 

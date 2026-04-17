@@ -35,7 +35,7 @@ If you need to configure the server manually (custom ports, multiple captures di
 ### Start the server manually
 
 ```bash
-VIEWGRAPH_CAPTURES_DIR=./my-captures VIEWGRAPH_HTTP_PORT=9877 node node_modules/viewgraph/server/index.js
+VIEWGRAPH_CAPTURES_DIR=./my-captures VIEWGRAPH_HTTP_PORT=9877 npx @viewgraph/core
 ```
 
 ### MCP Configuration
@@ -47,11 +47,8 @@ The init script writes this automatically. If you need to edit it manually:
 {
   "mcpServers": {
     "viewgraph": {
-      "command": "node",
-      "args": ["node_modules/viewgraph/server/index.js"],
-      "env": {
-        "VIEWGRAPH_CAPTURES_DIR": ".viewgraph/captures"
-      }
+      "command": "npx",
+      "args": ["-y", "@viewgraph/core"]
     }
   }
 }
