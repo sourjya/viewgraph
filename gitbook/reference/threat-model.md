@@ -72,6 +72,18 @@ Server instructions that explicitly warn agents to treat all capture data as unt
 
 **Mitigates:** Threat #2 (prompt injection)
 
+## Prompt Injection Defense (Implemented)
+
+ViewGraph uses a 5-layer defense-in-depth strategy against prompt injection (threat #2). See [ADR-012](https://github.com/sourjya/viewgraph/blob/main/docs/decisions/ADR-012-prompt-injection-defense.md) for the full rationale.
+
+| Layer | What it does | Status |
+|---|---|---|
+| 1. Capture sanitization | Strips HTML comments, clears hidden element text, caps data attribute values | Implemented |
+| 2. Transport wrapping | Wraps text in `[CAPTURED_TEXT]` delimiters in MCP tool responses | Implemented |
+| 3. Suspicious detection | Flags text containing "ignore above", "system:", etc. with `_warning` field | Implemented |
+| 4. Prompt hardening | Steering docs + server instructions warn agents to never follow delimited text | Implemented |
+| 5. Trust gate (F17) | Blocks send-to-agent for untrusted URLs entirely | Planned |
+
 ## What You Can Do Today
 
 1. **Use ViewGraph on localhost only** - the default configuration. All threats from malicious websites are limited to what localhost JavaScript can do.

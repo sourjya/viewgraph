@@ -15,6 +15,8 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - F16 Phase 1: zero-config server boot, auto-learn config.json on first capture
 - F18 Phase 1: SERVER_INSTRUCTIONS constant with workflow, categories, security, performance, delimiter docs (ADR-011)
 - F19 Phase 1: traverser sanitization - getCleanText strips comment nodes, hidden visibleText cleared, data-* attrs capped at 100 chars
+- F19 Phase 2+3: sanitize.js with [CAPTURED_TEXT] and [USER_COMMENT] delimiters, 11-pattern injection detection, integrated into annotation tools
+- F19 Phase 4: prompt hardening - steering docs, SERVER_INSTRUCTIONS, and all 9 @vg-* prompts updated with delimiter docs and injection defense
 - STRIDE threat model: 8 threats, 8 mitigations, 5 assumptions, 4 relevant threat actors
 - GitBook: threat model page, public changelog page, pre-built extension download section
 - GitHub Release v0.3.5 with Chrome + Firefox extension ZIPs
