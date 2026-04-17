@@ -1,6 +1,8 @@
 # Installation
 
-## Quick Setup (Recommended)
+All install methods — from zero-config to building from source.
+
+## Standard Setup
 
 Two steps. No install commands.
 
