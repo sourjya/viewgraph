@@ -424,3 +424,25 @@ Also: router pattern for `http-receiver.js`, auto-discovery for tool registratio
 - Fuzzy filename matching with "did you mean" suggestions on errors
 
 **Phases:** 5 phases, 19 tasks. Instructions -> status tool -> descriptions -> validation -> docs.
+
+### F19: Prompt Injection Defense - Multi-Layer Mitigation
+
+**Status:** Spec complete, not started
+**Spec:** `.kiro/specs/prompt-injection-defense/`
+**Priority:** High - mitigates STRIDE threat #2 (Tampering via prompt injection)
+
+**Problem:** Malicious pages can embed instructions in DOM text that AI agents may follow. No single defense is bulletproof.
+
+**5-layer defense-in-depth:**
+
+| Layer | Where | What it does |
+|---|---|---|
+| 1. Capture sanitization | Extension traverser | Strip HTML comments, clear hidden element text, cap data attribute values |
+| 2. Transport wrapping | MCP server tools | Wrap text in `[CAPTURED_TEXT]` delimiters so agents distinguish data from instructions |
+| 3. Suspicious detection | MCP server tools | Flag text containing "ignore above", "system:", etc. with `_warning` field |
+| 4. Prompt hardening | Steering docs + prompts | Explicit instructions to never follow delimited text |
+| 5. Trust gate | F17 | Block send-to-agent entirely for untrusted URLs |
+
+**Combined effect:** Layers 1+5 eliminate the most common vector (remote malicious site). Layers 2+3+4 make injection significantly harder even when it reaches the agent. No layer depends on another.
+
+**Phases:** 5 phases, 19 tasks. Sanitization -> wrapping -> detection -> hardening -> docs.

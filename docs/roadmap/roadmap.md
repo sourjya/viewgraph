@@ -48,6 +48,7 @@
 | F16: Zero-Config Install | Phase 1 Complete | Server self-configures, default urlPatterns, auto-learn config |
 | F17: URL Trust Indicator | Spec Complete | Block send-to-agent for untrusted URLs, visual trust badge, one-click exemption |
 | F18: MCP Agent Guidance | Spec Complete | Server instructions, session status tool, workflow-aware descriptions |
+| F19: Prompt Injection Defense | Spec Complete | 5-layer defense: sanitize, wrap, detect, harden, gate |
 | M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
 
 **Current totals:** 1279 tests (384 server + 895 extension), 36 MCP tools, 14 enrichment collectors
