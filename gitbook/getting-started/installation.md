@@ -89,7 +89,7 @@ Re-run `viewgraph-init` from your project. It restarts cleanly without duplicati
 
 ## Download Pre-Built Extension
 
-If the store version is outdated or you prefer manual installation, download the latest pre-built extension from [GitHub Releases](https://github.com/sourjya/viewgraph/releases).
+If the store version is outdated or you prefer manual installation, download the latest pre-built extension from the [downloads folder](https://github.com/sourjya/viewgraph/tree/main/downloads).
 
 **Chrome (persistent):**
 1. Download `viewgraph-chrome-x.x.x.zip` from the latest release

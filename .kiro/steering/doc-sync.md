@@ -23,6 +23,14 @@ Update lists in: gitbook/features/extension.md, gitbook/comparison/capture-forma
 ### Version Bump
 Update version in all 4 package.json files. Update CHANGELOG.md.
 
+### Extension Build
+When a new versioned extension ZIP is produced by `scripts/build-extension.sh`:
+- The build script auto-copies ZIPs to `downloads/` (removes old versions first)
+- Only the latest version exists in `downloads/` - old ZIPs are deleted automatically
+- Upload ZIPs to the GitHub Release: `gh release create vX.X.X downloads/*.zip --title "..." --notes "..."`
+- GitBook installation page links to `downloads/` folder, not GitHub Releases
+- Do NOT keep old extension ZIPs in the repo - they're buggy and waste space
+
 ### Significant Test Count Change
 Update counts in: gitbook/.gitbook/assets/viewgraph-numbers-speak.svg, docs/roadmap/roadmap.md, docs/architecture/project-metrics.md.
 

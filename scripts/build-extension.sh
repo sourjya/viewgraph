@@ -90,3 +90,11 @@ echo "" | tee -a "$LOG_FILE"
 echo "[build] Done. Version: $VERSION" | tee -a "$LOG_FILE"
 echo "[build] ZIPs ready for upload:" | tee -a "$LOG_FILE"
 ls -la "$EXT_DIR/.output"/viewgraph-*-${VERSION}.zip 2>/dev/null | tee -a "$LOG_FILE"
+
+# Copy to downloads/ folder (only latest version, remove old ones)
+DOWNLOADS_DIR="$(dirname "$EXT_DIR")/downloads"
+mkdir -p "$DOWNLOADS_DIR"
+rm -f "$DOWNLOADS_DIR"/viewgraph-chrome-*.zip "$DOWNLOADS_DIR"/viewgraph-firefox-*.zip
+cp "$EXT_DIR/.output"/viewgraph-*-${VERSION}.zip "$DOWNLOADS_DIR/" 2>/dev/null
+echo "[build] Copied to downloads/:" | tee -a "$LOG_FILE"
+ls -la "$DOWNLOADS_DIR"/viewgraph-*.zip 2>/dev/null | tee -a "$LOG_FILE"
