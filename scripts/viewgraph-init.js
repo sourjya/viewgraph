@@ -338,4 +338,22 @@ const server = spawn('node', [SERVER_ENTRY], {
 server.unref();
 console.log(`  Started (PID ${server.pid}, port ${port})`);
 console.log('  Extension popup should show green dot.\n');
+// ── Native messaging host registration (optional) ──
+if (process.argv.includes('--register-native-host')) {
+  try {
+    const { installHost } = await import(path.resolve(__dirname, '..', 'server', 'src', 'native-host-register.js'));
+    const hostScript = path.resolve(__dirname, '..', 'server', 'index.js');
+    const extensionId = process.argv[process.argv.indexOf('--register-native-host') + 1] || '';
+    if (!extensionId) {
+      console.log('  ⚠ --register-native-host requires extension ID as next argument');
+      console.log('    Usage: viewgraph-init --register-native-host <chrome-extension-id>');
+    } else {
+      const manifestPath = installHost(hostScript, extensionId, 'chrome');
+      console.log(`  ✓ Native messaging host registered: ${manifestPath}`);
+    }
+  } catch (err) {
+    console.log(`  ⚠ Native host registration failed: ${err.message}`);
+  }
+}
+
 console.log('Done.\n');

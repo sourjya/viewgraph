@@ -14,7 +14,8 @@ import { WS_MESSAGES } from '#src/ws-message-types.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { readFile } from 'fs/promises';
-import { existsSync, mkdirSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import path from 'path';
 
 import {
   SERVER_NAME, SERVER_VERSION, SERVER_DESCRIPTION, SERVER_INSTRUCTIONS, LOG_PREFIX,
@@ -62,6 +63,8 @@ import { register as registerGetComponentCoverage } from '#src/tools/get-compone
 import { register as registerGetSessionStatus } from '#src/tools/get-session-status.js';
 import { createRequestQueue } from '#src/request-queue.js';
 import { createHttpReceiver } from '#src/http-receiver.js';
+import { decodeMessage, encodeMessage } from '#src/native-host.js';
+import { createMessageHandler } from '#src/native-message-handler.js';
 
 // ---------------------------------------------------------------------------
 // Configuration  -  env vars > .viewgraphrc.json > defaults
@@ -185,9 +188,58 @@ async function main() {
   });
 
   // Transport auto-detection (F16 Phase 2, ADR-013):
+  // - Chrome native messaging host: --native-host flag -> length-prefixed JSON on stdin
   // - stdin is pipe: MCP client launched us -> start stdio transport
   // - stdin is TTY: manual start -> HTTP-only mode (no MCP)
-  if (!process.stdin.isTTY) {
+  const isNativeHost = process.argv.includes('--native-host');
+
+  if (isNativeHost) {
+    // Native messaging mode: Chrome/Firefox launched us as a native host.
+    // Read length-prefixed JSON from stdin, respond on stdout.
+    const configDir = path.resolve(CAPTURES_DIR, '..');
+    const handler = createMessageHandler({
+      capturesDir: CAPTURES_DIR,
+      indexer,
+      queue: requestQueue,
+      getInfo: () => httpReceiver.getInfo?.() || { capturesDir: CAPTURES_DIR, serverVersion: SERVER_VERSION },
+      getConfig: () => {
+        try { return JSON.parse(readFileSync(path.resolve(configDir, 'config.json'), 'utf-8')); } catch { return {}; }
+      },
+      updateConfig: async (updates) => {
+        const cfgPath = path.resolve(configDir, 'config.json');
+        let cfg = {};
+        try { cfg = JSON.parse(readFileSync(cfgPath, 'utf-8')); } catch { /* new */ }
+        Object.assign(cfg, updates);
+        writeFileSync(cfgPath, JSON.stringify(cfg, null, 2));
+        return cfg;
+      },
+      writeCapture: async (payload) => {
+        const filename = `viewgraph-${Date.now()}.json`;
+        writeFileSync(path.resolve(CAPTURES_DIR, filename), JSON.stringify(payload, null, 2));
+        indexer.add(filename, payload);
+        return filename;
+      },
+    });
+
+    let buf = Buffer.alloc(0);
+    process.stdin.on('data', async (chunk) => {
+      buf = Buffer.concat([buf, chunk]);
+      while (buf.length >= 4) {
+        const msgLen = buf.readUInt32LE(0);
+        if (buf.length < 4 + msgLen) break;
+        const msgBuf = buf.subarray(0, 4 + msgLen);
+        buf = buf.subarray(4 + msgLen);
+        try {
+          const decoded = decodeMessage(msgBuf);
+          const response = await handler(decoded);
+          process.stdout.write(encodeMessage(response));
+        } catch (err) {
+          process.stdout.write(encodeMessage({ error: err.message }));
+        }
+      }
+    });
+    console.error(`${LOG_PREFIX} Native messaging host mode + HTTP (port ${HTTP_PORT ?? 9876})`);
+  } else if (!process.stdin.isTTY) {
     const transport = new StdioServerTransport();
     await server.connect(transport);
     console.error(`${LOG_PREFIX} MCP server running on stdio + HTTP (port ${HTTP_PORT ?? 9876})`);
