@@ -1,14 +1,14 @@
 # Installation
 
-[![Chrome - Install](https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj)  [![Firefox - Install](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
-
 ## Quick Setup (Recommended)
 
 Two steps. No install commands.
 
 ### 1. Install the browser extension
 
-Click the Chrome or Firefox button above. Works in Edge, Brave, and Opera too (Chromium-based).
+<a href="https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj"><img src="https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Chrome Web Store"></a>  <a href="https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/"><img src="https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white" alt="Firefox Add-ons"></a>
+
+Works in Edge, Brave, and Opera too (Chromium-based). Store version outdated? [Download latest ZIPs directly](https://github.com/sourjya/viewgraph/tree/main/downloads).
 
 ### 2. Add MCP config
 
