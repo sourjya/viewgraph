@@ -25,7 +25,7 @@ import { chevronRightIcon, closeIcon, bellIcon, sendIcon, checkIcon, docIcon, do
 import { KEYS, set as storageSet } from './storage.js';
 // import { groupRequests, smartPath } from './network-grouper.js';
 import { formatMarkdown } from './export/export-markdown.js';
-import { discoverServer, getAgentName, fetchConfig, classifyTrust } from './constants.js';
+import { discoverServer, getAgentName, fetchConfig, classifyTrust, updateConfig } from './constants.js';
 import { collectNetworkState } from './collectors/network-collector.js';
 import { getConsoleState } from './collectors/console-collector.js';
 import { collectBreakpoints } from './collectors/breakpoint-collector.js';
@@ -55,6 +55,7 @@ let _hasCaptured = false;
 let pendingRequests = [];
 let activeFilter = 'open';
 let _suggestionsCache = null;
+let _trustLevel = null; // F17: cached trust classification result
 let activeTypeFilters = new Set(['element', 'region', 'page-note', 'idea', 'diagnostic']);
 let bellBtn = null;
 
@@ -138,6 +139,7 @@ export function create() {
           }
           // F17: Trust shield based on URL classification
           const trust = classifyTrust(window.location.href, info.trustedPatterns || []);
+          _trustLevel = trust;
           const TRUST_COLORS = { trusted: '#4ade80', configured: '#60a5fa', untrusted: '#f59e0b' };
           trustShield.replaceChildren(shieldIcon(12, TRUST_COLORS[trust.level]));
           trustShield.title = `${trust.level}: ${trust.reason}`;
@@ -332,11 +334,21 @@ export function create() {
   sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#5558e6'; });
   sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = '#6366f1'; });
   sendBtn.addEventListener('click', () => {
+    // F17: Block send for untrusted URLs
+    if (_trustLevel?.level === 'untrusted') {
+      showTrustGate(sidebarEl, sendBtn);
+      return;
+    }
+    doSend();
+  });
+
+  /** Execute the actual send-to-agent action. */
+  function doSend(trustOverride = false) {
     // Read session note from input if recording
     const noteInput = hostEl?.shadowRoot?.querySelector(`[${ATTR}="session-note"]`);
     const sessionNote = noteInput?.value?.trim() || undefined;
     if (noteInput) noteInput.value = '';
-    chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true, includeSnapshot: true, sessionNote }, () => {});
+    chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true, includeSnapshot: true, sessionNote, trustOverride }, () => {});
     // Mark unresolved annotations as pending (visual feedback while agent works)
     for (const ann of getAnnotations()) {
       if (!ann.resolved) ann.pending = true;
@@ -345,7 +357,70 @@ export function create() {
     sendBtn.replaceChildren(checkIcon(14), document.createTextNode('Sent!'));
     sendBtn.style.background = '#059669';
     setTimeout(() => { sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent')); sendBtn.style.background = '#6366f1'; }, 2000);
-  });
+  }
+
+  /**
+   * Show inline trust gate when user tries to send from an untrusted URL.
+   * Offers "Add to trusted" (permanent) or "Send anyway" (one-time override).
+   */
+  function showTrustGate(parent, anchorBtn) {
+    // Remove existing gate if any
+    parent.querySelector(`[${ATTR}="trust-gate"]`)?.remove();
+
+    const gate = document.createElement('div');
+    gate.setAttribute(ATTR, 'trust-gate');
+    Object.assign(gate.style, {
+      padding: '10px 12px', background: '#2a2a1a', border: '1px solid #f59e0b',
+      borderRadius: '6px', margin: '4px 0', fontFamily: 'system-ui, sans-serif',
+    });
+
+    const msg = document.createElement('div');
+    msg.textContent = '\u26a0 Untrusted URL - captures from remote sites may contain malicious content.';
+    Object.assign(msg.style, { color: '#f59e0b', fontSize: '11px', marginBottom: '8px', lineHeight: '1.4' });
+
+    const hostname = (() => { try { return new URL(window.location.href).hostname; } catch { return window.location.hostname; } })();
+
+    const btnRow = document.createElement('div');
+    Object.assign(btnRow.style, { display: 'flex', gap: '6px' });
+
+    const addBtn = document.createElement('button');
+    addBtn.textContent = `Add "${hostname}" to trusted`;
+    Object.assign(addBtn.style, {
+      flex: '1', padding: '6px', border: 'none', borderRadius: '4px',
+      background: '#6366f1', color: '#fff', fontSize: '10px', fontWeight: '600',
+      cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+    });
+    addBtn.addEventListener('click', async () => {
+      try {
+        const serverUrl = await discoverServer(window.location.href);
+        if (serverUrl) {
+          const cfg = await fetch(`${serverUrl}/config`, { signal: AbortSignal.timeout(3000) }).then((r) => r.json()).catch(() => ({}));
+          const patterns = cfg.trustedPatterns || [];
+          if (!patterns.includes(hostname)) patterns.push(hostname);
+          await updateConfig(serverUrl, { trustedPatterns: patterns });
+          _trustLevel = { level: 'configured', reason: hostname };
+          // Update shield
+          const shield = hostEl?.shadowRoot?.querySelector(`[${ATTR}="trust-shield"]`);
+          if (shield) { shield.replaceChildren(shieldIcon(12, '#60a5fa')); shield.title = `configured: ${hostname}`; }
+        }
+      } catch { /* best effort */ }
+      gate.remove();
+      doSend();
+    });
+
+    const overrideBtn = document.createElement('button');
+    overrideBtn.textContent = 'Send anyway';
+    Object.assign(overrideBtn.style, {
+      padding: '6px 10px', border: '1px solid #333', borderRadius: '4px',
+      background: 'transparent', color: '#666', fontSize: '10px',
+      cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+    });
+    overrideBtn.addEventListener('click', () => { gate.remove(); doSend(true); });
+
+    btnRow.append(addBtn, overrideBtn);
+    gate.append(msg, btnRow);
+    anchorBtn.parentElement.insertBefore(gate, anchorBtn);
+  }
 
   // Copy Markdown
   const copyBtn = document.createElement('button');
@@ -779,4 +854,5 @@ export function destroy() {
   pendingRequests = [];
   activeFilter = 'open';
   _suggestionsCache = null;
+  _trustLevel = null;
 }
