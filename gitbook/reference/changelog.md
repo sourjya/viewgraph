@@ -6,11 +6,12 @@ What's new in ViewGraph. User-facing changes only - for the full engineering cha
 
 ## v0.3.5 - April 17, 2026
 
-- **Zero-config install** - add 5 lines of MCP config JSON and the server runs automatically via `npx`. No `npm install`, no `viewgraph-init` needed. Server auto-creates directories and learns your URL pattern from the first capture.
-- **innerHTML eliminated** - all SVG icons now use DOM API (createElementNS) instead of innerHTML. Reduces XSS surface and satisfies Firefox store review requirements.
-- **Sidebar decomposition complete** - annotation-sidebar.js reduced from 2,306 to 747 lines (68% smaller). 10 focused modules with clean interfaces.
-- **1,279 tests** (895 extension + 384 server), 75.1% statement coverage
-- **Security comparison matrix** added to docs - compares zero-config, npm install, and build-from-source across 10 security dimensions
+- **Auto-inspect suggestions (F15)** - ViewGraph now scans pages automatically and presents a ranked checklist of issues: missing alt text, failed network requests, unlabeled inputs, missing testids. Select which ones to fix and send to your agent in one click.
+- **Prompt injection defense (F19)** - 4-layer protection against malicious content in captured pages: HTML comments stripped, hidden text cleared, text wrapped in `[CAPTURED_TEXT]` delimiters, suspicious patterns flagged with warnings. A 5th layer (URL trust gate) is coming next.
+- **MCP agent guidance (F18)** - the server now tells your AI agent the recommended workflow, tool categories, security rules, and performance tips on connection. Agents make better tool choices automatically.
+- **Zero-config install** - add 5 lines of MCP config JSON and the server runs via `npx`. No install commands needed.
+- **STRIDE threat model** - 8 threats identified and mitigated. Published on the [Threat Model](threat-model.md) page.
+- **1,343 tests**, pre-built extension ZIPs available for [direct download](https://github.com/sourjya/viewgraph/tree/main/downloads)
 
 ## v0.3.4 - April 16, 2026
 
