@@ -93,62 +93,7 @@ Re-run `viewgraph-init` from your project. It restarts cleanly without duplicati
 
 ## Install from GitHub ZIP
 
-If the store version is outdated or you prefer manual control, install the latest extension directly from GitHub. This is the fastest way to get the newest features and fixes.
-
-### Why is the store version behind?
-
-Both the Chrome Web Store and Firefox Add-ons require a manual review process before publishing updates. This is a good thing - it protects users from malicious extensions. However, it means updates can take anywhere from a few hours to several weeks to appear in the store, depending on reviewer availability and queue length. This is outside our control and affects all browser extensions, not just ViewGraph.
-
-During active development, the GitHub release will often be ahead of the store version. Both are safe to use - the store version is simply an older, already-reviewed build.
-
-### Are the GitHub ZIPs safe?
-
-Yes. The ZIP files on GitHub are built from the same open-source code you can see in the repository:
-
-- The extension source code is in [`extension/`](https://github.com/sourjya/viewgraph/tree/main/extension) - fully readable
-- ZIPs are produced by the [`scripts/build-extension.sh`](https://github.com/sourjya/viewgraph/blob/main/scripts/build-extension.sh) build script, which runs the standard build toolchain and packages the output
-- Each release is tagged in git (e.g., `v0.3.7`) so you can verify exactly which code produced the ZIP
-- You can always [build from source](#build-from-source) yourself if you prefer
-
-The extension requests only the permissions it needs (listed in the [manifest](https://github.com/sourjya/viewgraph/blob/main/extension/manifest.json)) and runs entirely on your machine. No data is sent to any external server.
-
-### Version mismatch warning
-
-When the MCP server version is newer than your extension, ViewGraph shows a banner in the sidebar with a link to update. This means the server (installed via npm) has been updated but your browser extension hasn't received the store update yet. Follow the link to install the latest ZIP.
-
-**Latest ZIPs:** [github.com/sourjya/viewgraph/tree/main/downloads](https://github.com/sourjya/viewgraph/tree/main/downloads)
-
-### Chrome / Edge / Brave (persistent install)
-
-1. Download `viewgraph-chrome-x.x.x.zip` from the [downloads folder](https://github.com/sourjya/viewgraph/tree/main/downloads)
-2. Unzip to a permanent folder (e.g., `~/viewgraph-extension/`)
-3. Open `chrome://extensions/` in your browser
-4. Enable **Developer mode** (toggle in the top-right corner)
-5. Click **Load unpacked** and select the unzipped folder
-6. Pin the ViewGraph icon to your toolbar for easy access
-
-The extension stays installed across browser restarts. To update, download the new ZIP, unzip over the same folder, and click the refresh icon on `chrome://extensions/`.
-
-{% hint style="info" %}
-**Disable the store version first.** If you have both the store version and the unpacked version installed, disable the store version on `chrome://extensions/` to avoid conflicts.
-{% endhint %}
-
-### Firefox (temporary - removed on restart)
-
-1. Download `viewgraph-firefox-x.x.x.zip` from the [downloads folder](https://github.com/sourjya/viewgraph/tree/main/downloads)
-2. Open `about:debugging#/runtime/this-firefox`
-3. Click **Load Temporary Add-on**
-4. Select the `.zip` file directly (no need to unzip)
-
-{% hint style="warning" %}
-**Firefox temporary add-ons are removed when the browser closes.** You'll need to re-load the ZIP each time you restart Firefox. For a persistent install, use the [Firefox Add-ons store](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/) or [build from source](#build-from-source) with `web-ext`.
-{% endhint %}
-
-### How to check your extension version
-
-1. Click the ViewGraph icon in your browser toolbar
-2. The version number appears in the sidebar footer (e.g., `v0.3.7`)
-3. Compare with the latest version on [GitHub](https://github.com/sourjya/viewgraph/releases)
+If the store version is outdated, install the latest extension directly from GitHub. See the dedicated **[Install from GitHub](manual-install.md)** page for step-by-step instructions for Chrome and Firefox, version checking, and build transparency details.
 
 ---
 
