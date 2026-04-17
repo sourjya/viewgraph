@@ -29,8 +29,9 @@ export function register(server, _indexer, capturesDir, options = {}) {
   server.tool(
     'resolve_annotation',
     `Mark a ${PROJECT_NAME} annotation as resolved after fixing the issue. ` +
-    'Use action "fixed" when code was changed, "wontfix" for intentional behavior, ' +
-    '"duplicate" if already reported, "invalid" if not a real issue.',
+    'Actions: "fixed" (code changed), "wontfix" (intentional), "duplicate", "invalid". ' +
+    'WHEN TO USE: After fixing each issue from get_annotations. Include files_changed and a summary. ' +
+    'NEXT: Use request_capture to ask user to verify the fix.',
     {
       filename: z.string().describe('Capture filename'),
       annotation_uuid: z.string().min(1).describe('UUID of the annotation to resolve'),

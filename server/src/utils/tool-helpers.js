@@ -8,7 +8,7 @@
  * @see docs/architecture/code-quality-audit-2026-04-12.md - CQ-14 pattern
  */
 
-import { readFile } from 'fs/promises';
+import { readFile, readdir } from 'fs/promises';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture, parseSummary, parseMetadata } from '#src/parsers/viewgraph-v2.js';
 
@@ -35,7 +35,7 @@ export async function readAndParse(filename, capturesDir, level = 'full') {
     content = await readFile(filePath, 'utf-8');
   } catch (err) {
     const msg = err.code === 'ENOENT'
-      ? `Error: Capture not found: ${filename}. Use list_captures to see available files.`
+      ? await buildNotFoundMessage(filename, capturesDir)
       : `Error reading capture: ${err.message}`;
     return { ok: false, error: { content: [{ type: 'text', text: msg }], isError: true } };
   }
@@ -47,4 +47,20 @@ export async function readAndParse(filename, capturesDir, level = 'full') {
   }
 
   return { ok: true, parsed: result.data };
+}
+
+/**
+ * Build a helpful not-found error message with filename suggestions.
+ * Lists the 3 most recent captures so the agent can pick the right one.
+ */
+async function buildNotFoundMessage(filename, capturesDir) {
+  let suggestion = '';
+  try {
+    const files = await readdir(capturesDir);
+    const captures = files.filter((f) => f.endsWith('.json')).sort().reverse().slice(0, 3);
+    if (captures.length > 0) {
+      suggestion = '\nAvailable captures (most recent first):\n' + captures.map((f) => `  - ${f}`).join('\n') + '\nUse list_captures to see all files.';
+    }
+  } catch { /* dir not readable */ }
+  return `Error: Capture not found: "${filename}".${suggestion || ' Use list_captures to see available files.'}`;
 }

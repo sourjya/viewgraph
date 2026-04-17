@@ -20,10 +20,10 @@ import { validateCapturePath } from '#src/utils/validate-path.js';
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'get_capture',
-    `Retrieve the full ${PROJECT_NAME} DOM capture JSON for a specific file. ` +
-    'Returns the complete capture including NODES, SUMMARY, RELATIONS, DETAILS, ' +
-    'and ANNOTATIONS sections. For large captures (>100KB), consider using ' +
-    'get_page_summary first for an overview. Use list_captures to find filenames.',
+    `Retrieve the full ${PROJECT_NAME} DOM capture JSON. Includes NODES, SUMMARY, RELATIONS, DETAILS, ANNOTATIONS. ` +
+    'WHEN TO USE: After get_page_summary confirms you need full details. Use list_captures to find filenames. ' +
+    'NEXT: Use get_annotations for user feedback, audit_accessibility for a11y, find_source to locate code. ' +
+    'PERFORMANCE: Can be 50-200KB. Always use get_page_summary first.',
     {
       filename: z.string()
         .describe(`Capture filename (e.g., "${PROJECT_PREFIX}-localhost-2026-04-08T060815.json")`),

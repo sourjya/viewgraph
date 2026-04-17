@@ -30,9 +30,10 @@ export function register(server, _indexer, capturesDir) {
 
   server.tool(
     'find_source',
-    `Find the source file that renders a DOM element. Searches the project for ` +
-    'data-testid, aria-label, id, class, or text matches. Returns file paths and line numbers. ' +
-    'Use after identifying an element via other ' + PROJECT_NAME + ' tools.',
+    `Find the source file that renders a DOM element. Searches for data-testid, aria-label, id, class, or text matches. ` +
+    'Returns file paths and line numbers. ' +
+    'WHEN TO USE: After identifying a broken element from annotations or audits. Provide testid, selector, or text. ' +
+    'NEXT: Edit the source file to fix the issue, then resolve_annotation.',
     {
       testid: z.string().optional().describe('data-testid attribute value'),
       aria_label: z.string().optional().describe('aria-label attribute value'),

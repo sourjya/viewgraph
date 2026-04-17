@@ -18,9 +18,9 @@ export function register(server, queue) {
   server.tool(
     'request_capture',
     `Request a fresh ${PROJECT_NAME} capture from the browser extension. ` +
-    'The extension will capture the specified URL and submit the result. ' +
-    'Use get_request_status to poll for completion. ' +
-    'Provide guidance to tell the user what to look for when capturing.',
+    'The user sees the request in their sidebar and can accept or decline. ' +
+    'WHEN TO USE: After fixing issues, request a capture to verify fixes. Provide guidance text. ' +
+    'NEXT: Use get_request_status to poll for completion, then compare_captures to diff before/after.',
     {
       url: z.string().describe('URL of the page to capture'),
       guidance: z.string().max(500).optional()
