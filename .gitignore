@@ -39,3 +39,4 @@ docs/artifacts/
 # Coverage reports
 server/coverage/
 extension/coverage/
+.threatmodel/
