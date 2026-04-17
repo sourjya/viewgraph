@@ -54,18 +54,43 @@ export function createSettings() {
   const mapLabel = document.createElement('div');
   mapLabel.textContent = 'Project Mapping';
   Object.assign(mapLabel.style, { fontWeight: '600', marginBottom: '6px' });
-  const autoInfo = document.createElement('div');
-  autoInfo.textContent = 'Auto-detected from server. Edit via viewgraph-init --url.';
-  Object.assign(autoInfo.style, { color: '#666', fontSize: '11px', marginBottom: '8px' });
+
+  // Info box with code-styled command and help link
+  const infoBox = document.createElement('div');
+  Object.assign(infoBox.style, {
+    background: '#16161e', border: '1px solid #2a2a3a', borderRadius: '6px',
+    padding: '8px 10px', marginBottom: '8px', fontSize: '11px', color: '#9ca3af', lineHeight: '1.5',
+  });
+  const infoText = document.createElement('span');
+  infoText.textContent = 'Auto-detected from server. Edit via ';
+  const codeEl = document.createElement('code');
+  codeEl.textContent = 'viewgraph-init --url';
+  Object.assign(codeEl.style, { background: '#1e1e2e', padding: '1px 4px', borderRadius: '3px', color: '#a5b4fc', fontSize: '10px' });
+  infoBox.append(infoText, codeEl);
+  const helpLink = document.createElement('a');
+  helpLink.textContent = 'Multi-project setup guide';
+  helpLink.href = 'https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project';
+  helpLink.target = '_blank';
+  Object.assign(helpLink.style, { display: 'block', marginTop: '4px', color: '#6366f1', fontSize: '10px', textDecoration: 'none' });
+  infoBox.appendChild(helpLink);
+
+  // Project details box (agent, patterns rendered here)
+  const detailsBox = document.createElement('div');
+  detailsBox.setAttribute(ATTR, 'project-details');
+  Object.assign(detailsBox.style, {
+    background: '#1a1a2e', border: '1px solid #2a2a3a', borderRadius: '6px',
+    padding: '8px 10px', marginBottom: '8px', display: 'none',
+  });
+
   const advLink = document.createElement('button');
-  advLink.textContent = 'Advanced Settings \u2192';
+  advLink.textContent = 'Advanced Settings →';
   Object.assign(advLink.style, {
     border: '1px solid #333', background: 'transparent', color: '#6366f1', fontSize: '12px',
     cursor: 'pointer', padding: '6px 12px', marginTop: '10px', borderRadius: '6px',
     fontFamily: 'system-ui, sans-serif', fontWeight: '600',
   });
   advLink.addEventListener('click', () => chrome.runtime.sendMessage({ type: 'open-options' }));
-  mappingsSection.append(mapLabel, autoInfo, advLink);
+  mappingsSection.append(mapLabel, infoBox, detailsBox, advLink);
 
   // Capture options
   const captureOpts = document.createElement('div');
@@ -134,20 +159,32 @@ export function createSettings() {
 
   // Populate server info async
   function renderProjectInfo(data) {
+    detailsBox.replaceChildren();
+    let hasContent = false;
     if (data.agent) {
       const agentLine = document.createElement('div');
       agentLine.textContent = `Agent: ${data.agent}`;
       Object.assign(agentLine.style, { color: '#9ca3af', fontSize: '11px', marginBottom: '4px' });
-      mappingsSection.insertBefore(agentLine, advLink);
+      detailsBox.appendChild(agentLine);
+      hasContent = true;
     }
     if (data.urlPatterns?.length) {
       for (const p of data.urlPatterns) {
         const patLine = document.createElement('div');
         patLine.textContent = `Pattern: ${p}`;
         Object.assign(patLine.style, { color: '#6366f1', fontSize: '11px', fontFamily: 'monospace', marginBottom: '2px' });
-        mappingsSection.insertBefore(patLine, advLink);
+        detailsBox.appendChild(patLine);
+        hasContent = true;
       }
     }
+    if (data.projectRoot) {
+      const rootLine = document.createElement('div');
+      rootLine.textContent = `Root: ${data.projectRoot}`;
+      Object.assign(rootLine.style, { color: '#666', fontSize: '10px', marginTop: '4px', fontFamily: 'monospace' });
+      detailsBox.appendChild(rootLine);
+      hasContent = true;
+    }
+    detailsBox.style.display = hasContent ? 'block' : 'none';
   }
 
   /** Fetch server info and update the settings display. */
