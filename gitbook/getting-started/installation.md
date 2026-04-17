@@ -8,7 +8,11 @@ Two steps. No install commands.
 
 <a href="https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj"><img src="https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Chrome Web Store"></a>  <a href="https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/"><img src="https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white" alt="Firefox Add-ons"></a>
 
-Works in Edge, Brave, and Opera too (Chromium-based). Store version outdated? [Download latest ZIPs directly](https://github.com/sourjya/viewgraph/tree/main/downloads).
+Works in Edge, Brave, and Opera too (Chromium-based).
+
+{% hint style="warning" %}
+**Store versions may be outdated.** The Chrome Web Store and Firefox Add-ons review process can delay updates by days or weeks. After installing, check your extension version: click the ViewGraph icon → look for the version in the sidebar footer. If it shows an older version (e.g., v0.1.0 instead of the latest), install the latest ZIP directly from GitHub instead. See [Install from GitHub ZIP](#install-from-github-zip) below.
+{% endhint %}
 
 ### 2. Add MCP config
 
@@ -87,25 +91,43 @@ Re-run `viewgraph-init` from your project. It restarts cleanly without duplicati
 
 ---
 
-## Download Pre-Built Extension
+## Install from GitHub ZIP
 
-If the store version is outdated or you prefer manual installation, download the latest pre-built extension from the [downloads folder](https://github.com/sourjya/viewgraph/tree/main/downloads). Previous versions available on [GitHub Releases](https://github.com/sourjya/viewgraph/releases).
+If the store version is outdated or you prefer manual control, install the latest extension directly from GitHub. This is the fastest way to get the newest features and fixes.
 
-**Chrome (persistent):**
-1. Download `viewgraph-chrome-x.x.x.zip` from the latest release
-2. Unzip to a folder
-3. Open `chrome://extensions/`
-4. Enable **Developer mode** (top-right toggle)
+**Latest ZIPs:** [github.com/sourjya/viewgraph/tree/main/downloads](https://github.com/sourjya/viewgraph/tree/main/downloads)
+
+### Chrome / Edge / Brave (persistent install)
+
+1. Download `viewgraph-chrome-x.x.x.zip` from the [downloads folder](https://github.com/sourjya/viewgraph/tree/main/downloads)
+2. Unzip to a permanent folder (e.g., `~/viewgraph-extension/`)
+3. Open `chrome://extensions/` in your browser
+4. Enable **Developer mode** (toggle in the top-right corner)
 5. Click **Load unpacked** and select the unzipped folder
+6. Pin the ViewGraph icon to your toolbar for easy access
 
-The extension stays installed across browser restarts. You'll need to manually update by downloading new releases.
+The extension stays installed across browser restarts. To update, download the new ZIP, unzip over the same folder, and click the refresh icon on `chrome://extensions/`.
 
-**Firefox (temporary):**
-1. Download `viewgraph-firefox-x.x.x.zip` from the latest release
+{% hint style="info" %}
+**Disable the store version first.** If you have both the store version and the unpacked version installed, disable the store version on `chrome://extensions/` to avoid conflicts.
+{% endhint %}
+
+### Firefox (temporary - removed on restart)
+
+1. Download `viewgraph-firefox-x.x.x.zip` from the [downloads folder](https://github.com/sourjya/viewgraph/tree/main/downloads)
 2. Open `about:debugging#/runtime/this-firefox`
-3. Click **Load Temporary Add-on** and select the ZIP file
+3. Click **Load Temporary Add-on**
+4. Select the `.zip` file directly (no need to unzip)
 
-> **Note:** Firefox temporary add-ons are removed when the browser closes. For persistent Firefox installs, use the [Firefox Add-ons store](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/) or build from source with [web-ext](https://extensionworkshop.com/documentation/develop/getting-started-with-web-ext/).
+{% hint style="warning" %}
+**Firefox temporary add-ons are removed when the browser closes.** You'll need to re-load the ZIP each time you restart Firefox. For a persistent install, use the [Firefox Add-ons store](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/) or [build from source](#build-from-source) with `web-ext`.
+{% endhint %}
+
+### How to check your extension version
+
+1. Click the ViewGraph icon in your browser toolbar
+2. The version number appears in the sidebar footer (e.g., `v0.3.7`)
+3. Compare with the latest version on [GitHub](https://github.com/sourjya/viewgraph/releases)
 
 ---
 
@@ -134,8 +156,10 @@ npm run build:ext:firefox            # Firefox only
 
 | Component | How to update |
 |---|---|
-| Chrome extension | Auto-updates from Chrome Web Store |
-| Firefox extension | Auto-updates from Firefox Add-ons |
+| Chrome extension (store) | Auto-updates, but store reviews can delay updates by days/weeks |
+| Chrome extension (ZIP) | Download new ZIP from [GitHub](https://github.com/sourjya/viewgraph/tree/main/downloads), unzip over same folder, refresh on `chrome://extensions/` |
+| Firefox extension (store) | Auto-updates, but store reviews can delay updates |
+| Firefox extension (ZIP) | Download new ZIP, re-load via `about:debugging` |
 | MCP server (zero-config) | Automatic - `npx` fetches latest on each run |
 | MCP server (npm install) | `npm update -g @viewgraph/core` |
 | @viewgraph/playwright | `npm update @viewgraph/playwright` |
