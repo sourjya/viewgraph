@@ -31,6 +31,12 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - Integrated into all filename-accepting tools via readAndParse
 - 8 new tests: typo matching, partial filenames, missing extensions, integration
 
+### M16: Sidebar UX Polish (Complete)
+- 16.10: Collapsed strip highlights active mode icon with indigo background
+- 16.6: Filter tabs update counts incrementally without DOM recreation
+- 16.5: Keyboard navigation in annotation list (Arrow Up/Down to move, Enter to open)
+- 16.8: Green "No issues detected" empty state in Inspect tab when all diagnostics clean
+
 ## [0.3.7] - 2026-04-17
 
 ### New Features
