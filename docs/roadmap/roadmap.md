@@ -38,17 +38,37 @@
 | Dead Code Elimination | Complete | 16 unused exports/imports/functions removed |
 | Redundancy Centralization | Complete | selector(), ATTR, readAndParse() helpers extracted |
 | M16: Sidebar UX Polish | In Progress | Help overlay, keyboard shortcuts, settings to footer, VG icon, strip redesign |
+### Completed Features
+
+| Feature | Status | Description |
+|---|---|---|
+| F1: Help Overlay | Complete | Keyboard shortcuts, help card, settings in footer |
 | F2: Project Config | Complete | .viewgraph/config.json, GET/PUT endpoints, extension fetch/cache |
+| F3: Auto-Audit | Complete | Post-capture a11y, layout, testid audits with WS push |
+| F4: Baseline Management | Complete | Set/compare baselines from Inspect tab |
+| F5: Smart Suggestions | Complete | Clickable diagnostic chips on element selection |
 | F7: CSS Style Diff | Complete | compare_styles MCP tool - diff computed styles between captures |
 | F8: Component Coverage | Complete | get_component_coverage MCP tool - testid coverage per component |
 | F12: Ideation Pipeline | Complete | Idea category, @vg-ideate prompt, feature spec generation |
 | F13: Type Filtering | Complete | Annotation type registry, filter toggles, badge standardization |
 | F14: Sidebar Decomposition | Complete | 2306->747 lines, 10 modules, icons.js + styles.js |
-| F15: Auto-Inspect Suggestions | Spec Complete | Proactive issue detection, ranked pick-list, 3 tiers |
+| F15: Auto-Inspect Suggestions | Complete | Proactive issue detection, ranked pick-list, 3 tiers |
 | F16: Zero-Config Install | Phase 1 Complete | Server self-configures, default urlPatterns, auto-learn config |
-| F17: URL Trust Indicator | Spec Complete | Block send-to-agent for untrusted URLs, visual trust badge, one-click exemption |
-| F18: MCP Agent Guidance | Spec Complete | Server instructions, session status tool, workflow-aware descriptions |
-| F19: Prompt Injection Defense | Spec Complete | 5-layer defense: sanitize, wrap, detect, harden, gate |
+
+### Implementation Roadmap (priority order)
+
+| Priority | Feature | Dependencies | Effort | Impact |
+|---|---|---|---|---|
+| 1 | F19: Prompt Injection Defense | None | Medium | Mitigates STRIDE threat #2 - highest security impact |
+| 2 | F17: URL Trust Indicator | None | Medium | Mitigates STRIDE threats #1, #2, #8 - blocks untrusted captures |
+| 3 | F18: MCP Agent Guidance | None | Low | Server instructions, session status - biggest UX improvement |
+| 4 | F6: Capture Timeline | F4 | Low | Inspect tab feature - visual capture history |
+| 5 | F16: Zero-Config Phase 2 | F16 P1 | Low | Transport auto-detection, docs as primary install path |
+| 6 | F9: Cross-Page Consistency | F6 | Medium | Compare elements across page captures |
+| 7 | F10: Live DOM Watcher | F2, F3 | Medium | Smart alerts on DOM changes |
+| 8 | F11: Remote MCP + Native Messaging | F17 | High | Native messaging (eliminates 5/8 threats), remote mode with auth |
+
+**Rationale:** F19 and F17 are security-first (threat model driven). F18 is low-effort, high-impact UX. F6/F9/F10 are feature work. F11 is the big architectural change that eliminates most localhost threats.
 | M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
 
 **Current totals:** 1279 tests (384 server + 895 extension), 36 MCP tools, 14 enrichment collectors
