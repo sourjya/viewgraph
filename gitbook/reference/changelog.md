@@ -6,6 +6,15 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ---
 
+## v0.3.6 - April 17, 2026
+
+- **URL trust indicator (F17)** - shield icon with check/x mark in sidebar header. Green (trusted localhost), blue (configured pattern), amber (untrusted remote). Send to Agent blocked for untrusted URLs with "Add to trusted" or "Send anyway" options.
+- **Auto-inspect suggestions (F15)** - collapsed badge expands to checklist with tier tags (A11Y, QUAL, TEST). Add individual suggestions to review list or batch add all. Suggestions become editable annotations.
+- **Prompt injection defense (F19)** - 5-layer defense: capture sanitization, `[CAPTURED_TEXT]` delimiters, suspicious pattern detection, prompt hardening, trust gate.
+- **MCP agent guidance (F18)** - SERVER_INSTRUCTIONS with workflow/security/performance. `get_session_status` tool (37th). Workflow-aware tool descriptions. Filename suggestions on not-found errors.
+- **Transport auto-detection (F16)** - server detects stdio (MCP client) vs TTY (manual) and adapts.
+- **1,401 tests** (990 extension + 411 server)
+
 ## v0.3.5 - April 17, 2026
 
 - **Auto-inspect suggestions (F15)** - ViewGraph now scans pages automatically and presents a ranked checklist of issues: missing alt text, failed network requests, unlabeled inputs, missing testids. Select which ones to fix and send to your agent in one click.
