@@ -1183,3 +1183,38 @@ describe('auto-audit', () => {
     destroy();
   });
 });
+
+// ──────────────────────────────────────────────
+// F15: Suggestions panel rendering order - regression tests
+// ──────────────────────────────────────────────
+
+describe('suggestions panel survives refresh', () => {
+  it('(+) suggestions panel exists in list after refresh', () => {
+    start();
+    create();
+    refresh();
+    const list = shadowQuery(`[${ATTR}="list"]`);
+    const sugPanel = list?.querySelector(`[${ATTR}="suggestions-panel"]`);
+    expect(sugPanel).not.toBeNull();
+  });
+
+  it('(+) suggestions panel is first child of list', () => {
+    start();
+    create();
+    refresh();
+    const list = shadowQuery(`[${ATTR}="list"]`);
+    const firstChild = list?.firstElementChild;
+    expect(firstChild?.getAttribute(ATTR)).toBe('suggestions-panel');
+  });
+
+  it('(+) suggestions panel survives multiple refresh cycles', () => {
+    start();
+    create();
+    refresh();
+    refresh();
+    refresh();
+    const list = shadowQuery(`[${ATTR}="list"]`);
+    const panels = list?.querySelectorAll(`[${ATTR}="suggestions-panel"]`);
+    expect(panels?.length).toBe(1);
+  });
+});
