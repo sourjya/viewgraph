@@ -402,6 +402,38 @@ describe('sidebar MCP disconnected state', () => {
     expect(copyBtn.title).not.toContain('not connected');
     expect(dlBtn.title).not.toContain('not connected');
   });
+
+  it('(+) status banner is positioned directly above footer buttons, not above tabs', async () => {
+    start();
+    create();
+    await vi.waitFor(() => {
+      const banner = shadowQuery(`[${ATTR}="status-banner"]`);
+      expect(banner?.style.display).toBe('block');
+    });
+    const banner = shadowQuery(`[${ATTR}="status-banner"]`);
+    const sendBtn = shadowQuery(`[${ATTR}="send"]`);
+    const reviewContent = shadowQuery(`[${ATTR}="review-content"]`);
+    // Banner must be inside review-content (not a sibling of primary-tabs)
+    expect(reviewContent.contains(banner)).toBe(true);
+    // Banner must come after the list and before or at the footer level
+    const children = [...reviewContent.children].map((el) => el.getAttribute(ATTR) || el.tagName);
+    const bannerIdx = children.indexOf('status-banner');
+    const listIdx = children.indexOf('list');
+    expect(bannerIdx).toBeGreaterThan(listIdx);
+  });
+
+  it('(-) status banner is NOT a child of primary-tabs area', async () => {
+    start();
+    create();
+    await vi.waitFor(() => {
+      const banner = shadowQuery(`[${ATTR}="status-banner"]`);
+      expect(banner?.style.display).toBe('block');
+    });
+    const primaryTabs = shadowQuery(`[${ATTR}="primary-tabs"]`);
+    const banner = shadowQuery(`[${ATTR}="status-banner"]`);
+    // Banner must not be a sibling immediately after primary-tabs
+    expect(primaryTabs.nextElementSibling?.getAttribute(ATTR)).not.toBe('status-banner');
+  });
 });
 
 // ---------------------------------------------------------------------------
