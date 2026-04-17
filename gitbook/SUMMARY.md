@@ -8,7 +8,7 @@
 
 * [Quick Start (5 minutes)](getting-started/quick-start.md)
 * [Installation](getting-started/installation.md)
-* [Install from GitHub](getting-started/manual-install.md)
+* [Install from GitHub (Latest)](getting-started/manual-install.md)
 * [Multi-Project Setup](getting-started/multi-project.md)
 
 ## Tutorials
