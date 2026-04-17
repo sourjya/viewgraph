@@ -642,30 +642,7 @@ export function refresh() {
 
   const anns = getAnnotations();
 
-  // Auto-inspect suggestions - render at top of list before annotations
-  const existingSugPanel = list.parentElement?.querySelector(`[data-vg-annotate="suggestions-panel"]`);
-  if (existingSugPanel) existingSugPanel.remove();
-  if (!_suggestionsCache) _suggestionsCache = scanForSuggestions();
-  renderSuggestionList(list, _suggestionsCache, {
-    onSend: (selected) => {
-      for (const sug of selected) {
-        const ann = addPageNote();
-        if (ann) {
-          updateComment(ann.id, sug.title + ': ' + sug.detail);
-          ann.diagnostic = { section: sug.tier, data: sug.detail };
-          if (sug.selector && sug.selector !== 'body') {
-            ann.element = { selector: sug.selector };
-          }
-        }
-      }
-      _suggestionsCache = null;
-      save();
-      refresh();
-    },
-    onDismiss: (id) => { _suggestionsCache = _suggestionsCache?.filter((s) => s.id !== id) || null; },
-    onRefresh: () => { _suggestionsCache = null; refresh(); },
-  });
-
+  // Render annotation list first (clears list contents)
   renderReviewList(list, tabContainer, sidebarEl, {
     annotations: anns,
     pendingRequests,
@@ -742,6 +719,28 @@ export function refresh() {
       })();
     },
     getSidebarEl: () => sidebarEl,
+  });
+
+  // Auto-inspect suggestions - prepend to list AFTER renderReviewList (which clears list)
+  if (!_suggestionsCache) _suggestionsCache = scanForSuggestions();
+  renderSuggestionList(list, _suggestionsCache, {
+    onSend: (selected) => {
+      for (const sug of selected) {
+        const ann = addPageNote();
+        if (ann) {
+          updateComment(ann.id, sug.title + ': ' + sug.detail);
+          ann.diagnostic = { section: sug.tier, data: sug.detail };
+          if (sug.selector && sug.selector !== 'body') {
+            ann.element = { selector: sug.selector };
+          }
+        }
+      }
+      _suggestionsCache = null;
+      save();
+      refresh();
+    },
+    onDismiss: (id) => { _suggestionsCache = _suggestionsCache?.filter((s) => s.id !== id) || null; },
+    onRefresh: () => { _suggestionsCache = null; refresh(); },
   });
 
   updateBadgeCount();
