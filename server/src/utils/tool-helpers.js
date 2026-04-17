@@ -13,6 +13,68 @@ import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture, parseSummary, parseMetadata } from '#src/parsers/viewgraph-v2.js';
 
 /**
+ * Compute Levenshtein edit distance between two strings.
+ * Used for fuzzy filename matching in "did you mean" suggestions.
+ * @param {string} a
+ * @param {string} b
+ * @returns {number}
+ */
+function editDistance(a, b) {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  const matrix = Array.from({ length: a.length + 1 }, (_, i) =>
+    Array.from({ length: b.length + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0)),
+  );
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      matrix[i][j] = a[i - 1] === b[j - 1]
+        ? matrix[i - 1][j - 1]
+        : 1 + Math.min(matrix[i - 1][j], matrix[i][j - 1], matrix[i - 1][j - 1]);
+    }
+  }
+  return matrix[a.length][b.length];
+}
+
+/**
+ * Find the closest matching capture filename using fuzzy matching.
+ * Returns the best match if the edit distance is within threshold,
+ * or if the query is a substring of a filename. Returns null if
+ * no reasonable match is found.
+ *
+ * @param {string} query - The filename the agent provided
+ * @param {string} capturesDir - Captures directory path
+ * @returns {Promise<string|null>} Best matching filename or null
+ */
+export async function suggestFilename(query, capturesDir) {
+  let files;
+  try {
+    files = (await readdir(capturesDir)).filter((f) => f.endsWith('.json'));
+  } catch { return null; }
+  if (files.length === 0) return null;
+
+  const q = query.toLowerCase();
+
+  // Exact substring match (e.g., partial filename without viewgraph- prefix)
+  const substringMatch = files.find((f) => f.toLowerCase().includes(q));
+  if (substringMatch) return substringMatch;
+
+  // Missing .json extension - exact match
+  const withExt = q.endsWith('.json') ? q : q + '.json';
+  const exactWithExt = files.find((f) => f.toLowerCase() === withExt);
+  if (exactWithExt) return exactWithExt;
+
+  // Levenshtein distance - find closest match
+  const maxDist = Math.max(5, Math.floor(query.length * 0.2));
+  let best = null;
+  let bestDist = Infinity;
+  for (const f of files) {
+    const d = editDistance(q, f.toLowerCase());
+    if (d < bestDist) { bestDist = d; best = f; }
+  }
+  return bestDist <= maxDist ? best : null;
+}
+
+/**
  * Validate a filename, read the capture file, and parse it.
  * Returns `{ ok: true, parsed }` on success, or `{ ok: false, error }` with
  * an MCP-formatted error response on failure.
@@ -56,10 +118,16 @@ export async function readAndParse(filename, capturesDir, level = 'full') {
 async function buildNotFoundMessage(filename, capturesDir) {
   let suggestion = '';
   try {
-    const files = await readdir(capturesDir);
-    const captures = files.filter((f) => f.endsWith('.json')).sort().reverse().slice(0, 3);
-    if (captures.length > 0) {
-      suggestion = '\nAvailable captures (most recent first):\n' + captures.map((f) => `  - ${f}`).join('\n') + '\nUse list_captures to see all files.';
+    // Try fuzzy match first
+    const match = await suggestFilename(filename, capturesDir);
+    if (match) {
+      suggestion = `\nDid you mean: ${match}`;
+    } else {
+      const files = await readdir(capturesDir);
+      const captures = files.filter((f) => f.endsWith('.json')).sort().reverse().slice(0, 3);
+      if (captures.length > 0) {
+        suggestion = '\nAvailable captures (most recent first):\n' + captures.map((f) => `  - ${f}`).join('\n') + '\nUse list_captures to see all files.';
+      }
     }
   } catch { /* dir not readable */ }
   return `Error: Capture not found: "${filename}".${suggestion || ' Use list_captures to see available files.'}`;

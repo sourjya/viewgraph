@@ -19,10 +19,10 @@
 - [x] 12. Update tool description tests to verify cross-references exist
 
 ## Phase 4: Input Validation
-- [ ] 13. Add suggestCapture() helper to tool-helpers.js for fuzzy filename matching
-- [ ] 14. Update all filename-accepting tools to use suggestCapture on not-found errors
-- [ ] 15. Add helpful error messages with "did you mean" suggestions
-- [ ] 16. Write tests for fuzzy matching and error message formatting
+- [x] 13. Add suggestCapture() helper to tool-helpers.js for fuzzy filename matching
+- [x] 14. Update all filename-accepting tools to use suggestCapture on not-found errors
+- [x] 15. Add helpful error messages with "did you mean" suggestions
+- [x] 16. Write tests for fuzzy matching and error message formatting
 
 ## Phase 5: Documentation
 - [x] 17. Update docs/architecture/security-assessment.md with prompt injection mitigations
