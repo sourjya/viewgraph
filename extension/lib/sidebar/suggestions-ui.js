@@ -46,13 +46,10 @@ export function renderSuggestionBar(container, suggestions, callbacks) {
   return { element: wrapper };
 }
 
-/** Green checkmark - no issues found. */
+/** No issues - hide the panel entirely. */
 function renderClean(wrapper) {
-  Object.assign(wrapper.style, { padding: '8px 12px' });
-  const row = document.createElement('div');
-  Object.assign(row.style, { fontSize: '11px', color: '#4ade80', display: 'flex', alignItems: 'center', gap: '6px' });
-  row.textContent = '\u2713 No issues detected';
-  wrapper.appendChild(row);
+  wrapper.replaceChildren();
+  wrapper.style.display = 'none';
 }
 
 /** One-line badge with count and Review button. */

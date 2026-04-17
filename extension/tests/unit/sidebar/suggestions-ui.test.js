@@ -30,17 +30,17 @@ describe('renderSuggestionBar', () => {
   // Clean state
   // ──────────────────────────────────────────────
 
-  it('(+) shows "No issues detected" when suggestions empty', () => {
+  it('(+) hides panel when no suggestions', () => {
     renderSuggestionBar(container, [], {});
     const panel = container.querySelector('[data-vg-annotate="suggestions-panel"]');
     expect(panel).not.toBeNull();
-    expect(panel.textContent).toContain('No issues detected');
+    expect(panel.style.display).toBe('none');
   });
 
-  it('(+) clean state has green checkmark', () => {
+  it('(+) clean state panel has no visible content', () => {
     renderSuggestionBar(container, [], {});
     const panel = container.querySelector('[data-vg-annotate="suggestions-panel"]');
-    expect(panel.textContent).toContain('\u2713');
+    expect(panel.children.length).toBe(0);
   });
 
   // ──────────────────────────────────────────────
@@ -157,7 +157,7 @@ describe('renderSuggestionBar', () => {
     renderSuggestionBar(container, [makeSug()], { onAddAll: vi.fn() });
     container.querySelector('button').click();
     [...container.querySelectorAll('button')].find((b) => b.textContent === 'Add All to Review').click();
-    expect(container.textContent).toContain('No issues detected');
+    const panel = container.querySelector('[data-vg-annotate="suggestions-panel"]'); expect(panel.style.display).toBe('none');
   });
 
   // ──────────────────────────────────────────────
@@ -176,7 +176,7 @@ describe('renderSuggestionBar', () => {
     renderSuggestionBar(container, [makeSug()], { onDismissAll: vi.fn() });
     container.querySelector('button').click();
     [...container.querySelectorAll('button')].find((b) => b.textContent === 'Dismiss All').click();
-    expect(container.textContent).toContain('No issues detected');
+    const panel = container.querySelector('[data-vg-annotate="suggestions-panel"]'); expect(panel.style.display).toBe('none');
   });
 
   // ──────────────────────────────────────────────
