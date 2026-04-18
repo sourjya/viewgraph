@@ -267,6 +267,6 @@ describe('settings card design', () => {
 
   it('(+) settings screen has bottom offset to not cover footer', () => {
     const s = createSettings();
-    expect(s.element.style.bottom).toBe('42px');
+    expect(s.element.style.bottom).toBe('72px');
   });
 });

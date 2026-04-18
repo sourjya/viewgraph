@@ -148,6 +148,30 @@ describe('settings', () => {
     stop();
     destroy();
   });
+
+  it('(+) status banner has higher z-index than settings overlay', () => {
+    start();
+    create();
+
+    const banner = shadowQuery(`[${ATTR}="status-banner"]`);
+    const screen = shadowQuery(`[${ATTR}="settings-screen"]`);
+    expect(parseInt(banner.style.zIndex)).toBeGreaterThan(parseInt(screen.style.zIndex));
+
+    stop();
+    destroy();
+  });
+
+  it('(+) status banner is sibling of footer (visible on all views)', () => {
+    start();
+    create();
+
+    const banner = shadowQuery(`[${ATTR}="status-banner"]`);
+    const footer = shadowQuery(`[${ATTR}="footer"]`);
+    expect(banner.parentElement).toBe(footer.parentElement);
+
+    stop();
+    destroy();
+  });
 });
 
 describe('suggestions panel survives refresh', () => {

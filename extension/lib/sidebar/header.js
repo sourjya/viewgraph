@@ -115,7 +115,7 @@ export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellCl
     display: 'none', padding: '6px 12px', fontSize: '11px',
     fontFamily: FONT, color: COLOR.warning,
     background: '#2a2a1a', borderBottom: `1px solid ${COLOR.border}`,
-    flexShrink: '0',
+    flexShrink: '0', position: 'relative', zIndex: '11',
   });
 
   /**
