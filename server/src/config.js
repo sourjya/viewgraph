@@ -21,7 +21,7 @@
 
 import { readFileSync, existsSync } from 'fs';
 import path from 'path';
-import { ENV_CAPTURES_DIR, ENV_MAX_CAPTURES, ENV_HTTP_PORT, ENV_IDLE_TIMEOUT, LOG_PREFIX, PROJECT_PREFIX, DEFAULT_HTTP_PORT } from './constants.js';
+import { ENV_CAPTURES_DIR, ENV_MAX_CAPTURES, ENV_HTTP_PORT, ENV_IDLE_TIMEOUT, ENV_ALLOWED_DIRS, LOG_PREFIX, PROJECT_PREFIX, DEFAULT_HTTP_PORT } from './constants.js';
 
 const CONFIG_FILENAME = `.${PROJECT_PREFIX}rc.json`;
 
@@ -124,7 +124,7 @@ export function resolveConfig(cwd = process.cwd()) {
   // The x-captures-dir header must resolve to one of these.
   // Env: comma-separated VIEWGRAPH_ALLOWED_DIRS, or config file allowedDirs array.
   const allowedDirs = (
-    process.env.VIEWGRAPH_ALLOWED_DIRS?.split(',').map((d) => resolvePath(d.trim()))
+    process.env[ENV_ALLOWED_DIRS]?.split(',').map((d) => resolvePath(d.trim()))
     || (fileConfig.allowedDirs || []).map((d) => resolvePath(d))
   );
   // The default capturesDir is always allowed

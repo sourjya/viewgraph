@@ -25,6 +25,7 @@ export const ENV_CAPTURES_DIR = `${PROJECT_PREFIX.toUpperCase()}_CAPTURES_DIR`;
 export const ENV_MAX_CAPTURES = `${PROJECT_PREFIX.toUpperCase()}_MAX_CAPTURES`;
 export const ENV_HTTP_PORT = `${PROJECT_PREFIX.toUpperCase()}_HTTP_PORT`;
 export const ENV_IDLE_TIMEOUT = `${PROJECT_PREFIX.toUpperCase()}_IDLE_TIMEOUT_MINUTES`;
+export const ENV_ALLOWED_DIRS = `${PROJECT_PREFIX.toUpperCase()}_ALLOWED_DIRS`;
 
 /** Stderr log prefix. */
 export const LOG_PREFIX = `[${PROJECT_PREFIX}]`;

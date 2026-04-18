@@ -42,7 +42,7 @@ describe('get_fidelity_report via MCP', () => {
     writeFileSync(path.join(capturesDir, 'viewgraph-test-123.json'), JSON.stringify(SAMPLE_CAPTURE));
     writeFileSync(path.join(rootDir, 'snapshots', 'viewgraph-test-123.html'), SAMPLE_HTML);
 
-    const { client, cleanup: c } = await createTestClient((s) => register(s, capturesDir));
+    const { client, cleanup: c } = await createTestClient((s) => register(s, null, capturesDir));
     cleanup = c;
     const result = await client.callTool({ name: 'get_fidelity_report', arguments: { filename: 'viewgraph-test-123.json' } });
     const data = JSON.parse(result.content[0].text);
@@ -55,7 +55,7 @@ describe('get_fidelity_report via MCP', () => {
     mkdirSync(capturesDir, { recursive: true });
     writeFileSync(path.join(capturesDir, 'viewgraph-test-456.json'), JSON.stringify(SAMPLE_CAPTURE));
 
-    const { client, cleanup: c } = await createTestClient((s) => register(s, capturesDir));
+    const { client, cleanup: c } = await createTestClient((s) => register(s, null, capturesDir));
     cleanup = c;
     const result = await client.callTool({ name: 'get_fidelity_report', arguments: { filename: 'viewgraph-test-456.json' } });
     expect(result.isError).toBe(true);
@@ -64,7 +64,7 @@ describe('get_fidelity_report via MCP', () => {
   it('(-) returns error for nonexistent capture', async () => {
     capturesDir = path.join(os.tmpdir(), `vg-fid-${Date.now()}`);
     mkdirSync(capturesDir, { recursive: true });
-    const { client, cleanup: c } = await createTestClient((s) => register(s, capturesDir));
+    const { client, cleanup: c } = await createTestClient((s) => register(s, null, capturesDir));
     cleanup = c;
     const result = await client.callTool({ name: 'get_fidelity_report', arguments: { filename: 'nope.json' } });
     expect(result.isError).toBe(true);
@@ -73,7 +73,7 @@ describe('get_fidelity_report via MCP', () => {
   it('(-) returns error for path traversal', async () => {
     capturesDir = path.join(os.tmpdir(), `vg-fid-${Date.now()}`);
     mkdirSync(capturesDir, { recursive: true });
-    const { client, cleanup: c } = await createTestClient((s) => register(s, capturesDir));
+    const { client, cleanup: c } = await createTestClient((s) => register(s, null, capturesDir));
     cleanup = c;
     const result = await client.callTool({ name: 'get_fidelity_report', arguments: { filename: '../../../etc/passwd' } });
     expect(result.isError).toBe(true);
