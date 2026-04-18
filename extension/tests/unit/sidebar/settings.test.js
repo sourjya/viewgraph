@@ -177,6 +177,7 @@ describe('settings card design', () => {
     transport.reset();
     transport.init('http://127.0.0.1:9876');
     mockChrome();
+    Object.defineProperty(window, 'location', { value: { href: 'http://localhost:3000/page' }, writable: true, configurable: true });
     mockServer({ info: { projectRoot: '/test', urlPatterns: ['localhost:3000'], serverVersion: '0.3.7', agent: 'Kiro' } });
     const s = createSettings();
     s.show();
@@ -190,6 +191,7 @@ describe('settings card design', () => {
     const transport = await import('#lib/transport.js');
     transport.reset(); transport.init('http://127.0.0.1:9876');
     mockChrome();
+    Object.defineProperty(window, 'location', { value: { href: 'http://localhost:4000/page' }, writable: true, configurable: true });
     mockServer({ info: { projectRoot: '/myproject', urlPatterns: ['localhost:4000'], agent: 'Kiro', serverVersion: '0.3.7' } });
     const s = createSettings();
     s.show();
