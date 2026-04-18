@@ -8,7 +8,9 @@ See a bug. Click it. Describe it. Your agent fixes it.
 
 ![ViewGraph sidebar with annotations](.gitbook/assets/sidebar-annotations.png)
 
-[![Chrome - Install](https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj)  [![Firefox - Install](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)  [![npm](https://img.shields.io/badge/npm-@viewgraph/core-CB3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/@viewgraph/core)  [![GitHub](https://img.shields.io/badge/GitHub-Source_Code-black?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sourjya/viewgraph)
+[![Chrome - Install](https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj) &nbsp; [![Firefox - Install](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
+
+[![npm](https://img.shields.io/badge/npm-@viewgraph/core-CB3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/@viewgraph/core) &nbsp; [![GitHub](https://img.shields.io/badge/GitHub-Source_Code-black?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sourjya/viewgraph)
 
 ---
 
