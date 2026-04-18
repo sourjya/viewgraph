@@ -68,10 +68,13 @@ export function startJourney(onNavigate) {
   // Click on links (for MPA navigation detection before unload)
   const clickHandler = (e) => {
     const link = e.target.closest('a[href]');
-    if (link && link.href && !link.href.startsWith('javascript:')) {
-      // Capture before navigation (MPA will unload the page)
-      const isExternal = link.hostname !== location.hostname;
-      if (!isExternal) trigger('link-click');
+    if (link && link.href) {
+      try {
+        const linkUrl = new URL(link.href, location.href);
+        if (linkUrl.protocol === 'javascript:') return;
+        const isExternal = linkUrl.hostname !== location.hostname;
+        if (!isExternal) trigger('link-click');
+      } catch { /* invalid URL */ }
     }
   };
   document.addEventListener('click', clickHandler, true);

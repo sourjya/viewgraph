@@ -13,7 +13,12 @@
 /** Sanitize text for markdown: escape backticks and pipes. */
 function sanitize(text) {
   if (!text) return '';
-  return text.replace(/`/g, '\\`').replace(/\|/g, '\\|');
+  return text
+    .replace(/\\/g, '\\\\')
+    .replace(/`/g, '\\`')
+    .replace(/\|/g, '\\|')
+    .replace(/\[/g, '\\[')
+    .replace(/\]/g, '\\]');
 }
 
 /**
