@@ -133,27 +133,23 @@ export function createHelpCard() {
     isVisible() { return visible; },
     setVersion(text, warn) {
       versionEl.replaceChildren();
-      // Parse "Label: value | Label: value" into highlighted blobs
       const parts = text.split(' | ');
-      parts.forEach((part, i) => {
-        if (i > 0) {
-          const sep = document.createElement('span');
-          sep.textContent = ' | ';
-          Object.assign(sep.style, { color: COLOR.border, margin: '0 2px' });
-          versionEl.appendChild(sep);
-        }
+      parts.forEach((part) => {
+        const row = document.createElement('div');
+        Object.assign(row.style, { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2px 0' });
         const colonIdx = part.indexOf(':');
-        if (colonIdx === -1) { versionEl.appendChild(document.createTextNode(part)); return; }
+        if (colonIdx === -1) { row.textContent = part; versionEl.appendChild(row); return; }
         const label = document.createElement('span');
-        label.textContent = part.slice(0, colonIdx + 1) + ' ';
-        Object.assign(label.style, { color: COLOR.muted });
+        label.textContent = part.slice(0, colonIdx);
+        Object.assign(label.style, { color: COLOR.muted, fontSize: '11px' });
         const val = document.createElement('span');
         val.textContent = part.slice(colonIdx + 1).trim();
         Object.assign(val.style, {
           background: 'rgba(99,102,241,0.15)', color: COLOR.primaryLight,
-          padding: '1px 5px', borderRadius: '3px', fontSize: '10px',
+          padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontFamily: 'monospace',
         });
-        versionEl.append(label, val);
+        row.append(label, val);
+        versionEl.appendChild(row);
       });
       if (warn) { versionEl.style.color = COLOR.warning; versionEl.style.background = '#451a03'; }
     },
