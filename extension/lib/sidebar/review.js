@@ -156,9 +156,16 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
   tabContainer.replaceChildren();
   tabContainer.appendChild(tabBar);
 
-  // Type filter toggles: [bug] [idea] [diagnostic] [note]
+  // Type filter toggles: [label] [bug] [idea] [diagnostic] [note]
   const typeFilterRow = document.createElement('div');
-  Object.assign(typeFilterRow.style, { display: 'flex', gap: '2px', padding: '4px 8px', borderBottom: `1px solid ${COLOR.borderLight}`, justifyContent: 'flex-end' });
+  Object.assign(typeFilterRow.style, { display: 'flex', gap: '2px', padding: '4px 8px', borderBottom: `1px solid ${COLOR.borderLight}`, alignItems: 'center' });
+  const filterLabel = document.createElement('span');
+  filterLabel.textContent = 'Filter';
+  Object.assign(filterLabel.style, { fontSize: '10px', color: COLOR.muted, marginRight: '4px', flexShrink: '0' });
+  typeFilterRow.appendChild(filterLabel);
+  const filterSpacer = document.createElement('span');
+  filterSpacer.style.flex = '1';
+  typeFilterRow.appendChild(filterSpacer);
   const filterTypes = [
     { key: 'element', label: 'Bugs', color: COLOR.secondary },
     { key: 'idea', label: 'Ideas', color: '#eab308' },
