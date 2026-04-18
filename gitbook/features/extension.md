@@ -1,211 +1,140 @@
 # Browser Extension
 
-The ViewGraph extension runs in Chrome and Firefox. Other Chromium-based browsers (Edge, Brave, Opera) can load the extension but are not officially tested.
+Click bugs. Describe them. Send to your agent - or export to Jira.
 
 <a href="https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj"><img src="https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Chrome Web Store"></a>  <a href="https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/"><img src="https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white" alt="Firefox Add-ons"></a>
 
 {% hint style="info" %}
-Store version outdated? [Download latest ZIPs directly](https://github.com/sourjya/viewgraph/tree/main/downloads) - see [install instructions](../getting-started/installation.md#download-pre-built-extension).
+Also works in Edge, Brave, and Opera (Chromium-based). Store version outdated? [Download latest from GitHub](https://github.com/sourjya/viewgraph/releases/latest).
 {% endhint %}
 
-## Annotate Mode
+---
 
-Click the ViewGraph toolbar icon to enter annotate mode. The sidebar opens and elements highlight as you hover.
+## 1. Hover and Select
+
+Click the ViewGraph toolbar icon. Elements highlight as you hover, with a tooltip showing the CSS selector, testid, role, and dimensions.
 
 ![Hover highlighting with tooltip showing selector and testid](../.gitbook/assets/hover-highlight.png)
 
-### Element Selection
-
-- **Click** any element to select it and add a comment
+- **Click** any element to annotate it
 - **Shift+drag** to select a rectangular region
 - **Scroll wheel** while hovering to navigate up/down the DOM tree
 
-### Hover Tooltip
+---
 
-A 2-line tooltip follows your cursor showing:
-```
-body > main > form > input.form-control
-testid: email-input | role: textbox | 330x38
-```
+## 2. Annotate
 
-### Annotation Panel
-
-When you click an element, a floating panel appears with:
-- **Comment** text area - describe what's wrong
-- **Severity** - Critical (red), Major (yellow), Minor (gray)
-- **Category** - Visual, Functional, Content, A11y, Perf, Idea
-- **Idea toggle** (lightbulb icon in header) - one-click switch to idea mode
-- **Smart suggestions** - clickable chips based on detected issues (missing aria-label, no testid, low contrast)
+Describe what's wrong. Set severity and category. ViewGraph captures the technical details automatically.
 
 ![Annotation panel with severity, category, and comment](../.gitbook/assets/annotation-panel.png)
 
-### Idea Mode - Feature Specs from Your Screen
+- **Severity:** Critical / Major / Minor
+- **Category:** Visual, Functional, Content, A11y, Perf, Idea
+- **Smart suggestions:** Clickable chips for detected issues (missing aria-label, no testid, low contrast)
+- **Idea mode:** Toggle the lightbulb to switch from bug reporting to feature ideation. Send ideas to your agent with `@vg-ideate` to generate structured specs.
 
-Not every annotation is a bug. Sometimes you're staring at a screen and thinking "this needs a new feature." ViewGraph supports this with **idea mode**.
+---
 
-Click the lightbulb icon in the annotation panel header, or select "Idea" from the category dropdown. The panel changes:
-- Border turns yellow to signal you're in idea mode
-- Severity dropdown hides (ideas don't have severity)
-- Diagnostic suggestions are suppressed (ideas are about what to build, not what's broken)
-- The annotation appears in the sidebar with a yellow lightbulb badge
+## 3. Inspect
 
-**The ideation pipeline:**
-1. Open your app, click ViewGraph
-2. Click elements or use Page mode to add notes
-3. Toggle idea mode (lightbulb icon) and describe what you want: "Add a dark mode toggle here", "This table needs export to CSV"
-4. Send to Agent
-5. Tell your agent `@vg-ideate` - it generates a structured feature spec with requirements, user stories, and implementation tasks, all grounded in the actual UI context from the capture
+The Inspect tab surfaces browser diagnostics without opening DevTools.
 
-This turns screen-staring into structured specs. The agent has the full DOM context - it knows what elements exist, what the layout looks like, and what components are nearby. The spec it generates isn't generic; it's specific to the page you're looking at.
+![Inspect tab showing network and console diagnostics](../.gitbook/assets/inspect-tab.png)
 
-### Diagnostic Notes
+- Failed network requests with URL, type, and duration
+- Console errors and warnings from page scripts
+- Accessibility issues (missing labels, low contrast, keyboard traps)
+- Layout problems (overflow, z-index conflicts, focus chain)
+- Viewport breakpoint indicator
 
-The Inspect tab shows network failures, console errors, accessibility issues, and layout problems. Each section has two action buttons:
-- **Copy** (clipboard icon) - copies section data as text for pasting into chat or tickets
-- **Add as note** (sparkle icon) - creates an annotation with a clean summary and the full diagnostic data as a collapsible attachment
+Each section has **Copy** (clipboard) and **Add as Note** (+) buttons. One click turns a network failure or console error into an annotation - no DevTools, no copy-pasting.
 
-Diagnostic notes appear in the sidebar with a teal terminal icon and a `[Network]` or `[Console]` tag. The full data is preserved for the agent but doesn't clutter the annotation list.
+---
 
-## Two-Tab Sidebar
-
-### Review Tab
-
-For annotating and exporting:
-- Mode bar: Element, Region, Page selection modes
-- Agent request cards (when your agent asks for a capture)
-- Annotation list with severity badges
-- Filter: Open / Resolved / All
-- Export: Send to Agent, Copy MD, Download Report
+## 4. Export
 
 ![Sidebar with annotations and export buttons](../.gitbook/assets/sidebar-annotations.png)
 
-### Inspect Tab
-
-For understanding page state:
-
-![Inspect tab showing network and console diagnostics](../.gitbook/assets/inspect-tab.png)
-- Viewport breakpoint indicator
-- Network requests (failed requests highlighted in red)
-- Console errors and warnings
-- Visibility warnings (elements hidden by ancestor)
-- Stacking, focus, scroll, and landmark diagnostics
-
-## Export Options
-
-Three export modes, available based on connection status:
-
-| Export | Requires MCP server | Works offline |
-|---|---|---|
-| Send to Agent | Yes | No |
-| Copy Markdown | No | Yes |
-| Download Report | No | Yes |
-
-When no MCP server is connected, the sidebar shows a status banner above the export buttons: "No project connected. Copy MD and Report available." The Send button is hidden and Copy MD is promoted as the primary action.
-
-**URL Trust Indicator:** A shield icon in the sidebar header shows the trust level of the current page. On untrusted URLs (remote sites not in your trusted patterns), Send to Agent is blocked with an option to add the URL to your trusted list or send with an explicit override. Copy MD and Download Report always work regardless of trust level. See [Threat Model](../reference/threat-model.md) for details.
-
-### Send to Agent
-
-Pushes annotations + full DOM capture + all enrichment data to the MCP server. Your agent receives everything needed to implement fixes.
-
-![Send to Agent button and success confirmation](../.gitbook/assets/send-to-agent.png)
-
-After sending, each annotation shows its status - waiting for the agent to fix it:
+{% tabs %}
+{% tab title="Send to Agent" %}
+Pushes annotations + full DOM capture + 16 enrichment collectors to the MCP server. Your agent receives everything needed to fix the code.
 
 ![Annotations waiting for agent fix](../.gitbook/assets/sent-waiting-for-fix.png)
 
-### Copy Markdown
+**Requires:** MCP server running. **Trust gate:** Blocked on untrusted URLs with override option.
+{% endtab %}
 
-Copies a structured bug report to clipboard:
-- Page metadata (URL, date, viewport, browser)
-- Environment (breakpoint, failed requests, console errors)
-- Each annotation with element details and severity
+{% tab title="Copy Markdown" %}
+Copies a structured bug report to clipboard. Paste into Jira, Linear, or GitHub Issues.
 
-![Copy Markdown button in sidebar](../.gitbook/assets/export-markdown.png)
+Includes: page metadata, viewport, breakpoint, failed requests, console errors, and each annotation with element details.
 
-![Rendered markdown report](../.gitbook/assets/markdown-view.png)
+![Copy Markdown output](../.gitbook/assets/export-markdown.png)
 
-### Download Report (ZIP)
+**Works offline** - no server needed.
+{% endtab %}
 
-Downloads a ZIP archive:
+{% tab title="Download Report" %}
+Downloads a ZIP archive with:
 - `report.md` - full markdown report
 - `screenshots/` - cropped screenshots per annotation
 - `network.json` - network request data
 - `console.json` - console errors and warnings
 
-## 14 Enrichment Collectors
+**Works offline** - no server needed.
+{% endtab %}
+{% endtabs %}
+
+---
+
+## 16 Enrichment Collectors
 
 Every capture automatically includes data from these collectors:
 
+{% tabs %}
+{% tab title="Runtime" %}
 | Collector | What it captures |
 |---|---|
 | Network | HTTP requests, failed requests, response sizes |
 | Console | Errors, warnings from page scripts |
+| Performance | Navigation timing, resource timing, memory |
+| Event listeners | Click handlers, keyboard handlers |
+| Animations | Running CSS/JS animations |
+{% endtab %}
+
+{% tab title="Layout & A11y" %}
+| Collector | What it captures |
+|---|---|
 | Breakpoints | Active CSS breakpoint, viewport width |
 | Media queries | All `@media` rules and their match state |
 | Stacking contexts | Z-index conflicts between siblings |
 | Focus chain | Tab order, unreachable elements, focus traps |
 | Scroll containers | Nested scroll areas, overflow state |
 | Landmarks | Semantic elements (nav, main, header, footer) |
-| Components | React/Vue/Svelte component names on DOM nodes |
 | axe-core | 100+ WCAG accessibility rules |
-| Event listeners | Click handlers, keyboard handlers |
-| Performance | Navigation timing, resource timing, memory |
-| Animations | Running CSS/JS animations |
 | Intersection | Element visibility relative to viewport |
+{% endtab %}
+
+{% tab title="Framework & State" %}
+| Collector | What it captures |
+|---|---|
+| Components | React/Vue/Svelte component names on DOM nodes |
 | Client storage | localStorage, sessionStorage, cookies (sensitive values redacted) |
 | CSS custom properties | CSS variables defined on `:root` and `body` |
+{% endtab %}
+{% endtabs %}
 
-Every diagnostic section has two action buttons:
+---
 
-- **Copy** (clipboard icon) - copies the section data as text. Paste into a chat, Jira ticket, or Slack message.
-- **Note** (document icon) - creates an annotation pre-populated with the diagnostic data. It appears in your Review tab and gets sent with your next "Send to Agent."
+## More Features
 
-This turns error reporting into a one-click action. See a red "2 failed" badge on Network? Click the note icon - the failed URLs, request types, and durations are packaged into an annotation automatically. No DevTools, no copy-pasting error messages, no writing technical descriptions. The sidebar surfaces what matters and lets you report it instantly.
-
-## Capture Output
-
-Every capture produces a structured JSON file in `.viewgraph/captures/`. Optionally, you can also save an HTML snapshot and a screenshot alongside it.
-
-### Settings (footer link in sidebar)
-
-| Toggle | What it saves | Location | Use case |
-|---|---|---|---|
-| **ViewGraph JSON** (always on) | Structured DOM capture with enrichment data | `.viewgraph/captures/viewgraph-host-timestamp.json` | Agent consumption via MCP tools |
-| **HTML Snapshot** | Full page HTML at capture time | `.viewgraph/snapshots/viewgraph-host-timestamp.html` | Fidelity comparison, offline replay |
-| **Screenshot** | Viewport PNG at capture time | `.viewgraph/screenshots/viewgraph-host-timestamp.png` | Visual reference, pixel diff |
-
-Toggle these in the sidebar settings (click "Settings" in the footer). The JSON capture is always saved. HTML snapshot and screenshot are optional - enable them when you need visual evidence or fidelity reports.
-
-### Where output goes
-
-```
-your-project/
-  .viewgraph/
-    captures/       <- JSON captures (always)
-    snapshots/      <- HTML snapshots (when enabled)
-    screenshots/    <- PNG screenshots (when enabled)
-    config.json     <- Project settings
-```
-
-The MCP server reads from `captures/`. The `get_fidelity_report` tool compares captures against snapshots. The `compare_screenshots` tool diffs PNG files pixel-by-pixel.
-
-## Keyboard Shortcuts
-
-Click the `?` button in the sidebar header for the shortcut cheat sheet. See [Keyboard Shortcuts](../reference/keyboard-shortcuts.md) for the full list.
-
-| Shortcut | Action |
+| Feature | Description |
 |---|---|
-| `Esc` | Close current panel or exit |
-| `Ctrl+Enter` | Send to Agent |
-| `Ctrl+Shift+C` | Copy Markdown |
-| `1` / `2` / `3` | Set severity |
-| `Delete` | Delete annotation |
-
-## Auto-Audit
-
-Toggle "Auto-Audit" in the Inspect tab. When enabled, the server automatically runs accessibility, layout, and testid audits after each capture and shows a summary badge in the sidebar.
-
-## Baselines
-
-In the Inspect tab, set the latest capture as your baseline. On subsequent captures, click "Compare" to see a structural diff: elements added, removed, moved, or with changed testids.
+| **Auto-audit** | Automatically runs a11y, layout, and testid audits after each capture |
+| **Baselines** | Set a capture as baseline, compare subsequent captures for structural regressions |
+| **Session recording** | Record multi-step user journeys as annotated sessions |
+| **HTML snapshots** | Save full page HTML alongside captures (toggle in Settings) |
+| **Screenshots** | Save viewport PNG alongside captures (toggle in Settings) |
+| **Keyboard shortcuts** | Ctrl+Enter (send), Ctrl+Shift+C (copy), 1/2/3 (severity), Esc (close). [Full list](../reference/keyboard-shortcuts.md) |
+| **URL trust indicator** | Shield icon shows trusted (green), configured (blue), or untrusted (amber) pages |
+| **Multi-project** | Up to 4 simultaneous projects with automatic URL routing. [Setup guide](../getting-started/multi-project.md) |
