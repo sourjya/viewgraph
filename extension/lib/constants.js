@@ -94,10 +94,10 @@ export async function updateConfig(updates) {
  * @returns {{ level: 'trusted'|'configured'|'untrusted', reason: string }}
  */
 export function classifyTrust(pageUrl, trustedPatterns = []) {
-  if (!pageUrl) return { level: 'untrusted', reason: 'empty URL' };
-  if (isLocalUrl(pageUrl)) return { level: 'trusted', reason: 'localhost' };
+  if (!pageUrl) return { level: 'untrusted', reason: 'Empty URL' };
+  if (isLocalUrl(pageUrl)) return { level: 'trusted', reason: 'Localhost' };
   for (const pattern of trustedPatterns) {
     if (pageUrl.includes(pattern)) return { level: 'configured', reason: pattern };
   }
-  return { level: 'untrusted', reason: 'remote URL' };
+  return { level: 'untrusted', reason: 'Remote URL' };
 }

@@ -53,7 +53,7 @@ describe('trust indicator', () => {
     }, { timeout: 3000 });
     const shield = shadowQuery(`[${ATTR}="trust-shield"]`);
     expect(shield.querySelector('svg')).not.toBeNull();
-    expect(shield.getAttribute('data-tooltip')).toContain('trusted');
+    expect(shield.getAttribute('data-tooltip')).toContain('Trusted');
   });
 
   it('(+) shows green shield for localhost even without server', async () => {
@@ -68,7 +68,7 @@ describe('trust indicator', () => {
       const shield = shadowQuery(`[${ATTR}="trust-shield"]`);
       expect(shield?.style.display).toBe('inline-flex');
     }, { timeout: 3000 });
-    expect(shadowQuery(`[${ATTR}="trust-shield"]`).getAttribute('data-tooltip')).toContain('trusted');
+    expect(shadowQuery(`[${ATTR}="trust-shield"]`).getAttribute('data-tooltip')).toContain('Trusted');
   });
 
   it('(+) shows amber shield for remote URL without server', async () => {
@@ -83,7 +83,7 @@ describe('trust indicator', () => {
       const shield = shadowQuery(`[${ATTR}="trust-shield"]`);
       expect(shield?.style.display).toBe('inline-flex');
     }, { timeout: 3000 });
-    expect(shadowQuery(`[${ATTR}="trust-shield"]`).getAttribute('data-tooltip')).toContain('untrusted');
+    expect(shadowQuery(`[${ATTR}="trust-shield"]`).getAttribute('data-tooltip')).toContain('Untrusted');
   });
 
   it('(+) shows blue shield for configured trusted pattern', async () => {
@@ -105,7 +105,7 @@ describe('trust indicator', () => {
       const shield = shadowQuery(`[${ATTR}="trust-shield"]`);
       expect(shield?.style.display).toBe('inline-flex');
     }, { timeout: 3000 });
-    expect(shadowQuery(`[${ATTR}="trust-shield"]`).getAttribute('data-tooltip')).toContain('configured');
+    expect(shadowQuery(`[${ATTR}="trust-shield"]`).getAttribute('data-tooltip')).toContain('Configured');
   });
 
   it('(+) shield always visible - never stays display:none after discoverServer resolves', async () => {

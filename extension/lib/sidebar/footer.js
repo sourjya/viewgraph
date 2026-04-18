@@ -180,7 +180,7 @@ export function createFooter({ onSend, onShowSettings }) {
    */
   function setTrustLevel(trust) {
     trustShield.replaceChildren(shieldIcon(16, TRUST_COLORS[trust.level], trust.level === 'untrusted' ? 'x' : 'check'));
-    trustShield.setAttribute('data-tooltip', `${trust.level}: ${trust.reason}`);
+    trustShield.setAttribute('data-tooltip', `${trust.level[0].toUpperCase() + trust.level.slice(1)}: ${trust.reason}`);
     trustShield.style.display = 'inline-flex';
   }
 
