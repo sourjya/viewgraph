@@ -216,16 +216,26 @@ export function createSettings() {
   async function refreshServerInfo() {
     try {
       const info = await transport.getInfo();
-      if (info) {
-        renderProjectInfo(info);
-        statusDotEl.style.background = COLOR.success;
-        statusText.textContent = 'Server Connected';
-        statusText.style.color = COLOR.success;
-      } else {
-        statusDotEl.style.background = COLOR.errorLight;
-        statusText.textContent = 'Server Not Connected';
-        statusText.style.color = COLOR.errorLight;
+      if (!info) throw new Error('no info');
+      // Verify this server actually matches the current page URL
+      const pageUrl = window.location.href;
+      const patterns = info.urlPatterns || [];
+      const root = info.projectRoot || '';
+      const isFileUrl = pageUrl.startsWith('file://');
+      const isMatch = isFileUrl
+        ? pageUrl.includes(root.replace(/\\/g, '/'))
+        : patterns.some((p) => pageUrl.includes(p));
+      if (!isMatch) {
+        statusDotEl.style.background = COLOR.muted;
+        statusText.textContent = 'No matching server for this page';
+        statusText.style.color = COLOR.muted;
+        cardBody.replaceChildren();
+        return;
       }
+      renderProjectInfo(info);
+      statusDotEl.style.background = COLOR.success;
+      statusText.textContent = 'Server Connected';
+      statusText.style.color = COLOR.success;
     } catch {
       statusDotEl.style.background = COLOR.errorLight;
       statusText.textContent = 'Server Not Connected';
