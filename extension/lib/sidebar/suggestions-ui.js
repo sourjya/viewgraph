@@ -24,6 +24,21 @@ const SEV_ICONS = { error: '\ud83d\udd34', warning: '\u26a0\ufe0f', info: '\ud83
 /** Map suggestion severity to annotation severity. */
 const SEV_MAP = { error: 'critical', warning: 'major', info: 'minor' };
 
+/** Track expanded state for Esc-to-collapse. */
+let _expandedState = null;
+
+/**
+ * Collapse the suggestion bar if expanded. Returns true if it was collapsed.
+ * Called by the Esc key handler in annotation-sidebar.js.
+ */
+export function collapseSuggestions() {
+  if (!_expandedState) return false;
+  const { wrapper, suggestions, callbacks } = _expandedState;
+  _expandedState = null;
+  renderCollapsed(wrapper, suggestions, callbacks);
+  return true;
+}
+
 /**
  * Render the suggestion bar: collapsed badge or expanded checklist.
  * @param {HTMLElement} container - Element to prepend into
@@ -48,12 +63,14 @@ export function renderSuggestionBar(container, suggestions, callbacks) {
 
 /** No issues - hide the panel entirely. */
 function renderClean(wrapper) {
+  _expandedState = null;
   wrapper.replaceChildren();
   wrapper.style.display = 'none';
 }
 
 /** One-line badge with count and Review button. */
 function renderCollapsed(wrapper, suggestions, callbacks) {
+  _expandedState = null;
   wrapper.replaceChildren();
   Object.assign(wrapper.style, { padding: '6px 12px' });
 
@@ -82,6 +99,7 @@ function renderCollapsed(wrapper, suggestions, callbacks) {
 
 /** Expanded checklist with tier tags and add buttons. */
 function renderExpanded(wrapper, suggestions, callbacks) {
+  _expandedState = { wrapper, suggestions, callbacks };
   wrapper.replaceChildren();
   Object.assign(wrapper.style, { padding: '6px 12px' });
 

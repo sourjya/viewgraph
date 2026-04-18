@@ -32,7 +32,7 @@ import { createSettings } from './sidebar/settings.js';
 import { createInspectTab } from './sidebar/inspect.js';
 import { renderReviewList } from './sidebar/review.js';
 import { scanForSuggestions } from './sidebar/suggestions.js';
-import { renderSuggestionBar } from './sidebar/suggestions-ui.js';
+import { renderSuggestionBar, collapseSuggestions } from './sidebar/suggestions-ui.js';
 import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from './sidebar/sync.js';
 import { EVENTS, createEventBus } from './sidebar/events.js';
 import { createHeader } from './sidebar/header.js';
@@ -336,6 +336,7 @@ export function create() {
     onEscape: () => {
       if (help.isVisible()) { help.hide(); return; }
       if (settingsVisible) { hideSettings(); return; }
+      if (collapseSuggestions()) return;
       hideMarkers(); stopAnnotate(); destroy();
     },
     onSend: () => { _shadowRoot?.querySelector(`[${ATTR}="send"]`)?.click(); },
