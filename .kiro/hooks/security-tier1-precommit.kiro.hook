@@ -1,0 +1,42 @@
+
+{
+  "enabled": true,
+  "name": "Security Checkpoint - Tier 1 Pre-Commit",
+  "description": "Before git commit: blocks commits containing secrets, unsafe execution, auth bypass, or critical input validation gaps in staged source files.",
+  "version": "1",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": [
+      "shell"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Check if the shell command about to run is exactly 'git commit' or starts with 'git commit' or calls 'scripts/git-commit-push.sh'. If it does NOT match any of these patterns, respond with just 'OK' and take no further action.
+
+Only if the command IS a git commit, run '.kiro/prompts/review-code-security.md' at TIER 1 scope.
+
+Tier 1 instructions: run 'git diff --cached --name-only --diff-filter=ACM' to get staged added/modified files. For each staged .py, .ts, and .tsx file (skip .md, .json, .lock, .css, .html, test files), read the staged content via 'git show :path/to/file' and check for ALL of the following:
+
+CRITICAL (block commit):
+- T1-S1: Hardcoded secrets: AWS keys (AKIA...), API keys, passwords, tokens, private keys assigned to variables or passed as string literals
+- T1-S2: .env files staged that are not .env.example
+- T1-S3: Private keys or certificates in source files
+- T1-S4: Base64-encoded credentials or secret material embedded in code
+- T1-S5: eval(), exec(), innerHTML assignment, dangerouslySetInnerHTML without sanitization, subprocess with shell=True, os.system()
+- T1-S6: Raw SQL string interpolation (not parameterized queries)
+- T1-S7: Auth or authorization checks bypassed or weakened in auth files, middleware, or route handlers
+
+HIGH (block commit):
+- T1-S8: New API endpoints missing auth decorators or guards
+- T1-S9: Raw exception messages or stack traces returned in API responses
+
+MEDIUM (warn but allow):
+- T1-S10: New FastAPI routes without Pydantic model validation on request bodies
+- T1-S11: Pydantic schemas with string fields missing max_length constraints
+- T1-S12: PII (email, name, address, phone) logged in plain text without masking
+
+For each violation found, report: file, line number, violation ID, severity, and a one-line fix suggestion. If ANY CRITICAL or HIGH violation is found, BLOCK the commit and list all violations before proceeding. MEDIUM violations are reported as warnings but do not block."
+  }
+}
+

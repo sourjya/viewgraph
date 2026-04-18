@@ -1,0 +1,56 @@
+
+{
+  "enabled": true,
+  "name": "Security Checkpoint - Tier 2 Feature Complete",
+  "description": "After feature completion: full security audit of files changed since the last SRR, covering OWASP S1-S13, BOLA/IDOR, cryptographic quality, and file upload security.",
+  "version": "1",
+  "when": {
+    "type": "postToolUse",
+    "toolTypes": [
+      "shell"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Run the security review at TIER 2 scope.
+
+Read docs/security/SECURITY_LOG.md to understand what has been reviewed before. Read docs/roadmap/roadmap.md to identify specs completed since the last SRR. Identify the next SRR number by checking docs/security/ for existing reports.
+
+Audit all files changed since the last SRR, plus any new integrations, routes, or IAM definitions. Check for ALL of the following:
+
+S1 - AUTHENTICATION & AUTHORIZATION: per-route and per-service authentication enforcement, role-based access control correctness, session management, token expiry and refresh logic, OAuth and SSO integration security.
+
+S1-EXT - BOLA/IDOR: every endpoint accepting a resource ID must verify the requesting user owns or has explicit permission for that specific resource at the service layer - not only at the route layer. Check for horizontal privilege escalation (user A accessing user B data by changing an ID), and indirect object references in batch or bulk endpoints.
+
+S2 - DATA ISOLATION & MULTI-TENANCY: tenant data leakage across API boundaries, missing tenant scoping in queries, shared caches or queues leaking cross-tenant data.
+
+S3 - INPUT VALIDATION & INJECTION: SQL, NoSQL, LDAP, OS command, and template injection vectors, path traversal, XML/JSON deserialization vulnerabilities, GraphQL query depth and complexity limits.
+
+S4 - CRYPTOGRAPHY EXPANDED: weak algorithms (MD5/SHA1 for password hashing, ECB mode AES, RSA under 2048 bits), insecure randomness (Math.random() or random.random() for tokens/OTPs/session IDs), JWT vulnerabilities (alg:none, weak signing secrets, missing exp validation, RS256 vs HS256 confusion), timing attacks (== comparison of secrets instead of constant-time functions), IV or nonce reuse, secrets not in AWS Secrets Manager or Parameter Store.
+
+S5 - API SECURITY & ERROR HANDLING: verbose error responses leaking internal paths or framework versions, user enumeration via different error messages, missing pagination limits, GraphQL introspection in non-dev environments, debug flags active in production.
+
+S6 - DATABASE & ORM SECURITY: ORM misuse enabling injection, missing query result limits, unencrypted sensitive fields at rest, insecure direct database access bypassing service layer.
+
+S7 - FRONTEND SECURITY: XSS vectors, sensitive data in localStorage or sessionStorage, client-side-only authorization checks, insecure postMessage handling.
+
+S8 - INFRASTRUCTURE & CONFIGURATION: debug or verbose logging in production, insecure default configurations, exposed admin interfaces.
+
+S9 - DATA PRIVACY: PII collected without necessity, missing data retention or deletion mechanisms, unmasked sensitive data in logs or exports.
+
+S10 - IAM & LEAST PRIVILEGE: wildcard actions or resources in IAM policies, missing condition keys, cross-account trust misconfigurations, Lambda execution roles broader than required.
+
+S11 - SECRETS & ENVIRONMENT VARIABLES: Lambda env var exposure of secrets, missing Secrets Manager usage, function URL authentication disabled, overly broad resource-based policies.
+
+S12 - CLOUD MISCONFIGURATION: S3 bucket public access, API Gateway missing auth, CloudWatch log groups retaining sensitive data without expiry, permissive VPC security group ingress, unencrypted data at rest or in transit.
+
+S13 - BUSINESS LOGIC: price or quantity manipulation, workflow bypass (later step invoked without earlier steps), privilege escalation through data fields, mass assignment without allowlist, race conditions in business-critical flows (double-spend, double-booking, duplicate reward redemption). For every business rule found, verify it is enforced consistently at all entry points - controller, service, validator, job, and database layers.
+
+S17 - FILE UPLOAD SECURITY: MIME type validation based on file content not extension, server-side file size limits, path traversal in file names, malicious file content (zip bombs, SVG with embedded scripts, polyglot files), S3 buckets without pre-signed URL protection or with public-read ACLs.
+
+For each finding: classify severity (CRITICAL, HIGH, MEDIUM, LOW, INFO), assign finding ID (S{cat}-{seq}), assign confidence (CONFIRMED, LIKELY, NEEDS VALIDATION), describe the concrete attack scenario, propose 2-3 remediation pathways with pros/cons, recommend the best option with justification. Every HIGH+ finding must note whether a regression test exists. For S10-S12 findings note the specific AWS service and blast radius. For S13 findings describe the concrete abuse scenario.
+
+Create docs/security/SRR-{###}-{YYYY-MM-DD}-T2.md with the full report. Update docs/security/SECURITY_LOG.md. Create immediate fix tasks for CRITICAL/HIGH findings. Add MEDIUM/LOW findings to docs/roadmap/roadmap.md. Update the security reviews table in docs/roadmap/roadmap.md."
+  }
+}
+

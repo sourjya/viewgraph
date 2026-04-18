@@ -1,0 +1,52 @@
+
+{
+  "enabled": true,
+  "name": "Security Checkpoint - Tier 3 Sprint End",
+  "description": "Sprint or phase end: full codebase audit covering all Tier 1 and Tier 2 categories plus supply chain, secure headers, CORS, logging security, rate limiting, AI-generation artifacts, and test coverage delta.",
+  "version": "1",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": [
+      "shell"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Run the security review at TIER 3 scope - full codebase.
+
+Read docs/security/SECURITY_LOG.md to understand all prior reviews. Read docs/roadmap/roadmap.md to identify all specs completed this sprint. Identify the next SRR number by checking docs/security/ for existing reports.
+
+Run ALL Tier 1 and Tier 2 categories across the full codebase, plus the following additional categories:
+
+Q1 - DEAD CODE & UNUSED IMPORTS: unused functions, unreachable code paths, unused imports and dependencies.
+
+Q2 - QUERY PERFORMANCE & DATABASE HYGIENE: missing indexes, N+1 query patterns, unbounded result sets, unoptimized joins.
+
+Q3 - ERROR HANDLING & CONSISTENCY: mixed error shapes, repeated error translation logic, inconsistent user-facing vs internal error handling, verbose error modes left active.
+
+D1 - KNOWN CVEs: scan package.json, requirements.txt, pom.xml, go.mod, or equivalent manifests for packages with known vulnerabilities. Include CVE ID and CVSS score for each finding.
+
+D2 - OUTDATED OR ABANDONED PACKAGES: dependencies with no recent maintenance activity or available major security patches.
+
+D3 - SECRETS IN VERSION CONTROL: .env files, credential files, or secret patterns committed to git history. Verify .gitignore covers .env, *.pem, *.key, *.p12, and credential file types.
+
+D4 - SUPPLY CHAIN INTEGRITY: internal package names that could be squatted on public registries (dependency confusion), package names one character off from popular libraries (typosquatting), transitive dependency risk from indirect vulnerable packages. Note whether risk is direct or transitive.
+
+D5 - LOCK FILE INTEGRITY: verify package-lock.json, poetry.lock, or equivalent is committed, consistent with the manifest, and not manually edited. Flag postinstall or build-time scripts in package.json that execute arbitrary code.
+
+S15 - SECURE HEADERS & CORS: Content-Security-Policy presence and strength, X-Frame-Options or CSP frame-ancestors, X-Content-Type-Options: nosniff, Strict-Transport-Security with appropriate max-age, CORS wildcard origins combined with credentials:true, overly permissive Access-Control-Allow-Origin, missing origin validation, cookie security flags (HttpOnly, Secure, SameSite) on all session and auth cookies, HTTPS enforcement and HTTP-to-HTTPS redirect. Note whether misconfiguration affects all responses or only specific routes.
+
+S16 - LOGGING SECURITY: security-relevant events not being logged (failed logins, permission denials, admin actions, data exports, password resets, account lockouts), log injection via user-controlled input written directly into log messages, sensitive data in logs (PII, tokens, passwords, session IDs, internal paths), audit trail completeness for sensitive data operations, missing correlation IDs or request context. Classify each finding as: missing event, data exposure, or structural logging inconsistency.
+
+S14-EXT - RATE LIMITING SYSTEMIC REVIEW: missing rate limiting on authentication endpoints enabling brute force, missing rate limiting on expensive operations (file uploads, report generation, bulk exports, email sending), unbounded pagination (limit or page_size parameters without a maximum cap), ReDoS patterns (catastrophic backtracking in regex applied to user input), missing account lockout or progressive delay after repeated failed auth attempts, missing CAPTCHA or bot detection on public-facing signup, login, or contact forms.
+
+AI-GENERATION ARTIFACT REVIEW: inconsistent naming conventions across files generated in different sessions, redundant inline comments that merely restate what the code does, unnecessary abstraction layers added without reducing duplication, structural inconsistencies suggesting code was generated without awareness of adjacent modules, over-verbose boilerplate that should be consolidated.
+
+TEST COVERAGE DELTA: for every new module, service, utility, or Lambda handler added this sprint, flag whether corresponding unit or integration tests exist. Highlight untested public interfaces, untested business-critical paths, and service boundaries lacking contract tests.
+
+For each finding: classify severity (CRITICAL, HIGH, MEDIUM, LOW, INFO), assign finding ID, assign confidence (CONFIRMED, LIKELY, NEEDS VALIDATION), describe the concrete attack scenario or maintainability cost, propose 2-3 remediation pathways with pros/cons, recommend the best option with justification. Every HIGH+ finding must note whether a regression test exists.
+
+Create docs/security/SRR-{###}-{YYYY-MM-DD}-T3.md with the full report. Update docs/security/SECURITY_LOG.md. Create immediate fix tasks for CRITICAL/HIGH findings. Add MEDIUM/LOW findings to docs/roadmap/roadmap.md. Update the security reviews table in docs/roadmap/roadmap.md. Record a dependency manifest snapshot in docs/security/dep-snapshot-{YYYY-MM-DD}.md for comparison in the next sprint."
+  }
+}
+

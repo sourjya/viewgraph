@@ -1,3 +1,4 @@
+
 Act as a principal-level software engineer, software architect, and prompt-driven code review specialist.
 
 Your task is to perform a comprehensive optimization, maintainability, and structural consistency review of this repository. Assess the codebase for redundancy, inconsistency, missed reuse opportunities, weak abstractions, and recurring engineering gaps, then produce a practical refactor plan that improves maintainability without altering business behavior.
@@ -22,10 +23,10 @@ Focus on identifying:
 12. Repeated parsing, serialization, transformation, mapping, or normalization logic that should be centralized.
 13. Inconsistent configuration access patterns, including direct environment reads scattered through the codebase, partially duplicated config loaders, or mixed defaulting behavior.
 14. Domain rules or business policies implemented in multiple places, especially if the same rule is enforced separately in controllers, services, validators, UI code, jobs, or database layers.
-15. Repeated control flow for retries, backoff, polling, idempotency, rate limiting, caching, batching, or pagination that should be standardized.
+15. Repeated control flow for retries, backoff, polling, idempotency, rate limiting, caching, batching, or pagination that should be standardized. Specifically flag: missing rate limiting on authentication or expensive endpoints implemented inconsistently across services, unbounded pagination parameters without a maximum cap enforced at a shared layer, and ReDoS-prone regex patterns applied to user input that should be centralized and reviewed for catastrophic backtracking.
 16. Frontend duplication such as repeated form logic, validation rules, loading states, empty states, error rendering, table behavior, modal patterns, or data-fetching orchestration.
 17. Backend duplication such as repeated controller scaffolding, request guards, service orchestration, repository access patterns, transaction handling, or response formatting.
-18. Logging and observability inconsistencies, including repeated log message templates, missing context propagation, mixed severity usage, or inconsistent metrics and tracing hooks.
+18. Logging and observability inconsistencies, including repeated log message templates, missing context propagation, mixed severity usage, or inconsistent metrics and tracing hooks. Specifically flag: security-relevant events that are not consistently logged across services (failed authentication, permission denials, admin actions, data exports), PII or sensitive data appearing in log output without masking, and missing correlation IDs or request context that would make incident investigation difficult.
 19. Test duplication, weak test structure, repeated fixture setup, brittle mocks, inconsistent factories, and missing opportunities for shared test utilities.
 20. Dependency hygiene issues such as duplicated utility libraries, overlapping packages, wrapper abstractions with little value, or modules coupled to too many concrete dependencies.
 21. Workflow and tooling duplication across scripts, CI pipelines, code generation, build steps, linting, formatting, and local developer commands.
@@ -58,6 +59,8 @@ Use the following review behavior:
 * If you find one test smell, determine whether it reflects a broader testing pattern or an isolated case.
 * If you find one AI-generation artifact (objective 31), scan all files generated in the same session or feature branch for the same pattern family.
 * If you find one untested module or interface (objective 32), audit the entire layer for consistent test coverage gaps rather than reporting it as an isolated omission.
+* If you find one rate limiting gap or unbounded pagination instance (objective 15), scan all endpoints and service entry points for the same missing control.
+* If you find one logging security gap (objective 18), audit all services for consistent coverage of security-relevant events before reporting it as an isolated omission.
 
 Treat the repository as a pattern landscape, not a collection of isolated issues.
 
@@ -172,6 +175,8 @@ Group related findings into broader refactor themes, for example:
 * Repository and query abstraction cleanup
 * Test utility consolidation
 * AI-generation drift remediation
+* Rate limiting and abuse prevention standardization
+* Logging security and observability consolidation
 
 This section should help turn many granular findings into a smaller number of actionable workstreams.
 
@@ -195,6 +200,9 @@ At the end, include a checklist of high-value areas you explicitly reviewed, eve
 * Untested new modules and public interfaces
 * Redundant comments or documentation that restates obvious code behavior
 * Lambda handler structure and execution role hygiene (for AWS-based codebases)
+* Rate limiting coverage across all authentication and expensive endpoints
+* Security-relevant event logging coverage across all services
+* Unbounded pagination parameters without enforced maximum caps
 
 ## Quality Bar
 
