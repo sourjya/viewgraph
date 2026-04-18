@@ -39,7 +39,7 @@ Runtime debuggers (Replay.io) capture execution traces but have no review workfl
 
 4. **Measured accuracy.** 92.1% composite accuracy across 48 diverse real-world websites. No competitor publishes equivalent metrics.
 
-5. **14 enrichment collectors** in every capture: network requests, console errors, breakpoints, media queries, stacking contexts, focus chain, scroll containers, landmarks, components, axe-core, event listeners, performance, animations, intersection state.
+5. **16 enrichment collectors** in every capture: network requests, console errors, breakpoints, media queries, stacking contexts, focus chain, scroll containers, landmarks, components, axe-core, event listeners, performance, animations, intersection state.
 
 ## Token Efficiency
 

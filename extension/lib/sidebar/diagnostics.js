@@ -19,6 +19,8 @@ import { collectFocusChain } from '#lib/collectors/focus-collector.js';
 import { collectScrollContainers } from '#lib/collectors/scroll-collector.js';
 import { collectLandmarks } from '#lib/collectors/landmark-collector.js';
 import { checkRendered } from '#lib/collectors/visibility-collector.js';
+import { collectStorage } from '#lib/collectors/storage-collector.js';
+import { collectCSSCustomProperties } from '#lib/collectors/css-custom-properties-collector.js';
 import { groupRequests, smartPath } from '#lib/network-grouper.js';
 import { createSection } from './inspect.js';
 import { COLOR, LABEL_STYLE } from './styles.js';
@@ -221,6 +223,40 @@ export function renderDiagnostics(container, callbacks = {}) {
       scrollBody.appendChild(row);
     }
     container.appendChild(scrollSection);
+  }
+
+  // Client-side storage section (always shown if entries exist)
+  const storageData = collectStorage();
+  if (storageData.summary.local > 0 || storageData.summary.session > 0 || storageData.summary.cookies > 0) {
+    const storageBadge = `${storageData.summary.local + storageData.summary.session + storageData.summary.cookies} entries`;
+    const { section: storageSection, body: storageBody } = createSection('Storage', storageBadge, COLOR.border, callbacks.onRefresh);
+    for (const entry of storageData.localStorage.slice(0, 10)) {
+      const row = document.createElement('div');
+      row.textContent = `local: ${entry.key} = ${entry.value}`;
+      Object.assign(row.style, { color: COLOR.secondary, padding: '1px 0', fontSize: '10px', wordBreak: 'break-all' });
+      storageBody.appendChild(row);
+    }
+    for (const entry of storageData.sessionStorage.slice(0, 5)) {
+      const row = document.createElement('div');
+      row.textContent = `session: ${entry.key} = ${entry.value}`;
+      Object.assign(row.style, { color: COLOR.secondary, padding: '1px 0', fontSize: '10px', wordBreak: 'break-all' });
+      storageBody.appendChild(row);
+    }
+    container.appendChild(storageSection);
+  }
+
+  // CSS custom properties section (always shown if properties exist)
+  const cssProps = collectCSSCustomProperties();
+  if (cssProps.summary.rootCount > 0) {
+    const cssBadge = `${cssProps.summary.rootCount} root vars`;
+    const { section: cssSection, body: cssBody } = createSection('CSS Variables', cssBadge, COLOR.border, callbacks.onRefresh);
+    for (const prop of cssProps.root.slice(0, 15)) {
+      const row = document.createElement('div');
+      row.textContent = `${prop.name}: ${prop.value}`;
+      Object.assign(row.style, { color: COLOR.primary, padding: '1px 0', fontSize: '10px', fontFamily: 'monospace' });
+      cssBody.appendChild(row);
+    }
+    container.appendChild(cssSection);
   }
 
   // Empty state: all diagnostics clean
