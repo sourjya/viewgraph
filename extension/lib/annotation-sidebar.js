@@ -100,10 +100,10 @@ export function create() {
   discoverServer(window.location.href)
     .then(async (url) => {
       // Guard: sidebar may have been destroyed while discovery was in flight
-      if (!_header) return;
+      if (!_footer) return;
       if (url) {
-        _header.statusDot.style.background = COLOR.success;
-        _header.statusDot.setAttribute('data-tooltip', `MCP server: ${url}`);
+        _footer.statusDot.style.background = COLOR.success;
+        _footer.statusDot.setAttribute('data-tooltip', `MCP server: ${url}`);
         _header.statusBanner.style.display = 'none';
         try {
           const info = await transport.getInfo();
@@ -123,20 +123,20 @@ export function create() {
           }
           const trust = classifyTrust(window.location.href, info.trustedPatterns || []);
           _trustLevel = trust;
-          _header.setTrustLevel(trust);
+          _footer.setTrustLevel(trust);
         } catch (e) { console.error('[ViewGraph] info/trust error:', e); }
       } else {
-        _header.statusDot.style.background = COLOR.errorLight;
-        _header.statusDot.setAttribute('data-tooltip', 'MCP server offline');
+        _footer.statusDot.style.background = COLOR.errorLight;
+        _footer.statusDot.setAttribute('data-tooltip', 'MCP server offline');
         _header.statusBanner.textContent = 'No project connected. Copy MD and Report available.';
         _header.statusBanner.style.display = 'block';
         _footer.setOfflineMode();
       }
       // Always classify trust based on URL even without server
-      if (!_trustLevel && _header) {
+      if (!_trustLevel && _footer) {
         const trust = classifyTrust(window.location.href, []);
         _trustLevel = trust;
-        _header.setTrustLevel(trust);
+        _footer.setTrustLevel(trust);
       }
     });
 
@@ -145,7 +145,7 @@ export function create() {
     if (!_header) return;
     const trust = classifyTrust(window.location.href, []);
     _trustLevel = trust;
-    _header.setTrustLevel(trust);
+    _footer.setTrustLevel(trust);
   };
   window.addEventListener('popstate', _popstateHandler);
 

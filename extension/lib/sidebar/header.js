@@ -2,21 +2,20 @@
  * Sidebar Header
  *
  * Creates the top header row of the annotation sidebar containing:
- * - ViewGraph logo + label (clickable to toggle collapse)
- * - Connection status dot (green=connected, red=offline)
- * - Trust shield icon (F17: green=trusted, blue=configured, amber=untrusted)
+ * - ViewGraph logo + label
  * - Notification bell (pulses when agent requests pending)
  * - Help button (opens help card overlay)
  * - Collapse chevron + close button
  *
+ * Status indicators (connection dot, trust shield) live in the footer
+ * per ADR-012 - header is for navigation/actions only.
+ *
  * @see sidebar/help.js - help card toggled by the ? button
- * @see lib/constants.js - classifyTrust() for trust level determination
+ * @see sidebar/footer.js - status dot + trust shield
  */
 
 import { ATTR } from '#lib/selector.js';
-import { chevronRightIcon, closeIcon, bellIcon, shieldIcon } from '#lib/sidebar/icons.js';
-import { classifyTrust } from '#lib/constants.js';
-import * as transport from '#lib/transport.js';
+import { chevronRightIcon, closeIcon, bellIcon } from '#lib/sidebar/icons.js';
 import { COLOR, FONT } from '#lib/sidebar/styles.js';
 
 /**
@@ -27,7 +26,7 @@ import { COLOR, FONT } from '#lib/sidebar/styles.js';
  * @param {Function} opts.onClose - Called when close button clicked
  * @param {Function} opts.onHelpToggle - Called when help button clicked
  * @param {Function} opts.onBellClick - Called when notification bell clicked
- * @returns {{ element: HTMLElement, statusDot: HTMLElement, trustShield: HTMLElement, bellBtn: HTMLElement, statusBanner: HTMLElement, setTrustLevel: Function }}
+ * @returns {{ element: HTMLElement, bellBtn: HTMLElement, statusBanner: HTMLElement, updateBell: Function }}
  */
 export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellClick }) {
   const header = document.createElement('div');
@@ -52,25 +51,6 @@ export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellCl
     background: 'transparent', color: COLOR.primaryLight, fontSize: '13px', fontWeight: '600',
     cursor: 'default', textAlign: 'left', display: 'flex', alignItems: 'center',
   });
-
-  // Connection status dot
-  const statusDot = document.createElement('span');
-  statusDot.setAttribute(ATTR, 'status-dot');
-  Object.assign(statusDot.style, {
-    width: '8px', height: '8px', borderRadius: '50%',
-    background: COLOR.muted, flexShrink: '0', transition: 'background 0.3s',
-    marginLeft: '6px', border: '1px solid rgba(255,255,255,0.1)',
-  });
-
-  // Trust shield (F17)
-  const trustShield = document.createElement('span');
-  trustShield.setAttribute(ATTR, 'trust-shield');
-  Object.assign(trustShield.style, {
-    display: 'none', marginLeft: '4px', flexShrink: '0',
-    padding: '2px', borderRadius: '3px', background: 'rgba(255,255,255,0.04)',
-  });
-
-  toggle.append(statusDot, trustShield);
 
   // Notification bell
   const bellBtn = document.createElement('button');
@@ -138,18 +118,6 @@ export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellCl
     flexShrink: '0',
   });
 
-  const TRUST_COLORS = { trusted: COLOR.success, configured: '#60a5fa', untrusted: COLOR.warning };
-
-  /**
-   * Update the trust shield icon based on trust classification.
-   * @param {{ level: string, reason: string }} trust - Trust classification result
-   */
-  function setTrustLevel(trust) {
-    trustShield.replaceChildren(shieldIcon(16, TRUST_COLORS[trust.level], trust.level === 'untrusted' ? 'x' : 'check'));
-    trustShield.setAttribute('data-tooltip', `${trust.level}: ${trust.reason}`);
-    trustShield.style.display = 'inline-flex';
-  }
-
   /**
    * Update bell visibility and animation based on pending request count.
    * @param {number} count - Number of pending agent requests
@@ -165,5 +133,5 @@ export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellCl
     }
   }
 
-  return { element: header, statusDot, trustShield, bellBtn, statusBanner, setTrustLevel, updateBell };
+  return { element: header, bellBtn, statusBanner, updateBell };
 }

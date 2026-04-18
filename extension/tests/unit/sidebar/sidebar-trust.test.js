@@ -24,11 +24,11 @@ describe('trust indicator', () => {
     expect(shield).not.toBeNull();
   });
 
-  it('(+) trust-shield is inside the toggle/header area', () => {
+  it('(+) trust-shield is inside the footer status row (ADR-012)', () => {
     start();
     create();
-    const toggle = shadowQuery(`[${ATTR}="toggle"]`);
-    const shield = toggle?.querySelector(`[${ATTR}="trust-shield"]`);
+    const footer = shadowQuery(`[${ATTR}="footer"]`);
+    const shield = footer?.querySelector(`[${ATTR}="trust-shield"]`);
     expect(shield).not.toBeNull();
   });
 

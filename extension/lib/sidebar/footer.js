@@ -14,7 +14,7 @@
  */
 
 import { ATTR } from '#lib/selector.js';
-import { sendIcon, checkIcon, docIcon, downloadIcon, gearIcon } from '#lib/sidebar/icons.js';
+import { sendIcon, checkIcon, docIcon, downloadIcon, gearIcon, shieldIcon } from '#lib/sidebar/icons.js';
 import { COLOR, FONT } from './styles.js';
 import { formatMarkdown } from '#lib/export/export-markdown.js';
 import { getAnnotations } from '#lib/annotate.js';
@@ -40,7 +40,7 @@ const BTN_STYLE = {
  * @param {Object} opts
  * @param {Function} opts.onSend - Called when Send to Agent clicked (after trust check)
  * @param {Function} opts.onShowSettings - Called when Settings link clicked
- * @returns {{ element: HTMLElement, sendBtn: HTMLElement, copyBtn: HTMLElement, dlBtn: HTMLElement, setOfflineMode: Function, updateDisabledState: Function }}
+ * @returns {{ element: HTMLElement, sendBtn: HTMLElement, copyBtn: HTMLElement, dlBtn: HTMLElement, statusDot: HTMLElement, setOfflineMode: Function, updateDisabledState: Function, setTrustLevel: Function }}
  */
 export function createFooter({ onSend, onShowSettings }) {
   const footer = document.createElement('div');
@@ -92,6 +92,31 @@ export function createFooter({ onSend, onShowSettings }) {
   Object.assign(secondaryRow.style, { display: 'flex', gap: '4px', alignItems: 'center' });
   secondaryRow.append(copyBtn, dlBtn);
 
+  // Status row: [dot] [shield] ←spacer→ [gear settings]  (ADR-012)
+  const statusRow = document.createElement('div');
+  Object.assign(statusRow.style, {
+    display: 'flex', alignItems: 'center', padding: '4px 0', marginTop: '4px',
+    borderTop: `1px solid ${COLOR.border}`,
+  });
+
+  const statusDot = document.createElement('span');
+  statusDot.setAttribute(ATTR, 'status-dot');
+  Object.assign(statusDot.style, {
+    width: '8px', height: '8px', borderRadius: '50%',
+    background: COLOR.muted, flexShrink: '0', transition: 'background 0.3s',
+    border: '1px solid rgba(255,255,255,0.1)',
+  });
+
+  const trustShield = document.createElement('span');
+  trustShield.setAttribute(ATTR, 'trust-shield');
+  Object.assign(trustShield.style, {
+    display: 'none', marginLeft: '6px', flexShrink: '0',
+    padding: '2px', borderRadius: '3px', background: 'rgba(255,255,255,0.04)',
+  });
+
+  const spacer = document.createElement('span');
+  spacer.style.flex = '1';
+
   // Settings link
   const settingsLink = document.createElement('button');
   settingsLink.setAttribute(ATTR, 'settings-link');
@@ -99,14 +124,14 @@ export function createFooter({ onSend, onShowSettings }) {
   Object.assign(settingsLink.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
     color: COLOR.muted, fontSize: '11px', fontFamily: FONT,
-    padding: '6px 0', display: 'flex', alignItems: 'center', gap: '5px',
-    width: '100%', justifyContent: 'center', marginTop: '4px',
+    padding: '4px 0', display: 'flex', alignItems: 'center', gap: '5px',
   });
   settingsLink.addEventListener('mouseenter', () => { settingsLink.style.color = COLOR.secondary; });
   settingsLink.addEventListener('mouseleave', () => { settingsLink.style.color = COLOR.dim; });
   settingsLink.addEventListener('click', onShowSettings);
 
-  footer.append(sendBtn, secondaryRow, settingsLink);
+  statusRow.append(statusDot, trustShield, spacer, settingsLink);
+  footer.append(sendBtn, secondaryRow, statusRow);
 
   /** Flash a button green with a success message, then restore. */
   function flashButton(btn, msg, iconFn, label) {
@@ -147,5 +172,17 @@ export function createFooter({ onSend, onShowSettings }) {
     setTimeout(() => { sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent')); sendBtn.style.background = COLOR.primary; }, 2000);
   }
 
-  return { element: footer, sendBtn, copyBtn, dlBtn, setOfflineMode, updateDisabledState, flashSend };
+  const TRUST_COLORS = { trusted: COLOR.success, configured: '#60a5fa', untrusted: COLOR.warning };
+
+  /**
+   * Update the trust shield icon based on trust classification.
+   * @param {{ level: string, reason: string }} trust - Trust classification result
+   */
+  function setTrustLevel(trust) {
+    trustShield.replaceChildren(shieldIcon(16, TRUST_COLORS[trust.level], trust.level === 'untrusted' ? 'x' : 'check'));
+    trustShield.setAttribute('data-tooltip', `${trust.level}: ${trust.reason}`);
+    trustShield.style.display = 'inline-flex';
+  }
+
+  return { element: footer, sendBtn, copyBtn, dlBtn, statusDot, setOfflineMode, updateDisabledState, flashSend, setTrustLevel };
 }

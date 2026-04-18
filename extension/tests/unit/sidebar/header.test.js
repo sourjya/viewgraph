@@ -14,8 +14,6 @@ describe('createHeader', () => {
   it('(+) returns element with all expected children', () => {
     const h = createHeader({ onToggleCollapse: vi.fn(), onClose: vi.fn(), onHelpToggle: vi.fn(), onBellClick: vi.fn() });
     expect(h.element.tagName).toBe('DIV');
-    expect(h.statusDot).toBeTruthy();
-    expect(h.trustShield).toBeTruthy();
     expect(h.bellBtn).toBeTruthy();
     expect(h.statusBanner).toBeTruthy();
   });
@@ -39,13 +37,6 @@ describe('createHeader', () => {
     const h = createHeader({ onToggleCollapse: vi.fn(), onClose: vi.fn(), onHelpToggle: fn, onBellClick: vi.fn() });
     h.element.querySelector('[data-vg-annotate="help-btn"]').click();
     expect(fn).toHaveBeenCalled();
-  });
-
-  it('(+) setTrustLevel updates shield', () => {
-    const h = createHeader({ onToggleCollapse: vi.fn(), onClose: vi.fn(), onHelpToggle: vi.fn(), onBellClick: vi.fn() });
-    h.setTrustLevel({ level: 'trusted', reason: 'localhost' });
-    expect(h.trustShield.style.display).toBe('inline-flex');
-    expect(h.trustShield.getAttribute('data-tooltip')).toContain('trusted');
   });
 
   it('(+) updateBell shows bell when count > 0', () => {
