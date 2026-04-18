@@ -18,7 +18,7 @@ Yes. The ZIP files on GitHub are built from the same open-source code you can se
 
 - The extension source code is in [`extension/`](https://github.com/sourjya/viewgraph/tree/main/extension) - fully readable, no obfuscation
 - ZIPs are produced by the [`scripts/build-extension.sh`](https://github.com/sourjya/viewgraph/blob/main/scripts/build-extension.sh) build script, which runs the standard build toolchain and packages the output
-- Each release is [tagged in git](https://github.com/sourjya/viewgraph/tags) (e.g., `v0.3.7`) so you can verify exactly which code produced the ZIP
+- Each release is [tagged in git](https://github.com/sourjya/viewgraph/tags) (e.g., `v0.4.0`) so you can verify exactly which code produced the ZIP
 - The extension [manifest](https://github.com/sourjya/viewgraph/blob/main/extension/manifest.json) lists every permission it requests - nothing hidden
 - You can always [build from source](installation.md#build-from-source) yourself if you prefer full control
 
@@ -27,7 +27,7 @@ The extension runs entirely on your machine. No data is sent to any external ser
 ## How to check your extension version
 
 1. Click the ViewGraph icon in your browser toolbar
-2. The version number appears in the sidebar footer (e.g., `v0.3.7`)
+2. The version number appears in the sidebar footer (e.g., `v0.4.0`)
 3. Compare with the latest version on [GitHub Releases](https://github.com/sourjya/viewgraph/releases)
 
 If your extension version is behind, follow the steps below for your browser.
@@ -36,7 +36,7 @@ If your extension version is behind, follow the steps below for your browser.
 
 When the MCP server (installed via npm) is newer than your browser extension, ViewGraph shows a banner in the sidebar:
 
-> Extension v0.1.0 is behind server v0.3.7. [Update extension](#)
+> Extension v0.1.0 is behind server v0.4.0. [Update extension](#)
 
 This means `npx` pulled the latest server, but your browser extension hasn't received the store update yet. Install the latest ZIP from GitHub to resolve it.
 

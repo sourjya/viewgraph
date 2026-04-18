@@ -2,7 +2,7 @@
 
 When you run `npx viewgraph-init` in a Kiro project, ViewGraph installs hooks, prompts, and steering docs that automate common workflows. These work in both Kiro IDE and Kiro CLI.
 
-## Hooks (3)
+## Hooks (8)
 
 | Hook | Trigger | What it does |
 |---|---|---|
@@ -25,7 +25,7 @@ In Kiro CLI, type `@vg` then Tab to see all shortcuts:
 | `@vg-tests` | Generate Playwright E2E tests from capture |
 | `@vg-help` | List all ViewGraph tools with explanations |
 
-## Steering Docs (3)
+## Steering Docs (4)
 
 Installed to `.kiro/steering/` to guide the agent's behavior:
 

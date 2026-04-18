@@ -37,13 +37,13 @@ What's shipped, what's next, and where ViewGraph is heading.
 - Generate tests from captures via `@vg-tests`
 
 ### Kiro Power
-- 3 hooks: capture-and-audit, fix-annotations, check-testids
+- 8 hooks: capture-and-audit, fix-annotations, check-testids, security-tier1-precommit, security-tier2-feature, security-tier3-sprint, comment-standards-check, doc-sync-check
 - 9 prompt shortcuts: @vg-audit, @vg-review, @vg-capture, @vg-diff, @vg-testids, @vg-a11y, @vg-tests, @vg-help, @vg-ideate
 - 3 steering docs for agent behavior
 
 ### Distribution
 - npm: `@viewgraph/core` and `@viewgraph/playwright` published
-- GitHub: public repo with 1444+ tests
+- GitHub: public repo with 1506 tests
 - GitBook: 28 pages of documentation
 - Firefox Add-ons: approved and live. Chrome Web Store: live
 
@@ -87,14 +87,20 @@ Extract reusable design tokens (colors, fonts, spacing, radii) from captures. Us
 ### Power Packages for Other Agents
 Dedicated hooks, prompts, and steering docs for Claude Code, Cursor, Windsurf, and Cline. The MCP tools already work with all agents - Power packages add agent-specific automation.
 
-## Recently Shipped (v0.3.6)
+## Recently Shipped (v0.4.0)
 
 - **URL Trust Indicator (F17)** - shield icon with check/x showing trusted/configured/untrusted. Send gate blocks untrusted URLs.
-- **Prompt Injection Defense (F19)** - 5-layer defense: capture sanitization, text delimiters, suspicious content detection, prompt hardening, trust gate.
-- **MCP Agent Guidance (F18)** - server instructions + `get_session_status` tool (37 MCP tools total).
+- **Prompt Injection Defense (F19)** - 5-layer defense complete: capture sanitization, transport wrapping, suspicious detection, prompt hardening, trust gate.
+- **MCP Agent Guidance (F18)** - server instructions + `get_session_status` tool (37 MCP tools total). Fuzzy filename matching with "did you mean" suggestions.
 - **Auto-Inspect Suggestions (F15)** - proactive issue detection with collapsed badge, tier tags, add-to-review flow.
 - **Native Messaging Foundation (F11)** - transport abstraction (17 methods), native host protocol, message handler, host registration. Extension migration in progress.
 - **STRIDE Threat Model** - 8 threats, 8 mitigations, published on [Threat Model](threat-model.md) page.
+- **Server lifecycle management** - stdin close detection + 30-min idle timeout prevents orphaned processes.
+- **SRR-001 security fixes** - config schema validation, shadow DOM closed mode, WebSocket limits, security headers, error sanitization.
+- **M16 sidebar polish complete** - keyboard nav, incremental tabs, strip active state, empty state, collapse toast.
+- **F10 smart alerts** - regression detection in post-capture auto-audit.
+- **Themed tooltip component** - tooltips on all sidebar buttons.
+- **16 CodeQL alerts resolved** - path validation, URL parsing, crypto.randomUUID, CI permissions.
 
 ## Accuracy
 

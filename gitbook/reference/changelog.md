@@ -6,6 +6,27 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ---
 
+## v0.4.0 - April 18, 2026
+
+### Security
+- SRR-001 security fixes: config schema validation, shadow DOM closed mode, WebSocket limits, security headers, error sanitization
+- F19 prompt injection defense complete: 5-layer defense (capture sanitization, transport wrapping, suspicious detection, prompt hardening, trust gate)
+- 16 CodeQL alerts resolved: path validation, URL parsing, crypto.randomUUID, CI permissions
+- 3-tier security review system: pre-commit, feature-complete, sprint-end hooks
+
+### Features
+- Server lifecycle management: stdin close detection + 30-min idle timeout prevents orphaned processes
+- F18 fuzzy filename matching: "did you mean" suggestions on typos
+- F10 smart alerts: regression detection in post-capture auto-audit
+- Themed tooltip component on all sidebar buttons
+- M16 sidebar polish complete: keyboard nav, incremental tabs, strip active state, empty state, collapse toast
+- F17 URL trust indicator complete: SPA reclassification
+
+### Codebase
+- Phase 2 refactors: 74 files - jsonResponse/errorResponse, readAndParse/Pair/Multi, shared test fixtures, mockChrome, styles.js COLOR constants
+- Test split: annotation-sidebar.test.js (1366 lines) to 7 focused files
+- 1506 tests (463 server + 1043 extension)
+
 ## v0.3.7 - April 17, 2026
 
 - **Capture timeline (F6)** - collapsible list of all captures in the Inspect tab with timestamps and green dot for latest.
