@@ -200,9 +200,9 @@ export function create() {
       try {
         const info = await transport.getInfo();
         const mismatch = info.serverVersion && extVer && extVer < info.serverVersion;
-        help.setVersion(`Ext v${extVer} | Server v${info.serverVersion || '?'} | Port ${port}${mismatch ? ' - rebuild extension' : ''}`, mismatch);
-      } catch { help.setVersion(`Ext v${extVer} | Server: offline | Port ${port}`); }
-    } else { help.setVersion(`Ext v${extVer} | Server: not connected | Port: n/a`); }
+        help.setVersion(`Extension: v${extVer} | Server: v${info.serverVersion || '?'} | Port: ${port}${mismatch ? ' - rebuild extension' : ''}`, mismatch);
+      } catch { help.setVersion(`Extension: v${extVer} | Server: offline | Port: ${port}`); }
+    } else { help.setVersion(`Extension: v${extVer} | Server: not connected | Port: n/a`); }
   });
 
   // ── Scrollable list ──

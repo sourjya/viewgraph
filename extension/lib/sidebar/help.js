@@ -132,7 +132,29 @@ export function createHelpCard() {
     },
     isVisible() { return visible; },
     setVersion(text, warn) {
-      versionEl.textContent = text;
+      versionEl.replaceChildren();
+      // Parse "Label: value | Label: value" into highlighted blobs
+      const parts = text.split(' | ');
+      parts.forEach((part, i) => {
+        if (i > 0) {
+          const sep = document.createElement('span');
+          sep.textContent = ' | ';
+          Object.assign(sep.style, { color: COLOR.border, margin: '0 2px' });
+          versionEl.appendChild(sep);
+        }
+        const colonIdx = part.indexOf(':');
+        if (colonIdx === -1) { versionEl.appendChild(document.createTextNode(part)); return; }
+        const label = document.createElement('span');
+        label.textContent = part.slice(0, colonIdx + 1) + ' ';
+        Object.assign(label.style, { color: COLOR.muted });
+        const val = document.createElement('span');
+        val.textContent = part.slice(colonIdx + 1).trim();
+        Object.assign(val.style, {
+          background: 'rgba(99,102,241,0.15)', color: COLOR.primaryLight,
+          padding: '1px 5px', borderRadius: '3px', fontSize: '10px',
+        });
+        versionEl.append(label, val);
+      });
       if (warn) { versionEl.style.color = COLOR.warning; versionEl.style.background = '#451a03'; }
     },
   };
