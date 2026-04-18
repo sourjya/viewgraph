@@ -104,8 +104,6 @@ export function createHelpCard() {
     a.addEventListener('mouseleave', () => { txt.style.textDecoration = 'none'; });
     linkRow.appendChild(a);
   }
-  helpCard.appendChild(linkRow);
-
   // Version info slot - populated by sidebar core
   const versionEl = document.createElement('div');
   versionEl.setAttribute(ATTR, 'help-version');
@@ -114,6 +112,9 @@ export function createHelpCard() {
     background: COLOR.bgCard, fontSize: '11px', color: COLOR.secondary, fontFamily: 'monospace',
   });
   helpCard.appendChild(versionEl);
+
+  Object.assign(linkRow.style, { display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '10px', paddingTop: '8px', borderTop: `1px solid ${COLOR.border}` });
+  helpCard.appendChild(linkRow);
 
   let visible = false;
 
