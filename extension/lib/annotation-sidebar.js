@@ -63,6 +63,7 @@ let _bus = null;
 let pendingRequests = [];
 let activeFilter = 'open';
 let _suggestionsCache = null;
+let _skipSuggestionsRender = false;
 let _trustLevel = null;
 let activeTypeFilters = new Set(['element', 'region', 'page-note', 'idea', 'diagnostic']);
 let _header = null;
@@ -527,8 +528,15 @@ export function refresh() {
       if (sug.selector && sug.selector !== 'body') ann.element = { selector: sug.selector };
     }
   }
-  renderSuggestionBar(list, _suggestionsCache, {
-    onAdd: (sug) => { addSuggestionToReview(sug); _suggestionsCache = _suggestionsCache?.filter((s) => s.id !== sug.id) || null; save(); refresh(); },
+  if (!_skipSuggestionsRender) renderSuggestionBar(list, _suggestionsCache, {
+    onAdd: (sug) => {
+      addSuggestionToReview(sug);
+      _suggestionsCache = _suggestionsCache?.filter((s) => s.id !== sug.id) || null;
+      save();
+      _skipSuggestionsRender = true;
+      refresh();
+      _skipSuggestionsRender = false;
+    },
     onAddAll: (sugs) => { for (const s of sugs) addSuggestionToReview(s); _suggestionsCache = []; save(); refresh(); },
     onDismissAll: () => { _suggestionsCache = []; refresh(); },
     onRefresh: () => { _suggestionsCache = null; refresh(); },
