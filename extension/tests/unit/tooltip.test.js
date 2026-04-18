@@ -42,7 +42,7 @@ describe('createTooltip', () => {
     btn.setAttribute('data-tooltip', 'Test tooltip text');
     shadowRoot.appendChild(btn);
 
-    btn.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+    btn.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
 
     // Wait for show delay (300ms)
     await new Promise((r) => setTimeout(r, 350));
@@ -57,10 +57,10 @@ describe('createTooltip', () => {
     btn.setAttribute('data-tooltip', 'Hover me');
     shadowRoot.appendChild(btn);
 
-    btn.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+    btn.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
     await new Promise((r) => setTimeout(r, 350));
 
-    btn.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }));
+    btn.dispatchEvent(new MouseEvent('mouseout', { bubbles: true }));
 
     const tip = shadowRoot.querySelector('[role="tooltip"]');
     expect(tip.style.opacity).toBe('0');
@@ -71,7 +71,7 @@ describe('createTooltip', () => {
     btn.setAttribute('data-tooltip', 'Accessible');
     shadowRoot.appendChild(btn);
 
-    btn.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+    btn.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
     await new Promise((r) => setTimeout(r, 350));
 
     expect(btn.getAttribute('aria-describedby')).toBeTruthy();
@@ -82,7 +82,7 @@ describe('createTooltip', () => {
     btn.textContent = 'No tooltip';
     shadowRoot.appendChild(btn);
 
-    btn.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+    btn.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
     await new Promise((r) => setTimeout(r, 350));
 
     const tip = shadowRoot.querySelector('[role="tooltip"]');

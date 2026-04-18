@@ -74,30 +74,36 @@ export function createTooltip(shadowRoot) {
     }
   }
 
-  function onEnter(e) {
+  let lastAnchor = null;
+
+  function onOver(e) {
     const anchor = e.target.closest?.('[data-tooltip]');
+    if (anchor === lastAnchor) return;
+    if (lastAnchor) hide();
     if (!anchor) return;
+    lastAnchor = anchor;
     clearTimeout(showTimer);
     showTimer = setTimeout(() => show(anchor), SHOW_DELAY);
   }
 
-  function onLeave(e) {
+  function onOut(e) {
     const anchor = e.target.closest?.('[data-tooltip]');
-    if (!anchor) return;
-    hide();
+    const related = e.relatedTarget?.closest?.('[data-tooltip]');
+    if (anchor && anchor !== related) {
+      lastAnchor = null;
+      hide();
+    }
   }
 
-  shadowRoot.addEventListener('mouseenter', onEnter, true);
-  shadowRoot.addEventListener('mouseleave', onLeave, true);
-  shadowRoot.addEventListener('focusin', onEnter, true);
-  shadowRoot.addEventListener('focusout', onLeave, true);
+  shadowRoot.addEventListener('mouseover', onOver);
+  shadowRoot.addEventListener('mouseout', onOut);
+  shadowRoot.addEventListener('focusin', (e) => { const a = e.target.closest?.('[data-tooltip]'); if (a) { clearTimeout(showTimer); showTimer = setTimeout(() => show(a), SHOW_DELAY); } });
+  shadowRoot.addEventListener('focusout', () => hide());
 
   return {
     destroy() {
-      shadowRoot.removeEventListener('mouseenter', onEnter, true);
-      shadowRoot.removeEventListener('mouseleave', onLeave, true);
-      shadowRoot.removeEventListener('focusin', onEnter, true);
-      shadowRoot.removeEventListener('focusout', onLeave, true);
+      shadowRoot.removeEventListener('mouseover', onOver);
+      shadowRoot.removeEventListener('mouseout', onOut);
       tip.remove();
     },
   };
