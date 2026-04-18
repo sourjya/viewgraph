@@ -189,8 +189,18 @@ export function create() {
   // ── Settings ──
   const settings = createSettings();
   let settingsVisible = false;
-  function showSettings() { settingsVisible = true; settings.show(); }
-  function hideSettings() { settingsVisible = false; settings.hide(); }
+  function showSettings() {
+    settingsVisible = true;
+    settings.show();
+    const link = _footer?.element.querySelector(`[${ATTR}="settings-link"]`);
+    if (link) link.style.display = 'none';
+  }
+  function hideSettings() {
+    settingsVisible = false;
+    settings.hide();
+    const link = _footer?.element.querySelector(`[${ATTR}="settings-link"]`);
+    if (link) link.style.display = 'flex';
+  }
 
   // Version info for help card
   const extVer = chrome.runtime.getManifest?.()?.version || 'unknown';
@@ -223,7 +233,7 @@ export function create() {
   const reviewContent = document.createElement('div');
   reviewContent.setAttribute(ATTR, 'review-content');
   Object.assign(reviewContent.style, { display: 'flex', flexDirection: 'column', flex: '1', minHeight: '0' });
-  reviewContent.append(_modeBar.element, tabContainer, list, _header.statusBanner, _footer.element);
+  reviewContent.append(_modeBar.element, tabContainer, list, _header.statusBanner);
 
   const inspect = createInspectTab({ onRefresh: () => refresh() });
   const inspectContent = inspect.element;
@@ -256,7 +266,7 @@ export function create() {
     primaryTabs.appendChild(btn);
   }
 
-  sidebarEl.append(_header.element, help.element, primaryTabs, reviewContent, inspectContent, settings.element);
+  sidebarEl.append(_header.element, help.element, primaryTabs, reviewContent, inspectContent, settings.element, _footer.element);
 
   // ── Shadow DOM ──
   hostEl = document.createElement('div');
