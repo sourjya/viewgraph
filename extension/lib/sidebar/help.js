@@ -24,10 +24,24 @@ export function createHelpCard() {
     transition: 'max-height 0.2s ease', maxHeight: '0',
   });
 
-  // Title
+  // Title row with collapse button
   const title = document.createElement('div');
-  title.textContent = 'Keyboard Shortcuts';
-  Object.assign(title.style, { fontWeight: '700', fontSize: '13px', color: COLOR.primaryLight, marginBottom: '10px' });
+  Object.assign(title.style, { display: 'flex', alignItems: 'center', marginBottom: '10px' });
+  const titleText = document.createElement('span');
+  titleText.textContent = 'Keyboard Shortcuts';
+  Object.assign(titleText.style, { fontWeight: '700', fontSize: '13px', color: COLOR.primaryLight, flex: '1' });
+  const collapseBtn = document.createElement('button');
+  collapseBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
+  Object.assign(collapseBtn.style, {
+    border: 'none', background: 'transparent', cursor: 'pointer',
+    padding: '2px', display: 'flex', alignItems: 'center', borderRadius: '4px',
+    color: COLOR.muted,
+  });
+  collapseBtn.addEventListener('mouseenter', () => { collapseBtn.style.color = COLOR.secondary; });
+  collapseBtn.addEventListener('mouseleave', () => { collapseBtn.style.color = COLOR.muted; });
+  let _onCollapse = null;
+  collapseBtn.addEventListener('click', () => { if (_onCollapse) _onCollapse(); });
+  title.append(titleText, collapseBtn);
   helpCard.appendChild(title);
 
   // Shortcuts with keycap styling
@@ -118,7 +132,7 @@ export function createHelpCard() {
 
   let visible = false;
 
-  return {
+  const api = {
     element: helpCard,
     toggle() { visible ? this.hide() : this.show(); },
     show() {
@@ -155,4 +169,6 @@ export function createHelpCard() {
       if (warn) { versionEl.style.color = COLOR.warning; versionEl.style.background = '#451a03'; }
     },
   };
+  _onCollapse = () => api.hide();
+  return api;
 }
