@@ -98,6 +98,8 @@ Every capture automatically includes data from these collectors, providing conte
 | Performance | Navigation timing, resource timing | Page load performance context |
 | Animations | Running CSS/JS animations | Animation-related layout issues |
 | Intersection | Element visibility relative to viewport | Above/below fold, lazy loading state |
+| Client storage | localStorage, sessionStorage, cookies | App state, auth tokens (sensitive values redacted) |
+| CSS custom properties | CSS variables on :root and body | Design system tokens, theme state |
 
 ## Token Efficiency
 

@@ -153,6 +153,8 @@ Every capture automatically includes data from these collectors:
 | Performance | Navigation timing, resource timing, memory |
 | Animations | Running CSS/JS animations |
 | Intersection | Element visibility relative to viewport |
+| Client storage | localStorage, sessionStorage, cookies (sensitive values redacted) |
+| CSS custom properties | CSS variables defined on `:root` and `body` |
 
 Every diagnostic section has two action buttons:
 
