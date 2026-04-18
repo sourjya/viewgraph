@@ -13,9 +13,8 @@
  * @see docs/roadmap/roadmap.md - M12.4
  */
 
-import { buildSelector, ATTR } from '../selector.js';
-
-const MAX_ELEMENTS = 2000;
+import { buildSelector } from '../selector.js';
+import { walkDOM } from './collector-utils.js';
 
 /** HTML event attributes to check. */
 const EVENT_ATTRS = [
@@ -37,13 +36,8 @@ const REACT_EVENTS = [
 export function collectEventListeners() {
   const elements = [];
   const suspicious = [];
-  let count = 0;
 
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
-  let node = walker.nextNode();
-  while (node && count < MAX_ELEMENTS) {
-    count++;
-    if (node.closest(`[${ATTR}]`)) { node = walker.nextNode(); continue; }
+  for (const node of walkDOM({ max: 2000 })) {
 
     const events = [];
     let source = '';
@@ -98,8 +92,6 @@ export function collectEventListeners() {
         });
       }
     }
-
-    node = walker.nextNode();
   }
 
   return { elements: elements.slice(0, 100), suspicious: suspicious.slice(0, 20) };

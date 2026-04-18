@@ -17,9 +17,8 @@
  * @see docs/roadmap/roadmap.md - M12.3
  */
 
-import { buildSelector, ATTR } from '../selector.js';
-
-const MAX_ELEMENTS = 3000;
+import { buildSelector } from '../selector.js';
+import { walkDOM } from './collector-utils.js';
 
 /**
  * Detect which frontend framework is active on the page.
@@ -158,13 +157,8 @@ export function collectComponents() {
 
   const components = [];
   const seen = new Set();
-  let count = 0;
 
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
-  let node = walker.nextNode();
-  while (node && count < MAX_ELEMENTS) {
-    count++;
-    if (node.closest(`[${ATTR}]`)) { node = walker.nextNode(); continue; }
+  for (const node of walkDOM({ max: 3000 })) {
 
     let name = null;
     let source = null;
@@ -185,7 +179,6 @@ export function collectComponents() {
       seen.add(name + ':' + buildSelector(node));
       components.push({ selector: buildSelector(node), component: name, source: source || null });
     }
-    node = walker.nextNode();
   }
 
   return { framework, components };

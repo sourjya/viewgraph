@@ -14,6 +14,7 @@
  */
 
 import { buildSelector, ATTR } from '../selector.js';
+import { walkDOM, isZeroSize } from './collector-utils.js';
 
 
 /**
@@ -42,21 +43,13 @@ function getStackingTrigger(cs) {
 export function collectStackingContexts() {
   const contexts = [];
   const issues = [];
-  const MAX_ELEMENTS = 2000;
-  let count = 0;
 
-  // Walk DOM and find all stacking context creators
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
-  let node = walker.nextNode();
-  while (node && count < MAX_ELEMENTS) {
-    count++;
-    if (node.closest(`[${ATTR}]`)) { node = walker.nextNode(); continue; }
+  for (const node of walkDOM({ max: 2000 })) {
     const cs = window.getComputedStyle(node);
     const trigger = getStackingTrigger(cs);
     if (trigger) {
+      if (isZeroSize(node)) continue;
       const rect = node.getBoundingClientRect();
-      // Skip invisible elements
-      if (rect.width === 0 && rect.height === 0) { node = walker.nextNode(); continue; }
       contexts.push({
         selector: buildSelector(node),
         trigger,
@@ -65,7 +58,6 @@ export function collectStackingContexts() {
         element: node,
       });
     }
-    node = walker.nextNode();
   }
 
   // Detect conflicts: sibling stacking contexts that overlap spatially

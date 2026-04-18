@@ -12,6 +12,7 @@
  */
 
 import { buildSelector, ATTR } from '../selector.js';
+import { walkDOM } from './collector-utils.js';
 
 
 /**
@@ -36,14 +37,8 @@ function isScrollContainer(el) {
 export function collectScrollContainers() {
   const containers = [];
   const issues = [];
-  const MAX = 2000;
-  let count = 0;
 
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
-  let node = walker.nextNode();
-  while (node && count < MAX) {
-    count++;
-    if (node.closest(`[${ATTR}]`)) { node = walker.nextNode(); continue; }
+  for (const node of walkDOM({ max: 2000 })) {
     if (isScrollContainer(node)) {
       // Calculate nesting depth (how many scroll container ancestors)
       let depth = 0;
@@ -65,7 +60,6 @@ export function collectScrollContainers() {
         depth,
       });
     }
-    node = walker.nextNode();
   }
 
   // Detect nested scroll containers (depth > 0)
