@@ -12,6 +12,7 @@
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
+import { wrapComment } from '#src/utils/sanitize.js';
 import { analyzePatterns } from '#src/analysis/steering-generator.js';
 
 /**
@@ -35,7 +36,7 @@ export function register(server, indexer, capturesDir) {
           if (!raw.annotations?.length) continue;
           for (const ann of raw.annotations) {
             annotations.push({
-              comment: ann.comment, severity: ann.severity, category: ann.category,
+              comment: wrapComment(ann.comment), severity: ann.severity, category: ann.category,
               selector: ann.ancestor, resolution: ann.resolution,
             });
           }

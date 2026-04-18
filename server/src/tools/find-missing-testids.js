@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { readAndParse } from '#src/utils/tool-helpers.js';
 import { flattenNodes, filterInteractive, getNodeDetails } from '#src/analysis/node-queries.js';
+import { wrapCapturedText } from '#src/utils/sanitize.js';
 
 /** Generate a suggested testid from tag and text content. */
 function suggestTestId(tag, text) {
@@ -42,7 +43,7 @@ export function register(server, _indexer, capturesDir) {
       }).map((n) => {
         const details = getNodeDetails(parsed, n.id);
         return {
-          id: n.id, tag: n.tag, text: n.text,
+          id: n.id, tag: n.tag, text: wrapCapturedText(n.text),
           selector: details?.selector,
           suggestedTestId: suggestTestId(n.tag, n.text),
         };
