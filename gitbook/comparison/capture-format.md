@@ -78,7 +78,7 @@ Agents don't receive the full capture upfront. The MCP tools serve data on deman
 
 An agent solving a button bug calls `get_interactive_elements` (2K tokens) instead of `get_capture` (20K+ tokens). 90% token savings for the same result.
 
-## 14 Enrichment Collectors
+## 16 Enrichment Collectors
 
 Every capture automatically includes data from these collectors, providing context beyond the DOM:
 
