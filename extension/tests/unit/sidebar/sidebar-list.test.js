@@ -167,7 +167,7 @@ describe('sidebar renders annotations with severity and category', () => {
     create();
     expect(getEntries().length).toBe(1);
     const list = getList();
-    const badge = list.querySelector('span[title="critical"]');
+    const badge = list.querySelector('span[data-tooltip="critical"]');
     expect(badge).toBeTruthy();
   });
 

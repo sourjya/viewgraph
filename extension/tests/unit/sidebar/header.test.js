@@ -45,7 +45,7 @@ describe('createHeader', () => {
     const h = createHeader({ onToggleCollapse: vi.fn(), onClose: vi.fn(), onHelpToggle: vi.fn(), onBellClick: vi.fn() });
     h.setTrustLevel({ level: 'trusted', reason: 'localhost' });
     expect(h.trustShield.style.display).toBe('inline-flex');
-    expect(h.trustShield.title).toContain('trusted');
+    expect(h.trustShield.getAttribute('data-tooltip')).toContain('trusted');
   });
 
   it('(+) updateBell shows bell when count > 0', () => {
