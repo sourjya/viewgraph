@@ -279,8 +279,13 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
             const isLocal = ['localhost', '127.0.0.1', '[::1]', '0.0.0.0'].includes(captureUrl.hostname) || capture.metadata.url.startsWith('file://');
             if (isLocal) {
               const pattern = `${captureUrl.hostname}${captureUrl.port ? ':' + captureUrl.port : ''}`;
-              const autoConfig = { urlPatterns: [pattern], autoAudit: false, smartSuggestions: true };
-              writeFileSync(configFile, JSON.stringify(autoConfig, null, 2));
+              // S3-2: Merge into existing config to preserve user keys
+              let existing = {};
+              try { existing = JSON.parse(readFileSync(configFile, 'utf8')); } catch { /* new file */ }
+              existing.urlPatterns = [pattern];
+              if (!('autoAudit' in existing)) existing.autoAudit = false;
+              if (!('smartSuggestions' in existing)) existing.smartSuggestions = true;
+              writeFileSync(configFile, JSON.stringify(existing, null, 2));
               console.error(`${LOG_PREFIX} Auto-configured: ${configFile} (pattern: ${pattern})`);
             }
           }

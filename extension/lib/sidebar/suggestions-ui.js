@@ -39,6 +39,9 @@ export function collapseSuggestions() {
   return true;
 }
 
+/** Reset module state on sidebar destroy. */
+export function resetSuggestions() { _expandedState = null; }
+
 /**
  * Render the suggestion bar: collapsed badge or expanded checklist.
  * @param {HTMLElement} container - Element to prepend into

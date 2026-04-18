@@ -32,7 +32,7 @@ import { createSettings } from './sidebar/settings.js';
 import { createInspectTab } from './sidebar/inspect.js';
 import { renderReviewList } from './sidebar/review.js';
 import { scanForSuggestions } from './sidebar/suggestions.js';
-import { renderSuggestionBar, collapseSuggestions } from './sidebar/suggestions-ui.js';
+import { renderSuggestionBar, collapseSuggestions, resetSuggestions } from './sidebar/suggestions-ui.js';
 import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from './sidebar/sync.js';
 import { EVENTS, createEventBus } from './sidebar/events.js';
 import { createHeader } from './sidebar/header.js';
@@ -560,6 +560,7 @@ export function destroy() {
   _footer = null;
   _modeBar = null;
   _strip = null;
+  resetSuggestions();
   if (_popstateHandler) { window.removeEventListener('popstate', _popstateHandler); _popstateHandler = null; }
   if (_bus) { _bus.destroy(); _bus = null; }
   collapsed = false;

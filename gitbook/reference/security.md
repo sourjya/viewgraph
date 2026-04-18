@@ -64,6 +64,7 @@ The entire codebase is open source under AGPL-3.0. You can inspect every line:
 - [STRIDE Threat Model](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-stride.md) - 8 threats, 8 mitigations, 4 threat actors (April 2026)
 - [Security assessment](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/security-assessment.md)
 - [SRR-001 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-001-2026-04-18.md)
+- [SRR-002 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-002-2026-04-19-T2.md)
 - [Codebase Review](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/codebase-review-2026-04-18.md)
 
 ## Security Audits Performed
@@ -74,7 +75,12 @@ The project undergoes periodic security reviews using a 3-tier model:
 - **Tier 2 (feature complete):** Full OWASP S1-S17 audit of changed files
 - **Tier 3 (sprint end):** Full codebase + supply chain + AI-generation artifacts
 
-**[SRR-001 - Full Codebase Review (April 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-001-2026-04-18.md):**
+**[SRR-002 - Tier 2 Review (April 19, 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-002-2026-04-19-T2.md):**
+- 1 HIGH (fixed: auto-learn config merge), 3 MEDIUM (2 fixed, 2 deferred), 2 LOW (1 fixed)
+- URL hostname matching replaces String.includes() trust gate bypass
+- All SRR-001 remediations verified in place
+
+**[SRR-001 - Full Codebase Review (April 18, 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-001-2026-04-18.md):**
 - 2 HIGH (both accepted risks pending native messaging), 5 MEDIUM (all fixed), 4 LOW (all fixed)
 - Config schema validation, auto-learn localhost-only, shadow DOM closed mode
 - Security headers, WebSocket limits, error sanitization, F19 wrapping gaps closed

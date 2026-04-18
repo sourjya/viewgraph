@@ -222,9 +222,17 @@ export function createSettings() {
       const patterns = info.urlPatterns || [];
       const root = info.projectRoot || '';
       const isFileUrl = pageUrl.startsWith('file://');
-      const isMatch = isFileUrl
-        ? pageUrl.includes(root.replace(/\\/g, '/'))
-        : patterns.some((p) => pageUrl.includes(p));
+      // S5-4: Match hostname+port only, not full URL string
+      let isMatch = false;
+      if (isFileUrl) {
+        isMatch = pageUrl.includes(root.replace(/\\/g, '/'));
+      } else {
+        try {
+          const parsed = new URL(pageUrl);
+          const hostPort = `${parsed.hostname}${parsed.port ? ':' + parsed.port : ''}`;
+          isMatch = patterns.some((p) => hostPort.includes(p));
+        } catch { /* invalid URL */ }
+      }
       if (!isMatch) {
         statusDotEl.style.background = COLOR.muted;
         statusText.textContent = 'No matching server for this page';
