@@ -4,9 +4,10 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createFooter } from '#lib/sidebar/footer.js';
+import { mockChrome } from '../../mocks/chrome.js';
 
 beforeEach(() => {
-  globalThis.chrome = { runtime: { sendMessage: vi.fn() } };
+  mockChrome();
   globalThis.navigator = { clipboard: { writeText: vi.fn(() => Promise.resolve()) }, userAgent: 'Chrome/120' };
 });
 

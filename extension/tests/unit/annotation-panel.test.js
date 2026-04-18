@@ -7,6 +7,7 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { show, hide, currentAnnotationId } from '#lib/annotation-panel.js';
+import { mockChrome } from '../mocks/chrome.js';
 
 const ATTR = 'data-vg-annotate';
 
@@ -26,10 +27,7 @@ function getPanel() {
 
 describe('annotation panel', () => {
   beforeEach(() => {
-    // Mock chrome.storage for config reads
-    globalThis.chrome = {
-      storage: { local: { get: async () => ({}) } },
-    };
+    mockChrome();
   });
 
   afterEach(() => {
@@ -106,9 +104,7 @@ describe('annotation panel', () => {
   });
 
   it('(-) no suggestion chips when smartSuggestions is disabled', async () => {
-    globalThis.chrome = {
-      storage: { local: { get: async () => ({ vg_project_config: { smartSuggestions: false } }) } },
-    };
+    mockChrome({ storage: { local: { get: async () => ({ vg_project_config: { smartSuggestions: false } }) } } });
     const btn = document.createElement('button');
     document.body.appendChild(btn);
     await show(makeAnnotation({ element: { selector: 'button' } }));
@@ -120,9 +116,7 @@ describe('annotation panel', () => {
 
 describe('idea mode switching', () => {
   beforeEach(() => {
-    globalThis.chrome = {
-      storage: { local: { get: async () => ({}) } },
-    };
+    mockChrome();
   });
 
   afterEach(() => {

@@ -6,6 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from '#lib/sidebar/sync.js';
+import { mockChrome } from '../../mocks/chrome.js';
 
 beforeEach(() => {
   globalThis.fetch = vi.fn(() => Promise.reject(new Error('offline')));
@@ -60,7 +61,7 @@ describe('pollRequests', () => {
     const transport = await import('#lib/transport.js');
     resetServerCache();
     transport.init('http://127.0.0.1:9876');
-    globalThis.chrome = { runtime: { sendNativeMessage: undefined } };
+    mockChrome({ runtime: { sendNativeMessage: undefined } });
     Object.defineProperty(window, 'location', {
       value: { href: 'http://localhost:8040/page', hostname: 'localhost', protocol: 'http:' },
       writable: true, configurable: true,

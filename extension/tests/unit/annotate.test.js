@@ -15,6 +15,7 @@ import {
   hideHoverUI, hideMarkers, spotlightMarker, ATTR,
   setCaptureMode, getCaptureMode, CAPTURE_MODES,
 } from '#lib/annotate.js';
+import { mockChrome } from '../mocks/chrome.js';
 
 let restore;
 
@@ -250,12 +251,12 @@ describe('save and load', () => {
 
   beforeEach(() => {
     mockStorage = {};
-    globalThis.chrome = {
+    mockChrome({
       storage: { local: {
         set: async (obj) => { Object.assign(mockStorage, obj); },
         get: async (key) => ({ [key]: mockStorage[key] }),
       } },
-    };
+    });
   });
 
   it('save does not throw when empty', async () => {

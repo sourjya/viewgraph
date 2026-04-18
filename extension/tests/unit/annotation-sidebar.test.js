@@ -16,6 +16,7 @@ import {
 import { create, destroy, refresh, expand, collapse, isCollapsed, _getShadowRoot } from '#lib/annotation-sidebar.js';
 import { resetServerCache } from '#lib/constants.js';
 import * as transport from '#lib/transport.js';
+import { mockChrome } from '../mocks/chrome.js';
 
 // ---------------------------------------------------------------------------
 // Chrome API mocks
@@ -26,7 +27,7 @@ beforeEach(() => {
   // Set location to localhost so server discovery works in tests
   Object.defineProperty(window, 'location', { value: { href: 'http://localhost:8040/projects', hostname: 'localhost', protocol: 'http:' }, writable: true, configurable: true });
   // Mock chrome APIs needed by sidebar
-  globalThis.chrome = {
+  mockChrome({
     storage: {
       local: {
         get: vi.fn((key, cb) => { if (cb) cb({}); return Promise.resolve({}); }),
@@ -41,7 +42,7 @@ beforeEach(() => {
       sendMessage: vi.fn((msg, cb) => { if (cb) cb({ ok: true }); }),
       getURL: vi.fn((path) => `chrome-extension://test-id/${path}`),
     },
-  };
+  });
   // Mock getBoundingClientRect for annotation creation
   Element.prototype._origGetBCR = Element.prototype.getBoundingClientRect;
   Element.prototype.getBoundingClientRect = function () {
