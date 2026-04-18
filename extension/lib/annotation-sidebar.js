@@ -196,13 +196,13 @@ export function create() {
   help.setVersion(`Extension: v${extVer}`);
   discoverServer(window.location.href).then(async (url) => {
     if (url) {
+      const port = new URL(url).port || '9876';
       try {
-        const port = new URL(url).port || '9876';
         const info = await transport.getInfo();
         const mismatch = info.serverVersion && extVer && extVer < info.serverVersion;
         help.setVersion(`Ext v${extVer} | Server v${info.serverVersion || '?'} | Port ${port}${mismatch ? ' - rebuild extension' : ''}`, mismatch);
-      } catch { help.setVersion(`Ext v${extVer} | Server: offline`); }
-    } else { help.setVersion(`Ext v${extVer} | Server: not connected`); }
+      } catch { help.setVersion(`Ext v${extVer} | Server: offline | Port ${port}`); }
+    } else { help.setVersion(`Ext v${extVer} | Server: not connected | Port: n/a`); }
   });
 
   // ── Scrollable list ──
