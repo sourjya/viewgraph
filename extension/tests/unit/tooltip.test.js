@@ -13,79 +13,106 @@ beforeEach(() => {
   shadowHost = document.createElement('div');
   shadowRoot = shadowHost.attachShadow({ mode: 'open' });
   document.body.appendChild(shadowHost);
-  tooltip = createTooltip(shadowRoot);
 });
 
 afterEach(() => {
-  tooltip.destroy();
+  if (tooltip) tooltip.destroy();
   shadowHost.remove();
 });
 
 describe('createTooltip', () => {
   it('(+) creates a tooltip element in shadow root', () => {
+    tooltip = createTooltip(shadowRoot);
     const tip = shadowRoot.querySelector('[role="tooltip"]');
     expect(tip).not.toBeNull();
   });
 
   it('(+) tooltip starts hidden (opacity 0)', () => {
+    tooltip = createTooltip(shadowRoot);
     const tip = shadowRoot.querySelector('[role="tooltip"]');
     expect(tip.style.opacity).toBe('0');
   });
 
   it('(+) destroy removes tooltip from shadow root', () => {
+    tooltip = createTooltip(shadowRoot);
     tooltip.destroy();
     expect(shadowRoot.querySelector('[role="tooltip"]')).toBeNull();
+    tooltip = null;
   });
 
-  it('(+) shows tooltip text on mouseenter of data-tooltip element', async () => {
+  it('(+) attaches to elements with data-tooltip', () => {
     const btn = document.createElement('button');
-    btn.setAttribute('data-tooltip', 'Test tooltip text');
+    btn.setAttribute('data-tooltip', 'Test text');
     shadowRoot.appendChild(btn);
+    tooltip = createTooltip(shadowRoot);
 
-    btn.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+    // Trigger pointerenter
+    btn.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true }));
 
-    // Wait for show delay (300ms)
-    await new Promise((r) => setTimeout(r, 350));
-
-    const tip = shadowRoot.querySelector('[role="tooltip"]');
-    expect(tip.textContent).toBe('Test tooltip text');
-    expect(tip.style.opacity).toBe('1');
+    // Wait for show delay
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const tip = shadowRoot.querySelector('[role="tooltip"]');
+        expect(tip.textContent).toBe('Test text');
+        expect(tip.style.opacity).toBe('1');
+        resolve();
+      }, 350);
+    });
   });
 
-  it('(+) hides tooltip on mouseleave', async () => {
+  it('(+) hides on pointerleave', async () => {
     const btn = document.createElement('button');
     btn.setAttribute('data-tooltip', 'Hover me');
     shadowRoot.appendChild(btn);
+    tooltip = createTooltip(shadowRoot);
 
-    btn.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+    btn.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true }));
     await new Promise((r) => setTimeout(r, 350));
 
-    btn.dispatchEvent(new MouseEvent('mouseout', { bubbles: true }));
+    btn.dispatchEvent(new PointerEvent('pointerleave', { bubbles: true }));
 
     const tip = shadowRoot.querySelector('[role="tooltip"]');
     expect(tip.style.opacity).toBe('0');
   });
 
-  it('(+) sets aria-describedby on anchor when shown', async () => {
+  it('(+) removes native title attribute to prevent double tooltip', () => {
+    const btn = document.createElement('button');
+    btn.setAttribute('data-tooltip', 'Custom');
+    btn.title = 'Native title';
+    shadowRoot.appendChild(btn);
+    tooltip = createTooltip(shadowRoot);
+
+    expect(btn.hasAttribute('title')).toBe(false);
+  });
+
+  it('(+) sets aria-describedby when shown', async () => {
     const btn = document.createElement('button');
     btn.setAttribute('data-tooltip', 'Accessible');
     shadowRoot.appendChild(btn);
+    tooltip = createTooltip(shadowRoot);
 
-    btn.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+    btn.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true }));
     await new Promise((r) => setTimeout(r, 350));
 
     expect(btn.getAttribute('aria-describedby')).toBeTruthy();
   });
 
-  it('(-) does not show for elements without data-tooltip', async () => {
+  it('(+) auto-attaches to dynamically added elements', async () => {
+    tooltip = createTooltip(shadowRoot);
+
+    // Add element after tooltip is created
     const btn = document.createElement('button');
-    btn.textContent = 'No tooltip';
+    btn.setAttribute('data-tooltip', 'Dynamic');
     shadowRoot.appendChild(btn);
 
-    btn.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+    // MutationObserver is async - wait a tick
+    await new Promise((r) => setTimeout(r, 50));
+
+    btn.dispatchEvent(new PointerEvent('pointerenter', { bubbles: true }));
     await new Promise((r) => setTimeout(r, 350));
 
     const tip = shadowRoot.querySelector('[role="tooltip"]');
-    expect(tip.style.opacity).toBe('0');
+    expect(tip.textContent).toBe('Dynamic');
+    expect(tip.style.opacity).toBe('1');
   });
 });

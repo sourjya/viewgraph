@@ -1,26 +1,22 @@
 /**
  * Themed Tooltip Component
  *
- * Singleton tooltip that attaches to any element with a `data-tooltip` attribute
- * inside the sidebar's shadow DOM. Uses event delegation - no per-element setup.
- *
- * Usage:
- *   <button data-tooltip="Send annotations to your AI agent">Send</button>
- *   createTooltip(shadowRoot);
+ * Attaches to elements with `data-tooltip` inside the sidebar's shadow DOM.
+ * Uses a MutationObserver to auto-attach to new elements as they're added.
+ * Removes native `title` attributes to prevent double-tooltip.
  *
  * @see docs/ideas/themed-tooltip-component.md
+ * @see https://mayank.co/blog/tooltip-using-webcomponents/ - shadow DOM tooltip patterns
  */
 
 import { COLOR, FONT } from './sidebar/styles.js';
 
 const SHOW_DELAY = 300;
-const HIDE_DELAY = 0;
-const MAX_WIDTH = 200;
 const GAP = 6;
 
 /**
- * Attach tooltip behavior to a shadow root via event delegation.
- * Creates a single tooltip div, repositioned per hover/focus.
+ * Create and manage tooltips inside a shadow root.
+ * Observes the shadow DOM for new `data-tooltip` elements and attaches listeners.
  * @param {ShadowRoot} shadowRoot
  * @returns {{ destroy: function }}
  */
@@ -31,79 +27,93 @@ export function createTooltip(shadowRoot) {
     position: 'fixed', zIndex: '2147483647', pointerEvents: 'none',
     background: COLOR.bgCard, color: COLOR.text, border: `1px solid ${COLOR.border}`,
     borderRadius: '6px', padding: '4px 8px', fontSize: '11px', fontFamily: FONT,
-    maxWidth: `${MAX_WIDTH}px`, lineHeight: '1.4', whiteSpace: 'normal',
-    opacity: '0', transition: `opacity 150ms`,
+    maxWidth: '200px', lineHeight: '1.4', whiteSpace: 'normal',
+    opacity: '0', transition: 'opacity 150ms',
     boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
   });
   shadowRoot.appendChild(tip);
 
   let showTimer = null;
-  let currentTarget = null;
+  let currentAnchor = null;
+  const attached = new WeakSet();
 
+  /** Position and show the tooltip near the anchor element. */
   function show(anchor) {
     const text = anchor.getAttribute('data-tooltip');
     if (!text) return;
+    currentAnchor = anchor;
     tip.textContent = text;
     tip.style.opacity = '1';
 
-    // Position: above by default, flip to below if near top
     const rect = anchor.getBoundingClientRect();
-    tip.style.left = `${rect.left + rect.width / 2}px`;
+    const placement = anchor.getAttribute('data-tooltip-placement') || 'above';
+    const left = Math.max(4, Math.min(rect.left + rect.width / 2, window.innerWidth - 104));
+    tip.style.left = `${left}px`;
     tip.style.transform = 'translateX(-50%)';
 
-    const placement = anchor.getAttribute('data-tooltip-placement') || 'above';
-    if (placement === 'below' || rect.top < 60) {
+    if (placement === 'below' || rect.top < 50) {
       tip.style.top = `${rect.bottom + GAP}px`;
     } else {
       tip.style.top = `${rect.top - GAP - 28}px`;
     }
 
-    // Link for a11y
-    const id = 'vg-tooltip-' + Date.now();
+    const id = 'vg-tip-' + Date.now();
     tip.id = id;
     anchor.setAttribute('aria-describedby', id);
-    currentTarget = anchor;
   }
 
+  /** Hide the tooltip. */
   function hide() {
     clearTimeout(showTimer);
+    showTimer = null;
     tip.style.opacity = '0';
-    if (currentTarget) {
-      currentTarget.removeAttribute('aria-describedby');
-      currentTarget = null;
+    if (currentAnchor) {
+      currentAnchor.removeAttribute('aria-describedby');
+      currentAnchor = null;
     }
   }
 
-  let lastAnchor = null;
+  /**
+   * Attach pointerenter/pointerleave + focus/blur listeners to an element.
+   * Also removes the native `title` attribute to prevent double-tooltip.
+   */
+  function attach(el) {
+    if (attached.has(el)) return;
+    attached.add(el);
 
-  function onOver(e) {
-    const anchor = e.target.closest?.('[data-tooltip]');
-    if (anchor === lastAnchor) return;
-    if (lastAnchor) hide();
-    if (!anchor) return;
-    lastAnchor = anchor;
-    clearTimeout(showTimer);
-    showTimer = setTimeout(() => show(anchor), SHOW_DELAY);
+    // Remove native title to prevent browser's built-in tooltip
+    if (el.hasAttribute('title')) el.removeAttribute('title');
+
+    el.addEventListener('pointerenter', () => {
+      clearTimeout(showTimer);
+      showTimer = setTimeout(() => show(el), SHOW_DELAY);
+    });
+    el.addEventListener('pointerleave', () => hide());
+    el.addEventListener('focusin', () => {
+      clearTimeout(showTimer);
+      showTimer = setTimeout(() => show(el), SHOW_DELAY);
+    });
+    el.addEventListener('focusout', () => hide());
   }
 
-  function onOut(e) {
-    const anchor = e.target.closest?.('[data-tooltip]');
-    const related = e.relatedTarget?.closest?.('[data-tooltip]');
-    if (anchor && anchor !== related) {
-      lastAnchor = null;
-      hide();
+  /** Scan for all data-tooltip elements and attach listeners. */
+  function scan() {
+    for (const el of shadowRoot.querySelectorAll('[data-tooltip]')) {
+      attach(el);
     }
   }
 
-  shadowRoot.addEventListener('mouseover', onOver);
-  shadowRoot.addEventListener('mouseout', onOut);
-  shadowRoot.addEventListener('focusin', (e) => { const a = e.target.closest?.('[data-tooltip]'); if (a) { clearTimeout(showTimer); showTimer = setTimeout(() => show(a), SHOW_DELAY); } });
-  shadowRoot.addEventListener('focusout', () => hide());
+  // Initial scan
+  scan();
+
+  // Watch for new elements added to the shadow DOM
+  const observer = new MutationObserver(() => scan());
+  observer.observe(shadowRoot, { childList: true, subtree: true });
 
   return {
     destroy() {
-      shadowRoot.removeEventListener('mouseover', onOver);
-      shadowRoot.removeEventListener('mouseout', onOut);
+      observer.disconnect();
+      clearTimeout(showTimer);
       tip.remove();
     },
   };
