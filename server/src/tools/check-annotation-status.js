@@ -15,6 +15,7 @@
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { wrapComment } from '#src/utils/sanitize.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
@@ -38,10 +39,10 @@ export function register(server, indexer, capturesDir) {
     async ({ annotated_capture, latest_capture }) => {
       let annotatedPath, latestPath;
       try { annotatedPath = validateCapturePath(annotated_capture, capturesDir); } catch (e) {
-        return { content: [{ type: 'text', text: `Error: ${e.message}` }], isError: true };
+        return errorResponse(`Error: ${e.message}`);
       }
       try { latestPath = validateCapturePath(latest_capture, capturesDir); } catch (e) {
-        return { content: [{ type: 'text', text: `Error: ${e.message}` }], isError: true };
+        return errorResponse(`Error: ${e.message}`);
       }
 
       let annotatedData, latestData;
@@ -50,11 +51,11 @@ export function register(server, indexer, capturesDir) {
         const rawL = await readFile(latestPath, 'utf-8');
         const parsedA = JSON.parse(rawA);
         const parsedL = parseCapture(rawL);
-        if (!parsedL.ok) return { content: [{ type: 'text', text: 'Error: Could not parse latest capture' }], isError: true };
+        if (!parsedL.ok) return errorResponse('Error: Could not parse latest capture');
         annotatedData = parsedA;
         latestData = parsedL.data;
       } catch (e) {
-        return { content: [{ type: 'text', text: `Error reading captures: ${e.message}` }], isError: true };
+        return errorResponse(`Error reading captures: ${e.message}`);
       }
 
       const annotations = annotatedData.annotations || [];
@@ -88,11 +89,11 @@ export function register(server, indexer, capturesDir) {
         else if (r.status === 'already-resolved') counts.alreadyResolved++;
       }
 
-      return { content: [{ type: 'text', text: JSON.stringify({
+      return jsonResponse({
         summary: `${counts.stillPresent} still present, ${counts.elementMissing} element(s) missing, ${counts.alreadyResolved} already resolved`,
         counts,
         annotations: results,
-      }, null, 2) }] };
+      });
     },
   );
 }

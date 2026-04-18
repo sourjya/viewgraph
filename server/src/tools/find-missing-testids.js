@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
-import { readAndParse } from '#src/utils/tool-helpers.js';
+import { readAndParse, jsonResponse } from '#src/utils/tool-helpers.js';
 import { flattenNodes, filterInteractive, getNodeDetails } from '#src/analysis/node-queries.js';
 import { wrapCapturedText } from '#src/utils/sanitize.js';
 
@@ -48,7 +48,7 @@ export function register(server, _indexer, capturesDir) {
           suggestedTestId: suggestTestId(n.tag, n.text),
         };
       });
-      return { content: [{ type: 'text', text: JSON.stringify(missing, null, 2) }] };
+      return jsonResponse(missing);
     },
   );
 }

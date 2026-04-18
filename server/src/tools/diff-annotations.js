@@ -14,6 +14,7 @@ import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { wrapComment } from '#src/utils/sanitize.js';
 import { diffAnnotations } from '#src/analysis/annotation-diff.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the diff_annotations MCP tool.
@@ -45,14 +46,14 @@ export function register(server, _indexer, capturesDir) {
       }
 
       if (captures.length < 2) {
-        return { content: [{ type: 'text', text: 'Need at least 2 captures with annotations to compare' }], isError: true };
+        return errorResponse('Need at least 2 captures with annotations to compare');
       }
 
       const result = diffAnnotations(captures);
-      return { content: [{ type: 'text', text: JSON.stringify({
+      return jsonResponse({
         summary: `${result.persistent.length} persistent, ${result.newInLatest.length} new, ${result.resolvedSince.length} resolved`,
         ...result,
-      }, null, 2) }] };
+      });
     },
   );
 }

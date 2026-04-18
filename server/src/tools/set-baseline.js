@@ -9,6 +9,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 import { setBaseline } from '#src/baselines.js';
 
 /**
@@ -29,10 +30,10 @@ export function register(server, _indexer, capturesDir) {
     async ({ filename }) => {
       try {
         const result = await setBaseline(capturesDir, filename);
-        return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+        return jsonResponse(result);
       } catch (err) {
-        if (err.code === 'ENOENT') return { content: [{ type: 'text', text: 'Capture file not found.' }], isError: true };
-        return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+        if (err.code === 'ENOENT') return errorResponse('Capture file not found.');
+        return errorResponse(`Error: ${err.message}`);
       }
     },
   );

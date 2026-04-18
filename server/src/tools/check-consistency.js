@@ -15,6 +15,7 @@
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { checkConsistency } from '#src/analysis/consistency-checker.js';
@@ -39,7 +40,7 @@ export function register(server, indexer, capturesDir) {
       for (const filename of filenames) {
         let filePath;
         try { filePath = validateCapturePath(filename, capturesDir); } catch (err) {
-          return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+          return errorResponse(`Error: ${err.message}`);
         }
         try {
           const raw = await readFile(filePath, 'utf-8');
@@ -50,12 +51,12 @@ export function register(server, indexer, capturesDir) {
       }
 
       if (captures.length < 2) {
-        return { content: [{ type: 'text', text: 'Error: Need at least 2 valid captures to compare' }], isError: true };
+        return errorResponse('Error: Need at least 2 valid captures to compare');
       }
 
       const result = checkConsistency(captures);
 
-      return { content: [{ type: 'text', text: JSON.stringify({
+      return jsonResponse({
         summary: result.inconsistencies.length === 0
           ? `No inconsistencies found across ${result.comparedPages} pages (${result.matchedElements} elements matched)`
           : `${result.inconsistencies.length} inconsistency(ies) across ${result.comparedPages} pages`,
@@ -66,7 +67,7 @@ export function register(server, indexer, capturesDir) {
           pages: [inc.pageA, inc.pageB],
           diffs: inc.diffs.map((d) => `${d.property}: ${d.valueA} vs ${d.valueB}`),
         })),
-      }, null, 2) }] };
+      });
     },
   );
 }

@@ -14,6 +14,7 @@ import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { wrapComment } from '#src/utils/sanitize.js';
 import { detectRecurringIssues } from '#src/analysis/recurring-issues.js';
+import { jsonResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the detect_recurring_issues MCP tool.
@@ -49,11 +50,11 @@ export function register(server, indexer, capturesDir) {
       }
 
       const result = detectRecurringIssues(captures, { minOccurrences: min_occurrences });
-      return { content: [{ type: 'text', text: JSON.stringify({
+      return jsonResponse({
         capturesScanned: captures.length,
         hotspots: result.hotspots.length,
         details: result.hotspots,
-      }, null, 2) }] };
+      });
     },
   );
 }

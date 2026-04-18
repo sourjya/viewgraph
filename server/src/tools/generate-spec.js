@@ -15,6 +15,7 @@ import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { wrapComment } from '#src/utils/sanitize.js';
 import { generateSpec } from '#src/analysis/spec-generator.js';
+import { jsonResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the generate_spec MCP tool.
@@ -54,11 +55,11 @@ export function register(server, indexer, capturesDir) {
       }
 
       const spec = generateSpec(annotations, { specName: spec_name });
-      return { content: [{ type: 'text', text: JSON.stringify({
+      return jsonResponse({
         annotationsProcessed: annotations.length,
         requirements: spec.requirements,
         tasks: spec.tasks,
-      }, null, 2) }] };
+      });
     },
   );
 }

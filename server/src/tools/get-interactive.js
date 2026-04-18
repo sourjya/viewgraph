@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
-import { readAndParse } from '#src/utils/tool-helpers.js';
+import { readAndParse, jsonResponse } from '#src/utils/tool-helpers.js';
 import { flattenNodes, filterInteractive, getNodeDetails, isInViewport } from '#src/analysis/node-queries.js';
 import { wrapCapturedText } from '#src/utils/sanitize.js';
 
@@ -42,7 +42,7 @@ export function register(server, _indexer, capturesDir) {
           'aria-label': details?.attributes?.['aria-label'] ?? null,
         };
       });
-      return { content: [{ type: 'text', text: JSON.stringify(elements, null, 2) }] };
+      return jsonResponse(elements);
     },
   );
 }

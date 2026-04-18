@@ -14,6 +14,7 @@
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
+import { jsonResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the list_sessions MCP tool.
@@ -68,10 +69,10 @@ export function register(server, indexer, capturesDir) {
 
       result.sort((a, b) => (b.lastStep || '').localeCompare(a.lastStep || ''));
 
-      return { content: [{ type: 'text', text: JSON.stringify({
+      return jsonResponse({
         summary: `${result.length} session(s)`,
         sessions: result,
-      }, null, 2) }] };
+      });
     },
   );
 }

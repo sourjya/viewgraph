@@ -8,6 +8,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
+import { jsonResponse } from '#src/utils/tool-helpers.js';
 import { listBaselines } from '#src/baselines.js';
 
 /**
@@ -26,7 +27,7 @@ export function register(server, _indexer, capturesDir) {
     },
     async ({ url_filter }) => {
       const baselines = await listBaselines(capturesDir, url_filter);
-      return { content: [{ type: 'text', text: JSON.stringify(baselines, null, 2) }] };
+      return jsonResponse(baselines);
     },
   );
 }

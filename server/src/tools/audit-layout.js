@@ -10,7 +10,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
-import { readAndParse } from '#src/utils/tool-helpers.js';
+import { readAndParse, jsonResponse } from '#src/utils/tool-helpers.js';
 import { analyzeLayout } from '#src/analysis/layout-analysis.js';
 
 /**
@@ -33,7 +33,7 @@ export function register(server, _indexer, capturesDir) {
       const { ok, parsed, error } = await readAndParse(filename, capturesDir);
       if (!ok) return error;
       const layout = analyzeLayout(parsed);
-      return { content: [{ type: 'text', text: JSON.stringify(layout, null, 2) }] };
+      return jsonResponse(layout);
     },
   );
 }

@@ -12,6 +12,7 @@ import path from 'path';
 import { PROJECT_NAME } from '#src/constants.js';
 import { parseSnapshot, compareFidelity } from '#src/analysis/fidelity.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the get_fidelity_report MCP tool.
@@ -32,7 +33,7 @@ export function register(server, _indexer, capturesDir) {
       try {
         capturePath = validateCapturePath(filename, capturesDir);
       } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid filename "${filename}"` }], isError: true };
+        return errorResponse(`Error: Invalid filename "${filename}"`);
       }
 
       const stem = filename.replace(/\.json$/, '');
@@ -42,12 +43,12 @@ export function register(server, _indexer, capturesDir) {
       try {
         captureJson = JSON.parse(await readFile(capturePath, 'utf-8'));
       } catch {
-        return { content: [{ type: 'text', text: `Error: Capture "${filename}" not found` }], isError: true };
+        return errorResponse(`Error: Capture "${filename}" not found`);
       }
       try {
         snapshotHtml = await readFile(snapshotPath, 'utf-8');
       } catch {
-        return { content: [{ type: 'text', text: `Error: No snapshot found for "${filename}". Expected: snapshots/${stem}.html` }], isError: true };
+        return errorResponse(`Error: No snapshot found for "${filename}". Expected: snapshots/${stem}.html`);
       }
 
       const snapshot = parseSnapshot(snapshotHtml);
@@ -55,7 +56,7 @@ export function register(server, _indexer, capturesDir) {
       report.captureFile = filename;
       report.snapshotFile = `${stem}.html`;
 
-      return { content: [{ type: 'text', text: JSON.stringify(report, null, 2) }] };
+      return jsonResponse(report);
     },
   );
 }

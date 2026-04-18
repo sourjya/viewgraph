@@ -11,6 +11,7 @@
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { flattenNodes, filterInteractive, getNodeDetails } from '#src/analysis/node-queries.js';
@@ -32,17 +33,17 @@ export function register(server, _indexer, capturesDir) {
     async ({ filename }) => {
       let filePath;
       try { filePath = validateCapturePath(filename, capturesDir); } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid filename - ${filename}` }], isError: true };
+        return errorResponse(`Error: Invalid filename - ${filename}`);
       }
 
       let parsed;
       try {
         const raw = await readFile(filePath, 'utf-8');
         parsed = parseCapture(raw);
-        if (!parsed.ok) return { content: [{ type: 'text', text: 'Error: Failed to parse capture' }], isError: true };
+        if (!parsed.ok) return errorResponse('Error: Failed to parse capture');
       } catch (err) {
-        if (err.code === 'ENOENT') return { content: [{ type: 'text', text: `Error: Capture not found: ${filename}` }], isError: true };
-        return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+        if (err.code === 'ENOENT') return errorResponse(`Error: Capture not found: ${filename}`);
+        return errorResponse(`Error: ${err.message}`);
       }
 
       const allNodes = flattenNodes(parsed.data);
@@ -98,7 +99,7 @@ export function register(server, _indexer, capturesDir) {
             : 100,
           components: results,
         };
-        return { content: [{ type: 'text', text: JSON.stringify(summary, null, 2) }] };
+        return jsonResponse(summary);
       }
 
       // With component data: cross-reference interactive nodes against components
@@ -140,7 +141,7 @@ export function register(server, _indexer, capturesDir) {
         components: results,
       };
 
-      return { content: [{ type: 'text', text: JSON.stringify(summary, null, 2) }] };
+      return jsonResponse(summary);
     },
   );
 }

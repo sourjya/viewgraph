@@ -7,6 +7,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the request_capture MCP tool.
@@ -31,9 +32,9 @@ export function register(server, queue) {
     async ({ url, guidance, purpose }) => {
       try {
         const req = queue.create(url, { guidance, purpose });
-        return { content: [{ type: 'text', text: JSON.stringify({ requestId: req.id, status: req.status }) }] };
+        return jsonResponse({ requestId: req.id, status: req.status });
       } catch (err) {
-        return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+        return errorResponse(`Error: ${err.message}`);
       }
     },
   );

@@ -11,6 +11,7 @@
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { getNodeDetails } from '#src/analysis/node-queries.js';
@@ -34,10 +35,10 @@ export function register(server, _indexer, capturesDir) {
     async ({ file_a, file_b, element_id }) => {
       let pathA, pathB;
       try { pathA = validateCapturePath(file_a, capturesDir); } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid filename - ${file_a}` }], isError: true };
+        return errorResponse(`Error: Invalid filename - ${file_a}`);
       }
       try { pathB = validateCapturePath(file_b, capturesDir); } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid filename - ${file_b}` }], isError: true };
+        return errorResponse(`Error: Invalid filename - ${file_b}`);
       }
 
       let capA, capB;
@@ -45,16 +46,16 @@ export function register(server, _indexer, capturesDir) {
         const [rawA, rawB] = await Promise.all([readFile(pathA, 'utf-8'), readFile(pathB, 'utf-8')]);
         capA = parseCapture(rawA);
         capB = parseCapture(rawB);
-        if (!capA.ok || !capB.ok) return { content: [{ type: 'text', text: 'Error: Failed to parse captures' }], isError: true };
+        if (!capA.ok || !capB.ok) return errorResponse('Error: Failed to parse captures');
       } catch (err) {
-        return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+        return errorResponse(`Error: ${err.message}`);
       }
 
       const detailsA = getNodeDetails(capA.data, element_id);
       const detailsB = getNodeDetails(capB.data, element_id);
 
       if (!detailsA && !detailsB) {
-        return { content: [{ type: 'text', text: `Error: Element "${element_id}" not found in either capture` }], isError: true };
+        return errorResponse(`Error: Element "${element_id}" not found in either capture`);
       }
 
       const stylesA = detailsA?.computedStyles || {};
@@ -89,7 +90,7 @@ export function register(server, _indexer, capturesDir) {
         unchanged: allKeys.size - changed.length - added.length - removed.length,
       };
 
-      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+      return jsonResponse(result);
     },
   );
 }

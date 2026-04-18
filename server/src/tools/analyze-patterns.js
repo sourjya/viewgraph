@@ -14,6 +14,7 @@ import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { wrapComment } from '#src/utils/sanitize.js';
 import { analyzePatterns } from '#src/analysis/steering-generator.js';
+import { jsonResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the analyze_patterns MCP tool.
@@ -48,11 +49,11 @@ export function register(server, indexer, capturesDir) {
       }
 
       const result = analyzePatterns(annotations);
-      return { content: [{ type: 'text', text: JSON.stringify({
+      return jsonResponse({
         totalAnnotations: annotations.length,
         resolvedAnnotations: annotations.filter((a) => a.resolution).length,
         ...result,
-      }, null, 2) }] };
+      });
     },
   );
 }

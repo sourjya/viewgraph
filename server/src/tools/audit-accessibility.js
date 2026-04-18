@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
-import { readAndParse } from '#src/utils/tool-helpers.js';
+import { readAndParse, jsonResponse } from '#src/utils/tool-helpers.js';
 import { flattenNodes, getNodeDetails } from '#src/analysis/node-queries.js';
 import { auditNode } from '#src/analysis/a11y-rules.js';
 
@@ -56,7 +56,7 @@ export function register(server, _indexer, capturesDir) {
         grouped.total += parsed.axe.violations.length;
       }
 
-      return { content: [{ type: 'text', text: JSON.stringify(grouped, null, 2) }] };
+      return jsonResponse(grouped);
     },
   );
 }

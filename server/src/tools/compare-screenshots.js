@@ -16,6 +16,7 @@ import { z } from 'zod';
 import { readFile } from 'fs/promises';
 import path from 'path';
 import { PROJECT_NAME } from '#src/constants.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 import { diffScreenshots } from '#src/analysis/screenshot-diff.js';
 
 /**
@@ -44,7 +45,7 @@ export function register(server, _indexer, capturesDir) {
         const [bufA, bufB] = await Promise.all([readFile(pathA), readFile(pathB)]);
         const result = diffScreenshots(bufA, bufB, { threshold });
 
-        return { content: [{ type: 'text', text: JSON.stringify({
+        return jsonResponse({
           diffPercent: result.diffPercent,
           changedPixels: result.changedPixels,
           totalPixels: result.totalPixels,
@@ -54,9 +55,9 @@ export function register(server, _indexer, capturesDir) {
             : result.diffPercent < 1 ? 'minor differences (< 1%)'
               : result.diffPercent < 5 ? 'noticeable changes (1-5%)'
                 : 'significant changes (> 5%)',
-        }, null, 2) }] };
+        });
       } catch (err) {
-        return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+        return errorResponse(`Error: ${err.message}`);
       }
     },
   );

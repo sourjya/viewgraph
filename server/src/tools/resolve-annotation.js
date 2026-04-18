@@ -13,6 +13,7 @@ import { z } from 'zod';
 import { readFile, writeFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 
 /** Allowed resolution actions. */
 const ACTIONS = ['fixed', 'wontfix', 'duplicate', 'invalid'];
@@ -43,7 +44,7 @@ export function register(server, _indexer, capturesDir, options = {}) {
     async ({ filename, annotation_uuid, action, summary, files_changed }) => {
       let filePath;
       try { filePath = validateCapturePath(filename, capturesDir); } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid filename - ${filename}` }], isError: true };
+        return errorResponse(`Error: Invalid filename - ${filename}`);
       }
 
       try {
@@ -53,7 +54,7 @@ export function register(server, _indexer, capturesDir, options = {}) {
 
         const ann = annotations.find((a) => a.uuid === annotation_uuid);
         if (!ann) {
-          return { content: [{ type: 'text', text: `Error: Annotation not found: ${annotation_uuid}` }], isError: true };
+          return errorResponse(`Error: Annotation not found: ${annotation_uuid}`);
         }
 
         // Set resolved state and resolution details
@@ -71,10 +72,10 @@ export function register(server, _indexer, capturesDir, options = {}) {
         // Notify WebSocket clients of resolution
         if (options.onResolve) options.onResolve({ uuid: annotation_uuid, resolution: ann.resolution });
 
-        return { content: [{ type: 'text', text: JSON.stringify(ann, null, 2) }] };
+        return jsonResponse(ann);
       } catch (err) {
-        if (err.code === 'ENOENT') return { content: [{ type: 'text', text: `Error: Capture not found: ${filename}` }], isError: true };
-        return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+        if (err.code === 'ENOENT') return errorResponse(`Error: Capture not found: ${filename}`);
+        return errorResponse(`Error: ${err.message}`);
       }
     },
   );

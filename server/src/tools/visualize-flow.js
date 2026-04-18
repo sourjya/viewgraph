@@ -15,6 +15,7 @@ import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { buildStateMachine } from '#src/analysis/state-machine.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the visualize_flow MCP tool.
@@ -48,17 +49,17 @@ export function register(server, _indexer, capturesDir) {
       }
 
       if (steps.length < 2) {
-        return { content: [{ type: 'text', text: 'Need at least 2 valid captures to build a flow' }], isError: true };
+        return errorResponse('Need at least 2 valid captures to build a flow');
       }
 
       const result = buildStateMachine(steps);
-      return { content: [{ type: 'text', text: JSON.stringify({
+      return jsonResponse({
         steps: result.states.length,
         transitionCount: result.transitions.length,
         states: result.states,
         transitions: result.transitions,
         mermaid: result.mermaid,
-      }, null, 2) }] };
+      });
     },
   );
 }

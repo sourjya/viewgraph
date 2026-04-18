@@ -10,6 +10,7 @@
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 
 /** Minimum node count for a useful capture. */
@@ -29,7 +30,7 @@ export function register(server, _indexer, capturesDir) {
     async ({ filename }) => {
       let filePath;
       try { filePath = validateCapturePath(filename, capturesDir); } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid filename - ${filename}` }], isError: true };
+        return errorResponse(`Error: Invalid filename - ${filename}`);
       }
 
       try {
@@ -54,14 +55,14 @@ export function register(server, _indexer, capturesDir) {
           warnings.push(`${failedReqs.length} failed network request(s) - may cause missing content`);
         }
 
-        return { content: [{ type: 'text', text: JSON.stringify({
+        return jsonResponse({
           ok: warnings.length === 0,
           totalNodes,
           warnings,
           enrichmentPresent: enrichment.filter((k) => raw[k]),
-        }, null, 2) }] };
+        });
       } catch (err) {
-        return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+        return errorResponse(`Error: ${err.message}`);
       }
     },
   );

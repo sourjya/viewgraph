@@ -10,6 +10,7 @@ import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseSummary } from '#src/parsers/viewgraph-v2.js';
+import { errorResponse } from '#src/utils/tool-helpers.js';
 
 const MAX_INLINE_SIZE = 100 * 1024;
 
@@ -34,14 +35,14 @@ export function register(server, indexer, capturesDir) {
     async ({ url_filter: urlFilter }) => {
       const latest = indexer.getLatest(urlFilter);
       if (!latest) {
-        return { content: [{ type: 'text', text: 'No captures found.' + (urlFilter ? ` Filter: "${urlFilter}"` : '') }], isError: true };
+        return errorResponse('No captures found.' + (urlFilter ? ` Filter: "${urlFilter}"` : ''));
       }
 
       let filePath;
       try {
         filePath = validateCapturePath(latest.filename, capturesDir);
       } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid path for ${latest.filename}` }], isError: true };
+        return errorResponse(`Error: Invalid path for ${latest.filename}`);
       }
 
       try {
@@ -58,7 +59,7 @@ export function register(server, indexer, capturesDir) {
 
         return { content: [{ type: 'text', text: `Latest capture: ${latest.filename}\n\n${content}` }] };
       } catch (err) {
-        return { content: [{ type: 'text', text: `Error reading capture: ${err.message}` }], isError: true };
+        return errorResponse(`Error reading capture: ${err.message}`);
       }
     },
   );

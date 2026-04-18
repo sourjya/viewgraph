@@ -14,6 +14,7 @@ import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { flattenNodes } from '#src/analysis/node-queries.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the analyze_journey MCP tool.
@@ -42,7 +43,7 @@ export function register(server, _indexer, capturesDir) {
       }
 
       if (steps.length < 2) {
-        return { content: [{ type: 'text', text: 'Need at least 2 valid captures to analyze a journey' }], isError: true };
+        return errorResponse('Need at least 2 valid captures to analyze a journey');
       }
 
       const issues = [];
@@ -83,12 +84,12 @@ export function register(server, _indexer, capturesDir) {
         elements: flattenNodes(s.data).length,
       }));
 
-      return { content: [{ type: 'text', text: JSON.stringify({
+      return jsonResponse({
         steps: summary.length,
         issueCount: issues.length,
         journey: summary,
         issues: issues,
-      }, null, 2) }] };
+      });
     },
   );
 }

@@ -12,6 +12,7 @@
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { diffCaptures } from '#src/analysis/capture-diff.js';
@@ -43,21 +44,21 @@ export function register(server, indexer, capturesDir) {
           captureContent = await readFile(capturePath, 'utf-8');
         } else {
           const latest = indexer.getLatest(url);
-          if (!latest) return { content: [{ type: 'text', text: 'No captures found.' }], isError: true };
+          if (!latest) return errorResponse('No captures found.');
           capturePath = validateCapturePath(latest.filename, capturesDir);
           captureContent = await readFile(capturePath, 'utf-8');
         }
 
         const captureResult = parseCapture(captureContent);
-        if (!captureResult.ok) return { content: [{ type: 'text', text: `Error parsing capture: ${captureResult.error}` }], isError: true };
+        if (!captureResult.ok) return errorResponse(`Error parsing capture: ${captureResult.error}`);
 
         const captureUrl = url || captureResult.data.METADATA?.url;
-        if (!captureUrl) return { content: [{ type: 'text', text: 'Cannot determine URL from capture.' }], isError: true };
+        if (!captureUrl) return errorResponse('Cannot determine URL from capture.');
 
         // Load baseline
         const baseline = await getBaseline(capturesDir, captureUrl);
         if (!baseline) {
-          return { content: [{ type: 'text', text: JSON.stringify({ hasBaseline: false, url: captureUrl }, null, 2) }] };
+          return jsonResponse({ hasBaseline: false, url: captureUrl });
         }
 
         // Diff
@@ -77,10 +78,10 @@ export function register(server, indexer, capturesDir) {
           },
           summary: buildSummary(diff, baselineInteractive, currentInteractive),
         };
-        return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+        return jsonResponse(result);
       } catch (err) {
-        if (err.code === 'ENOENT') return { content: [{ type: 'text', text: 'Capture file not found.' }], isError: true };
-        return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+        if (err.code === 'ENOENT') return errorResponse('Capture file not found.');
+        return errorResponse(`Error: ${err.message}`);
       }
     },
   );

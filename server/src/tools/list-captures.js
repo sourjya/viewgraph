@@ -7,6 +7,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
+import { jsonResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the list_captures MCP tool.
@@ -38,7 +39,7 @@ export function register(server, indexer) {
         timestamp: c.timestamp,
         node_count: c.nodeCount,
       }));
-      return { content: [{ type: 'text', text: JSON.stringify(summary, null, 2) }] };
+      return jsonResponse(summary);
     },
   );
 }

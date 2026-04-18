@@ -17,6 +17,7 @@ import { z } from 'zod';
 import path from 'path';
 import { PROJECT_NAME } from '#src/constants.js';
 import { findSource } from '#src/analysis/source-linker.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the find_source MCP tool.
@@ -43,7 +44,7 @@ export function register(server, _indexer, capturesDir) {
     },
     async ({ testid, aria_label, selector, text, component }) => {
       if (!testid && !aria_label && !selector && !text && !component) {
-        return { content: [{ type: 'text', text: 'Error: Provide at least one of: testid, aria_label, selector, text, component' }], isError: true };
+        return errorResponse('Error: Provide at least one of: testid, aria_label, selector, text, component');
       }
 
       // Look up fiber-derived source path from capture component data.
@@ -71,17 +72,17 @@ export function register(server, _indexer, capturesDir) {
       });
 
       if (results.length === 0) {
-        return { content: [{ type: 'text', text: JSON.stringify({
+        return jsonResponse({
           summary: 'No source files found matching the element',
           query: { testid, aria_label, selector, text },
           suggestion: 'Try adding a data-testid to the element for reliable source linking',
-        }, null, 2) }] };
+        });
       }
 
-      return { content: [{ type: 'text', text: JSON.stringify({
+      return jsonResponse({
         summary: `${results.length} source location(s) found`,
         results,
-      }, null, 2) }] };
+      });
     },
   );
 }
