@@ -72,6 +72,8 @@ The extension captures the DOM from Chrome or Firefox. The server reads those ca
 
 The server runs automatically via `npx` - no install needed. It auto-creates `.viewgraph/captures/` and learns your URL pattern from the first capture.
 
+> **GitHub Releases = latest version, always.** Chrome/Firefox store reviews can delay updates by days or weeks. [GitHub Releases](https://github.com/sourjya/viewgraph/releases/latest) always has the newest extension ZIPs and changelog. For the bleeding edge, get it from GitHub.
+
 **Alternative:** `npm install -g @viewgraph/core && viewgraph-init` for explicit version pinning and config control.
 
 The extension sidebar opens with **Review** (annotate and comment) and **Inspect** (network errors, console issues) tabs. Export via **Send to Agent** (MCP), **Copy Markdown** (Jira/GitHub), or **Download Report** (ZIP).

@@ -149,6 +149,10 @@ ViewGraph is AGPL-3.0 licensed. Full source, issues, and contributions on [GitHu
 | [packages/playwright/](https://github.com/sourjya/viewgraph/tree/main/packages/playwright) | Playwright fixture for E2E test captures |
 | [power/](https://github.com/sourjya/viewgraph/tree/main/power) | Kiro Power assets - hooks, prompts, steering docs |
 
+{% hint style="success" %}
+**GitHub Releases = latest version, always.** Chrome and Firefox stores can lag behind by days or weeks due to review queues. [GitHub Releases](https://github.com/sourjya/viewgraph/releases/latest) always has the newest extension ZIPs, npm package, and changelog. If you want the bleeding edge, get it from GitHub.
+{% endhint %}
+
 {% hint style="info" %}
 **GitHub:** [github.com/sourjya/viewgraph](https://github.com/sourjya/viewgraph) - star the repo, report issues, contribute
 

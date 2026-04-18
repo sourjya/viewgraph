@@ -102,6 +102,10 @@ Re-run `viewgraph-init` from your project. It restarts cleanly without duplicati
 
 ## Install from GitHub ZIP
 
+{% hint style="success" %}
+**GitHub Releases is always the most up-to-date source.** Store reviews can delay updates by days or weeks. If you want the latest features and fixes immediately, download from [GitHub Releases](https://github.com/sourjya/viewgraph/releases/latest).
+{% endhint %}
+
 If the store version is outdated, install the latest extension directly from GitHub. See the dedicated **[Install from GitHub](manual-install.md)** page for step-by-step instructions for Chrome and Firefox, version checking, and build transparency details.
 
 ---
