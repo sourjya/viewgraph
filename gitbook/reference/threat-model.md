@@ -1,6 +1,6 @@
 # Threat Model
 
-ViewGraph undergoes structured threat modeling using the [STRIDE methodology](https://en.wikipedia.org/wiki/STRIDE_(security)). This page summarizes the findings and how our roadmap addresses them.
+ViewGraph undergoes structured threat modeling using the [STRIDE methodology](https://en.wikipedia.org/wiki/STRIDE_%28security%29). This page summarizes the findings and how our roadmap addresses them.
 
 For the full engineering report, see [GitHub](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-stride.md).
 

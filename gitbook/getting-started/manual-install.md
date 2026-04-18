@@ -19,7 +19,7 @@ Yes. The ZIP files on GitHub are built from the same open-source code you can se
 - The extension source code is in [`extension/`](https://github.com/sourjya/viewgraph/tree/main/extension) - fully readable, no obfuscation
 - ZIPs are produced by the [`scripts/build-extension.sh`](https://github.com/sourjya/viewgraph/blob/main/scripts/build-extension.sh) build script, which runs the standard build toolchain and packages the output
 - Each release is [tagged in git](https://github.com/sourjya/viewgraph/tags) (e.g., `v0.4.0`) so you can verify exactly which code produced the ZIP
-- The extension [manifest](https://github.com/sourjya/viewgraph/blob/main/extension/manifest.json) lists every permission it requests - nothing hidden
+- The extension [config](https://github.com/sourjya/viewgraph/blob/main/extension/wxt.config.js) declares every permission it requests - nothing hidden
 - You can always [build from source](installation.md#build-from-source) yourself if you prefer full control
 
 The extension runs entirely on your machine. No data is sent to any external server. See [Security](../reference/security.md) for the full security model.
