@@ -260,18 +260,29 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       const safePath = validateCapturePath(filename, targetDir);
       await writeFile(safePath, JSON.stringify(capture, null, 2));
 
-      // Auto-learn: generate config.json on first capture if none exists
+      // Auto-learn: generate or update config.json when urlPatterns is empty
       // S3-1: Only auto-learn from localhost/file URLs to prevent remote URL injection
       try {
         const configFile = safeConfigPath(targetDir);
-        if (configFile && !existsSync(configFile) && capture.metadata?.url) {
-          const captureUrl = new URL(capture.metadata.url);
-          const isLocal = ['localhost', '127.0.0.1', '[::1]', '0.0.0.0'].includes(captureUrl.hostname) || capture.metadata.url.startsWith('file://');
-          if (isLocal) {
-            const pattern = `${captureUrl.hostname}${captureUrl.port ? ':' + captureUrl.port : ''}`;
-            const autoConfig = { urlPatterns: [pattern], autoAudit: false, smartSuggestions: true };
-            writeFileSync(configFile, JSON.stringify(autoConfig, null, 2));
-            console.error(`${LOG_PREFIX} Auto-configured: ${configFile} (pattern: ${pattern})`);
+        if (configFile && capture.metadata?.url) {
+          let shouldLearn = false;
+          if (!existsSync(configFile)) {
+            shouldLearn = true;
+          } else {
+            try {
+              const existing = JSON.parse(readFileSync(configFile, 'utf8'));
+              if (!existing.urlPatterns || existing.urlPatterns.length === 0) shouldLearn = true;
+            } catch { shouldLearn = true; }
+          }
+          if (shouldLearn) {
+            const captureUrl = new URL(capture.metadata.url);
+            const isLocal = ['localhost', '127.0.0.1', '[::1]', '0.0.0.0'].includes(captureUrl.hostname) || capture.metadata.url.startsWith('file://');
+            if (isLocal) {
+              const pattern = `${captureUrl.hostname}${captureUrl.port ? ':' + captureUrl.port : ''}`;
+              const autoConfig = { urlPatterns: [pattern], autoAudit: false, smartSuggestions: true };
+              writeFileSync(configFile, JSON.stringify(autoConfig, null, 2));
+              console.error(`${LOG_PREFIX} Auto-configured: ${configFile} (pattern: ${pattern})`);
+            }
           }
         }
       } catch { /* best effort - non-blocking */ }

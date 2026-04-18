@@ -2,9 +2,9 @@
 
 - **ID**: BUG-015
 - **Severity**: High
-- **Status**: OPEN
+- **Status**: FIXED
 - **Reported**: 2026-04-18
-- **Fixed**: -
+- **Fixed**: 2026-04-18
 
 ## Description
 
@@ -41,9 +41,13 @@ Or manually edit `.viewgraph/config.json`:
 2. `viewgraph-init` should warn when no `--url` is provided and prompt for one
 3. Extension should show a warning when captures are sent to a server with no URL patterns
 
+## Fix
+
+Auto-learn now fires when config.json exists but has empty `urlPatterns: []`, not just when config.json is missing. On first capture, the server reads the existing config, checks if urlPatterns is empty, and populates it from the capture URL.
+
 ## Files Changed
 
--
+- `server/src/http-receiver.js`
 
 ## Regression Tests
 
