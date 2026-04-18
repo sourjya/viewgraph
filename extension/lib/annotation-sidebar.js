@@ -362,6 +362,24 @@ export function collapse() {
   badgeEl.style.display = 'flex';
   updateBadgeCount();
   if (_strip) _strip.updateModeButtons(getCaptureMode());
+
+  // First-time collapse hint (shown once, tracked in storage)
+  chrome.storage.local.get('vg_collapse_hint_shown', (data) => {
+    if (data.vg_collapse_hint_shown) return;
+    chrome.storage.local.set({ vg_collapse_hint_shown: true });
+    const toast = document.createElement('div');
+    Object.assign(toast.style, {
+      position: 'fixed', bottom: '20px', right: '50px', zIndex: '2147483647',
+      background: '#1e1e2e', color: '#a5b4fc', border: '1px solid #333',
+      borderRadius: '8px', padding: '8px 14px', fontSize: '12px',
+      fontFamily: 'system-ui, sans-serif', boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+      opacity: '0', transition: 'opacity 0.3s',
+    });
+    toast.textContent = 'Click elements on the page. Tap the strip to expand.';
+    document.documentElement.appendChild(toast);
+    requestAnimationFrame(() => { toast.style.opacity = '1'; });
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 4000);
+  });
 }
 
 export function expand() {
