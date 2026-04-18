@@ -31,6 +31,7 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - BUG-017: sidebar vanishes on Element click - re-append guard for DOM cleanup
 - BUG-018: settings showed wrong server for unmatched pages
 - Trust shield tooltip capitalization (Trusted/Untrusted/Configured)
+- BUG-019: suggestions panel stays open when adding individual items
 
 ### Codebase
 - Phase 2 refactors: 74 files - jsonResponse/errorResponse, readAndParse/Pair/Multi, shared test fixtures, mockChrome, styles.js COLOR constants
