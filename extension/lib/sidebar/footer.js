@@ -53,7 +53,6 @@ export function createFooter({ onSend, onShowSettings }) {
   sendBtn.setAttribute('data-tooltip', 'Send annotations to your AI agent');
   sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent'));
   Object.assign(sendBtn.style, { ...BTN_STYLE, background: COLOR.primary, width: '100%', padding: '9px 4px', marginBottom: '4px' });
-  sendBtn.title = 'Send annotations to your AI coding agent via MCP';
   sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#5558e6'; });
   sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = COLOR.primary; });
   sendBtn.addEventListener('click', onSend);
@@ -64,7 +63,6 @@ export function createFooter({ onSend, onShowSettings }) {
   copyBtn.setAttribute('data-tooltip', 'Copy as Markdown for Jira/GitHub');
   copyBtn.replaceChildren(docIcon(14), document.createTextNode('Copy MD'));
   Object.assign(copyBtn.style, { ...BTN_STYLE, background: 'transparent', color: COLOR.secondary, flex: '1', border: `1px solid ${COLOR.border}` });
-  copyBtn.title = 'Copy as Markdown';
   copyBtn.addEventListener('mouseenter', () => { copyBtn.style.background = 'rgba(255,255,255,0.05)'; });
   copyBtn.addEventListener('mouseleave', () => { copyBtn.style.background = 'transparent'; });
   copyBtn.addEventListener('click', () => {
@@ -82,7 +80,6 @@ export function createFooter({ onSend, onShowSettings }) {
   dlBtn.setAttribute('data-tooltip', 'Download ZIP report with screenshots');
   dlBtn.replaceChildren(downloadIcon(14), document.createTextNode('Report'));
   Object.assign(dlBtn.style, { ...BTN_STYLE, background: 'transparent', color: COLOR.secondary, flex: '1', border: `1px solid ${COLOR.border}` });
-  dlBtn.title = 'Download Report (Markdown + Screenshots)';
   dlBtn.addEventListener('mouseenter', () => { dlBtn.style.background = 'rgba(255,255,255,0.05)'; });
   dlBtn.addEventListener('mouseleave', () => { dlBtn.style.background = 'transparent'; });
   dlBtn.addEventListener('click', () => {
