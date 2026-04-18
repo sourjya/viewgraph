@@ -243,4 +243,30 @@ describe('settings card design', () => {
     const allLink = links.find((a) => a.textContent.includes('All servers'));
     expect(allLink.querySelector('svg')).not.toBeNull();
   });
+
+  it('(+) server info rows use consistent font size and baseline alignment', async () => {
+    const transport = await import('#lib/transport.js');
+    transport.reset(); transport.init('http://127.0.0.1:9876');
+    mockChrome();
+    Object.defineProperty(window, 'location', { value: { href: 'http://localhost:4000/page' }, writable: true, configurable: true });
+    mockServer({ info: { projectRoot: '/myproject', urlPatterns: ['localhost:4000'], agent: 'Kiro', serverVersion: '0.4.1' } });
+    const s = createSettings();
+    s.show();
+    await new Promise((r) => setTimeout(r, 150));
+    const body = s.element.querySelector('[data-vg-annotate="project-details"]');
+    const rows = body.querySelectorAll('div');
+    for (const row of rows) {
+      expect(row.style.alignItems).toBe('baseline');
+      const spans = row.querySelectorAll('span');
+      for (const span of spans) {
+        expect(span.style.fontSize).toBe('11px');
+      }
+    }
+    transport.reset();
+  });
+
+  it('(+) settings screen has bottom offset to not cover footer', () => {
+    const s = createSettings();
+    expect(s.element.style.bottom).toBe('42px');
+  });
 });

@@ -80,4 +80,11 @@ describe('createFooter', () => {
     const shield = f.element.querySelector('[data-vg-annotate="trust-shield"]');
     expect(shield.getAttribute('data-tooltip')).toBe('Untrusted: Remote URL');
   });
+
+  it('(+) status row has no borderTop (footer already has one)', () => {
+    const f = createFooter({ onSend: vi.fn(), onShowSettings: vi.fn() });
+    const dot = f.element.querySelector('[data-vg-annotate="status-dot"]');
+    const statusRow = dot.parentElement;
+    expect(statusRow.style.borderTop).toBe('');
+  });
 });
