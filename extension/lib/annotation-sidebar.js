@@ -277,9 +277,14 @@ export function create() {
       if (audit.a11y) parts.push(`${audit.a11y} a11y`);
       if (audit.layout) parts.push(`${audit.layout} layout`);
       if (audit.testids) parts.push(`${audit.testids} testids`);
+      if (audit.regressions) {
+        const r = audit.regressions;
+        if (r.elementsRemoved) parts.push(`${r.elementsRemoved} removed`);
+        if (r.elementsMoved) parts.push(`${r.elementsMoved} shifted`);
+      }
       badge.textContent = parts.length ? `Auto-audit: ${parts.join(', ')}` : 'Auto-audit: no issues found';
       badge.style.display = 'block';
-      badge.style.color = audit.total > 0 ? COLOR.warning : COLOR.success;
+      badge.style.color = audit.regressions ? COLOR.errorLight : audit.total > 0 ? COLOR.warning : COLOR.success;
     }
   });
 

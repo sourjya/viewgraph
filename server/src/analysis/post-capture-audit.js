@@ -15,14 +15,15 @@ import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { flattenNodes, filterInteractive, getNodeDetails } from '#src/analysis/node-queries.js';
 import { auditNode } from '#src/analysis/a11y-rules.js';
 import { analyzeLayout } from '#src/analysis/layout-analysis.js';
+import { diffCaptures } from '#src/analysis/capture-diff.js';
 
 /**
  * Run all audits on a capture file and return a compact summary.
  * @param {string} filePath - Absolute path to the capture JSON file
- * @returns {Promise<{ a11y: number, layout: number, testids: number, total: number, details: Object } | null>}
- *   Returns null if the file can't be parsed.
+ * @param {object} [previousParsed] - Previous capture for the same URL (for regression detection)
+ * @returns {Promise<{ a11y: number, layout: number, testids: number, total: number, regressions?: object } | null>}
  */
-export async function runPostCaptureAudit(filePath) {
+export async function runPostCaptureAudit(filePath, previousParsed = null) {
   let parsed;
   try {
     const raw = await readFile(filePath, 'utf-8');
@@ -58,5 +59,28 @@ export async function runPostCaptureAudit(filePath) {
     layout: layoutCount,
     testids: missingTestids,
     total: a11yCount + layoutCount + missingTestids,
+    ...(previousParsed ? detectRegressions(parsed, previousParsed) : {}),
   };
+}
+
+/**
+ * Compare current capture against previous to detect regressions.
+ * Returns a regressions object only if issues are found.
+ */
+function detectRegressions(current, previous) {
+  try {
+    const diff = diffCaptures(previous, current);
+    const removed = diff.removed?.length || 0;
+    const added = diff.added?.length || 0;
+    const moved = diff.moved?.length || 0;
+    if (removed === 0 && added === 0 && moved === 0) return {};
+    return {
+      regressions: {
+        elementsRemoved: removed,
+        elementsAdded: added,
+        elementsMoved: moved,
+        removedElements: diff.removed?.slice(0, 5).map((n) => ({ id: n.id, tag: n.tag, text: n.text?.slice(0, 40) })),
+      },
+    };
+  } catch { return {}; }
 }

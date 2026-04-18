@@ -272,7 +272,20 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         const configFile = path.resolve(path.dirname(targetDir), 'config.json');
         const cfg = JSON.parse(readFileSync(configFile, 'utf-8'));
         if (cfg.autoAudit) {
-          const audit = await runPostCaptureAudit(safePath);
+          // Find previous capture for regression detection
+          let previousParsed = null;
+          if (indexer) {
+            const prev = indexer.list().find((c) => c.url === capture.metadata?.url && c.filename !== filename);
+            if (prev) {
+              try {
+                const prevPath = validateCapturePath(prev.filename, targetDir);
+                const prevRaw = await readFile(prevPath, 'utf-8');
+                const prevResult = parseCapture(prevRaw);
+                if (prevResult.ok) previousParsed = prevResult.data;
+              } catch { /* previous capture unreadable - skip regression check */ }
+            }
+          }
+          const audit = await runPostCaptureAudit(safePath, previousParsed);
           if (audit && wsServer) {
             wsServer.broadcast({ type: WS_MESSAGES.AUDIT_RESULTS, filename, audit });
           }
