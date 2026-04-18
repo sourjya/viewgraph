@@ -65,8 +65,8 @@
 | 3 | F18: MCP Agent Guidance | None | Low | Complete: SERVER_INSTRUCTIONS, session status, tool descriptions, fuzzy filename matching |
 | 4 | F6: Capture Timeline | F4 | Low | Complete: collapsible timeline, consistency checker, baseline comparison |
 | 5 | F16: Zero-Config Phase 2 | F16 P1 | Low | Transport auto-detection, docs as primary install path |
-| 6 | F9: Cross-Page Consistency | F6 | Medium | Compare elements across page captures |
-| 7 | F10: Live DOM Watcher | F2, F3 | Medium | Smart alerts on DOM changes |
+| 6 | F9: Cross-Page Consistency | F6 | Medium | Complete: consistency section in Inspect tab, Compare button copies agent prompt |
+| 7 | F10: Live DOM Watcher | F2, F3 | Medium | Partial: auto-capture via MutationObserver (continuous-capture.js). Smart alerts deferred. |
 | 8 | F11: Remote MCP + Native Messaging | F17 | High | Phase 1-5 shipped: protocol, registration, transport abstraction, message handler |
 
 **Rationale:** F19 and F17 are security-first (threat model driven). F18 is low-effort, high-impact UX. F6/F9/F10 are feature work. F11 is the big architectural change that eliminates most localhost threats.
