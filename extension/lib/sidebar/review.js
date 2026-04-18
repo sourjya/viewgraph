@@ -196,8 +196,9 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
   trashBtn.addEventListener('mouseenter', () => { trashBtn.querySelector('svg')?.setAttribute('stroke', COLOR.errorLight); });
   trashBtn.addEventListener('mouseleave', () => { trashBtn.querySelector('svg')?.setAttribute('stroke', COLOR.muted); });
   trashBtn.addEventListener('click', () => {
-    if (!anns.length) return;
-    showClearConfirmation(anns.length, callbacks);
+    const currentCount = callbacks.getAnnotationCount ? callbacks.getAnnotationCount() : anns.length;
+    if (!currentCount) return;
+    showClearConfirmation(currentCount, callbacks);
   });
   tabBar.appendChild(trashBtn);
 }

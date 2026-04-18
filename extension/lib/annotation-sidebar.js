@@ -505,6 +505,7 @@ export function refresh() {
       })();
     },
     getSidebarEl: () => sidebarEl,
+    getAnnotationCount: () => getAnnotations().length,
   });
 
   // Suggestions bar
