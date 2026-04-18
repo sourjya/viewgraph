@@ -46,7 +46,7 @@ Calls `get_interactive_elements` and `get_page_summary`. Generates a Playwright 
 
 ## @vg-help
 
-List all 36 ViewGraph MCP tools grouped by category with plain-English explanations and example usage.
+List all 37 ViewGraph MCP tools grouped by category with plain-English explanations and example usage.
 
 ## @vg-ideate
 

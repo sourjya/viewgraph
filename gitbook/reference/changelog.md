@@ -21,11 +21,21 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - Themed tooltip component on all sidebar buttons
 - M16 sidebar polish complete: keyboard nav, incremental tabs, strip active state, empty state, collapse toast
 - F17 URL trust indicator complete: SPA reclassification
+- 2 new enrichment collectors (16 total): client-side storage + CSS custom properties
+- ADR-012: status indicators (connection dot, trust shield) moved from header to footer
+- Help card redesign: version info with highlighted pills, collapse chevron, links below version
+
+### Bug Fixes
+- BUG-015: auto-learn URL patterns when config exists but patterns empty
+- BUG-016: `npx viewgraph-init` 404 - updated all docs to use `npm install -g`
+- BUG-017: sidebar vanishes on Element click - re-append guard for DOM cleanup
+- BUG-018: settings showed wrong server for unmatched pages
+- Trust shield tooltip capitalization (Trusted/Untrusted/Configured)
 
 ### Codebase
 - Phase 2 refactors: 74 files - jsonResponse/errorResponse, readAndParse/Pair/Multi, shared test fixtures, mockChrome, styles.js COLOR constants
 - Test split: annotation-sidebar.test.js (1366 lines) to 7 focused files
-- 1506 tests (463 server + 1043 extension)
+- 1520 tests (463 server + 1057 extension)
 
 ## v0.3.7 - April 17, 2026
 
