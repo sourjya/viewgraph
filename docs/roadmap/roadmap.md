@@ -70,7 +70,7 @@
 | 8 | F11: Remote MCP + Native Messaging | F17 | High | Phase 1-5 shipped: protocol, registration, transport abstraction, message handler |
 
 **Rationale:** F19 and F17 are security-first (threat model driven). F18 is low-effort, high-impact UX. F6/F9/F10 are feature work. F11 is the big architectural change that eliminates most localhost threats.
-| M17: Telemetry | Specced | Anonymous usage analytics, consent UI, privacy-by-design |
+| M17: Telemetry | Deferred (post-traction) | Anonymous usage analytics - not needed until product has adoption |
 
 **Current totals:** 1480 tests (1009 extension + 463 server + 8 playwright), 37 MCP tools, 14 enrichment collectors
 
