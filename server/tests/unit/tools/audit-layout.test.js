@@ -9,19 +9,15 @@
  */
 
 import { describe, it, expect, afterEach } from 'vitest';
-import path from 'path';
-import { createTestClient } from './helpers.js';
-import { createIndexer } from '#src/indexer.js';
+import { createFixtureClient } from './helpers.js';
 import { register } from '#src/tools/audit-layout.js';
-
-const FIXTURES_DIR = path.resolve(import.meta.dirname, '../../fixtures');
 
 describe('audit_layout via MCP', () => {
   let cleanup;
   afterEach(async () => { if (cleanup) await cleanup(); });
 
   it('returns structured result with overflows, overlaps, viewportOverflows, summary', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'audit_layout', arguments: { filename: 'valid-capture.json' } });
     expect(result.isError).toBeFalsy();
@@ -36,7 +32,7 @@ describe('audit_layout via MCP', () => {
   });
 
   it('summary counts match array lengths', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'audit_layout', arguments: { filename: 'valid-capture.json' } });
     const data = JSON.parse(result.content[0].text);
@@ -46,14 +42,14 @@ describe('audit_layout via MCP', () => {
   });
 
   it('(-) returns error for missing file', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'audit_layout', arguments: { filename: 'nonexistent.json' } });
     expect(result.isError).toBe(true);
   });
 
   it('(-) returns error for invalid filename', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'audit_layout', arguments: { filename: '../../../etc/passwd' } });
     expect(result.isError).toBe(true);

@@ -9,13 +9,10 @@
  */
 
 import { describe, it, expect, afterEach } from 'vitest';
-import path from 'path';
-import { createTestClient } from './helpers.js';
+import { createTestClient, FIXTURES_DIR } from './helpers.js';
 import { createIndexer } from '#src/indexer.js';
 import { register as registerListSessions } from '#src/tools/list-sessions.js';
 import { register as registerGetSession } from '#src/tools/get-session.js';
-
-const FIXTURES_DIR = path.resolve(import.meta.dirname, '../../fixtures');
 
 /** Create a client with both session tools and pre-indexed fixtures. */
 async function setup() {
