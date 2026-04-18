@@ -26,6 +26,8 @@ import { collectEventListeners } from './collectors/event-listener-collector.js'
 import { collectPerformance } from './collectors/performance-collector.js';
 import { collectAnimations } from './collectors/animation-collector.js';
 import { collectIntersectionState } from './collectors/intersection-collector.js';
+import { collectStorage } from './collectors/storage-collector.js';
+import { collectCSSCustomProperties } from './collectors/css-custom-properties-collector.js';
 
 /**
  * Collect all enrichment data for a capture.
@@ -47,6 +49,8 @@ export async function collectAllEnrichment() {
     performance: safeCollect('performance', collectPerformance),
     animations: safeCollect('animations', collectAnimations),
     intersection: safeCollect('intersection', collectIntersectionState),
+    storage: safeCollect('storage', collectStorage),
+    cssCustomProperties: safeCollect('cssCustomProperties', collectCSSCustomProperties),
   };
   e.axe = await safeCollectAsync('axe', collectAxeResults);
   return e;
@@ -72,5 +76,7 @@ export function collectEnrichmentSync() {
     performance: safeCollect('performance', collectPerformance),
     animations: safeCollect('animations', collectAnimations),
     intersection: safeCollect('intersection', collectIntersectionState),
+    storage: safeCollect('storage', collectStorage),
+    cssCustomProperties: safeCollect('cssCustomProperties', collectCSSCustomProperties),
   };
 }

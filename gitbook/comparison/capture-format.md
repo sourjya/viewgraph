@@ -28,7 +28,7 @@ summary         Quick orientation: key elements, styles, page structure
 nodes           Element tree grouped by salience tier (high/med/low)
 relations       Semantic relationships (label-for, aria-controls, etc.)
 details         Full element data: locators, attributes, styles, layout
-enrichment      14 collectors: network, console, a11y, stacking, focus, etc.
+enrichment      16 collectors: network, console, a11y, stacking, focus, etc.
 annotations     Human comments with severity, category, element references
 ```
 
@@ -126,7 +126,7 @@ ViewGraph extended these foundations through [deep format research](https://gith
 | **Locators** | None - consumer must derive selectors | Ranked multi-strategy locators (testId > role > css) per element |
 | **Coordinate frame** | Undeclared (must infer viewport-relative CSS pixels) | Explicit declaration in metadata (unit, origin, scroll offset) |
 | **Accessibility** | ARIA attributes from DOM only | Inline computed AX tree data (role, name, state) + axe-core audit results |
-| **Enrichment** | DOM structure only | 14 collectors: network, console, stacking, focus, scroll, landmarks, components, performance, animations, etc. |
+| **Enrichment** | DOM structure only | 16 collectors: network, console, stacking, focus, scroll, landmarks, components, performance, animations, etc. |
 | **Annotations** | Not supported | W3C-aligned annotation model with severity, category, element references |
 | **Relations** | All spatial relations computed upfront (hundreds of entries) | Semantic relations always included; spatial relations on-demand via MCP tool |
 | **Specification** | No spec - format defined only by source code | Formal JSON Schema 2020-12 spec with semver versioning |
