@@ -16,6 +16,7 @@ import { z } from 'zod';
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
+import { wrapComment } from '#src/utils/sanitize.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { flattenNodes } from '#src/analysis/node-queries.js';
 
@@ -66,7 +67,7 @@ export function register(server, indexer, capturesDir) {
       const latestTestids = new Set(latestNodes.map((n) => n.testid || n.attributes?.['data-testid']).filter(Boolean));
 
       const results = annotations.map((ann) => {
-        if (ann.resolved) return { id: ann.id, uuid: ann.uuid, status: 'already-resolved', comment: ann.comment?.slice(0, 80) };
+        if (ann.resolved) return { id: ann.id, uuid: ann.uuid, status: 'already-resolved', comment: wrapComment(ann.comment?.slice(0, 80)) };
 
         // Check if the annotated element still exists in the new capture
         const ancestor = ann.ancestor || '';
@@ -74,10 +75,10 @@ export function register(server, indexer, capturesDir) {
         const testidMatch = ann.element?.testid && latestTestids.has(ann.element.testid);
 
         if (!stillExists && !testidMatch) {
-          return { id: ann.id, uuid: ann.uuid, status: 'element-missing', comment: ann.comment?.slice(0, 80), hint: 'Element no longer in DOM - may be resolved or page structure changed' };
+          return { id: ann.id, uuid: ann.uuid, status: 'element-missing', comment: wrapComment(ann.comment?.slice(0, 80)), hint: 'Element no longer in DOM - may be resolved or page structure changed' };
         }
 
-        return { id: ann.id, uuid: ann.uuid, status: 'still-present', comment: ann.comment?.slice(0, 80), selector: ancestor };
+        return { id: ann.id, uuid: ann.uuid, status: 'still-present', comment: wrapComment(ann.comment?.slice(0, 80)), selector: ancestor };
       });
 
       const counts = { stillPresent: 0, elementMissing: 0, alreadyResolved: 0 };

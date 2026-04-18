@@ -53,6 +53,7 @@ import { ATTR } from './selector.js';
 
 let sidebarEl = null;
 let hostEl = null;
+let _shadowRoot = null;
 let collapsed = false;
 let badgeEl = null;
 let _strip = null;
@@ -106,7 +107,15 @@ export function create() {
           const extVersion = chrome.runtime.getManifest?.()?.version;
           if (info.serverVersion && extVersion && extVersion < info.serverVersion) {
             if (!_header) return;
-            _header.statusBanner.innerHTML = `Extension v${extVersion} is behind server v${info.serverVersion}. <a href="https://chaoslabz.gitbook.io/viewgraph/getting-started/manual-install" target="_blank" rel="noopener" style="color:#818cf8;text-decoration:underline">Update extension</a>`;
+            _header.statusBanner.textContent = '';
+            _header.statusBanner.appendChild(document.createTextNode(`Extension v${extVersion} is behind server v${info.serverVersion}. `));
+            const link = document.createElement('a');
+            link.href = 'https://chaoslabz.gitbook.io/viewgraph/getting-started/manual-install';
+            link.target = '_blank';
+            link.rel = 'noopener';
+            link.textContent = 'Update extension';
+            Object.assign(link.style, { color: '#818cf8', textDecoration: 'underline' });
+            _header.statusBanner.appendChild(link);
             _header.statusBanner.style.display = 'block';
           }
           const trust = classifyTrust(window.location.href, info.trustedPatterns || []);
@@ -161,7 +170,7 @@ export function create() {
         showTrustGate(sidebarEl, _footer.sendBtn, {
           onSend: (override) => doSend(override),
           onTrustUpdated: (trust) => { _trustLevel = trust; },
-          shadowRoot: hostEl?.shadowRoot,
+          shadowRoot: _shadowRoot,
         });
         return;
       }
@@ -249,7 +258,8 @@ export function create() {
   hostEl = document.createElement('div');
   hostEl.setAttribute(ATTR, 'shadow-host');
   Object.assign(hostEl.style, { all: 'initial', position: 'fixed', top: '0', right: '0', zIndex: '2147483646' });
-  const shadow = hostEl.attachShadow({ mode: 'open' });
+  const shadow = hostEl.attachShadow({ mode: 'closed' });
+  _shadowRoot = shadow;
 
   _bus = createEventBus(shadow);
   _bus.on(EVENTS.REFRESH, () => refresh());
@@ -260,7 +270,7 @@ export function create() {
     if (ann) { ann.resolved = true; ann.resolution = resolution; refresh(); }
   });
   _bus.on(EVENTS.AUDIT_RESULTS, ({ audit }) => {
-    const badge = hostEl?.shadowRoot?.querySelector(`[${ATTR}="audit-badge"]`);
+    const badge = _shadowRoot?.querySelector(`[${ATTR}="audit-badge"]`);
     if (badge && audit) {
       const parts = [];
       if (audit.a11y) parts.push(`${audit.a11y} a11y`);
@@ -319,8 +329,8 @@ export function create() {
       if (settingsVisible) { hideSettings(); return; }
       hideMarkers(); stopAnnotate(); destroy();
     },
-    onSend: () => { hostEl?.shadowRoot?.querySelector(`[${ATTR}="send"]`)?.click(); },
-    onCopyMd: () => { hostEl?.shadowRoot?.querySelector(`[${ATTR}="copy-md"]`)?.click(); },
+    onSend: () => { _shadowRoot?.querySelector(`[${ATTR}="send"]`)?.click(); },
+    onCopyMd: () => { _shadowRoot?.querySelector(`[${ATTR}="copy-md"]`)?.click(); },
     onDelete: () => {
       const selected = getAnnotations().find((a) => a.selected);
       if (selected) { removeAnnotation(selected.id); refresh(); }
@@ -515,6 +525,9 @@ export function refresh() {
 // Destroy
 // ──────────────────────────────────────────────
 
+/** Test-only accessor for the closed shadow root. */
+export function _getShadowRoot() { return _shadowRoot; }
+
 export function destroy() {
   stopShortcuts();
   stopJourney();
@@ -523,6 +536,7 @@ export function destroy() {
   transport.reset();
   if (hostEl) { hostEl.remove(); hostEl = null; }
   if (sidebarEl) { sidebarEl = null; }
+  _shadowRoot = null;
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }
   _header = null;
   _footer = null;

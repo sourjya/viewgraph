@@ -13,6 +13,7 @@ import { z } from 'zod';
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
+import { wrapComment } from '#src/utils/sanitize.js';
 import { generateSpec } from '#src/analysis/spec-generator.js';
 
 /**
@@ -41,7 +42,7 @@ export function register(server, indexer, capturesDir) {
           if (!raw.annotations?.length) continue;
           for (const ann of raw.annotations) {
             annotations.push({
-              comment: ann.comment, severity: ann.severity, category: ann.category,
+              comment: wrapComment(ann.comment), severity: ann.severity, category: ann.category,
               selector: ann.ancestor, page: raw.metadata?.url, resolved: ann.resolved,
             });
           }

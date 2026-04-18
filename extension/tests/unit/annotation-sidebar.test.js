@@ -13,7 +13,7 @@ import {
   start, stop, addPageNote, getAnnotations, clearAnnotations,
   updateComment, resolveAnnotation, removeAnnotation, updateSeverity, updateCategory, ATTR,
 } from '#lib/annotate.js';
-import { create, destroy, refresh, expand, collapse, isCollapsed } from '#lib/annotation-sidebar.js';
+import { create, destroy, refresh, expand, collapse, isCollapsed, _getShadowRoot } from '#lib/annotation-sidebar.js';
 import { resetServerCache } from '#lib/constants.js';
 import * as transport from '#lib/transport.js';
 
@@ -64,15 +64,15 @@ afterEach(() => {
 
 /** Find the sidebar's shadow root and query within it. */
 function shadowQuery(selector) {
-  const host = document.querySelector(`[${ATTR}="shadow-host"]`);
-  if (!host || !host.shadowRoot) return null;
-  return host.shadowRoot.querySelector(selector);
+  const sr = _getShadowRoot();
+  if (!sr) return null;
+  return sr.querySelector(selector);
 }
 
 function shadowQueryAll(selector) {
-  const host = document.querySelector(`[${ATTR}="shadow-host"]`);
-  if (!host || !host.shadowRoot) return [];
-  return [...host.shadowRoot.querySelectorAll(selector)];
+  const sr = _getShadowRoot();
+  if (!sr) return [];
+  return [...sr.querySelectorAll(selector)];
 }
 
 /** Get the sidebar element from shadow DOM. */
@@ -107,7 +107,7 @@ describe('sidebar creation', () => {
     create();
     const host = document.querySelector(`[${ATTR}="shadow-host"]`);
     expect(host).not.toBeNull();
-    expect(host.shadowRoot).not.toBeNull();
+    expect(_getShadowRoot()).not.toBeNull();
     expect(getSidebar()).not.toBeNull();
   });
 

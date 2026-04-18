@@ -102,7 +102,7 @@ registerGetAnnotations(server, indexer, CAPTURES_DIR);
 registerGetAnnotatedCapture(server, indexer, CAPTURES_DIR);
 registerRequestCapture(server, requestQueue);
 registerGetRequestStatus(server, requestQueue);
-registerGetFidelityReport(server, CAPTURES_DIR);
+registerGetFidelityReport(server, indexer, CAPTURES_DIR);
 registerResolveAnnotation(server, indexer, CAPTURES_DIR, {
   onResolve: ({ uuid, resolution }) => {
     const ws = httpReceiver?.getWsServer?.();

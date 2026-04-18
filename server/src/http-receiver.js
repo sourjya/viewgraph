@@ -76,7 +76,12 @@ function json(res, status, data) {
   // 2. Auth tokens on all POST endpoints
   // 3. No sensitive data in unauthenticated GET responses
   // Content scripts run in the page's origin, so we can't restrict by origin.
-  res.writeHead(status, { 'content-type': 'application/json', 'access-control-allow-origin': '*' });
+  res.writeHead(status, {
+    'content-type': 'application/json',
+    'access-control-allow-origin': '*',
+    'x-content-type-options': 'nosniff',
+    'cache-control': 'no-store',
+  });
   res.end(JSON.stringify(data));
 }
 
@@ -147,7 +152,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         return json(res, 200, JSON.parse(raw));
       } catch (err) {
         if (err.code === 'ENOENT') return json(res, 200, {});
-        return json(res, 500, { error: `Failed to read config: ${err.message}` });
+        return json(res, 500, { error: 'Failed to read config' });
       }
     }
 
@@ -158,10 +163,16 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       try { updates = JSON.parse(await readBody(req)); } catch {
         return json(res, 400, { error: 'Invalid JSON body' });
       }
-      // Merge with existing config
+      // S1-1: Whitelist allowed config keys to prevent config poisoning from malicious websites
+      const ALLOWED_CONFIG_KEYS = new Set(['urlPatterns', 'trustedPatterns', 'autoAudit', 'smartSuggestions', 'captureQuality', 'includeScreenshot', 'includeSnapshot', 'baselineAutoCompare']);
+      const sanitized = {};
+      for (const [k, v] of Object.entries(updates)) {
+        if (ALLOWED_CONFIG_KEYS.has(k)) sanitized[k] = v;
+      }
+      if (Object.keys(sanitized).length === 0) return json(res, 400, { error: 'No valid config keys provided' });
       let existing = {};
       try { existing = JSON.parse(readFileSync(configFile, 'utf-8')); } catch { /* new file */ }
-      const merged = { ...existing, ...updates };
+      const merged = { ...existing, ...sanitized };
       writeFileSync(configFile, JSON.stringify(merged, null, 2) + '\n');
       return json(res, 200, merged);
     }
@@ -237,14 +248,18 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       await writeFile(safePath, JSON.stringify(capture, null, 2));
 
       // Auto-learn: generate config.json on first capture if none exists
+      // S3-1: Only auto-learn from localhost/file URLs to prevent remote URL injection
       try {
         const configFile = path.resolve(path.dirname(targetDir), 'config.json');
         if (!existsSync(configFile) && capture.metadata?.url) {
           const captureUrl = new URL(capture.metadata.url);
-          const pattern = `${captureUrl.hostname}${captureUrl.port ? ':' + captureUrl.port : ''}`;
-          const autoConfig = { urlPatterns: [pattern], autoAudit: false, smartSuggestions: true };
-          writeFileSync(configFile, JSON.stringify(autoConfig, null, 2));
-          console.error(`${LOG_PREFIX} Auto-configured: ${configFile} (pattern: ${pattern})`);
+          const isLocal = ['localhost', '127.0.0.1', '[::1]', '0.0.0.0'].includes(captureUrl.hostname) || capture.metadata.url.startsWith('file://');
+          if (isLocal) {
+            const pattern = `${captureUrl.hostname}${captureUrl.port ? ':' + captureUrl.port : ''}`;
+            const autoConfig = { urlPatterns: [pattern], autoAudit: false, smartSuggestions: true };
+            writeFileSync(configFile, JSON.stringify(autoConfig, null, 2));
+            console.error(`${LOG_PREFIX} Auto-configured: ${configFile} (pattern: ${pattern})`);
+          }
         }
       } catch { /* best effort - non-blocking */ }
 
@@ -352,7 +367,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
           addedElements: pick(diff.added), removedElements: pick(diff.removed),
           movedElements: diff.moved.slice(0, 10), testidDetails: diff.testidChanges.slice(0, 10),
         } });
-      } catch (e) { return json(res, 500, { error: e.message }); }
+      } catch (e) { console.error(`${LOG_PREFIX} Compare error:`, e.message); return json(res, 500, { error: 'Comparison failed' }); }
     }
 
     // GET /captures?url=... - list captures, optionally filtered by URL

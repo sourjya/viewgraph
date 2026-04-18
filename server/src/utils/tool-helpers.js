@@ -13,6 +13,24 @@ import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture, parseSummary, parseMetadata } from '#src/parsers/viewgraph-v2.js';
 
 /**
+ * Format a successful MCP tool response with JSON data.
+ * @param {object} data - Response data to serialize
+ * @returns {{ content: Array }}
+ */
+export function jsonResponse(data) {
+  return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+}
+
+/**
+ * Format an MCP tool error response.
+ * @param {string} msg - Error message
+ * @returns {{ content: Array, isError: true }}
+ */
+export function errorResponse(msg) {
+  return { content: [{ type: 'text', text: msg }], isError: true };
+}
+
+/**
  * Compute Levenshtein edit distance between two strings.
  * Used for fuzzy filename matching in "did you mean" suggestions.
  * @param {string} a

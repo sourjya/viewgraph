@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
+import { wrapComment } from '#src/utils/sanitize.js';
 import { diffAnnotations } from '#src/analysis/annotation-diff.js';
 
 /**
@@ -37,7 +38,7 @@ export function register(server, _indexer, capturesDir) {
           if (raw.annotations?.length > 0) {
             captures.push({
               filename, url: raw.metadata?.url, timestamp: raw.metadata?.timestamp,
-              annotations: raw.annotations,
+              annotations: raw.annotations.map((a) => ({ ...a, comment: wrapComment(a.comment) })),
             });
           }
         } catch { continue; }

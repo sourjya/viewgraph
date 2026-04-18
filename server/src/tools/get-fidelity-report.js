@@ -19,7 +19,7 @@ import { validateCapturePath } from '#src/utils/validate-path.js';
  * @param {string} capturesDir - Absolute path to the captures directory
  * @see .kiro/specs/singlefile-fidelity/ - fidelity measurement spec
  */
-export function register(server, capturesDir) {
+export function register(server, _indexer, capturesDir) {
   server.tool(
     'get_fidelity_report',
     `Compare a ${PROJECT_NAME} capture against its HTML snapshot to measure fidelity. ` +

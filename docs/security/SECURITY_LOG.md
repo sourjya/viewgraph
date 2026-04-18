@@ -12,20 +12,19 @@ Tracks all security reviews, findings, and their resolution status.
 
 | ID | Severity | Summary | Status | Owner |
 |---|---|---|---|---|
-| S1-1 | HIGH | PUT /config unauthenticated config write | Open - needs schema validation | — |
-| S1-2 | HIGH | POST /captures unauthenticated injection | Accepted risk (ADR-010) - fix: M17c native messaging | — |
-| S3-1 | MEDIUM | Auto-learn writes URL from untrusted metadata | Open | — |
-| S5-1 | MEDIUM | Missing security response headers | Open | — |
-| S5-2 | MEDIUM | /info exposes filesystem paths | Accepted risk | — |
-| S7-1 | MEDIUM | Shadow DOM mode: 'open' | Open | — |
-| S7-2 | MEDIUM | innerHTML with server version string | Open | — |
-| WS-1 | LOW | WebSocket no maxPayload | Open | — |
-| WS-2 | LOW | WebSocket no connection limit | Open | — |
-| S5-3 | LOW | Error messages leak paths | Open | — |
-| Q3-1 | LOW | F19 wrapping gaps in 12 tools | Open | — |
+| S1-2 | HIGH | POST /captures unauthenticated injection | Accepted risk (ADR-010) - fix: M17c native messaging | - |
+| S5-2 | MEDIUM | /info exposes filesystem paths | Accepted risk | - |
 
 ## Resolved Findings
 
 | ID | Severity | Summary | Resolved | How |
 |---|---|---|---|---|
-| — | — | (none yet) | — | — |
+| S1-1 | HIGH | PUT /config unauthenticated config write | 2026-04-18 | Config body schema whitelist (8 allowed keys) |
+| S3-1 | MEDIUM | Auto-learn writes URL from untrusted metadata | 2026-04-18 | Only auto-learn from localhost/file:// URLs |
+| S5-1 | MEDIUM | Missing security response headers | 2026-04-18 | Added nosniff + no-store headers |
+| S7-1 | MEDIUM | Shadow DOM mode: 'open' | 2026-04-18 | Changed to mode: 'closed' |
+| S7-2 | MEDIUM | innerHTML with server version string | 2026-04-18 | Replaced with textContent + createElement |
+| WS-1 | LOW | WebSocket no maxPayload | 2026-04-18 | Added 1MB maxPayload limit |
+| WS-2 | LOW | WebSocket no connection limit | 2026-04-18 | Added 10-connection limit |
+| S5-3 | LOW | Error messages leak paths | 2026-04-18 | Sanitized to generic messages |
+| Q3-1 | LOW | F19 wrapping gaps in 12 tools | 2026-04-18 | Added wrapping to 6 more tools (11 total) |
