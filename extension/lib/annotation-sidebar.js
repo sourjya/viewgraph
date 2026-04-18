@@ -40,6 +40,7 @@ import { createFooter } from './sidebar/footer.js';
 import { createModeBar, MODE_ICONS, MODE_HINTS } from './sidebar/mode-bar.js';
 import { showTrustGate } from './sidebar/trust-gate.js';
 import { sendIcon, checkIcon } from './sidebar/icons.js';
+import { createTooltip } from './tooltip.js';
 import { COLOR } from './sidebar/styles.js';
 import { KEYS, set as storageSet } from './storage.js';
 import { discoverServer, getAgentName, classifyTrust } from './constants.js';
@@ -68,6 +69,7 @@ let _header = null;
 let _footer = null;
 let _modeBar = null;
 let _popstateHandler = null;
+let _tooltip = null;
 
 /** Create and mount the sidebar. */
 export function create() {
@@ -277,15 +279,21 @@ export function create() {
       if (audit.a11y) parts.push(`${audit.a11y} a11y`);
       if (audit.layout) parts.push(`${audit.layout} layout`);
       if (audit.testids) parts.push(`${audit.testids} testids`);
+      if (audit.regressions) {
+        const r = audit.regressions;
+        if (r.elementsRemoved) parts.push(`${r.elementsRemoved} removed`);
+        if (r.elementsMoved) parts.push(`${r.elementsMoved} shifted`);
+      }
       badge.textContent = parts.length ? `Auto-audit: ${parts.join(', ')}` : 'Auto-audit: no issues found';
       badge.style.display = 'block';
-      badge.style.color = audit.total > 0 ? COLOR.warning : COLOR.success;
+      badge.style.color = audit.regressions ? COLOR.errorLight : audit.total > 0 ? COLOR.warning : COLOR.success;
     }
   });
 
   const scrollStyle = document.createElement('style');
   scrollStyle.textContent = `:host{scrollbar-color:#2a2a3a transparent}*::-webkit-scrollbar{width:8px}*::-webkit-scrollbar-track{background:transparent}*::-webkit-scrollbar-thumb{background:#2a2a3a;border-radius:4px}*::-webkit-scrollbar-thumb:hover{background:#3a3a4a}@keyframes vg-bell-pulse{0%,100%{transform:rotate(0)}15%{transform:rotate(14deg)}30%{transform:rotate(-14deg)}45%{transform:rotate(8deg)}60%{transform:rotate(-8deg)}75%{transform:rotate(0)}}@keyframes vg-pulse{0%,100%{opacity:1}50%{opacity:0.3}}`;
   shadow.append(scrollStyle, sidebarEl);
+  _tooltip = createTooltip(shadow);
   document.documentElement.appendChild(hostEl);
 
   // ── Collapsed strip ──
@@ -538,6 +546,7 @@ export function destroy() {
   if (hostEl) { hostEl.remove(); hostEl = null; }
   if (sidebarEl) { sidebarEl = null; }
   _shadowRoot = null;
+  if (_tooltip) { _tooltip.destroy(); _tooltip = null; }
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }
   _header = null;
   _footer = null;

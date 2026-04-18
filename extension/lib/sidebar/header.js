@@ -77,6 +77,7 @@ export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellCl
   bellBtn.setAttribute(ATTR, 'bell');
   bellBtn.appendChild(bellIcon(18));
   bellBtn.title = 'Agent requests';
+  bellBtn.setAttribute('data-tooltip', 'Agent requests');
   Object.assign(bellBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
     padding: '8px', display: 'none', alignItems: 'center', borderRadius: '6px',
@@ -91,6 +92,7 @@ export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellCl
   helpBtn.setAttribute(ATTR, 'help-btn');
   helpBtn.textContent = '?';
   helpBtn.title = 'Help & keyboard shortcuts';
+  helpBtn.setAttribute('data-tooltip', 'Help & keyboard shortcuts');
   Object.assign(helpBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
     padding: '8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
@@ -105,6 +107,7 @@ export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellCl
   collapseBtn.setAttribute(ATTR, 'btn');
   collapseBtn.appendChild(chevronRightIcon(18, COLOR.muted));
   collapseBtn.title = 'Collapse panel';
+  collapseBtn.setAttribute('data-tooltip', 'Collapse panel');
   Object.assign(collapseBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
     padding: '8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
@@ -122,6 +125,7 @@ export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellCl
     padding: '8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
   });
   closeBtn.title = 'Close review mode';
+  closeBtn.setAttribute('data-tooltip', 'Close review mode');
   closeBtn.addEventListener('mouseenter', () => { closeBtn.style.background = 'rgba(255,255,255,0.05)'; });
   closeBtn.addEventListener('mouseleave', () => { closeBtn.style.background = 'transparent'; });
   closeBtn.addEventListener('click', onClose);
