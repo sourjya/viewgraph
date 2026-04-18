@@ -101,6 +101,53 @@ describe('settings', () => {
     stop();
     destroy();
   });
+
+  it('(+) footer status row visible when settings is open (ADR-013)', () => {
+    start();
+    create();
+
+    // Click settings link to open settings
+    const link = shadowQuery(`[${ATTR}="settings-link"]`);
+    link.click();
+
+    // Footer should still be in the DOM and visible
+    const footer = shadowQuery(`[${ATTR}="footer"]`);
+    expect(footer).toBeTruthy();
+    expect(footer.style.display).not.toBe('none');
+
+    // Status dot should be visible
+    const dot = footer.querySelector(`[${ATTR}="status-dot"]`);
+    expect(dot).toBeTruthy();
+
+    stop();
+    destroy();
+  });
+
+  it('(+) settings link hidden when settings panel is open', () => {
+    start();
+    create();
+
+    const link = shadowQuery(`[${ATTR}="settings-link"]`);
+    link.click();
+
+    expect(link.style.display).toBe('none');
+
+    stop();
+    destroy();
+  });
+
+  it('(+) settings screen does not cover footer (bottom offset)', () => {
+    start();
+    create();
+
+    const screen = shadowQuery(`[${ATTR}="settings-screen"]`);
+    expect(screen).toBeTruthy();
+    expect(screen.style.bottom).not.toBe('0px');
+    expect(screen.style.bottom).not.toBe('0');
+
+    stop();
+    destroy();
+  });
 });
 
 describe('suggestions panel survives refresh', () => {
