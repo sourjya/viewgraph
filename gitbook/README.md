@@ -1,61 +1,55 @@
-# What is ViewGraph?
+# The UI Context Layer for AI Coding Agents
 
 <figure><img src=".gitbook/assets/viewgraph-logo.png" alt="ViewGraph" width="420"></figure>
 
 > *Built with Kiro, for Kiro - and every MCP-compatible agent.*
 
-ViewGraph is the UI context layer for AI coding agents. A browser extension captures structured DOM snapshots from any web page - elements, styles, selectors, accessibility state, network errors - and a local MCP server exposes them to your AI assistant through the [Model Context Protocol](https://modelcontextprotocol.io/). The agent sees what you see in the browser, and can fix what you point at. Think of it as giving your coding agent a pair of eyes.
-
-<!-- VIDEO: Add YouTube embed via GitBook editor - do not edit this section from GitHub -->
-
-[![Chrome - Install](https://img.shields.io/badge/Chrome_Extension-Install_Now-blue?style=flat-square)](https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj) [![Firefox - Install](https://img.shields.io/badge/Firefox_Extension-Install_Now-orange?style=flat-square)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/) [![npm](https://img.shields.io/badge/npm-@viewgraph/core-red?style=flat-square)](https://www.npmjs.com/package/@viewgraph/core) [![GitHub](https://img.shields.io/badge/GitHub-Source_Code-black?style=flat-square)](https://github.com/sourjya/viewgraph)
-
-## The Problem
-
-AI coding agents can read your source code. They cannot see your rendered UI. This gap means:
-
-- The agent **guesses** CSS fixes instead of seeing the actual layout
-- Bug reports land as **vague screenshots** instead of structured evidence
-- Accessibility audits produce violations but **no path to the source file**
-- Visual regressions **slip through** because tests check behavior, not structure
-- QA handoffs require **back-and-forth** to clarify what's actually broken
-
-These problems cost teams hours per bug across development, testing, QA, and release. ViewGraph solves [23 of them](why-viewgraph.md#common-problems).
-
-## How ViewGraph Solves This
-
-You click the broken element. You describe what's wrong. You send it to your agent.
-
-The agent receives the element's exact CSS selector, computed styles, accessibility state, bounding box, parent layout, network errors, console warnings - and your comment explaining what to fix. It finds the source file and implements the fix.
-
-No screenshots with arrows. No copy-pasting selectors from DevTools. No "the button is somewhere on the settings page."
-
-For the full list of 23 problems ViewGraph solves across development, testing, QA, and release workflows, see [Why ViewGraph?](why-viewgraph.md).
+See a bug. Click it. Describe it. Your agent fixes it.
 
 ![ViewGraph sidebar with annotations](.gitbook/assets/sidebar-annotations.png)
 
+[![Chrome - Install](https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj)  [![Firefox - Install](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)  [![npm](https://img.shields.io/badge/npm-@viewgraph/core-CB3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/@viewgraph/core)  [![GitHub](https://img.shields.io/badge/GitHub-Source_Code-black?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sourjya/viewgraph)
+
+---
+
+## The Problem
+
+AI coding agents can read your source code. They cannot see your rendered UI.
+
+- The agent **guesses** CSS fixes instead of seeing the actual layout
+- Bug reports land as **vague screenshots** instead of structured evidence
+- Accessibility audits find violations but **no path to the source file**
+- Visual regressions **slip through** because tests check behavior, not structure
+- QA handoffs require **back-and-forth** to clarify what's actually broken
+
+These problems cost teams hours per bug. ViewGraph solves [23 of them](why-viewgraph.md).
+
+---
+
 ## How It Works
 
+You click the broken element. You describe what's wrong. You send it to your agent.
+
+The agent receives the element's exact CSS selector, computed styles, accessibility state, bounding box, network errors, console warnings - and your comment. It finds the source file and fixes the code.
+
+No screenshots with arrows. No copy-pasting from DevTools. No "the button is somewhere on the settings page."
+
 ```
-Your app (any language) --> serves HTML --> Browser renders it --> Extension captures DOM
-                                                                        |
-                                                                        v
-Kiro / Claude / Cursor  <-- MCP protocol <-- ViewGraph server <-- .viewgraph.json files
+Your app (any stack) --> Browser renders it --> Extension captures DOM
+                                                       |
+                                                       v
+Kiro / Claude / Cursor  <-- MCP protocol <-- ViewGraph server
 ```
 
-The extension captures the DOM from Chrome or Firefox. The server reads those capture files and exposes them to your AI agent via MCP. Your agent uses this context to modify your source code - it never injects into or manipulates the running application directly.
+Works with any web app regardless of backend. Python, Ruby, Java, Go, PHP - if it renders HTML, ViewGraph captures it.
 
-ViewGraph works with any web app regardless of backend technology. Python, Ruby, Java, Go, PHP - doesn't matter. If it renders HTML in a browser, ViewGraph can capture it.
+---
 
 ## Get Started in 2 Minutes
 
-**1. Install the browser extension:**
+**Step 1.** Install the browser extension (Chrome or Firefox links above)
 
-[![Chrome - Install](https://img.shields.io/badge/Chrome-Install_Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/viewgraph-capture/dmgbneoidgmkdcfnlegmfijkedijjnjj)  [![Firefox - Install](https://img.shields.io/badge/Firefox-Install_Extension-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/viewgraph-capture/)
-
-Store version outdated? [Download latest ZIPs directly](https://github.com/sourjya/viewgraph/tree/main/downloads).
-
-**2. Add to your AI agent's MCP config:**
+**Step 2.** Add to your AI agent's MCP config:
 
 ```json
 {
@@ -65,92 +59,58 @@ Store version outdated? [Download latest ZIPs directly](https://github.com/sourj
 }
 ```
 
-**That's it.** The server runs automatically, creates `.viewgraph/captures/`, and learns your project's URL pattern from the first capture. No install commands, no config files.
+**That's it.** The server runs automatically and learns your project from the first capture.
 
-> **Need version pinning?** Use `npm install -g @viewgraph/core && viewgraph-init` instead. See [Installation](getting-started/installation.md) for details.
+{% hint style="info" %}
+**Need version pinning?** `npm install -g @viewgraph/core && viewgraph-init`. See [Installation](getting-started/installation.md) for all options.
+{% endhint %}
 
 For the full walkthrough with screenshots, see the [Quick Start Guide](getting-started/quick-start.md).
 
+---
+
 ## Who It's For
 
-### Developers with AI agents
-
-See a bug, click it, describe it, send to agent, agent fixes it. The core loop takes 30 seconds from spotting a bug to the agent having full context.
-
-Works with **Kiro**, **Claude Code**, **Cursor**, **Windsurf**, **Cline**, **Aider**, and any MCP-compatible agent.
-
-See [Why ViewGraph?](why-viewgraph.md) for the full list of development, testing, and release problems it solves.
-
-### Testers and QA reviewers
-
-Same annotation workflow, no AI agent needed. Click elements, add comments, export as:
-- **Markdown** - paste into Jira, Linear, or GitHub Issues
-- **ZIP report** - markdown + cropped screenshots + network.json + console.json
-
-### Non-technical stakeholders and new developers
-
-You don't need to speak DOM. PMs, designers, junior devs, bootcamp grads, and career switchers can click what looks wrong, describe it in plain language, and ViewGraph captures the technical details automatically. See [Who Benefits?](who-benefits.md) for the full list.
-
-### Test automation teams
-
-Capture DOM snapshots during Playwright E2E tests. Generate tests from browser captures. The `@viewgraph/playwright` package bridges testing and review.
-
-## What It Captures
-
-Every capture includes:
-
-| Data | What agents do with it |
+| | |
 |---|---|
-| Every visible element with CSS selectors | `find_source` locates the source file |
-| Computed styles (colors, fonts, spacing, layout) | Agents fix CSS issues precisely |
-| Bounding boxes (position, size) | `audit_layout` detects overlaps and overflows |
-| Accessibility attributes (role, aria-label) | `audit_accessibility` finds WCAG violations |
-| data-testid attributes | `find_missing_testids` improves test coverage |
-| Network requests (failed, slow) | Agents correlate UI bugs with API failures |
-| Console errors and warnings | Agents fix JS errors causing UI issues |
-| Component names (React, Vue, Svelte) | Agents jump from DOM element to component file |
+| **Developers with AI agents** | See bug → click → describe → agent fixes. Works with Kiro, Claude Code, Cursor, Windsurf, Cline, Aider. |
+| **Testers and QA** | Same workflow, no agent needed. Export as Markdown (Jira/GitHub) or ZIP report with screenshots. |
+| **Non-technical stakeholders** | Click what looks wrong, describe it in plain language. ViewGraph captures the technical details. |
+| **Test automation teams** | Capture DOM during Playwright tests. Generate test files from browser captures. [`@viewgraph/playwright`](https://www.npmjs.com/package/@viewgraph/playwright) |
 
-## Capture Accuracy
+See [Who Benefits?](who-benefits.md) for the full breakdown.
 
-Measured automatically against 48 diverse real-world websites:
+---
 
-| Dimension | Median |
-|---|---|
-| **Composite** | **92.1%** |
-| Selector accuracy | 99.7% |
-| Testid recall | 100.0% |
-| Interactive recall | 97.9% |
-| Bbox accuracy | 100.0% |
-| Semantic recall | 88.2% |
+## What Makes It Different
 
-[Full details and per-site breakdowns](https://github.com/sourjya/viewgraph/tree/main/scripts/experiments/bulk-capture)
+| | ViewGraph | Screenshots + chat | Browser DevTools |
+|---|---|---|---|
+| Agent gets structured DOM context | ✅ | ❌ | ❌ |
+| Works with any MCP agent | ✅ | ❌ | ❌ |
+| Non-technical users can report bugs | ✅ | ✅ | ❌ |
+| Accessibility audit built in | ✅ | ❌ | Partial |
+| Captures network + console errors | ✅ | ❌ | ✅ (manual) |
+| Export to Jira/GitHub markdown | ✅ | ❌ | ❌ |
+| 92.1% capture accuracy (measured) | ✅ | N/A | N/A |
 
-## [37 MCP Tools](features/mcp-tools.md)
+[Full comparison](comparison/overview.md) | [Capture accuracy details](comparison/accuracy.md) | [37 MCP tools](features/mcp-tools.md)
 
-Your agent discovers these automatically via the MCP protocol:
-
-- **Core:** list captures, get capture, page summary
-- **Analysis:** accessibility audit, layout audit, missing testids, interactive elements
-- **Annotations:** resolve, track, diff, detect patterns, generate specs
-- **Comparison:** structural diff, baseline regression, screenshot pixel diff, cross-page consistency, CSS style diff
-- **Coverage:** component testid coverage report
-- **Sessions:** journey recording, flow visualization, capture stats
-- **Source:** find source file, component detection
-- **Bidirectional:** request capture from agent, verify fixes
+---
 
 ## Open Source
 
-ViewGraph is AGPL-3.0 licensed. Full source, issues, and contributions on [GitHub](https://github.com/sourjya/viewgraph).
+AGPL-3.0 licensed. Full source on [GitHub](https://github.com/sourjya/viewgraph).
 
 | Component | Description |
 |---|---|
 | [server/](https://github.com/sourjya/viewgraph/tree/main/server) | MCP server - 37 tools, WebSocket collab, baselines |
-| [extension/](https://github.com/sourjya/viewgraph/tree/main/extension) | Chrome/Firefox extension - capture, annotate, export |
+| [extension/](https://github.com/sourjya/viewgraph/tree/main/extension) | Chrome/Firefox extension - capture, annotate, 16 enrichment collectors |
 | [packages/playwright/](https://github.com/sourjya/viewgraph/tree/main/packages/playwright) | Playwright fixture for E2E test captures |
 | [power/](https://github.com/sourjya/viewgraph/tree/main/power) | Kiro Power assets - hooks, prompts, steering docs |
 
 {% hint style="success" %}
-**GitHub Releases = latest version, always.** Chrome and Firefox stores can lag behind by days or weeks due to review queues. [GitHub Releases](https://github.com/sourjya/viewgraph/releases/latest) always has the newest extension ZIPs, npm package, and changelog. If you want the bleeding edge, get it from GitHub.
+**GitHub Releases = latest version, always.** Chrome and Firefox stores can lag behind by days or weeks. [GitHub Releases](https://github.com/sourjya/viewgraph/releases/latest) always has the newest extension ZIPs, npm package, and changelog.
 {% endhint %}
 
 {% hint style="info" %}
