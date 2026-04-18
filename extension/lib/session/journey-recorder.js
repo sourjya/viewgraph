@@ -69,9 +69,10 @@ export function startJourney(onNavigate) {
   const clickHandler = (e) => {
     const link = e.target.closest('a[href]');
     if (link && link.href) {
+      // Skip javascript: URLs before parsing to prevent scheme bypass
+      if (/^javascript:/i.test(link.href)) return;
       try {
         const linkUrl = new URL(link.href, location.href);
-        if (linkUrl.protocol === 'javascript:') return;
         const isExternal = linkUrl.hostname !== location.hostname;
         if (!isExternal) trigger('link-click');
       } catch { /* invalid URL */ }
