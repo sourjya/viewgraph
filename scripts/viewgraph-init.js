@@ -313,7 +313,8 @@ async function findFreePort() {
 
 // Only kill a server that's serving THIS project's captures dir
 try {
-  const pids = execSync(`pgrep -f "${SERVER_ENTRY.replace(/\//g, '\\/')}"`, { encoding: 'utf-8' }).trim().split('\n').filter(Boolean);
+  const escapedEntry = SERVER_ENTRY.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\//g, '\\/');
+  const pids = execSync(`pgrep -f "${escapedEntry}"`, { encoding: 'utf-8' }).trim().split('\n').filter(Boolean);
   for (const pid of pids) {
     // Check if this server is using our captures dir by reading /proc/pid/environ or cmdline
     try {

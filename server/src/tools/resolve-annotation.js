@@ -62,7 +62,7 @@ export function register(server, _indexer, capturesDir, options = {}) {
         ann.resolution = {
           by: 'kiro',
           action,
-          summary: summary.replace(/<[^>]*>/g, '').slice(0, 500),
+          summary: (() => { let s = summary; while (/<[^>]*?>/g.test(s)) s = s.replace(/<[^>]*?>/g, ''); return s.slice(0, 500); })(),
           filesChanged: files_changed || [],
           at: new Date().toISOString(),
         };

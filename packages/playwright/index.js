@@ -100,7 +100,7 @@ export async function createViewGraph(page, options = {}) {
         const rect = el.getBoundingClientRect();
         return {
           id: `pw-${Date.now()}`,
-          uuid: `pw-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          uuid: crypto.randomUUID(),
           type: 'element',
           selector: sel,
           comment: cmt,

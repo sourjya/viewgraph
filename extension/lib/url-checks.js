@@ -54,8 +54,14 @@ export function getBlockedReason(url) {
   if (url.startsWith('view-source:')) return "Source view pages can't be inspected. Navigate to a web page.";
   if (url.startsWith('devtools://')) return "DevTools pages can't be inspected. Navigate to a web page.";
   if (url.startsWith('data:')) return "Data URLs can't be inspected. Navigate to a web page.";
-  if (url.includes('chrome.google.com/webstore') || url.includes('chromewebstore.google.com')) {
-    return "The Chrome Web Store can't be inspected. Navigate to a web page.";
-  }
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname === 'chrome.google.com' && parsed.pathname.startsWith('/webstore')) {
+      return "The Chrome Web Store can't be inspected. Navigate to a web page.";
+    }
+    if (parsed.hostname === 'chromewebstore.google.com') {
+      return "The Chrome Web Store can't be inspected. Navigate to a web page.";
+    }
+  } catch { /* invalid URL - fall through */ }
   return 'Navigate to a web page to start reviewing.';
 }

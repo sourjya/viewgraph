@@ -102,6 +102,19 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
    */
 
 
+  /**
+   * Derive the config.json path from a captures directory.
+   * Always resolves to the parent of capturesDir (the .viewgraph/ dir).
+   * Validates the result is within the expected project structure.
+   */
+  function safeConfigPath(dir) {
+    const resolved = path.resolve(path.dirname(dir), 'config.json');
+    // Ensure config path is within the parent of the captures dir
+    const parent = path.resolve(path.dirname(dir));
+    if (!resolved.startsWith(parent + path.sep) && resolved !== path.join(parent, 'config.json')) return null;
+    return resolved;
+  }
+
   async function handleRequest(req, res) {
     const { method, url } = req;
     if (onActivity) onActivity();
@@ -146,7 +159,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
 
     // GET /config - read project config
     if (method === 'GET' && url === '/config') {
-      const configFile = path.resolve(path.dirname(capturesDir), 'config.json');
+      const configFile = safeConfigPath(capturesDir);
       try {
         const raw = readFileSync(configFile, 'utf-8');
         return json(res, 200, JSON.parse(raw));
@@ -158,7 +171,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
 
     // PUT /config - update project config (merges with existing)
     if (method === 'PUT' && url === '/config') {
-      const configFile = path.resolve(path.dirname(capturesDir), 'config.json');
+      const configFile = safeConfigPath(capturesDir);
       let updates;
       try { updates = JSON.parse(await readBody(req)); } catch {
         return json(res, 400, { error: 'Invalid JSON body' });
@@ -250,8 +263,8 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       // Auto-learn: generate config.json on first capture if none exists
       // S3-1: Only auto-learn from localhost/file URLs to prevent remote URL injection
       try {
-        const configFile = path.resolve(path.dirname(targetDir), 'config.json');
-        if (!existsSync(configFile) && capture.metadata?.url) {
+        const configFile = safeConfigPath(targetDir);
+        if (configFile && !existsSync(configFile) && capture.metadata?.url) {
           const captureUrl = new URL(capture.metadata.url);
           const isLocal = ['localhost', '127.0.0.1', '[::1]', '0.0.0.0'].includes(captureUrl.hostname) || capture.metadata.url.startsWith('file://');
           if (isLocal) {
@@ -269,7 +282,8 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
 
       // Post-capture auto-audit: run if enabled in project config, push via WS
       try {
-        const configFile = path.resolve(path.dirname(targetDir), 'config.json');
+        const configFile = safeConfigPath(targetDir);
+        if (!configFile) throw new Error('skip');
         const cfg = JSON.parse(readFileSync(configFile, 'utf-8'));
         if (cfg.autoAudit) {
           // Find previous capture for regression detection
