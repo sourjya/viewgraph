@@ -39,12 +39,18 @@ Add ViewGraph to your agent's MCP config. The server runs automatically via [`np
 That's it. Open your project, start your agent, and the server auto-configures on first capture.
 
 > **Alternative: npm install**
-> If you prefer explicit control over versions and config, use the traditional setup:
+> If you prefer explicit control over versions and config:
 > ```bash
+> # Step 1: Install ViewGraph globally (one time only)
 > npm install -g @viewgraph/core
+>
+> # Step 2: Set up your project
 > cd ~/my-project
-> viewgraph-init                        # creates config, starts server
-> viewgraph-init --url localhost:3000   # match your app's URL for auto-detection
+> viewgraph-init
+> ```
+> If your app runs on a local server (e.g., `localhost:3000`), tell ViewGraph the URL:
+> ```bash
+> viewgraph-init --url localhost:3000
 > ```
 > See [Installation](installation.md) for details.
 

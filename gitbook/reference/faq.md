@@ -17,8 +17,16 @@ No. ViewGraph runs alongside your project as a standalone tool. It reads the DOM
 ## Installation
 
 ### How do I install it?
+
+**Quickest way (no install needed):** Add this to your AI agent's MCP config and you're done:
+```json
+{ "mcpServers": { "viewgraph": { "command": "npx", "args": ["-y", "@viewgraph/core"] } } }
+```
+
+**With explicit setup:**
 ```bash
 npm install -g @viewgraph/core
+cd ~/my-project
 viewgraph-init
 ```
 Then install the browser extension from the Chrome Web Store or Firefox Add-ons. See [Installation](../getting-started/installation.md) for details.
@@ -74,8 +82,12 @@ The server binds to localhost only and is not accessible from the network. Auth 
 
 ## Troubleshooting
 
+{% hint style="info" %}
+The `viewgraph-init` command requires a one-time global install: `npm install -g @viewgraph/core`. If you're using the zero-config setup (MCP JSON only), you don't need `viewgraph-init` at all.
+{% endhint %}
+
 ### The sidebar shows a red dot
-The server isn't running. Run `viewgraph-init` from your project folder.
+The server isn't running. Run `viewgraph-init` from your project folder. Or check your MCP config if using the zero-config setup.
 
 ### "Send to Agent" shows green checkmark but no capture appears
 Kill all servers and re-init: `pkill -f "node.*server/index.js"` then `viewgraph-init`.

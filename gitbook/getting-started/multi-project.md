@@ -58,6 +58,10 @@ The extension normalizes URLs automatically:
 
 ## Setting Up URL Patterns
 
+{% hint style="info" %}
+These commands require `npm install -g @viewgraph/core` first. If you're using the zero-config setup (MCP JSON only), URL patterns are learned automatically from your first capture.
+{% endhint %}
+
 ### During init
 
 ```bash

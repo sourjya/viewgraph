@@ -60,11 +60,18 @@ Add to your agent's config file:
 
 Use this if you need version pinning, offline use, or explicit config control.
 
+**Step 1: Install ViewGraph globally** (one time only):
 ```bash
 npm install -g @viewgraph/core
+```
+
+**Step 2: Set up your project:**
+```bash
 cd ~/my-project
 viewgraph-init
 ```
+
+**That's it.** The init script creates `.viewgraph/captures/`, detects your AI agent, writes the MCP config, and starts the server.
 
 **Custom URL?** If your app runs on a specific host:port (e.g., `localhost:3000`), add `--url` so ViewGraph knows which pages belong to this project:
 
