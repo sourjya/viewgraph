@@ -143,8 +143,11 @@ export function createSettings() {
   }
 
   const jsonToggle = createToggleRow('ViewGraph JSON', { checked: true, disabled: true });
+  jsonToggle.row.setAttribute('data-tooltip', 'Always included - structured DOM capture');
   const htmlToggle = createToggleRow('HTML snapshot');
+  htmlToggle.row.setAttribute('data-tooltip', 'Include raw HTML for fidelity comparison');
   const ssToggle = createToggleRow('Screenshot');
+  ssToggle.row.setAttribute('data-tooltip', 'Include viewport screenshot with capture');
   captureOpts.append(jsonToggle.row, htmlToggle.row, ssToggle.row);
 
   // Load saved settings
