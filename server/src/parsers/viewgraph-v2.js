@@ -49,6 +49,8 @@ export function parseMetadata(jsonString) {
       captureMode: meta.captureMode ?? 'unknown',
       session: meta.session ?? null,
       hasAnnotations: 'annotations' in raw,
+      annotationCount: Array.isArray(raw.annotations) ? raw.annotations.length : 0,
+      resolvedCount: Array.isArray(raw.annotations) ? raw.annotations.filter((a) => a.resolved).length : 0,
     },
   };
 }
