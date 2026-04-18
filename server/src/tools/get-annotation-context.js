@@ -8,7 +8,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
-import { readAndParse } from '#src/utils/tool-helpers.js';
+import { readAndParse, jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 import { flattenNodes, getNodeDetails } from '#src/analysis/node-queries.js';
 import { wrapComment, wrapCapturedText, detectSuspicious } from '#src/utils/sanitize.js';
 
@@ -37,7 +37,7 @@ export function register(server, _indexer, capturesDir) {
       if (annotation_id) {
         annotations = annotations.filter((a) => a.id === annotation_id);
         if (annotations.length === 0) {
-          return { content: [{ type: 'text', text: `Error: Annotation "${annotation_id}" not found` }], isError: true };
+          return errorResponse(`Error: Annotation "${annotation_id}" not found`);
         }
       }
       if (annotations.length === 0) {
@@ -66,7 +66,7 @@ export function register(server, _indexer, capturesDir) {
         annotatedNodes: output,
       };
 
-      return { content: [{ type: 'text', text: JSON.stringify(wrapped, null, 2) }] };
+      return jsonResponse(wrapped);
     },
   );
 }

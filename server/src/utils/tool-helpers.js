@@ -107,7 +107,7 @@ export async function readAndParse(filename, capturesDir, level = 'full') {
   try {
     filePath = validateCapturePath(filename, capturesDir);
   } catch {
-    return { ok: false, error: { content: [{ type: 'text', text: `Error: Invalid filename  -  ${filename}` }], isError: true } };
+    return { ok: false, error: errorResponse(`Error: Invalid filename  -  ${filename}`) };
   }
 
   let content;
@@ -117,16 +117,52 @@ export async function readAndParse(filename, capturesDir, level = 'full') {
     const msg = err.code === 'ENOENT'
       ? await buildNotFoundMessage(filename, capturesDir)
       : `Error reading capture: ${err.message}`;
-    return { ok: false, error: { content: [{ type: 'text', text: msg }], isError: true } };
+    return { ok: false, error: errorResponse(msg) };
   }
 
   const parseFn = level === 'summary' ? parseSummary : level === 'metadata' ? parseMetadata : parseCapture;
   const result = parseFn(content);
   if (!result.ok) {
-    return { ok: false, error: { content: [{ type: 'text', text: `Error parsing capture: ${result.error}` }], isError: true } };
+    return { ok: false, error: errorResponse(`Error parsing capture: ${result.error}`) };
   }
 
   return { ok: true, parsed: result.data };
+}
+
+/**
+ * Read and parse two capture files in parallel.
+ * Used by comparison tools (compare-captures, compare-styles, etc.).
+ * @param {string} fileA - First capture filename
+ * @param {string} fileB - Second capture filename
+ * @param {string} capturesDir - Captures directory path
+ * @param {'full'|'summary'|'metadata'} [level='full'] - Parse level
+ * @returns {Promise<{ ok: true, a: object, b: object } | { ok: false, error: object }>}
+ */
+export async function readAndParsePair(fileA, fileB, capturesDir, level = 'full') {
+  const [resA, resB] = await Promise.all([
+    readAndParse(fileA, capturesDir, level),
+    readAndParse(fileB, capturesDir, level),
+  ]);
+  if (!resA.ok) return { ok: false, error: resA.error };
+  if (!resB.ok) return { ok: false, error: resB.error };
+  return { ok: true, a: resA.parsed, b: resB.parsed };
+}
+
+/**
+ * Read and parse multiple capture files, skipping failures.
+ * Used by loop tools (analyze-journey, visualize-flow, etc.).
+ * @param {string[]} filenames - Capture filenames
+ * @param {string} capturesDir - Captures directory path
+ * @param {'full'|'summary'|'metadata'} [level='full'] - Parse level
+ * @returns {Promise<Array<{ filename: string, parsed: object }>>}
+ */
+export async function readAndParseMulti(filenames, capturesDir, level = 'full') {
+  const results = [];
+  for (const filename of filenames) {
+    const { ok, parsed } = await readAndParse(filename, capturesDir, level);
+    if (ok) results.push({ filename, parsed });
+  }
+  return results;
 }
 
 /**

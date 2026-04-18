@@ -7,6 +7,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
+import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the get_request_status MCP tool.
@@ -26,12 +27,12 @@ export function register(server, queue) {
     async ({ request_id }) => {
       const req = queue.get(request_id);
       if (!req) {
-        return { content: [{ type: 'text', text: `Error: Request "${request_id}" not found` }], isError: true };
+        return errorResponse(`Error: Request "${request_id}" not found`);
       }
       const result = { requestId: req.id, status: req.status, url: req.url };
       if (req.status === 'completed') result.filename = req.captureFilename;
       if (req.status === 'declined') result.reason = req.declineReason || 'User declined the capture request';
-      return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+      return jsonResponse(result);
     },
   );
 }

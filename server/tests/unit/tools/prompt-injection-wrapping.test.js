@@ -9,8 +9,7 @@
  */
 
 import { describe, it, expect, afterEach } from 'vitest';
-import path from 'path';
-import { createTestClient } from './helpers.js';
+import { createTestClient, createFixtureClient, FIXTURES_DIR } from './helpers.js';
 import { createIndexer } from '#src/indexer.js';
 import { register as registerGetCapture } from '#src/tools/get-capture.js';
 import { register as registerGetPageSummary } from '#src/tools/get-page-summary.js';
@@ -20,14 +19,12 @@ import { register as registerGetUnresolved } from '#src/tools/get-unresolved.js'
 import { register as registerGetAnnotations } from '#src/tools/get-annotations.js';
 import { TEXT_OPEN, TEXT_CLOSE, COMMENT_OPEN, COMMENT_CLOSE } from '#src/utils/sanitize.js';
 
-const FIXTURES_DIR = path.resolve(import.meta.dirname, '../../fixtures');
-
 describe('F19 prompt injection defense - tool wrapping', () => {
   let cleanup;
   afterEach(async () => { if (cleanup) await cleanup(); });
 
   it('(+) get_capture includes _notice header', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => registerGetCapture(s, createIndexer(), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(registerGetCapture);
     cleanup = c;
     const result = await client.callTool({ name: 'get_capture', arguments: { filename: 'valid-capture.json' } });
     expect(result.content[0].text).toContain('CAPTURED_TEXT');
@@ -35,7 +32,7 @@ describe('F19 prompt injection defense - tool wrapping', () => {
   });
 
   it('(+) get_page_summary includes _notice', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => registerGetPageSummary(s, createIndexer(), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(registerGetPageSummary);
     cleanup = c;
     const result = await client.callTool({ name: 'get_page_summary', arguments: { filename: 'valid-capture.json' } });
     const parsed = JSON.parse(result.content[0].text);
@@ -43,7 +40,7 @@ describe('F19 prompt injection defense - tool wrapping', () => {
   });
 
   it('(+) get_elements_by_role wraps text in CAPTURED_TEXT delimiters', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => registerGetElementsByRole(s, createIndexer(), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(registerGetElementsByRole);
     cleanup = c;
     const result = await client.callTool({ name: 'get_elements_by_role', arguments: { filename: 'valid-capture.json', role: 'button' } });
     const elements = JSON.parse(result.content[0].text);
@@ -55,7 +52,7 @@ describe('F19 prompt injection defense - tool wrapping', () => {
   });
 
   it('(+) get_interactive_elements wraps text in CAPTURED_TEXT delimiters', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => registerGetInteractive(s, createIndexer(), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(registerGetInteractive);
     cleanup = c;
     const result = await client.callTool({ name: 'get_interactive_elements', arguments: { filename: 'valid-capture.json' } });
     const elements = JSON.parse(result.content[0].text);
@@ -67,7 +64,7 @@ describe('F19 prompt injection defense - tool wrapping', () => {
   });
 
   it('(+) get_annotations wraps comments in USER_COMMENT delimiters', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => registerGetAnnotations(s, createIndexer(), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(registerGetAnnotations);
     cleanup = c;
     const result = await client.callTool({ name: 'get_annotations', arguments: { filename: 'annotated-capture.json' } });
     const parsed = JSON.parse(result.content[0].text);

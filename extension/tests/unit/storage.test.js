@@ -6,9 +6,10 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { KEYS, annotationKey, get, set, remove } from '#lib/storage.js';
+import { mockChrome } from '../mocks/chrome.js';
 
 beforeEach(() => {
-  globalThis.chrome = {
+  mockChrome({
     storage: {
       local: {
         get: vi.fn((key) => Promise.resolve({ [key]: undefined })),
@@ -16,7 +17,7 @@ beforeEach(() => {
         remove: vi.fn(() => Promise.resolve()),
       },
     },
-  };
+  });
 });
 
 describe('storage', () => {

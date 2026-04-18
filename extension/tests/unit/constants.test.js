@@ -10,16 +10,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import * as transport from '#lib/transport.js';
 import { fetchConfig, updateConfig } from '#lib/constants.js';
+import { mockChrome } from '../mocks/chrome.js';
 
 beforeEach(() => {
-  globalThis.chrome = {
-    storage: {
-      local: {
-        get: vi.fn(() => Promise.resolve({})),
-        set: vi.fn(() => Promise.resolve()),
-      },
-    },
-  };
+  mockChrome();
   globalThis.AbortSignal = { timeout: () => undefined };
 });
 

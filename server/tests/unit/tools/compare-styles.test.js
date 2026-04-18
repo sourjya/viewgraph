@@ -7,19 +7,15 @@
  */
 
 import { describe, it, expect, afterEach } from 'vitest';
-import path from 'path';
-import { createTestClient } from './helpers.js';
-import { createIndexer } from '#src/indexer.js';
+import { createFixtureClient } from './helpers.js';
 import { register } from '#src/tools/compare-styles.js';
-
-const FIXTURES_DIR = path.resolve(import.meta.dirname, '../../fixtures');
 
 describe('compare_styles via MCP', () => {
   let cleanup;
   afterEach(async () => { if (cleanup) await cleanup(); });
 
   it('(+) detects changed CSS properties', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'compare_styles', arguments: {
       file_a: 'valid-capture.json', file_b: 'valid-capture-v2.json', element_id: 'btn001',
@@ -32,7 +28,7 @@ describe('compare_styles via MCP', () => {
   });
 
   it('(+) detects added CSS properties', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'compare_styles', arguments: {
       file_a: 'valid-capture.json', file_b: 'valid-capture-v2.json', element_id: 'btn001',
@@ -44,7 +40,7 @@ describe('compare_styles via MCP', () => {
   });
 
   it('(+) detects removed CSS properties', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'compare_styles', arguments: {
       file_a: 'valid-capture.json', file_b: 'valid-capture-v2.json', element_id: 'btn001',
@@ -56,7 +52,7 @@ describe('compare_styles via MCP', () => {
   });
 
   it('(+) reports no changes when comparing same file', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'compare_styles', arguments: {
       file_a: 'valid-capture.json', file_b: 'valid-capture.json', element_id: 'btn001',
@@ -68,7 +64,7 @@ describe('compare_styles via MCP', () => {
   });
 
   it('(-) returns error for nonexistent element', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'compare_styles', arguments: {
       file_a: 'valid-capture.json', file_b: 'valid-capture-v2.json', element_id: 'ghost999',
@@ -78,7 +74,7 @@ describe('compare_styles via MCP', () => {
   });
 
   it('(-) returns error for nonexistent file', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'compare_styles', arguments: {
       file_a: 'nope.json', file_b: 'valid-capture.json', element_id: 'btn001',
@@ -87,7 +83,7 @@ describe('compare_styles via MCP', () => {
   });
 
   it('(-) returns error for path traversal', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'compare_styles', arguments: {
       file_a: '../../../etc/passwd', file_b: 'valid-capture.json', element_id: 'btn001',

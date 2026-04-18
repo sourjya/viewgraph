@@ -10,6 +10,7 @@
 import { ATTR } from '#lib/selector.js';
 import { getAnnotations } from '#lib/annotate.js';
 import { chevronLeftIcon, chatBubbleIcon } from './icons.js';
+import { COLOR } from './styles.js';
 
 /**
  * Create the collapsed strip element.
@@ -25,7 +26,7 @@ export function createStrip(opts) {
     position: 'fixed', top: '60px', right: '0', zIndex: '2147483646',
     display: 'none', flexDirection: 'column', gap: '2px',
     padding: '6px 5px', borderRadius: '10px 0 0 10px',
-    background: '#252536', border: '1px solid #333', borderRight: 'none',
+    background: '#252536', border: `1px solid ${COLOR.border}`, borderRight: 'none',
     fontFamily: 'system-ui, sans-serif',
     boxShadow: '-2px 0 8px rgba(0,0,0,0.3)', alignItems: 'center',
   });
@@ -44,7 +45,7 @@ export function createStrip(opts) {
   const expandBtn = document.createElement('button');
   expandBtn.appendChild(chevronLeftIcon(22, 'currentColor'));
   Object.assign(expandBtn.style, {
-    border: 'none', background: 'transparent', color: '#a5b4fc',
+    border: 'none', background: 'transparent', color: COLOR.primaryLight,
     cursor: 'pointer', padding: '2px', borderRadius: '4px', display: 'flex',
   });
   expandBtn.title = 'Expand sidebar';
@@ -53,7 +54,7 @@ export function createStrip(opts) {
 
   // Separator 1
   const sep1 = document.createElement('div');
-  Object.assign(sep1.style, { height: '1px', width: '100%', background: '#333', margin: '3px 0' });
+  Object.assign(sep1.style, { height: '1px', width: '100%', background: COLOR.border, margin: '3px 0' });
   el.appendChild(sep1);
 
   // Mode icons
@@ -64,10 +65,10 @@ export function createStrip(opts) {
     btn.title = modeHints[key];
     btn.dataset.mode = key;
     Object.assign(btn.style, {
-      border: 'none', background: 'transparent', color: '#9ca3af',
+      border: 'none', background: 'transparent', color: COLOR.secondary,
       cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex',
     });
-    btn.addEventListener('mouseenter', () => { if (btn.style.background !== 'rgb(99, 102, 241)') btn.style.background = '#2a2a4a'; });
+    btn.addEventListener('mouseenter', () => { if (btn.style.background !== 'rgb(99, 102, 241)') btn.style.background = COLOR.bgHover; });
     btn.addEventListener('mouseleave', () => { if (btn.style.background !== 'rgb(99, 102, 241)') btn.style.background = 'transparent'; });
     btn.addEventListener('click', (e) => { e.stopPropagation(); onModeClick(key); });
     stripButtons[key] = btn;
@@ -76,7 +77,7 @@ export function createStrip(opts) {
 
   // Separator 2
   const sep2 = document.createElement('div');
-  Object.assign(sep2.style, { height: '1px', width: '100%', background: '#333', margin: '3px 0' });
+  Object.assign(sep2.style, { height: '1px', width: '100%', background: COLOR.border, margin: '3px 0' });
   el.appendChild(sep2);
 
   return {
@@ -91,16 +92,16 @@ export function createStrip(opts) {
         Object.assign(countEl.style, { alignSelf: 'center', marginTop: '2px', position: 'relative', width: '32px', height: '32px' });
         el.appendChild(countEl);
       }
-      const fill = count > 0 ? '#6366f1' : '#333';
-      const stroke = count > 0 ? '#818cf8' : '#555';
+      const fill = count > 0 ? COLOR.primary : COLOR.border;
+      const stroke = count > 0 ? COLOR.primaryHover : COLOR.dim;
       countEl.replaceChildren(chatBubbleIcon(count, fill, stroke));
     },
     /** Sync mode button active states. */
     updateModeButtons(currentMode) {
       for (const [key, btn] of Object.entries(stripButtons)) {
         const isActive = currentMode === key;
-        btn.style.background = isActive ? '#6366f1' : 'transparent';
-        btn.style.color = isActive ? '#fff' : '#9ca3af';
+        btn.style.background = isActive ? COLOR.primary : 'transparent';
+        btn.style.color = isActive ? COLOR.white : COLOR.secondary;
       }
     },
   };

@@ -14,6 +14,36 @@ export const FONT = 'system-ui, sans-serif';
 /** Monospace font for code/selector badges. */
 export const FONT_MONO = 'SF Mono, Cascadia Code, monospace';
 
+/**
+ * Semantic color palette for the sidebar theme.
+ * All sidebar modules should use these instead of hardcoded hex values.
+ * Enables future theming by changing values in one place.
+ */
+export const COLOR = {
+  muted: '#666',
+  secondary: '#9ca3af',
+  dim: '#555',
+  text: '#c8c8d0',
+  white: '#fff',
+  primary: '#6366f1',
+  primaryLight: '#a5b4fc',
+  primaryHover: '#818cf8',
+  success: '#4ade80',
+  successDark: '#166534',
+  warning: '#f59e0b',
+  warningLight: '#fbbf24',
+  error: '#dc2626',
+  errorLight: '#f87171',
+  errorDark: '#7f1d1d',
+  border: '#333',
+  borderLight: '#2a2a3a',
+  bgDark: '#1a1a2e',
+  bgCard: '#16161e',
+  bgHover: '#2a2a4a',
+  bgHoverLight: 'rgba(255,255,255,0.06)',
+  bgHoverSubtle: 'rgba(255,255,255,0.08)',
+};
+
 /** Common style for section/toggle labels (uppercase, small, muted). */
 export const LABEL_STYLE = {
   fontWeight: '600', fontSize: '11px', color: '#9ca3af',

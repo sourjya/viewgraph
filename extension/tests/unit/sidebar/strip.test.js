@@ -6,11 +6,10 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createStrip } from '#lib/sidebar/strip.js';
+import { mockChrome } from '../../mocks/chrome.js';
 
 beforeEach(() => {
-  globalThis.chrome = {
-    runtime: { getURL: (p) => `chrome-extension://test/${p}` },
-  };
+  mockChrome({ runtime: { getURL: (p) => `chrome-extension://test/${p}` } });
 });
 
 const MODE_ICONS = {

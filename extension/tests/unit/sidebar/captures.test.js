@@ -8,11 +8,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderCaptures } from '#lib/sidebar/captures.js';
 import { resetServerCache } from '#lib/constants.js';
 import * as transport from '#lib/transport.js';
+import { mockChrome } from '../../mocks/chrome.js';
 
 beforeEach(() => {
   resetServerCache();
   transport.init('http://127.0.0.1:9876');
-  globalThis.chrome = { runtime: { sendNativeMessage: undefined } };
+  mockChrome({ runtime: { sendNativeMessage: undefined } });
   Object.defineProperty(window, 'location', {
     value: { href: 'http://localhost:8040/page', hostname: 'localhost', protocol: 'http:' },
     writable: true, configurable: true,

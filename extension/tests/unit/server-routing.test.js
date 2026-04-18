@@ -13,6 +13,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { discoverServer, getAllServers, resetServerCache } from '#lib/constants.js';
+import { mockChrome } from '../mocks/chrome.js';
 
 // ---------------------------------------------------------------------------
 // Mock setup
@@ -26,13 +27,7 @@ beforeEach(() => {
   serversByPort = {};
 
   // Mock chrome.storage for token fetch
-  globalThis.chrome = {
-    storage: {
-      local: {
-        get: vi.fn(() => Promise.resolve({})),
-      },
-    },
-  };
+  mockChrome();
 
   // Mock fetch to return server info based on port
   globalThis.fetch = vi.fn((url, _opts) => {

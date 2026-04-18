@@ -6,10 +6,8 @@
  */
 
 import { z } from 'zod';
-import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
-import { parseCapture } from '#src/parsers/viewgraph-v2.js';
+import { jsonResponse, errorResponse, readAndParsePair } from '#src/utils/tool-helpers.js';
 import { diffCaptures } from '#src/analysis/capture-diff.js';
 
 /**
@@ -29,33 +27,20 @@ export function register(server, _indexer, capturesDir) {
       file_b: z.string().describe('Second capture filename (after)'),
     },
     async ({ file_a, file_b }) => {
-      let pathA, pathB;
-      try { pathA = validateCapturePath(file_a, capturesDir); } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid filename - ${file_a}` }], isError: true };
-      }
-      try { pathB = validateCapturePath(file_b, capturesDir); } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid filename - ${file_b}` }], isError: true };
-      }
+      const { ok, a, b, error } = await readAndParsePair(file_a, file_b, capturesDir);
+      if (!ok) return error;
       try {
-        const [contentA, contentB] = await Promise.all([
-          readFile(pathA, 'utf-8'), readFile(pathB, 'utf-8'),
-        ]);
-        const resultA = parseCapture(contentA);
-        const resultB = parseCapture(contentB);
-        if (!resultA.ok) return { content: [{ type: 'text', text: `Error parsing ${file_a}: ${resultA.error}` }], isError: true };
-        if (!resultB.ok) return { content: [{ type: 'text', text: `Error parsing ${file_b}: ${resultB.error}` }], isError: true };
-
-        const diff = diffCaptures(resultA.data, resultB.data);
+        const diff = diffCaptures(a, b);
         const summary = {
           added: diff.added.map((n) => ({ id: n.id, tag: n.tag, text: n.text })),
           removed: diff.removed.map((n) => ({ id: n.id, tag: n.tag, text: n.text })),
           moved: diff.moved,
           testidChanges: diff.testidChanges,
         };
-        return { content: [{ type: 'text', text: JSON.stringify(summary, null, 2) }] };
+        return jsonResponse(summary);
       } catch (err) {
-        if (err.code === 'ENOENT') return { content: [{ type: 'text', text: `Error: Capture not found. Use list_captures to see available files.` }], isError: true };
-        return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+        if (err.code === 'ENOENT') return errorResponse('Error: Capture not found. Use list_captures to see available files.');
+        return errorResponse(`Error: ${err.message}`);
       }
     },
   );

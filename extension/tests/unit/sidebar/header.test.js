@@ -4,9 +4,10 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createHeader } from '#lib/sidebar/header.js';
+import { mockChrome } from '../../mocks/chrome.js';
 
 beforeEach(() => {
-  globalThis.chrome = { runtime: { getURL: () => 'icon-16.png', getManifest: () => ({ version: '0.3.7' }) } };
+  mockChrome();
 });
 
 describe('createHeader', () => {

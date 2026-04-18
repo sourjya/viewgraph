@@ -9,6 +9,7 @@
 
 import { ATTR } from '#lib/selector.js';
 import * as transport from '#lib/transport.js';
+import { COLOR, FONT, LABEL_STYLE } from './styles.js';
 
 /**
  * Fetch captures and baselines from server, render into container.
@@ -45,14 +46,14 @@ export async function renderCaptures(container) {
   Object.assign(row.style, { display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0' });
   const label = document.createElement('span');
   label.textContent = 'SNAPSHOTS';
-  Object.assign(label.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px' });
+  Object.assign(label.style, LABEL_STYLE);
   const info = document.createElement('span');
   info.textContent = `${captures.length} - ${timeStr}`;
   info.setAttribute(ATTR, 'capture-info');
-  Object.assign(info.style, { color: '#666', fontSize: '11px', flex: '1' });
+  Object.assign(info.style, { color: COLOR.muted, fontSize: '11px', flex: '1' });
   const dot = document.createElement('span');
   const isRecent = d && (now - d.getTime()) < 300000;
-  Object.assign(dot.style, { width: '6px', height: '6px', borderRadius: '50%', flexShrink: '0', background: isRecent ? '#4ade80' : '#444' });
+  Object.assign(dot.style, { width: '6px', height: '6px', borderRadius: '50%', flexShrink: '0', background: isRecent ? COLOR.success : '#444' });
   row.append(label, info, dot);
   container.appendChild(row);
 
@@ -63,17 +64,17 @@ export async function renderCaptures(container) {
   const idText = document.createElement('span');
   idText.textContent = latest.filename.replace(/\.json$/, '');
   idText.setAttribute(ATTR, 'capture-id');
-  Object.assign(idText.style, { color: '#6366f1', fontSize: '11px', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1' });
+  Object.assign(idText.style, { color: COLOR.primary, fontSize: '11px', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1' });
   const copyBtn = document.createElement('button');
   copyBtn.setAttribute(ATTR, 'copy-id');
   copyBtn.textContent = 'Copy';
   copyBtn.title = 'Copy capture ID';
-  Object.assign(copyBtn.style, { border: 'none', background: '#1a1a2e', color: '#666', fontSize: '10px', padding: '1px 6px', borderRadius: '3px', cursor: 'pointer', flexShrink: '0', fontFamily: 'system-ui, sans-serif' });
+  Object.assign(copyBtn.style, { border: 'none', background: COLOR.bgDark, color: COLOR.muted, fontSize: '10px', padding: '1px 6px', borderRadius: '3px', cursor: 'pointer', flexShrink: '0', fontFamily: FONT });
   copyBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(latest.filename).then(() => {
       copyBtn.textContent = 'Copied';
-      copyBtn.style.color = '#4ade80';
-      setTimeout(() => { copyBtn.textContent = 'Copy'; copyBtn.style.color = '#666'; }, 1500);
+      copyBtn.style.color = COLOR.success;
+      setTimeout(() => { copyBtn.textContent = 'Copy'; copyBtn.style.color = COLOR.muted; }, 1500);
     }).catch(() => {});
   });
   idRow.append(idText, copyBtn);
@@ -93,7 +94,7 @@ export async function renderCaptures(container) {
     const titleEl = document.createElement('div');
     titleEl.setAttribute(ATTR, 'capture-title');
     titleEl.textContent = latest.title;
-    Object.assign(titleEl.style, { color: '#555', fontSize: '10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
+    Object.assign(titleEl.style, { color: COLOR.dim, fontSize: '10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
     container.appendChild(titleEl);
   }
 
@@ -102,7 +103,7 @@ export async function renderCaptures(container) {
     const warn = document.createElement('div');
     warn.setAttribute(ATTR, 'capture-warning');
     warn.textContent = '\u26a0 Latest capture is empty - page may not have loaded';
-    Object.assign(warn.style, { color: '#f59e0b', fontSize: '10px', fontWeight: '600', padding: '2px 0' });
+    Object.assign(warn.style, { color: COLOR.warning, fontSize: '10px', fontWeight: '600', padding: '2px 0' });
     container.appendChild(warn);
   }
 
@@ -112,10 +113,10 @@ export async function renderCaptures(container) {
     Object.assign(timelineRow.style, { display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 0', cursor: 'pointer', userSelect: 'none' });
     const arrow = document.createElement('span');
     arrow.textContent = '\u25b6';
-    Object.assign(arrow.style, { fontSize: '8px', color: '#666', transition: 'transform 0.15s' });
+    Object.assign(arrow.style, { fontSize: '8px', color: COLOR.muted, transition: 'transform 0.15s' });
     const tlLabel = document.createElement('span');
     tlLabel.textContent = `${captures.length} captures`;
-    Object.assign(tlLabel.style, { fontSize: '10px', color: '#666', flex: '1' });
+    Object.assign(tlLabel.style, { fontSize: '10px', color: COLOR.muted, flex: '1' });
     timelineRow.append(arrow, tlLabel);
 
     const timelineBody = document.createElement('div');
@@ -134,10 +135,10 @@ export async function renderCaptures(container) {
       const capDot = document.createElement('span');
       const capTime = cap.timestamp ? new Date(cap.timestamp) : null;
       const isLatest = cap === latest;
-      Object.assign(capDot.style, { width: '4px', height: '4px', borderRadius: '50%', background: isLatest ? '#4ade80' : '#333', flexShrink: '0' });
+      Object.assign(capDot.style, { width: '4px', height: '4px', borderRadius: '50%', background: isLatest ? COLOR.success : COLOR.border, flexShrink: '0' });
       const capName = document.createElement('span');
       capName.textContent = cap.filename?.replace(/viewgraph-|\.json$/g, '').slice(-25) || 'unknown';
-      Object.assign(capName.style, { color: isLatest ? '#6366f1' : '#555', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1' });
+      Object.assign(capName.style, { color: isLatest ? COLOR.primary : COLOR.dim, fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: '1' });
       const capAge = document.createElement('span');
       if (capTime) {
         const mins = Math.floor((now - capTime.getTime()) / 60000);
@@ -158,18 +159,18 @@ export async function renderCaptures(container) {
   }).filter(Boolean))];
   if (uniquePages.length > 1) {
     const consistRow = document.createElement('div');
-    Object.assign(consistRow.style, { display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 0', borderTop: '1px solid #2a2a3a', marginTop: '4px' });
+    Object.assign(consistRow.style, { display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 0', borderTop: `1px solid ${COLOR.borderLight}`, marginTop: '4px' });
     const consistLabel = document.createElement('span');
     consistLabel.textContent = 'CONSISTENCY';
-    Object.assign(consistLabel.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', flex: '1' });
+    Object.assign(consistLabel.style, { ...LABEL_STYLE, flex: '1' });
     const consistInfo = document.createElement('span');
     consistInfo.textContent = `${uniquePages.length} pages`;
-    Object.assign(consistInfo.style, { color: '#666', fontSize: '11px' });
+    Object.assign(consistInfo.style, { color: COLOR.muted, fontSize: '11px' });
     const consistBtn = document.createElement('button');
     consistBtn.textContent = 'Compare';
     Object.assign(consistBtn.style, {
       border: 'none', borderRadius: '10px', padding: '2px 10px', fontSize: '10px',
-      fontWeight: '700', cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+      fontWeight: '700', cursor: 'pointer', fontFamily: FONT,
       background: '#1e3a5f', color: '#60a5fa',
     });
     consistBtn.addEventListener('click', () => {
@@ -178,7 +179,7 @@ export async function renderCaptures(container) {
       navigator.clipboard.writeText(prompt).then(() => {
         consistBtn.textContent = 'Copied!';
         consistBtn.style.background = '#059669';
-        consistBtn.style.color = '#fff';
+        consistBtn.style.color = COLOR.white;
         setTimeout(() => { consistBtn.textContent = 'Compare'; consistBtn.style.background = '#1e3a5f'; consistBtn.style.color = '#60a5fa'; }, 2000);
       }).catch(() => {});
     });
@@ -189,22 +190,22 @@ export async function renderCaptures(container) {
   // Baseline section
   const baseRow = document.createElement('div');
   baseRow.setAttribute(ATTR, 'baseline-row');
-  Object.assign(baseRow.style, { display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 0', borderTop: '1px solid #2a2a3a', marginTop: '4px' });
+  Object.assign(baseRow.style, { display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 0', borderTop: `1px solid ${COLOR.borderLight}`, marginTop: '4px' });
   const baseLabel = document.createElement('span');
   baseLabel.textContent = 'BASELINE';
-  Object.assign(baseLabel.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px' });
+  Object.assign(baseLabel.style, LABEL_STYLE);
   const baseInfo = document.createElement('span');
   baseInfo.setAttribute(ATTR, 'baseline-info');
-  Object.assign(baseInfo.style, { color: '#666', fontSize: '11px', flex: '1' });
+  Object.assign(baseInfo.style, { color: COLOR.muted, fontSize: '11px', flex: '1' });
   const baseBtn = document.createElement('button');
   baseBtn.setAttribute(ATTR, 'baseline-btn');
-  Object.assign(baseBtn.style, { border: 'none', borderRadius: '10px', padding: '2px 10px', fontSize: '10px', fontWeight: '700', cursor: 'pointer', fontFamily: 'system-ui, sans-serif', background: '#333', color: '#666' });
+  Object.assign(baseBtn.style, { border: 'none', borderRadius: '10px', padding: '2px 10px', fontSize: '10px', fontWeight: '700', cursor: 'pointer', fontFamily: FONT, background: COLOR.border, color: COLOR.muted });
   baseRow.append(baseLabel, baseInfo, baseBtn);
   container.appendChild(baseRow);
 
   const baseDiff = document.createElement('div');
   baseDiff.setAttribute(ATTR, 'baseline-diff');
-  Object.assign(baseDiff.style, { display: 'none', fontSize: '10px', color: '#9ca3af', padding: '2px 0' });
+  Object.assign(baseDiff.style, { display: 'none', fontSize: '10px', color: COLOR.secondary, padding: '2px 0' });
   container.appendChild(baseDiff);
 
   // Fetch baseline status
@@ -229,7 +230,7 @@ export async function renderCaptures(container) {
             if (dd.testidChanges) parts.push(`${dd.testidChanges} testid changes`);
             baseDiff.textContent = parts.length ? parts.join(', ') : 'No structural changes';
             baseDiff.style.display = 'block';
-            baseDiff.style.color = parts.length ? '#f59e0b' : '#4ade80';
+            baseDiff.style.color = parts.length ? COLOR.warning : COLOR.success;
           }
         } catch { /* timeout */ }
         baseBtn.textContent = 'Compare';

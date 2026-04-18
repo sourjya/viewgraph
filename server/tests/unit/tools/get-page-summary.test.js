@@ -6,12 +6,9 @@
  */
 
 import { describe, it, expect, afterEach } from 'vitest';
-import path from 'path';
-import { createTestClient } from './helpers.js';
+import { createTestClient, FIXTURES_DIR } from './helpers.js';
 import { createIndexer } from '#src/indexer.js';
 import { register } from '#src/tools/get-page-summary.js';
-
-const FIXTURES_DIR = path.resolve(import.meta.dirname, '../../fixtures');
 
 describe('get_page_summary via MCP', () => {
   let cleanup;

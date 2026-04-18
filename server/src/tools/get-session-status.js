@@ -10,6 +10,7 @@
  */
 
 import { PROJECT_NAME } from '#src/constants.js';
+import { jsonResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the get_session_status tool.
@@ -69,7 +70,7 @@ export function register(server, indexer) {
         suggestions,
       };
 
-      return { content: [{ type: 'text', text: JSON.stringify(status, null, 2) }] };
+      return jsonResponse(status);
     },
   );
 }

@@ -9,7 +9,7 @@
  */
 
 import { ATTR } from '#lib/selector.js';
-import { FONT } from './styles.js';
+import { COLOR, FONT } from './styles.js';
 
 /** Tier display config: label, background color, text color. */
 const TIERS = {
@@ -34,7 +34,7 @@ const SEV_MAP = { error: 'critical', warning: 'major', info: 'minor' };
 export function renderSuggestionBar(container, suggestions, callbacks) {
   const wrapper = document.createElement('div');
   wrapper.setAttribute(ATTR, 'suggestions-panel');
-  Object.assign(wrapper.style, { borderBottom: '1px solid #2a2a3a', fontFamily: FONT });
+  Object.assign(wrapper.style, { borderBottom: `1px solid ${COLOR.borderLight}`, fontFamily: FONT });
 
   if (suggestions.length === 0) {
     renderClean(wrapper);
@@ -66,13 +66,13 @@ function renderCollapsed(wrapper, suggestions, callbacks) {
 
   const label = document.createElement('span');
   label.textContent = `${suggestions.length} suggestion${suggestions.length > 1 ? 's' : ''}`;
-  Object.assign(label.style, { fontSize: '11px', fontWeight: '700', color: '#f59e0b', flex: '1' });
+  Object.assign(label.style, { fontSize: '11px', fontWeight: '700', color: COLOR.warning, flex: '1' });
 
   const reviewBtn = document.createElement('button');
   reviewBtn.textContent = 'Review';
   Object.assign(reviewBtn.style, {
-    border: '1px solid #f59e0b', borderRadius: '4px', background: 'transparent',
-    color: '#f59e0b', fontSize: '10px', padding: '2px 8px', cursor: 'pointer', fontFamily: FONT,
+    border: `1px solid ${COLOR.warning}`, borderRadius: '4px', background: 'transparent',
+    color: COLOR.warning, fontSize: '10px', padding: '2px 8px', cursor: 'pointer', fontFamily: FONT,
   });
   reviewBtn.addEventListener('click', () => renderExpanded(wrapper, suggestions, callbacks));
 
@@ -93,12 +93,12 @@ function renderExpanded(wrapper, suggestions, callbacks) {
   Object.assign(icon.style, { fontSize: '13px' });
   const label = document.createElement('span');
   label.textContent = `${suggestions.length} suggestion${suggestions.length > 1 ? 's' : ''}`;
-  Object.assign(label.style, { fontSize: '11px', fontWeight: '700', color: '#f59e0b', flex: '1' });
+  Object.assign(label.style, { fontSize: '11px', fontWeight: '700', color: COLOR.warning, flex: '1' });
   const collapseBtn = document.createElement('button');
   collapseBtn.textContent = 'Collapse';
   Object.assign(collapseBtn.style, {
-    border: '1px solid #333', borderRadius: '4px', background: 'transparent',
-    color: '#666', fontSize: '10px', padding: '2px 8px', cursor: 'pointer', fontFamily: FONT,
+    border: `1px solid ${COLOR.border}`, borderRadius: '4px', background: 'transparent',
+    color: COLOR.muted, fontSize: '10px', padding: '2px 8px', cursor: 'pointer', fontFamily: FONT,
   });
   collapseBtn.addEventListener('click', () => renderCollapsed(wrapper, suggestions, callbacks));
   header.append(icon, label, collapseBtn);
@@ -114,7 +114,7 @@ function renderExpanded(wrapper, suggestions, callbacks) {
       display: 'flex', alignItems: 'center', gap: '6px',
       padding: '4px 0', cursor: 'pointer', transition: 'background 0.1s', borderRadius: '4px',
     });
-    row.addEventListener('mouseenter', () => { row.style.background = '#1a1a2e'; });
+    row.addEventListener('mouseenter', () => { row.style.background = COLOR.bgDark; });
     row.addEventListener('mouseleave', () => { row.style.background = 'transparent'; });
 
     // Severity icon
@@ -136,7 +136,7 @@ function renderExpanded(wrapper, suggestions, callbacks) {
     const title = document.createElement('span');
     title.textContent = sug.title;
     Object.assign(title.style, {
-      fontSize: '11px', color: '#c8c8d0', flex: '1',
+      fontSize: '11px', color: COLOR.text, flex: '1',
       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
     });
 
@@ -146,12 +146,12 @@ function renderExpanded(wrapper, suggestions, callbacks) {
     addBtn.title = 'Add to review list';
     Object.assign(addBtn.style, {
       border: 'none', background: 'transparent',
-      color: '#6366f1', fontSize: '10px', fontWeight: '600', cursor: 'pointer',
+      color: COLOR.primary, fontSize: '10px', fontWeight: '600', cursor: 'pointer',
       padding: '2px 6px', flexShrink: '0', fontFamily: FONT,
       transition: 'color 0.15s',
     });
-    addBtn.addEventListener('mouseenter', () => { addBtn.style.color = '#818cf8'; });
-    addBtn.addEventListener('mouseleave', () => { addBtn.style.color = '#6366f1'; });
+    addBtn.addEventListener('mouseenter', () => { addBtn.style.color = COLOR.primaryHover; });
+    addBtn.addEventListener('mouseleave', () => { addBtn.style.color = COLOR.primary; });
     addBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       row.style.opacity = '0';
@@ -178,7 +178,7 @@ function renderExpanded(wrapper, suggestions, callbacks) {
   addAllBtn.textContent = 'Add All to Review';
   Object.assign(addAllBtn.style, {
     flex: '1', padding: '5px', border: 'none', borderRadius: '4px',
-    background: '#6366f1', color: '#fff', fontSize: '10px', fontWeight: '600',
+    background: COLOR.primary, color: COLOR.white, fontSize: '10px', fontWeight: '600',
     cursor: 'pointer', fontFamily: FONT,
   });
   addAllBtn.addEventListener('click', () => {
@@ -189,8 +189,8 @@ function renderExpanded(wrapper, suggestions, callbacks) {
   const dismissBtn = document.createElement('button');
   dismissBtn.textContent = 'Dismiss All';
   Object.assign(dismissBtn.style, {
-    padding: '5px 10px', border: '1px solid #333', borderRadius: '4px',
-    background: 'transparent', color: '#666', fontSize: '10px',
+    padding: '5px 10px', border: `1px solid ${COLOR.border}`, borderRadius: '4px',
+    background: 'transparent', color: COLOR.muted, fontSize: '10px',
     cursor: 'pointer', fontFamily: FONT,
   });
   dismissBtn.addEventListener('click', () => {

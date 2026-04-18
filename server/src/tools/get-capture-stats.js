@@ -10,6 +10,7 @@
 
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
+import { jsonResponse } from '#src/utils/tool-helpers.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 
 /**
@@ -54,14 +55,14 @@ export function register(server, indexer, capturesDir) {
         } catch { continue; }
       }
 
-      return { content: [{ type: 'text', text: JSON.stringify({
+      return jsonResponse({
         totalCaptures: entries.length,
         uniqueUrls: urls.size,
         dateRange: { oldest, newest },
         annotations: { total: totalAnnotations, open: openAnnotations },
         averageElements: entries.length > 0 ? Math.round(totalElements / entries.length) : 0,
         urls: [...urls].slice(0, 20),
-      }, null, 2) }] };
+      });
     },
   );
 }

@@ -9,11 +9,10 @@
  * @see docs/roadmap/roadmap.md - M10.6
  */
 
-import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
 import { wrapComment } from '#src/utils/sanitize.js';
 import { analyzePatterns } from '#src/analysis/steering-generator.js';
+import { jsonResponse, readAndParseMulti } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the analyze_patterns MCP tool.
@@ -28,19 +27,17 @@ export function register(server, indexer, capturesDir) {
     'Generates project-specific recommendations for preventing common issues.',
     {},
     async () => {
+      const filenames = indexer.list().map((e) => e.filename);
+      const results = await readAndParseMulti(filenames, capturesDir);
       const annotations = [];
-      for (const entry of indexer.list()) {
-        try {
-          const filePath = validateCapturePath(entry.filename, capturesDir);
-          const raw = JSON.parse(await readFile(filePath, 'utf-8'));
-          if (!raw.annotations?.length) continue;
-          for (const ann of raw.annotations) {
-            annotations.push({
-              comment: wrapComment(ann.comment), severity: ann.severity, category: ann.category,
-              selector: ann.ancestor, resolution: ann.resolution,
-            });
-          }
-        } catch { continue; }
+      for (const { parsed } of results) {
+        if (!parsed.annotations?.length) continue;
+        for (const ann of parsed.annotations) {
+          annotations.push({
+            comment: wrapComment(ann.comment), severity: ann.severity, category: ann.category,
+            selector: ann.ancestor, resolution: ann.resolution,
+          });
+        }
       }
 
       if (annotations.length === 0) {
@@ -48,11 +45,11 @@ export function register(server, indexer, capturesDir) {
       }
 
       const result = analyzePatterns(annotations);
-      return { content: [{ type: 'text', text: JSON.stringify({
+      return jsonResponse({
         totalAnnotations: annotations.length,
         resolvedAnnotations: annotations.filter((a) => a.resolution).length,
         ...result,
-      }, null, 2) }] };
+      });
     },
   );
 }

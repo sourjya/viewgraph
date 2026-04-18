@@ -9,11 +9,10 @@
  */
 
 import { z } from 'zod';
-import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
 import { wrapComment } from '#src/utils/sanitize.js';
 import { detectRecurringIssues } from '#src/analysis/recurring-issues.js';
+import { jsonResponse, readAndParseMulti } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the detect_recurring_issues MCP tool.
@@ -30,18 +29,16 @@ export function register(server, indexer, capturesDir) {
       min_occurrences: z.number().min(2).max(50).optional().describe('Minimum times an element must be flagged (default 2)'),
     },
     async ({ min_occurrences }) => {
+      const filenames = indexer.list().map((e) => e.filename);
+      const results = await readAndParseMulti(filenames, capturesDir);
       const captures = [];
-      for (const entry of indexer.list()) {
-        try {
-          const filePath = validateCapturePath(entry.filename, capturesDir);
-          const raw = JSON.parse(await readFile(filePath, 'utf-8'));
-          if (raw.annotations?.length > 0) {
-            captures.push({
-              filename: entry.filename, url: raw.metadata?.url, timestamp: raw.metadata?.timestamp,
-              annotations: raw.annotations.map((a) => ({ ...a, comment: wrapComment(a.comment) })),
-            });
-          }
-        } catch { continue; }
+      for (const { filename, parsed } of results) {
+        if (parsed.annotations?.length > 0) {
+          captures.push({
+            filename, url: parsed.metadata?.url, timestamp: parsed.metadata?.timestamp,
+            annotations: parsed.annotations.map((a) => ({ ...a, comment: wrapComment(a.comment) })),
+          });
+        }
       }
 
       if (captures.length === 0) {
@@ -49,11 +46,11 @@ export function register(server, indexer, capturesDir) {
       }
 
       const result = detectRecurringIssues(captures, { minOccurrences: min_occurrences });
-      return { content: [{ type: 'text', text: JSON.stringify({
+      return jsonResponse({
         capturesScanned: captures.length,
         hotspots: result.hotspots.length,
         details: result.hotspots,
-      }, null, 2) }] };
+      });
     },
   );
 }

@@ -7,19 +7,15 @@
  */
 
 import { describe, it, expect, afterEach } from 'vitest';
-import path from 'path';
-import { createTestClient } from './helpers.js';
-import { createIndexer } from '#src/indexer.js';
+import { createFixtureClient } from './helpers.js';
 import { register } from '#src/tools/get-component-coverage.js';
-
-const FIXTURES_DIR = path.resolve(import.meta.dirname, '../../fixtures');
 
 describe('get_component_coverage via MCP', () => {
   let cleanup;
   afterEach(async () => { if (cleanup) await cleanup(); });
 
   it('(+) returns coverage summary with overall stats', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'get_component_coverage', arguments: { filename: 'valid-capture.json' } });
     expect(result.isError).toBeFalsy();
@@ -31,7 +27,7 @@ describe('get_component_coverage via MCP', () => {
   });
 
   it('(+) identifies elements with testids as covered', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'get_component_coverage', arguments: { filename: 'valid-capture.json' } });
     const summary = JSON.parse(result.content[0].text);
@@ -40,7 +36,7 @@ describe('get_component_coverage via MCP', () => {
   });
 
   it('(+) identifies elements missing testids', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'get_component_coverage', arguments: { filename: 'valid-capture.json' } });
     const summary = JSON.parse(result.content[0].text);
@@ -49,7 +45,7 @@ describe('get_component_coverage via MCP', () => {
   });
 
   it('(+) falls back to tag-based grouping when no framework detected', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'get_component_coverage', arguments: { filename: 'valid-capture.json' } });
     const summary = JSON.parse(result.content[0].text);
@@ -60,7 +56,7 @@ describe('get_component_coverage via MCP', () => {
   });
 
   it('(+) sorts components by coverage ascending (worst first)', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'get_component_coverage', arguments: { filename: 'valid-capture.json' } });
     const summary = JSON.parse(result.content[0].text);
@@ -70,14 +66,14 @@ describe('get_component_coverage via MCP', () => {
   });
 
   it('(-) returns error for nonexistent file', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'get_component_coverage', arguments: { filename: 'nope.json' } });
     expect(result.isError).toBe(true);
   });
 
   it('(-) returns error for path traversal', async () => {
-    const { client, cleanup: c } = await createTestClient((s) => register(s, createIndexer({ maxCaptures: 10 }), FIXTURES_DIR));
+    const { client, cleanup: c } = await createFixtureClient(register);
     cleanup = c;
     const result = await client.callTool({ name: 'get_component_coverage', arguments: { filename: '../../package.json' } });
     expect(result.isError).toBe(true);

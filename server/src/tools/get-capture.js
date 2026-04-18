@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME, PROJECT_PREFIX } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
+import { errorResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the get_capture MCP tool.
@@ -33,7 +34,7 @@ export function register(server, _indexer, capturesDir) {
       try {
         filePath = validateCapturePath(filename, capturesDir);
       } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid filename  -  ${filename}` }], isError: true };
+        return errorResponse(`Error: Invalid filename  -  ${filename}`);
       }
 
       try {
@@ -44,9 +45,9 @@ export function register(server, _indexer, capturesDir) {
         return { content: [{ type: 'text', text: notice + header + content }] };
       } catch (err) {
         if (err.code === 'ENOENT') {
-          return { content: [{ type: 'text', text: `Error: Capture not found: ${filename}. Use list_captures to see available files.` }], isError: true };
+          return errorResponse(`Error: Capture not found: ${filename}. Use list_captures to see available files.`);
         }
-        return { content: [{ type: 'text', text: `Error reading capture: ${err.message}` }], isError: true };
+        return errorResponse(`Error reading capture: ${err.message}`);
       }
     },
   );

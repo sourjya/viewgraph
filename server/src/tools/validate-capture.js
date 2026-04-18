@@ -8,9 +8,8 @@
  */
 
 import { z } from 'zod';
-import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
+import { jsonResponse, errorResponse, readAndParse } from '#src/utils/tool-helpers.js';
 
 /** Minimum node count for a useful capture. */
 const MIN_NODES = 5;
@@ -27,13 +26,11 @@ export function register(server, _indexer, capturesDir) {
     `Check a ${PROJECT_NAME} capture for quality issues: empty pages, missing data, oversized payloads. Returns warnings if the capture may not be useful.`,
     { filename: z.string().describe('Capture filename') },
     async ({ filename }) => {
-      let filePath;
-      try { filePath = validateCapturePath(filename, capturesDir); } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid filename - ${filename}` }], isError: true };
-      }
+      const { ok, parsed, error } = await readAndParse(filename, capturesDir);
+      if (!ok) return error;
 
       try {
-        const raw = JSON.parse(await readFile(filePath, 'utf-8'));
+        const raw = parsed;
         const warnings = [];
         const nodes = raw.nodes || [];
         const totalNodes = raw.metadata?.stats?.totalNodes ?? nodes.length;
@@ -54,14 +51,14 @@ export function register(server, _indexer, capturesDir) {
           warnings.push(`${failedReqs.length} failed network request(s) - may cause missing content`);
         }
 
-        return { content: [{ type: 'text', text: JSON.stringify({
+        return jsonResponse({
           ok: warnings.length === 0,
           totalNodes,
           warnings,
           enrichmentPresent: enrichment.filter((k) => raw[k]),
-        }, null, 2) }] };
+        });
       } catch (err) {
-        return { content: [{ type: 'text', text: `Error: ${err.message}` }], isError: true };
+        return errorResponse(`Error: ${err.message}`);
       }
     },
   );

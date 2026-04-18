@@ -6,13 +6,10 @@
  */
 
 import { describe, it, expect, afterEach } from 'vitest';
-import path from 'path';
-import { createTestClient } from './helpers.js';
+import { createTestClient, FIXTURES_DIR } from './helpers.js';
 import { createIndexer } from '#src/indexer.js';
 import { register as registerConsistency } from '#src/tools/check-consistency.js';
 import { register as registerAnnotationStatus } from '#src/tools/check-annotation-status.js';
-
-const FIXTURES_DIR = path.resolve(import.meta.dirname, '../../fixtures');
 
 describe('check_consistency via MCP', () => {
   let cleanup;

@@ -9,11 +9,10 @@
  */
 
 import { z } from 'zod';
-import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
 import { wrapComment } from '#src/utils/sanitize.js';
 import { diffAnnotations } from '#src/analysis/annotation-diff.js';
+import { jsonResponse, errorResponse, readAndParseMulti } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the diff_annotations MCP tool.
@@ -30,29 +29,26 @@ export function register(server, _indexer, capturesDir) {
       filenames: z.array(z.string()).min(2).max(20).describe('Capture filenames to compare (2-20, chronological order preferred)'),
     },
     async ({ filenames }) => {
+      const results = await readAndParseMulti(filenames, capturesDir);
       const captures = [];
-      for (const filename of filenames) {
-        try {
-          const filePath = validateCapturePath(filename, capturesDir);
-          const raw = JSON.parse(await readFile(filePath, 'utf-8'));
-          if (raw.annotations?.length > 0) {
-            captures.push({
-              filename, url: raw.metadata?.url, timestamp: raw.metadata?.timestamp,
-              annotations: raw.annotations.map((a) => ({ ...a, comment: wrapComment(a.comment) })),
-            });
-          }
-        } catch { continue; }
+      for (const { filename, parsed } of results) {
+        if (parsed.annotations?.length > 0) {
+          captures.push({
+            filename, url: parsed.metadata?.url, timestamp: parsed.metadata?.timestamp,
+            annotations: parsed.annotations.map((a) => ({ ...a, comment: wrapComment(a.comment) })),
+          });
+        }
       }
 
       if (captures.length < 2) {
-        return { content: [{ type: 'text', text: 'Need at least 2 captures with annotations to compare' }], isError: true };
+        return errorResponse('Need at least 2 captures with annotations to compare');
       }
 
       const result = diffAnnotations(captures);
-      return { content: [{ type: 'text', text: JSON.stringify({
+      return jsonResponse({
         summary: `${result.persistent.length} persistent, ${result.newInLatest.length} new, ${result.resolvedSince.length} resolved`,
         ...result,
-      }, null, 2) }] };
+      });
     },
   );
 }

@@ -8,12 +8,11 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as transport from '#lib/transport.js';
+import { mockChrome } from '../mocks/chrome.js';
 
 beforeEach(() => {
   transport.reset();
-  globalThis.chrome = {
-    runtime: { sendNativeMessage: undefined, lastError: null },
-  };
+  mockChrome({ runtime: { sendNativeMessage: undefined } });
   globalThis.fetch = vi.fn(() => Promise.reject(new Error('offline')));
 });
 

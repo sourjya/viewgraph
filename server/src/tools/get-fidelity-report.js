@@ -11,7 +11,7 @@ import { readFile } from 'fs/promises';
 import path from 'path';
 import { PROJECT_NAME } from '#src/constants.js';
 import { parseSnapshot, compareFidelity } from '#src/analysis/fidelity.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
+import { jsonResponse, errorResponse, readAndParse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the get_fidelity_report MCP tool.
@@ -28,34 +28,25 @@ export function register(server, _indexer, capturesDir) {
       filename: z.string().describe('Capture JSON filename (e.g., viewgraph-localhost-20260408-120612.json)'),
     },
     async ({ filename }) => {
-      let capturePath;
-      try {
-        capturePath = validateCapturePath(filename, capturesDir);
-      } catch {
-        return { content: [{ type: 'text', text: `Error: Invalid filename "${filename}"` }], isError: true };
-      }
+      const { ok, parsed, error } = await readAndParse(filename, capturesDir);
+      if (!ok) return error;
 
       const stem = filename.replace(/\.json$/, '');
       const snapshotPath = path.join(capturesDir, '..', 'snapshots', `${stem}.html`);
 
-      let captureJson, snapshotHtml;
-      try {
-        captureJson = JSON.parse(await readFile(capturePath, 'utf-8'));
-      } catch {
-        return { content: [{ type: 'text', text: `Error: Capture "${filename}" not found` }], isError: true };
-      }
+      let snapshotHtml;
       try {
         snapshotHtml = await readFile(snapshotPath, 'utf-8');
       } catch {
-        return { content: [{ type: 'text', text: `Error: No snapshot found for "${filename}". Expected: snapshots/${stem}.html` }], isError: true };
+        return errorResponse(`Error: No snapshot found for "${filename}". Expected: snapshots/${stem}.html`);
       }
 
       const snapshot = parseSnapshot(snapshotHtml);
-      const report = compareFidelity(captureJson, snapshot);
+      const report = compareFidelity(parsed, snapshot);
       report.captureFile = filename;
       report.snapshotFile = `${stem}.html`;
 
-      return { content: [{ type: 'text', text: JSON.stringify(report, null, 2) }] };
+      return jsonResponse(report);
     },
   );
 }
