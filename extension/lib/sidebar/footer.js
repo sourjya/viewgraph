@@ -96,7 +96,6 @@ export function createFooter({ onSend, onShowSettings }) {
   const statusRow = document.createElement('div');
   Object.assign(statusRow.style, {
     display: 'flex', alignItems: 'center', padding: '4px 0', marginTop: '4px',
-    borderTop: `1px solid ${COLOR.border}`,
   });
 
   const statusDot = document.createElement('span');

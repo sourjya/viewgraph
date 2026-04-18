@@ -170,41 +170,43 @@ export function createSettings() {
   function renderProjectInfo(data) {
     cardBody.replaceChildren();
     let hasContent = false;
+    const rowStyle = { display: 'flex', gap: '6px', marginBottom: '2px', alignItems: 'baseline' };
+    const lblStyle = { color: COLOR.muted, fontSize: '11px', flexShrink: '0' };
     if (data.agent) {
       const row = document.createElement('div');
-      Object.assign(row.style, { display: 'flex', gap: '6px', marginBottom: '2px' });
+      Object.assign(row.style, rowStyle);
       const lbl = document.createElement('span');
       lbl.textContent = 'Agent:';
-      Object.assign(lbl.style, { color: COLOR.muted });
+      Object.assign(lbl.style, lblStyle);
       const val = document.createElement('span');
       val.textContent = data.agent;
-      Object.assign(val.style, { color: COLOR.success });
+      Object.assign(val.style, { color: COLOR.success, fontSize: '11px' });
       row.append(lbl, val);
       cardBody.appendChild(row);
       hasContent = true;
     }
     if (data.urlPatterns?.length) {
       const row = document.createElement('div');
-      Object.assign(row.style, { display: 'flex', gap: '6px', marginBottom: '2px' });
+      Object.assign(row.style, rowStyle);
       const lbl = document.createElement('span');
       lbl.textContent = 'URL:';
-      Object.assign(lbl.style, { color: COLOR.muted });
+      Object.assign(lbl.style, lblStyle);
       const val = document.createElement('span');
       val.textContent = data.urlPatterns.join(', ');
-      Object.assign(val.style, { color: COLOR.primary, fontFamily: 'monospace', fontSize: '10px' });
+      Object.assign(val.style, { color: COLOR.primary, fontFamily: 'monospace', fontSize: '11px' });
       row.append(lbl, val);
       cardBody.appendChild(row);
       hasContent = true;
     }
     if (data.projectRoot) {
       const row = document.createElement('div');
-      Object.assign(row.style, { display: 'flex', gap: '6px' });
+      Object.assign(row.style, rowStyle);
       const lbl = document.createElement('span');
       lbl.textContent = 'Root:';
-      Object.assign(lbl.style, { color: COLOR.muted });
+      Object.assign(lbl.style, lblStyle);
       const val = document.createElement('span');
       val.textContent = data.projectRoot;
-      Object.assign(val.style, { color: COLOR.dim, fontFamily: 'monospace', fontSize: '10px' });
+      Object.assign(val.style, { color: COLOR.dim, fontFamily: 'monospace', fontSize: '11px' });
       row.append(lbl, val);
       cardBody.appendChild(row);
       hasContent = true;
