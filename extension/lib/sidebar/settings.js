@@ -10,6 +10,7 @@
 import { ATTR } from '#lib/selector.js';
 import { chevronLeftIcon } from './icons.js';
 import * as transport from '#lib/transport.js';
+import { COLOR, FONT } from './styles.js';
 
 /**
  * Create the settings screen element.
@@ -28,40 +29,40 @@ export function createSettings() {
   const header = document.createElement('div');
   Object.assign(header.style, {
     display: 'flex', alignItems: 'center', gap: '8px',
-    padding: '10px 12px', borderBottom: '1px solid #333',
+    padding: '10px 12px', borderBottom: `1px solid ${COLOR.border}`,
   });
   const backBtn = document.createElement('button');
-  backBtn.appendChild(chevronLeftIcon(18, '#a5b4fc'));
+  backBtn.appendChild(chevronLeftIcon(18, COLOR.primaryLight));
   Object.assign(backBtn.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '4px', display: 'flex', borderRadius: '4px' });
   backBtn.addEventListener('click', () => hide());
   const title = document.createElement('span');
   title.textContent = 'Settings';
-  Object.assign(title.style, { color: '#a5b4fc', fontSize: '14px', fontWeight: '600' });
+  Object.assign(title.style, { color: COLOR.primaryLight, fontSize: '14px', fontWeight: '600' });
   header.append(backBtn, title);
 
   // Body
   const body = document.createElement('div');
-  Object.assign(body.style, { padding: '12px', fontSize: '12px', color: '#9ca3af' });
+  Object.assign(body.style, { padding: '12px', fontSize: '12px', color: COLOR.secondary });
 
   // Single server card: header (status) + body (details) + footer (links)
   const serverCard = document.createElement('div');
   serverCard.setAttribute(ATTR, 'server-card');
   Object.assign(serverCard.style, {
-    background: '#16161e', border: '1px solid #2a2a3a', borderRadius: '8px',
+    background: COLOR.bgCard, border: `1px solid ${COLOR.borderLight}`, borderRadius: '8px',
     marginBottom: '10px', overflow: 'hidden',
   });
 
   // Card header - connection status
   const cardHeader = document.createElement('div');
   Object.assign(cardHeader.style, {
-    padding: '8px 10px', borderBottom: '1px solid #2a2a3a',
+    padding: '8px 10px', borderBottom: `1px solid ${COLOR.borderLight}`,
     display: 'flex', alignItems: 'center', gap: '6px',
   });
   const statusDotEl = document.createElement('span');
-  Object.assign(statusDotEl.style, { width: '6px', height: '6px', borderRadius: '50%', background: '#666', flexShrink: '0' });
+  Object.assign(statusDotEl.style, { width: '6px', height: '6px', borderRadius: '50%', background: COLOR.muted, flexShrink: '0' });
   const statusText = document.createElement('span');
   statusText.textContent = 'Checking...';
-  Object.assign(statusText.style, { fontSize: '11px', fontWeight: '600', color: '#9ca3af' });
+  Object.assign(statusText.style, { fontSize: '11px', fontWeight: '600', color: COLOR.secondary });
   cardHeader.append(statusDotEl, statusText);
 
   // Card body - project details (populated by renderProjectInfo)
@@ -70,26 +71,26 @@ export function createSettings() {
   Object.assign(cardBody.style, { padding: '8px 10px', fontSize: '11px' });
   const noDetailsMsg = document.createElement('div');
   noDetailsMsg.textContent = 'No project mapping available. Start a server to see details.';
-  Object.assign(noDetailsMsg.style, { color: '#555', fontStyle: 'italic', fontSize: '10px' });
+  Object.assign(noDetailsMsg.style, { color: COLOR.dim, fontStyle: 'italic', fontSize: '10px' });
   cardBody.appendChild(noDetailsMsg);
 
   // Card footer - help link (left) + advanced settings (right)
   const cardFooter = document.createElement('div');
   Object.assign(cardFooter.style, {
-    padding: '6px 10px', borderTop: '1px solid #2a2a3a',
+    padding: '6px 10px', borderTop: `1px solid ${COLOR.borderLight}`,
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
   });
   const helpLink = document.createElement('a');
   helpLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>URL mapping docs';
   helpLink.href = 'https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project';
   helpLink.target = '_blank';
-  Object.assign(helpLink.style, { color: '#818cf8', fontSize: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' });
+  Object.assign(helpLink.style, { color: COLOR.primaryHover, fontSize: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' });
   helpLink.addEventListener('mouseenter', () => { helpLink.style.textDecoration = 'underline'; });
   helpLink.addEventListener('mouseleave', () => { helpLink.style.textDecoration = 'none'; });
   const advLink = document.createElement('a');
   advLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>All servers \u2192';
   advLink.href = '#';
-  Object.assign(advLink.style, { color: '#818cf8', fontSize: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' });
+  Object.assign(advLink.style, { color: COLOR.primaryHover, fontSize: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' });
   advLink.addEventListener('mouseenter', () => { advLink.style.textDecoration = 'underline'; });
   advLink.addEventListener('mouseleave', () => { advLink.style.textDecoration = 'none'; });
   advLink.addEventListener('click', (e) => { e.preventDefault(); chrome.runtime.sendMessage({ type: 'open-options' }); });
@@ -99,10 +100,10 @@ export function createSettings() {
 
   // Capture options
   const captureOpts = document.createElement('div');
-  Object.assign(captureOpts.style, { marginTop: '12px', borderTop: '1px solid #333', paddingTop: '10px' });
+  Object.assign(captureOpts.style, { marginTop: '12px', borderTop: `1px solid ${COLOR.border}`, paddingTop: '10px' });
   const optsLabel = document.createElement('div');
   optsLabel.textContent = 'Capture includes:';
-  Object.assign(optsLabel.style, { color: '#9ca3af', fontSize: '11px', marginBottom: '8px', fontWeight: '600' });
+  Object.assign(optsLabel.style, { color: COLOR.secondary, fontSize: '11px', marginBottom: '8px', fontWeight: '600' });
   captureOpts.appendChild(optsLabel);
 
   /** Build a toggle switch row. */
@@ -114,7 +115,7 @@ export function createSettings() {
     });
     const text = document.createElement('span');
     text.textContent = labelText;
-    Object.assign(text.style, { fontSize: '12px', color: opts.disabled ? '#666' : '#c8c8d0' });
+    Object.assign(text.style, { fontSize: '12px', color: opts.disabled ? COLOR.muted : COLOR.text });
     // Hidden checkbox for state
     const input = document.createElement('input');
     input.type = 'checkbox';
@@ -127,9 +128,9 @@ export function createSettings() {
       toggle.textContent = input.checked ? 'ON' : 'OFF';
       Object.assign(toggle.style, {
         borderRadius: '10px', padding: '2px 10px', fontSize: '10px',
-        fontWeight: '700', fontFamily: 'system-ui, sans-serif',
-        background: input.checked ? '#166534' : '#333',
-        color: input.checked ? '#4ade80' : '#666',
+        fontWeight: '700', fontFamily: FONT,
+        background: input.checked ? COLOR.successDark : COLOR.border,
+        color: input.checked ? COLOR.success : COLOR.muted,
         border: 'none',
       });
     }
@@ -171,10 +172,10 @@ export function createSettings() {
       Object.assign(row.style, { display: 'flex', gap: '6px', marginBottom: '2px' });
       const lbl = document.createElement('span');
       lbl.textContent = 'Agent:';
-      Object.assign(lbl.style, { color: '#666' });
+      Object.assign(lbl.style, { color: COLOR.muted });
       const val = document.createElement('span');
       val.textContent = data.agent;
-      Object.assign(val.style, { color: '#4ade80' });
+      Object.assign(val.style, { color: COLOR.success });
       row.append(lbl, val);
       cardBody.appendChild(row);
       hasContent = true;
@@ -184,10 +185,10 @@ export function createSettings() {
       Object.assign(row.style, { display: 'flex', gap: '6px', marginBottom: '2px' });
       const lbl = document.createElement('span');
       lbl.textContent = 'URL:';
-      Object.assign(lbl.style, { color: '#666' });
+      Object.assign(lbl.style, { color: COLOR.muted });
       const val = document.createElement('span');
       val.textContent = data.urlPatterns.join(', ');
-      Object.assign(val.style, { color: '#6366f1', fontFamily: 'monospace', fontSize: '10px' });
+      Object.assign(val.style, { color: COLOR.primary, fontFamily: 'monospace', fontSize: '10px' });
       row.append(lbl, val);
       cardBody.appendChild(row);
       hasContent = true;
@@ -197,10 +198,10 @@ export function createSettings() {
       Object.assign(row.style, { display: 'flex', gap: '6px' });
       const lbl = document.createElement('span');
       lbl.textContent = 'Root:';
-      Object.assign(lbl.style, { color: '#666' });
+      Object.assign(lbl.style, { color: COLOR.muted });
       const val = document.createElement('span');
       val.textContent = data.projectRoot;
-      Object.assign(val.style, { color: '#555', fontFamily: 'monospace', fontSize: '10px' });
+      Object.assign(val.style, { color: COLOR.dim, fontFamily: 'monospace', fontSize: '10px' });
       row.append(lbl, val);
       cardBody.appendChild(row);
       hasContent = true;
@@ -214,18 +215,18 @@ export function createSettings() {
       const info = await transport.getInfo();
       if (info) {
         renderProjectInfo(info);
-        statusDotEl.style.background = '#4ade80';
+        statusDotEl.style.background = COLOR.success;
         statusText.textContent = 'Server Connected';
-        statusText.style.color = '#4ade80';
+        statusText.style.color = COLOR.success;
       } else {
-        statusDotEl.style.background = '#f87171';
+        statusDotEl.style.background = COLOR.errorLight;
         statusText.textContent = 'Server Not Connected';
-        statusText.style.color = '#f87171';
+        statusText.style.color = COLOR.errorLight;
       }
     } catch {
-      statusDotEl.style.background = '#f87171';
+      statusDotEl.style.background = COLOR.errorLight;
       statusText.textContent = 'Server Not Connected';
-      statusText.style.color = '#f87171';
+      statusText.style.color = COLOR.errorLight;
     }
   }
 

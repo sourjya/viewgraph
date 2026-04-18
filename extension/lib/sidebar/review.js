@@ -15,7 +15,7 @@ import { resolveType, getBadgeColor, getBadgeIcon, getFilterIcon } from '#lib/an
 import { discoverServer } from '#lib/constants.js';
 import { KEYS, set as storageSet } from '#lib/storage.js';
 import { trashIcon, cameraIcon, closeIcon, checkIcon, circleIcon } from './icons.js';
-import { FONT } from './styles.js';
+import { FONT, COLOR, FONT_MONO } from './styles.js';
 
 /**
  * Render the review list: pending requests, filter tabs, type toggles,
@@ -53,7 +53,7 @@ export function renderReviewList(list, tabContainer, sidebarEl, state, callbacks
     hint.setAttribute(ATTR, 'hint');
     hint.textContent = 'Click an element or shift+drag to annotate';
     Object.assign(hint.style, {
-      padding: '16px 12px', color: '#666', fontSize: '13px',
+      padding: '16px 12px', color: COLOR.muted, fontSize: '13px',
       textAlign: 'center', fontStyle: 'italic',
     });
     list.appendChild(hint);
@@ -68,8 +68,8 @@ export function renderReviewList(list, tabContainer, sidebarEl, state, callbacks
     const reqHeader = document.createElement('div');
     reqHeader.textContent = `${agentName} Requests (${pendingRequests.length})`;
     Object.assign(reqHeader.style, {
-      padding: '6px 12px', color: '#f59e0b', fontSize: '11px', fontWeight: '600',
-      borderBottom: '1px solid #2a2a3a', fontFamily: 'system-ui, sans-serif',
+      padding: '6px 12px', color: COLOR.warning, fontSize: '11px', fontWeight: '600',
+      borderBottom: `1px solid ${COLOR.borderLight}`, fontFamily: FONT,
     });
     list.appendChild(reqHeader);
 
@@ -94,7 +94,7 @@ export function renderReviewList(list, tabContainer, sidebarEl, state, callbacks
   if (visible.length === 0) {
     const empty = document.createElement('div');
     empty.textContent = activeFilter === 'resolved' ? 'No resolved items yet' : 'No open items';
-    Object.assign(empty.style, { padding: '16px 12px', color: '#666', fontSize: '12px', textAlign: 'center', fontStyle: 'italic' });
+    Object.assign(empty.style, { padding: '16px 12px', color: COLOR.muted, fontSize: '12px', textAlign: 'center', fontStyle: 'italic' });
     list.appendChild(empty);
   }
 
@@ -120,8 +120,8 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
       if (i < 3) {
         tab.textContent = counts[i];
         const isActive = activeFilter === keys[i];
-        tab.style.color = isActive ? '#a5b4fc' : '#666';
-        tab.style.borderBottom = isActive ? '2px solid #a5b4fc' : '2px solid transparent';
+        tab.style.color = isActive ? COLOR.primaryLight : COLOR.muted;
+        tab.style.borderBottom = isActive ? `2px solid ${COLOR.primaryLight}` : '2px solid transparent';
       }
     });
     // Update type filter toggle states
@@ -129,7 +129,7 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
     typeToggles.forEach((btn) => {
       const ft = btn.dataset.type;
       const isOn = activeTypeFilters.has(ft) || (ft === 'element' && activeTypeFilters.has('region'));
-      btn.style.background = isOn ? 'rgba(255,255,255,0.08)' : 'transparent';
+      btn.style.background = isOn ? COLOR.bgHoverSubtle : 'transparent';
       btn.style.opacity = isOn ? '1' : '0.5';
     });
     return;
@@ -138,9 +138,9 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
   // First render - create tab bar from scratch
   const tabBar = document.createElement('div');
   Object.assign(tabBar.style, {
-    display: 'flex', borderBottom: '1px solid #2a2a3a', flexShrink: '0',
+    display: 'flex', borderBottom: `1px solid ${COLOR.borderLight}`, flexShrink: '0',
   });
-  const tabStyle = { flex: '1', padding: '6px 0', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '11px', fontWeight: '600', fontFamily: 'system-ui, sans-serif', textAlign: 'center' };
+  const tabStyle = { flex: '1', padding: '6px 0', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '11px', fontWeight: '600', fontFamily: FONT, textAlign: 'center' };
   for (const { key, label } of [
     { key: 'open', label: `Open (${open.length})` },
     { key: 'resolved', label: `Resolved (${resolved.length})` },
@@ -149,7 +149,7 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
     const tab = document.createElement('button');
     tab.textContent = label;
     const isActive = activeFilter === key;
-    Object.assign(tab.style, { ...tabStyle, color: isActive ? '#a5b4fc' : '#666', borderBottom: isActive ? '2px solid #a5b4fc' : '2px solid transparent' });
+    Object.assign(tab.style, { ...tabStyle, color: isActive ? COLOR.primaryLight : COLOR.muted, borderBottom: isActive ? `2px solid ${COLOR.primaryLight}` : '2px solid transparent' });
     tab.addEventListener('click', () => { callbacks.onFilterChange(key); });
     tabBar.appendChild(tab);
   }
@@ -158,9 +158,9 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
 
   // Type filter toggles: [bug] [idea] [diagnostic] [note]
   const typeFilterRow = document.createElement('div');
-  Object.assign(typeFilterRow.style, { display: 'flex', gap: '2px', padding: '4px 8px', borderBottom: '1px solid #2a2a3a', justifyContent: 'flex-end' });
+  Object.assign(typeFilterRow.style, { display: 'flex', gap: '2px', padding: '4px 8px', borderBottom: `1px solid ${COLOR.borderLight}`, justifyContent: 'flex-end' });
   const filterTypes = [
-    { key: 'element', label: 'Bugs', color: '#9ca3af' },
+    { key: 'element', label: 'Bugs', color: COLOR.secondary },
     { key: 'idea', label: 'Ideas', color: '#eab308' },
     { key: 'diagnostic', label: 'Diagnostics', color: '#0d9488' },
     { key: 'page-note', label: 'Notes', color: '#0ea5e9' },
@@ -174,9 +174,9 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
     const isOn = activeTypeFilters.has(ft.key) || (ft.key === 'element' && activeTypeFilters.has('region'));
     Object.assign(btn.style, {
       border: 'none', borderRadius: '4px', padding: '3px 6px', cursor: 'pointer',
-      display: 'flex', alignItems: 'center', fontFamily: 'system-ui, sans-serif',
-      background: isOn ? 'rgba(255,255,255,0.08)' : 'transparent',
-      color: isOn ? ft.color : '#555', opacity: isOn ? '1' : '0.5',
+      display: 'flex', alignItems: 'center', fontFamily: FONT,
+      background: isOn ? COLOR.bgHoverSubtle : 'transparent',
+      color: isOn ? ft.color : COLOR.dim, opacity: isOn ? '1' : '0.5',
       transition: 'opacity 0.15s',
     });
     btn.addEventListener('click', () => { callbacks.onTypeFilterToggle(ft.key); });
@@ -187,14 +187,14 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
   // Trash icon - clear all annotations
   const trashBtn = document.createElement('button');
   trashBtn.setAttribute(ATTR, 'trash');
-  trashBtn.appendChild(trashIcon(12, '#666'));
+  trashBtn.appendChild(trashIcon(12, COLOR.muted));
   trashBtn.title = 'Clear all annotations';
   Object.assign(trashBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
     padding: '6px 8px', display: 'flex', alignItems: 'center', flexShrink: '0',
   });
-  trashBtn.addEventListener('mouseenter', () => { trashBtn.querySelector('svg')?.setAttribute('stroke', '#f87171'); });
-  trashBtn.addEventListener('mouseleave', () => { trashBtn.querySelector('svg')?.setAttribute('stroke', '#666'); });
+  trashBtn.addEventListener('mouseenter', () => { trashBtn.querySelector('svg')?.setAttribute('stroke', COLOR.errorLight); });
+  trashBtn.addEventListener('mouseleave', () => { trashBtn.querySelector('svg')?.setAttribute('stroke', COLOR.muted); });
   trashBtn.addEventListener('click', () => {
     if (!anns.length) return;
     showClearConfirmation(anns.length, callbacks);
@@ -220,34 +220,34 @@ function showClearConfirmation(count, callbacks) {
   });
   const card = document.createElement('div');
   Object.assign(card.style, {
-    background: '#1e1e2e', border: '1px solid #dc2626', borderRadius: '10px',
+    background: '#1e1e2e', border: `1px solid ${COLOR.error}`, borderRadius: '10px',
     padding: '16px', width: '220px', textAlign: 'center',
     fontFamily: 'system-ui, sans-serif', boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
   });
   const icon = document.createElement('div');
-  icon.appendChild(trashIcon(28, '#f87171'));
+  icon.appendChild(trashIcon(28, COLOR.errorLight));
   Object.assign(icon.style, { marginBottom: '8px' });
   const msg = document.createElement('div');
   msg.textContent = `Clear ${count} annotation${count > 1 ? 's' : ''}?`;
   Object.assign(msg.style, { color: '#e0e0e0', fontSize: '13px', fontWeight: '600', marginBottom: '4px' });
   const sub = document.createElement('div');
   sub.textContent = 'This cannot be undone.';
-  Object.assign(sub.style, { color: '#666', fontSize: '11px', marginBottom: '14px' });
+  Object.assign(sub.style, { color: COLOR.muted, fontSize: '11px', marginBottom: '14px' });
   const btnRow = document.createElement('div');
   Object.assign(btnRow.style, { display: 'flex', gap: '8px', justifyContent: 'center' });
   const cancelBtn = document.createElement('button');
   cancelBtn.textContent = 'Cancel';
   Object.assign(cancelBtn.style, {
-    flex: '1', padding: '6px', border: '1px solid #333', borderRadius: '6px',
-    background: 'transparent', color: '#9ca3af', fontSize: '12px',
-    cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+    flex: '1', padding: '6px', border: `1px solid ${COLOR.border}`, borderRadius: '6px',
+    background: 'transparent', color: COLOR.secondary, fontSize: '12px',
+    cursor: 'pointer', fontFamily: FONT,
   });
   const confirmBtn = document.createElement('button');
   confirmBtn.textContent = 'Clear All';
   Object.assign(confirmBtn.style, {
     flex: '1', padding: '6px', border: 'none', borderRadius: '6px',
-    background: '#dc2626', color: '#fff', fontSize: '12px', fontWeight: '600',
-    cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+    background: COLOR.error, color: COLOR.white, fontSize: '12px', fontWeight: '600',
+    cursor: 'pointer', fontFamily: FONT,
   });
   cancelBtn.addEventListener('click', () => overlay.remove());
   confirmBtn.addEventListener('click', () => { overlay.remove(); callbacks.onClear(); });
@@ -268,8 +268,8 @@ function showClearConfirmation(count, callbacks) {
 function createRequestEntry(req, callbacks) {
   const entry = document.createElement('div');
   Object.assign(entry.style, {
-    padding: '10px 12px', borderBottom: '1px solid #2a2a3a',
-    fontFamily: 'system-ui, sans-serif',
+    padding: '10px 12px', borderBottom: `1px solid ${COLOR.borderLight}`,
+    fontFamily: FONT,
   });
 
   const btnRow = document.createElement('div');
@@ -280,7 +280,7 @@ function createRequestEntry(req, callbacks) {
   capBtn.title = 'Capture now';
   Object.assign(capBtn.style, {
     padding: '5px', border: 'none', borderRadius: '6px',
-    background: '#f59e0b', color: '#000', display: 'flex', cursor: 'pointer',
+    background: COLOR.warning, color: '#000', display: 'flex', cursor: 'pointer',
   });
   capBtn.addEventListener('click', () => { callbacks.onRequestCapture(req, entry, capBtn); });
 
@@ -288,11 +288,11 @@ function createRequestEntry(req, callbacks) {
   decBtn.appendChild(closeIcon(16, 'currentColor'));
   decBtn.title = 'Decline capture request';
   Object.assign(decBtn.style, {
-    padding: '5px', border: '1px solid #333', borderRadius: '6px',
-    background: 'transparent', color: '#9ca3af', display: 'flex', cursor: 'pointer',
+    padding: '5px', border: `1px solid ${COLOR.border}`, borderRadius: '6px',
+    background: 'transparent', color: COLOR.secondary, display: 'flex', cursor: 'pointer',
   });
-  decBtn.addEventListener('mouseenter', () => { decBtn.style.color = '#f87171'; decBtn.style.borderColor = '#f87171'; });
-  decBtn.addEventListener('mouseleave', () => { decBtn.style.color = '#9ca3af'; decBtn.style.borderColor = '#333'; });
+  decBtn.addEventListener('mouseenter', () => { decBtn.style.color = COLOR.errorLight; decBtn.style.borderColor = COLOR.errorLight; });
+  decBtn.addEventListener('mouseleave', () => { decBtn.style.color = COLOR.secondary; decBtn.style.borderColor = COLOR.border; });
   decBtn.addEventListener('click', () => { callbacks.onRequestDecline(req, entry); });
   btnRow.append(capBtn, decBtn);
 
@@ -301,11 +301,11 @@ function createRequestEntry(req, callbacks) {
   Object.assign(topRow.style, { display: 'flex', alignItems: 'center', gap: '6px' });
   const label = document.createElement('span');
   label.textContent = PURPOSE_LABELS[req.purpose] || '\ud83d\udd14 Capture';
-  Object.assign(label.style, { fontSize: '11px', fontWeight: '600', color: '#f59e0b' });
+  Object.assign(label.style, { fontSize: '11px', fontWeight: '600', color: COLOR.warning });
   const urlText = document.createElement('span');
   urlText.textContent = req.url;
   Object.assign(urlText.style, {
-    fontSize: '11px', color: '#9ca3af', flex: '1',
+    fontSize: '11px', color: COLOR.secondary, flex: '1',
     whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden',
   });
   topRow.append(label, urlText, btnRow);
@@ -317,7 +317,7 @@ function createRequestEntry(req, callbacks) {
     Object.assign(guide.style, {
       color: '#e0e0e0', fontSize: '12px', lineHeight: '1.4',
       marginTop: '6px', padding: '6px 8px',
-      background: '#252536', borderRadius: '0', borderLeft: '3px solid #f59e0b',
+      background: '#252536', borderRadius: '0', borderLeft: `3px solid ${COLOR.warning}`,
     });
     entry.appendChild(guide);
   }
@@ -338,21 +338,21 @@ function createEntry(ann, callbacks) {
   entry.setAttribute(ATTR, 'entry');
   entry.tabIndex = 0;
   Object.assign(entry.style, {
-    padding: '8px 12px', borderBottom: '1px solid #2a2a3a',
+    padding: '8px 12px', borderBottom: `1px solid ${COLOR.borderLight}`,
     cursor: ann.resolved ? 'default' : 'pointer', display: 'flex', justifyContent: 'space-between',
     alignItems: 'center', transition: 'background 0.1s',
     opacity: ann.pending && !ann.resolved ? '0.7' : '1',
     outline: 'none',
   });
   entry.addEventListener('mouseenter', () => {
-    entry.style.background = '#2a2a4a';
+    entry.style.background = COLOR.bgHover;
     callbacks.onSpotlight(ann.id);
   });
   entry.addEventListener('mouseleave', () => {
     if (entry !== entry.ownerDocument.activeElement) entry.style.background = 'transparent';
     callbacks.onSpotlight(null);
   });
-  entry.addEventListener('focus', () => { entry.style.background = '#2a2a4a'; callbacks.onSpotlight(ann.id); });
+  entry.addEventListener('focus', () => { entry.style.background = COLOR.bgHover; callbacks.onSpotlight(ann.id); });
   entry.addEventListener('blur', () => { entry.style.background = 'transparent'; callbacks.onSpotlight(null); });
   entry.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !ann.resolved) { callbacks.onEntryClick(ann); }
@@ -362,7 +362,7 @@ function createEntry(ann, callbacks) {
 
   const label = document.createElement('span');
   Object.assign(label.style, {
-    color: ann.resolved ? '#666' : '#c8c8d0', overflow: 'hidden',
+    color: ann.resolved ? COLOR.muted : COLOR.text, overflow: 'hidden',
     flex: '1', display: 'flex', flexDirection: 'column', gap: '2px',
   });
 
@@ -386,9 +386,9 @@ function createEntry(ann, callbacks) {
   const numBadge = document.createElement('span');
   numBadge.textContent = `#${ann.id}`;
   Object.assign(numBadge.style, {
-    background: markerColor, color: '#fff', fontSize: '10px', fontWeight: '700',
+    background: markerColor, color: COLOR.white, fontSize: '10px', fontWeight: '700',
     padding: '1px 5px', borderRadius: '3px', marginRight: '3px',
-    fontFamily: 'system-ui, sans-serif', flexShrink: '0',
+    fontFamily: FONT, flexShrink: '0',
   });
   numBadge.title = `Annotation ${ann.id}`;
   line1.appendChild(numBadge);
@@ -398,8 +398,8 @@ function createEntry(ann, callbacks) {
     sevIcon.textContent = '!';
     Object.assign(sevIcon.style, {
       background: SEV_DOT_COLORS[ann.severity] || '#a855f7',
-      color: '#fff', fontSize: '10px', fontWeight: '900', marginRight: '4px', flexShrink: '0',
-      fontFamily: 'system-ui, sans-serif',
+      color: COLOR.white, fontSize: '10px', fontWeight: '900', marginRight: '4px', flexShrink: '0',
+      fontFamily: FONT,
       padding: '1px 4px', borderRadius: '3px',
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
     });
@@ -415,9 +415,9 @@ function createEntry(ann, callbacks) {
     const elBadge = document.createElement('span');
     elBadge.textContent = ann.ancestor;
     Object.assign(elBadge.style, {
-      background: '#2a2a4a', color: '#93c5fd', fontSize: '10px', fontWeight: '500',
+      background: COLOR.bgHover, color: '#93c5fd', fontSize: '10px', fontWeight: '500',
       padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
-      fontFamily: 'SF Mono, Cascadia Code, monospace', flexShrink: '0',
+      fontFamily: FONT_MONO, flexShrink: '0',
     });
     line1.appendChild(elBadge);
   }
@@ -446,7 +446,7 @@ function createEntry(ann, callbacks) {
     const chevron = document.createElement('span');
     chevron.textContent = '\u25b8';
     Object.assign(chevron.style, {
-      color: '#555', fontSize: '9px', cursor: 'pointer', flexShrink: '0',
+      color: COLOR.dim, fontSize: '9px', cursor: 'pointer', flexShrink: '0',
       marginLeft: '4px', transition: 'transform 0.15s', userSelect: 'none',
     });
     chevron.title = 'Expand comment';
@@ -470,16 +470,16 @@ function createEntry(ann, callbacks) {
     const summary = ann.resolution.summary || '';
     resLine.textContent = `\u2713 ${action} by ${by}${summary ? ': ' + summary.slice(0, 60) : ''}`;
     Object.assign(resLine.style, {
-      color: '#4ade80', fontSize: '10px', marginTop: '2px',
-      fontFamily: 'system-ui, sans-serif',
+      color: COLOR.success, fontSize: '10px', marginTop: '2px',
+      fontFamily: FONT,
     });
     label.appendChild(resLine);
   } else if (ann.pending) {
     const pendLine = document.createElement('div');
     pendLine.textContent = '\u23F3 Sent to agent - waiting for fix...';
     Object.assign(pendLine.style, {
-      color: '#f59e0b', fontSize: '10px', marginTop: '2px',
-      fontFamily: 'system-ui, sans-serif',
+      color: COLOR.warning, fontSize: '10px', marginTop: '2px',
+      fontFamily: FONT,
     });
     label.appendChild(pendLine);
   }
@@ -490,13 +490,13 @@ function createEntry(ann, callbacks) {
 
   if (ann.resolved) {
     const check = document.createElement('span');
-    check.appendChild(checkIcon(12, '#4ade80'));
+    check.appendChild(checkIcon(12, COLOR.success));
     Object.assign(check.style, { padding: '2px', flexShrink: '0' });
     entry.append(label, check);
   } else {
     const resolveBtn = document.createElement('button');
     resolveBtn.setAttribute(ATTR, 'btn');
-    resolveBtn.appendChild(circleIcon(12, '#666'));
+    resolveBtn.appendChild(circleIcon(12, COLOR.muted));
     resolveBtn.title = 'Mark resolved';
     Object.assign(resolveBtn.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', flexShrink: '0' });
     resolveBtn.addEventListener('click', (e) => {
@@ -506,7 +506,7 @@ function createEntry(ann, callbacks) {
 
     const del = document.createElement('button');
     del.setAttribute(ATTR, 'btn');
-    del.appendChild(closeIcon(12, '#666'));
+    del.appendChild(closeIcon(12, COLOR.muted));
     Object.assign(del.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', flexShrink: '0' });
     del.addEventListener('click', (e) => { e.stopPropagation(); callbacks.onRemove(ann.id); });
 

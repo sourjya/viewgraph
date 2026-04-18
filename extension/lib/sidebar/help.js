@@ -8,6 +8,7 @@
  */
 
 import { ATTR } from '#lib/selector.js';
+import { COLOR, FONT } from './styles.js';
 
 /**
  * Create the help card element with shortcuts and links.
@@ -17,16 +18,16 @@ export function createHelpCard() {
   const helpCard = document.createElement('div');
   helpCard.setAttribute(ATTR, 'help-card');
   Object.assign(helpCard.style, {
-    display: 'none', background: '#1a1a2e', borderBottom: '1px solid #333',
-    padding: '14px 12px', fontSize: '12px', fontFamily: 'system-ui, sans-serif',
-    color: '#c8c8d0', flexShrink: '0', overflow: 'hidden',
+    display: 'none', background: COLOR.bgDark, borderBottom: `1px solid ${COLOR.border}`,
+    padding: '14px 12px', fontSize: '12px', fontFamily: FONT,
+    color: COLOR.text, flexShrink: '0', overflow: 'hidden',
     transition: 'max-height 0.2s ease', maxHeight: '0',
   });
 
   // Title
   const title = document.createElement('div');
   title.textContent = 'Keyboard Shortcuts';
-  Object.assign(title.style, { fontWeight: '700', fontSize: '13px', color: '#a5b4fc', marginBottom: '10px' });
+  Object.assign(title.style, { fontWeight: '700', fontSize: '13px', color: COLOR.primaryLight, marginBottom: '10px' });
   helpCard.appendChild(title);
 
   // Shortcuts with keycap styling
@@ -46,7 +47,7 @@ export function createHelpCard() {
     k.textContent = text;
     Object.assign(k.style, {
       display: 'inline-block', padding: '2px 6px', borderRadius: '4px',
-      border: '1px solid #555', background: '#2a2a3a', color: '#e2e8f0',
+      border: `1px solid ${COLOR.dim}`, background: COLOR.borderLight, color: '#e2e8f0',
       fontFamily: 'monospace', fontSize: '11px', fontWeight: '600',
       lineHeight: '1.4', minWidth: '20px', textAlign: 'center',
     });
@@ -65,13 +66,13 @@ export function createHelpCard() {
       if (i < keys.length - 1) {
         const plus = document.createElement('span');
         plus.textContent = '+';
-        Object.assign(plus.style, { color: '#666', fontSize: '10px' });
+        Object.assign(plus.style, { color: COLOR.muted, fontSize: '10px' });
         keyCell.appendChild(plus);
       }
     }
     const d = document.createElement('span');
     d.textContent = desc;
-    Object.assign(d.style, { color: '#9ca3af', fontSize: '12px' });
+    Object.assign(d.style, { color: COLOR.secondary, fontSize: '12px' });
     table.append(keyCell, d);
   }
   helpCard.appendChild(table);
@@ -92,7 +93,7 @@ export function createHelpCard() {
     a.href = url;
     a.target = '_blank';
     a.rel = 'noopener';
-    Object.assign(a.style, { color: '#6366f1', fontSize: '11px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' });
+    Object.assign(a.style, { color: COLOR.primary, fontSize: '11px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' });
     const ico = document.createElement('span');
     ico.innerHTML = iconSvg;
     Object.assign(ico.style, { display: 'inline-flex', flexShrink: '0' });
@@ -110,7 +111,7 @@ export function createHelpCard() {
   versionEl.setAttribute(ATTR, 'help-version');
   Object.assign(versionEl.style, {
     marginTop: '12px', padding: '6px 8px', borderRadius: '4px',
-    background: '#16161e', fontSize: '11px', color: '#9ca3af', fontFamily: 'monospace',
+    background: COLOR.bgCard, fontSize: '11px', color: COLOR.secondary, fontFamily: 'monospace',
   });
   helpCard.appendChild(versionEl);
 
@@ -132,7 +133,7 @@ export function createHelpCard() {
     isVisible() { return visible; },
     setVersion(text, warn) {
       versionEl.textContent = text;
-      if (warn) { versionEl.style.color = '#f59e0b'; versionEl.style.background = '#451a03'; }
+      if (warn) { versionEl.style.color = COLOR.warning; versionEl.style.background = '#451a03'; }
     },
   };
 }

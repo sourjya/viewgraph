@@ -40,6 +40,7 @@ import { createFooter } from './sidebar/footer.js';
 import { createModeBar, MODE_ICONS, MODE_HINTS } from './sidebar/mode-bar.js';
 import { showTrustGate } from './sidebar/trust-gate.js';
 import { sendIcon, checkIcon } from './sidebar/icons.js';
+import { COLOR } from './sidebar/styles.js';
 import { KEYS, set as storageSet } from './storage.js';
 import { discoverServer, getAgentName, classifyTrust } from './constants.js';
 import * as transport from './transport.js';
@@ -79,7 +80,7 @@ export function create() {
     position: 'fixed', top: '60px', right: '0', zIndex: '2147483646',
     width: '300px', height: 'calc(100vh - 120px)',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
-    background: '#1e1e2e', borderLeft: '1px solid #333', borderRadius: '8px 0 0 8px',
+    background: '#1e1e2e', borderLeft: `1px solid ${COLOR.border}`, borderRadius: '8px 0 0 8px',
     fontFamily: 'system-ui, sans-serif', fontSize: '14px',
     boxShadow: '-2px 0 12px rgba(0,0,0,0.3)', transition: 'transform 0.2s',
     boxSizing: 'border-box', color: '#e0e0e0',
@@ -99,7 +100,7 @@ export function create() {
       // Guard: sidebar may have been destroyed while discovery was in flight
       if (!_header) return;
       if (url) {
-        _header.statusDot.style.background = '#4ade80';
+        _header.statusDot.style.background = COLOR.success;
         _header.statusDot.title = `MCP server: ${url}`;
         _header.statusBanner.style.display = 'none';
         try {
@@ -114,7 +115,7 @@ export function create() {
             link.target = '_blank';
             link.rel = 'noopener';
             link.textContent = 'Update extension';
-            Object.assign(link.style, { color: '#818cf8', textDecoration: 'underline' });
+            Object.assign(link.style, { color: COLOR.primaryHover, textDecoration: 'underline' });
             _header.statusBanner.appendChild(link);
             _header.statusBanner.style.display = 'block';
           }
@@ -123,7 +124,7 @@ export function create() {
           _header.setTrustLevel(trust);
         } catch (e) { console.error('[ViewGraph] info/trust error:', e); }
       } else {
-        _header.statusDot.style.background = '#f87171';
+        _header.statusDot.style.background = COLOR.errorLight;
         _header.statusDot.title = 'MCP server offline';
         _header.statusBanner.textContent = 'No project connected. Copy MD and Report available.';
         _header.statusBanner.style.display = 'block';
@@ -214,7 +215,7 @@ export function create() {
   // ── Two-tab layout: Review | Inspect ──
   const primaryTabs = document.createElement('div');
   primaryTabs.setAttribute(ATTR, 'primary-tabs');
-  Object.assign(primaryTabs.style, { display: 'flex', borderBottom: '1px solid #333', flexShrink: '0' });
+  Object.assign(primaryTabs.style, { display: 'flex', borderBottom: `1px solid ${COLOR.border}`, flexShrink: '0' });
 
   const reviewContent = document.createElement('div');
   reviewContent.setAttribute(ATTR, 'review-content');
@@ -230,8 +231,8 @@ export function create() {
     if (tab === 'inspect') inspect.refresh();
     for (const btn of primaryTabs.children) {
       const isActive = btn.dataset.tab === tab;
-      btn.style.color = isActive ? '#a5b4fc' : '#666';
-      btn.style.borderBottom = isActive ? '2px solid #a5b4fc' : '2px solid transparent';
+      btn.style.color = isActive ? COLOR.primaryLight : COLOR.muted;
+      btn.style.borderBottom = isActive ? `2px solid ${COLOR.primaryLight}` : '2px solid transparent';
     }
   }
 
@@ -244,8 +245,8 @@ export function create() {
       flex: '1', padding: '8px 0', border: 'none', background: 'transparent',
       cursor: 'pointer', fontSize: '12px', fontWeight: '600',
       fontFamily: 'system-ui, sans-serif', textAlign: 'center',
-      color: key === 'review' ? '#a5b4fc' : '#666',
-      borderBottom: key === 'review' ? '2px solid #a5b4fc' : '2px solid transparent',
+      color: key === 'review' ? COLOR.primaryLight : COLOR.muted,
+      borderBottom: key === 'review' ? `2px solid ${COLOR.primaryLight}` : '2px solid transparent',
       transition: 'color 0.15s',
     });
     btn.addEventListener('click', () => switchTab(key));
@@ -278,7 +279,7 @@ export function create() {
       if (audit.testids) parts.push(`${audit.testids} testids`);
       badge.textContent = parts.length ? `Auto-audit: ${parts.join(', ')}` : 'Auto-audit: no issues found';
       badge.style.display = 'block';
-      badge.style.color = audit.total > 0 ? '#f59e0b' : '#4ade80';
+      badge.style.color = audit.total > 0 ? COLOR.warning : COLOR.success;
     }
   });
 
@@ -380,7 +381,7 @@ export function collapse() {
     const toast = document.createElement('div');
     Object.assign(toast.style, {
       position: 'fixed', bottom: '20px', right: '50px', zIndex: '2147483647',
-      background: '#1e1e2e', color: '#a5b4fc', border: '1px solid #333',
+      background: '#1e1e2e', color: COLOR.primaryLight, border: `1px solid ${COLOR.border}`,
       borderRadius: '8px', padding: '8px 14px', fontSize: '12px',
       fontFamily: 'system-ui, sans-serif', boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
       opacity: '0', transition: 'opacity 0.3s',
@@ -468,7 +469,7 @@ export function refresh() {
           entry.style.transition = 'background 0.3s, opacity 0.5s';
           entry.style.background = 'rgba(74, 222, 128, 0.15)';
           capBtn.textContent = '\u2713';
-          capBtn.style.background = '#4ade80';
+          capBtn.style.background = COLOR.success;
           setTimeout(() => {
             entry.style.opacity = '0';
             setTimeout(() => {

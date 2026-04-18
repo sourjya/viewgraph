@@ -12,6 +12,7 @@ import { updateComment, updateSeverity, updateCategory, removeAnnotation, MARKER
 import { diagnoseElement } from './ui/element-diagnostics.js';
 
 import { ATTR } from './selector.js';
+import { COLOR, FONT } from './sidebar/styles.js';
 let panelEl = null;
 let currentId = null;
 let onCommentChange = null;
@@ -46,7 +47,7 @@ export async function show(annotation, callbacks = {}) {
 
   const title = document.createElement('span');
   title.textContent = `#${annotation.id}`;
-  Object.assign(title.style, { color: '#a5b4fc', fontSize: '13px', fontWeight: '600', flex: '1' });
+  Object.assign(title.style, { color: COLOR.primaryLight, fontSize: '13px', fontWeight: '600', flex: '1' });
 
   const deleteBtn = makeHeaderBtn(
     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>',
@@ -71,7 +72,7 @@ export async function show(annotation, callbacks = {}) {
     annotation.category = updated.join(',');
     updateCategory(annotation.id, annotation.category);
     // Update button visual
-    ideaBtn.querySelector('svg').setAttribute('stroke', updated.includes('idea') ? '#eab308' : '#9ca3af');
+    ideaBtn.querySelector('svg').setAttribute('stroke', updated.includes('idea') ? '#eab308' : COLOR.secondary);
     ideaBtn.style.background = updated.includes('idea') ? 'rgba(234,179,8,0.15)' : 'transparent';
     // Re-render category chips and panel tint
     renderCategoryChips();
@@ -88,8 +89,8 @@ export async function show(annotation, callbacks = {}) {
 
   /** Chip colors by type. */
   const CHIP_COLORS = {
-    critical: '#dc2626', major: '#f59e0b', minor: '#6b7280',
-    visual: '#6366f1', functional: '#0ea5e9', content: '#8b5cf6',
+    critical: COLOR.error, major: COLOR.warning, minor: '#6b7280',
+    visual: COLOR.primary, functional: '#0ea5e9', content: '#8b5cf6',
     a11y: '#10b981', performance: '#f97316', idea: '#eab308',
   };
 
@@ -105,7 +106,7 @@ export async function show(annotation, callbacks = {}) {
     function renderChip(val) {
       wrapper.replaceChildren();
       const chip = document.createElement('span');
-      const chipColor = CHIP_COLORS[val] || '#555';
+      const chipColor = CHIP_COLORS[val] || COLOR.dim;
       Object.assign(chip.style, {
         display: 'inline-flex', alignItems: 'center', gap: '4px',
         padding: '2px 8px', borderRadius: '12px', fontSize: '11px',
@@ -126,9 +127,9 @@ export async function show(annotation, callbacks = {}) {
       wrapper.replaceChildren();
       const sel = document.createElement('select');
       Object.assign(sel.style, {
-        padding: '2px 6px', background: '#16161e', border: '1px solid #333',
+        padding: '2px 6px', background: COLOR.bgCard, border: `1px solid ${COLOR.border}`,
         borderRadius: '4px', color: '#e0e0e0', fontSize: '11px', height: '24px',
-        fontFamily: 'system-ui, sans-serif', outline: 'none', cursor: 'pointer',
+        fontFamily: FONT, outline: 'none', cursor: 'pointer',
         boxSizing: 'border-box',
       });
       for (const { value, label: optLabel } of [{ value: '', label: `${label}...` }, ...options]) {
@@ -196,8 +197,8 @@ export async function show(annotation, callbacks = {}) {
       Object.assign(chip.style, {
         display: 'inline-flex', alignItems: 'center', gap: '3px',
         padding: '2px 8px', borderRadius: '12px', fontSize: '11px',
-        fontFamily: 'system-ui, sans-serif', color: '#fff', cursor: 'default',
-        background: CHIP_COLORS[val] || '#555',
+        fontFamily: FONT, color: COLOR.white, cursor: 'default',
+        background: CHIP_COLORS[val] || COLOR.dim,
       });
       const text = document.createElement('span');
       text.textContent = CAT_OPTIONS.find((o) => o.value === val)?.label || val;
@@ -221,9 +222,9 @@ export async function show(annotation, callbacks = {}) {
     if (remaining.length > 0) {
       const sel = document.createElement('select');
       Object.assign(sel.style, {
-        padding: '2px 6px', background: '#16161e', border: '1px solid #333',
+        padding: '2px 6px', background: COLOR.bgCard, border: `1px solid ${COLOR.border}`,
         borderRadius: '4px', color: '#e0e0e0', fontSize: '11px', height: '24px',
-        fontFamily: 'system-ui, sans-serif', outline: 'none', cursor: 'pointer',
+        fontFamily: FONT, outline: 'none', cursor: 'pointer',
         boxSizing: 'border-box',
       });
       const placeholder = document.createElement('option');
@@ -257,16 +258,16 @@ export async function show(annotation, callbacks = {}) {
   textarea.placeholder = 'What should this look like?\ne.g. "font should be 14px" or "label should say Email Address"';
   Object.assign(textarea.style, {
     width: '100%', minHeight: '90px', padding: '6px 8px',
-    background: '#16161e', border: '1px solid #333', borderRadius: '4px',
-    color: '#e0e0e0', fontSize: '13px', fontFamily: 'system-ui, sans-serif',
+    background: COLOR.bgCard, border: `1px solid ${COLOR.border}`, borderRadius: '4px',
+    color: '#e0e0e0', fontSize: '13px', fontFamily: FONT,
     resize: 'vertical', outline: 'none', boxSizing: 'border-box',
   });
   textarea.addEventListener('input', () => {
     updateComment(annotation.id, textarea.value);
     if (onCommentChange) onCommentChange(annotation.id, textarea.value);
   });
-  textarea.addEventListener('focus', () => { textarea.style.borderColor = '#6366f1'; });
-  textarea.addEventListener('blur', () => { textarea.style.borderColor = '#333'; });
+  textarea.addEventListener('focus', () => { textarea.style.borderColor = COLOR.primary; });
+  textarea.addEventListener('blur', () => { textarea.style.borderColor = COLOR.border; });
 
   panelEl.append(header, chipRow, textarea);
 
@@ -274,7 +275,7 @@ export async function show(annotation, callbacks = {}) {
   if (annotation.diagnostic?.data) {
     const attachRow = document.createElement('div');
     attachRow.setAttribute(ATTR, 'diagnostic-attach');
-    Object.assign(attachRow.style, { marginTop: '4px', borderTop: '1px solid #333', paddingTop: '4px' });
+    Object.assign(attachRow.style, { marginTop: '4px', borderTop: `1px solid ${COLOR.border}`, paddingTop: '4px' });
 
     const attachHeader = document.createElement('div');
     Object.assign(attachHeader.style, { display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' });
@@ -292,7 +293,7 @@ export async function show(annotation, callbacks = {}) {
       background: '#0d1117', borderRadius: '4px', fontSize: '10px',
       color: '#8b949e', fontFamily: 'monospace', maxHeight: '80px',
       overflowY: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-all',
-      scrollbarWidth: 'thin', scrollbarColor: '#2a2a3a transparent',
+      scrollbarWidth: 'thin', scrollbarColor: `${COLOR.borderLight} transparent`,
     });
     attachBody.textContent = annotation.diagnostic.data;
 
@@ -323,10 +324,10 @@ export async function show(annotation, callbacks = {}) {
         if (hints.length > 0) {
           const hintsDiv = document.createElement('div');
           hintsDiv.setAttribute(ATTR, 'suggestions');
-          Object.assign(hintsDiv.style, { marginTop: '6px', borderTop: '1px solid #333', paddingTop: '6px', display: 'flex', flexWrap: 'wrap', gap: '4px' });
+          Object.assign(hintsDiv.style, { marginTop: '6px', borderTop: `1px solid ${COLOR.border}`, paddingTop: '6px', display: 'flex', flexWrap: 'wrap', gap: '4px' });
           const label = document.createElement('div');
           label.textContent = 'Suggestions';
-          Object.assign(label.style, { width: '100%', fontSize: '10px', color: '#666', marginBottom: '2px', fontFamily: 'system-ui, sans-serif' });
+          Object.assign(label.style, { width: '100%', fontSize: '10px', color: COLOR.muted, marginBottom: '2px', fontFamily: FONT });
           hintsDiv.appendChild(label);
           for (const hint of hints) {
             const chip = document.createElement('button');
@@ -337,8 +338,8 @@ export async function show(annotation, callbacks = {}) {
               fontSize: '10px', padding: '3px 8px', borderRadius: '12px',
               border: `1px solid ${isWarning ? '#92400e' : '#374151'}`,
               background: isWarning ? '#451a03' : '#1f2937',
-              color: isWarning ? '#fbbf24' : '#9ca3af',
-              cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+              color: isWarning ? COLOR.warningLight : COLOR.secondary,
+              cursor: 'pointer', fontFamily: FONT,
               transition: 'background 0.1s',
             });
             chip.addEventListener('mouseenter', () => { chip.style.background = isWarning ? '#78350f' : '#374151'; });

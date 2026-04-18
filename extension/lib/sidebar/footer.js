@@ -15,6 +15,7 @@
 
 import { ATTR } from '#lib/selector.js';
 import { sendIcon, checkIcon, docIcon, downloadIcon, gearIcon } from '#lib/sidebar/icons.js';
+import { COLOR, FONT } from './styles.js';
 import { formatMarkdown } from '#lib/export/export-markdown.js';
 import { getAnnotations } from '#lib/annotate.js';
 import { collectNetworkState } from '#lib/collectors/network-collector.js';
@@ -28,8 +29,8 @@ import { collectComponents } from '#lib/collectors/component-collector.js';
 
 const BTN_STYLE = {
   padding: '7px 4px', border: 'none', borderRadius: '6px',
-  color: '#fff', fontSize: '11px', fontWeight: '600', cursor: 'pointer',
-  fontFamily: 'system-ui, sans-serif', transition: 'background 0.12s',
+  color: COLOR.white, fontSize: '11px', fontWeight: '600', cursor: 'pointer',
+  fontFamily: FONT, transition: 'background 0.12s',
   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
 };
 
@@ -44,23 +45,23 @@ const BTN_STYLE = {
 export function createFooter({ onSend, onShowSettings }) {
   const footer = document.createElement('div');
   footer.setAttribute(ATTR, 'footer');
-  Object.assign(footer.style, { borderTop: '1px solid #2a2a3a', padding: '6px 8px', flexShrink: '0' });
+  Object.assign(footer.style, { borderTop: `1px solid ${COLOR.borderLight}`, padding: '6px 8px', flexShrink: '0' });
 
   // Send to Agent (primary)
   const sendBtn = document.createElement('button');
   sendBtn.setAttribute(ATTR, 'send');
   sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent'));
-  Object.assign(sendBtn.style, { ...BTN_STYLE, background: '#6366f1', width: '100%', padding: '9px 4px', marginBottom: '4px' });
+  Object.assign(sendBtn.style, { ...BTN_STYLE, background: COLOR.primary, width: '100%', padding: '9px 4px', marginBottom: '4px' });
   sendBtn.title = 'Send annotations to your AI coding agent via MCP';
   sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#5558e6'; });
-  sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = '#6366f1'; });
+  sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = COLOR.primary; });
   sendBtn.addEventListener('click', onSend);
 
   // Copy Markdown
   const copyBtn = document.createElement('button');
   copyBtn.setAttribute(ATTR, 'copy-md');
   copyBtn.replaceChildren(docIcon(14), document.createTextNode('Copy MD'));
-  Object.assign(copyBtn.style, { ...BTN_STYLE, background: 'transparent', color: '#9ca3af', flex: '1', border: '1px solid #333' });
+  Object.assign(copyBtn.style, { ...BTN_STYLE, background: 'transparent', color: COLOR.secondary, flex: '1', border: `1px solid ${COLOR.border}` });
   copyBtn.title = 'Copy as Markdown';
   copyBtn.addEventListener('mouseenter', () => { copyBtn.style.background = 'rgba(255,255,255,0.05)'; });
   copyBtn.addEventListener('mouseleave', () => { copyBtn.style.background = 'transparent'; });
@@ -77,7 +78,7 @@ export function createFooter({ onSend, onShowSettings }) {
   const dlBtn = document.createElement('button');
   dlBtn.setAttribute(ATTR, 'download');
   dlBtn.replaceChildren(downloadIcon(14), document.createTextNode('Report'));
-  Object.assign(dlBtn.style, { ...BTN_STYLE, background: 'transparent', color: '#9ca3af', flex: '1', border: '1px solid #333' });
+  Object.assign(dlBtn.style, { ...BTN_STYLE, background: 'transparent', color: COLOR.secondary, flex: '1', border: `1px solid ${COLOR.border}` });
   dlBtn.title = 'Download Report (Markdown + Screenshots)';
   dlBtn.addEventListener('mouseenter', () => { dlBtn.style.background = 'rgba(255,255,255,0.05)'; });
   dlBtn.addEventListener('mouseleave', () => { dlBtn.style.background = 'transparent'; });
@@ -97,12 +98,12 @@ export function createFooter({ onSend, onShowSettings }) {
   settingsLink.replaceChildren(gearIcon(12), document.createTextNode(' Settings'));
   Object.assign(settingsLink.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
-    color: '#666', fontSize: '11px', fontFamily: 'system-ui, sans-serif',
+    color: COLOR.muted, fontSize: '11px', fontFamily: FONT,
     padding: '6px 0', display: 'flex', alignItems: 'center', gap: '5px',
     width: '100%', justifyContent: 'center', marginTop: '4px',
   });
-  settingsLink.addEventListener('mouseenter', () => { settingsLink.style.color = '#9ca3af'; });
-  settingsLink.addEventListener('mouseleave', () => { settingsLink.style.color = '#555'; });
+  settingsLink.addEventListener('mouseenter', () => { settingsLink.style.color = COLOR.secondary; });
+  settingsLink.addEventListener('mouseleave', () => { settingsLink.style.color = COLOR.dim; });
   settingsLink.addEventListener('click', onShowSettings);
 
   footer.append(sendBtn, secondaryRow, settingsLink);
@@ -120,8 +121,8 @@ export function createFooter({ onSend, onShowSettings }) {
    */
   function setOfflineMode() {
     sendBtn.style.display = 'none';
-    Object.assign(copyBtn.style, { background: '#6366f1', color: '#fff', border: 'none', flex: '1' });
-    Object.assign(dlBtn.style, { background: '#374151', color: '#fff', border: 'none', flex: '1' });
+    Object.assign(copyBtn.style, { background: COLOR.primary, color: COLOR.white, border: 'none', flex: '1' });
+    Object.assign(dlBtn.style, { background: '#374151', color: COLOR.white, border: 'none', flex: '1' });
   }
 
   /**
@@ -143,7 +144,7 @@ export function createFooter({ onSend, onShowSettings }) {
   function flashSend() {
     sendBtn.replaceChildren(checkIcon(14), document.createTextNode('Sent!'));
     sendBtn.style.background = '#059669';
-    setTimeout(() => { sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent')); sendBtn.style.background = '#6366f1'; }, 2000);
+    setTimeout(() => { sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent')); sendBtn.style.background = COLOR.primary; }, 2000);
   }
 
   return { element: footer, sendBtn, copyBtn, dlBtn, setOfflineMode, updateDisabledState, flashSend };

@@ -17,6 +17,7 @@ import { copyIcon, checkIcon, noteIcon } from './icons.js';
 import { renderDiagnostics } from './diagnostics.js';
 import { renderToggles } from './toggles.js';
 import { renderCaptures } from './captures.js';
+import { COLOR, FONT, LABEL_STYLE } from './styles.js';
 
 /**
  * Create the inspect tab content element and its refresh function.
@@ -29,7 +30,7 @@ export function createInspectTab(callbacks = {}) {
   Object.assign(el.style, {
     display: 'none', flexDirection: 'column', flex: '1', minHeight: '0',
     overflowY: 'auto', padding: '8px 12px', gap: '12px',
-    fontSize: '12px', fontFamily: 'system-ui, sans-serif', color: '#c8c8d0',
+    fontSize: '12px', fontFamily: FONT, color: COLOR.text,
   });
 
   return {
@@ -58,17 +59,17 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
   });
   const arrow = document.createElement('span');
   arrow.textContent = '\u25b6';
-  Object.assign(arrow.style, { fontSize: '8px', color: '#666', transition: 'transform 0.15s' });
+  Object.assign(arrow.style, { fontSize: '8px', color: COLOR.muted, transition: 'transform 0.15s' });
   const label = document.createElement('span');
   label.textContent = title;
-  Object.assign(label.style, { fontWeight: '600', fontSize: '11px', color: '#9ca3af', flex: '1', textTransform: 'uppercase', letterSpacing: '0.5px' });
+  Object.assign(label.style, { ...LABEL_STYLE, flex: '1' });
   headerRow.append(arrow, label);
   if (badgeText) {
     const badge = document.createElement('span');
     badge.textContent = badgeText;
     Object.assign(badge.style, {
       fontSize: '10px', fontWeight: '600', padding: '1px 6px', borderRadius: '8px',
-      background: badgeColor || '#333', color: '#fff',
+      background: badgeColor || COLOR.border, color: COLOR.white,
     });
     headerRow.appendChild(badge);
   }
@@ -80,22 +81,22 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
   copyBtn.appendChild(copyIcon(12));
   copyBtn.title = `Copy ${title} data`;
   Object.assign(copyBtn.style, {
-    border: 'none', background: 'transparent', cursor: 'pointer', color: '#555',
+    border: 'none', background: 'transparent', cursor: 'pointer', color: COLOR.dim,
     padding: '2px', borderRadius: '3px', display: 'flex', flexShrink: '0',
   });
-  copyBtn.addEventListener('mouseenter', () => { copyBtn.style.color = '#a5b4fc'; });
-  copyBtn.addEventListener('mouseleave', () => { if (copyBtn.dataset.copied !== 'true') copyBtn.style.color = '#555'; });
+  copyBtn.addEventListener('mouseenter', () => { copyBtn.style.color = COLOR.primaryLight; });
+  copyBtn.addEventListener('mouseleave', () => { if (copyBtn.dataset.copied !== 'true') copyBtn.style.color = COLOR.dim; });
   copyBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     const text = `${title}:\n${body.textContent.trim()}`;
     navigator.clipboard.writeText(text).then(() => {
       copyBtn.dataset.copied = 'true';
-      copyBtn.replaceChildren(checkIcon(12, '#4ade80'));
-      copyBtn.style.color = '#4ade80';
+      copyBtn.replaceChildren(checkIcon(12, COLOR.success));
+      copyBtn.style.color = COLOR.success;
       setTimeout(() => {
         copyBtn.dataset.copied = 'false';
         copyBtn.replaceChildren(copyIcon(12));
-        copyBtn.style.color = '#555';
+        copyBtn.style.color = COLOR.dim;
       }, 1500);
     }).catch(() => {});
   });
@@ -110,16 +111,16 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
   const alreadyNoted = getAnnotations().some((a) => a.diagnostic?.section === title);
   Object.assign(noteBtn.style, {
     border: 'none', background: 'transparent', cursor: alreadyNoted ? 'default' : 'pointer',
-    color: alreadyNoted ? '#4ade80' : '#6366f1',
+    color: alreadyNoted ? COLOR.success : COLOR.primary,
     padding: '2px', borderRadius: '3px', display: 'flex', flexShrink: '0',
     opacity: alreadyNoted ? '0.4' : '1', pointerEvents: alreadyNoted ? 'none' : 'auto',
   });
   if (alreadyNoted) {
-    noteBtn.replaceChildren(checkIcon(12, '#4ade80'));
+    noteBtn.replaceChildren(checkIcon(12, COLOR.success));
     noteBtn.title = 'Note added';
   }
-  noteBtn.addEventListener('mouseenter', () => { noteBtn.style.color = '#818cf8'; });
-  noteBtn.addEventListener('mouseleave', () => { if (noteBtn.dataset.noted !== 'true') noteBtn.style.color = '#6366f1'; });
+  noteBtn.addEventListener('mouseenter', () => { noteBtn.style.color = COLOR.primaryHover; });
+  noteBtn.addEventListener('mouseleave', () => { if (noteBtn.dataset.noted !== 'true') noteBtn.style.color = COLOR.primary; });
   noteBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     const fullData = body.textContent.trim();
@@ -129,8 +130,8 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
       ann.diagnostic = { section: title, data: fullData };
       if (onRefresh) onRefresh();
       noteBtn.dataset.noted = 'true';
-      noteBtn.replaceChildren(checkIcon(12, '#4ade80'));
-      noteBtn.style.color = '#4ade80';
+      noteBtn.replaceChildren(checkIcon(12, COLOR.success));
+      noteBtn.style.color = COLOR.success;
       noteBtn.style.opacity = '0.4';
       noteBtn.style.pointerEvents = 'none';
       noteBtn.title = 'Note added';
