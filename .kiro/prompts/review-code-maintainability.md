@@ -38,6 +38,8 @@ Focus on identifying:
 28. Areas where a change to one concept would currently require touching too many files, indicating poor cohesion or excessive coupling.
 29. Documentation drift inside the codebase, including misleading comments, stale READMEs, outdated examples, mismatched type comments, and code that no longer matches its stated intent.
 30. Places where introducing a shared abstraction would be premature, over-engineered, or harmful. Explicitly call these out so the refactor plan stays pragmatic.
+31. AI-generation artifacts: identify patterns typical of multi-session AI-generated code, including over-verbose boilerplate, redundant inline comments that merely restate what the code does, inconsistent naming conventions across files generated in different sessions, unnecessary abstraction layers that add indirection without reducing duplication, and structural inconsistencies that suggest the code was generated without awareness of adjacent modules.
+32. Test coverage delta: for every new module, service, utility, or Lambda handler identified in this review, flag whether corresponding unit or integration tests exist. Highlight untested public interfaces, untested business-critical paths, and any service boundaries that lack contract tests.
 
 ## Explicit Gap-Finding Instructions
 
@@ -54,6 +56,8 @@ Use the following review behavior:
 * If you find one standardizable concern such as logging, auth, retries, caching, feature flags, or error handling, review the entire codebase for alternative implementations of the same concern.
 * If you find one duplicated frontend interaction pattern, inspect the rest of the UI for similar state, rendering, or network orchestration duplication.
 * If you find one test smell, determine whether it reflects a broader testing pattern or an isolated case.
+* If you find one AI-generation artifact (objective 31), scan all files generated in the same session or feature branch for the same pattern family.
+* If you find one untested module or interface (objective 32), audit the entire layer for consistent test coverage gaps rather than reporting it as an isolated omission.
 
 Treat the repository as a pattern landscape, not a collection of isolated issues.
 
@@ -85,6 +89,7 @@ Use this method while analyzing:
 * Flag where a shared abstraction is justified versus where duplication is acceptable due to differing domain intent.
 * When recommending consolidation, note the likely migration path and blast radius.
 * Highlight any findings that would require coordinated updates across multiple layers, such as schema, API, UI, and tests.
+* When reviewing AI-generated code, apply extra scrutiny to naming consistency, comment quality, and structural coherence across files - these are the most common failure modes of multi-session generation.
 
 ## Evidence Requirements
 
@@ -120,6 +125,7 @@ Provide:
 * The areas with the highest duplication or inconsistency
 * The most systemic cross-cutting patterns worth standardizing
 * The highest-confidence quick wins with low regression risk
+* A summary of AI-generation artifact findings and inter-session drift observed
 
 ### B. Findings Table
 
@@ -165,12 +171,13 @@ Group related findings into broader refactor themes, for example:
 * Shared frontend state patterns
 * Repository and query abstraction cleanup
 * Test utility consolidation
+* AI-generation drift remediation
 
 This section should help turn many granular findings into a smaller number of actionable workstreams.
 
 ### F. Do Not Miss List
 
-At the end, include a checklist of high-value areas you explicitly reviewed, even if no issue was found, such as:
+At the end, include a checklist of high-value areas you explicitly reviewed, even if no issue was found:
 
 * Constants and magic values
 * DTO and schema duplication
@@ -184,6 +191,10 @@ At the end, include a checklist of high-value areas you explicitly reviewed, eve
 * Config and environment access
 * Dependency duplication
 * Dead code and unused abstractions
+* AI-generation naming drift across sessions
+* Untested new modules and public interfaces
+* Redundant comments or documentation that restates obvious code behavior
+* Lambda handler structure and execution role hygiene (for AWS-based codebases)
 
 ## Quality Bar
 

@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Periodic Maintainability Review",
+  "description": "Reminds to run a maintainability review at feature completion and sprint boundaries",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/.kiro/specs/*/tasks.md"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A spec tasks file was edited. Check if all tasks are marked [x] (feature complete). If so:\n\n1. Read docs/reviews/ to find the last MRR number\n2. Recommend running: 'Run the maintainability review prompt: .kiro/prompts/review-code-maintainability.md'\n3. Reference the review-policy steering doc for output conventions\n\nOnly speak up if the spec appears complete (all tasks checked). Say nothing for partial updates."
+  }
+}
