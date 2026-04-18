@@ -1,7 +1,7 @@
 # Privacy Policy
 
 **ViewGraph Browser Extension**
-Last updated: April 13, 2026
+Last updated: April 19, 2026
 
 ## Summary
 
@@ -16,6 +16,8 @@ When you click the ViewGraph toolbar icon on a page, the extension reads:
 - Accessibility attributes (ARIA roles, labels)
 - Network request status (success/failure, not request bodies)
 - Console errors and warnings
+- Client-side storage keys and non-sensitive values (localStorage, sessionStorage, cookies). Values that look like tokens, passwords, or keys are automatically redacted and never captured.
+- CSS custom properties (variables defined on the page)
 - Your annotations (comments you type, severity, category)
 
 ## Where Data Goes
@@ -31,7 +33,7 @@ Browser extension -> localhost MCP server -> .viewgraph/captures/ on your disk
 
 - No personal information
 - No browsing history
-- No cookies or authentication tokens from visited pages
+- No cookies or authentication tokens from visited pages (storage keys are captured but sensitive values like tokens, passwords, and API keys are automatically redacted)
 - No request or response bodies
 - No data sent to external servers
 - No analytics or telemetry
