@@ -9,6 +9,7 @@
  */
 
 import { ATTR } from '#lib/selector.js';
+import { COLOR, FONT } from './styles.js';
 
 /** SVG icons for each capture mode (trusted internal strings). */
 export const MODE_ICONS = {
@@ -35,7 +36,7 @@ export function createModeBar({ onModeClick }) {
   modeBar.setAttribute(ATTR, 'mode-bar');
   Object.assign(modeBar.style, {
     display: 'flex', gap: '4px', padding: '6px 8px',
-    borderBottom: '1px solid #2a2a3a', flexShrink: '0',
+    borderBottom: `1px solid ${COLOR.borderLight}`, flexShrink: '0',
   });
 
   const buttons = {};
@@ -47,14 +48,14 @@ export function createModeBar({ onModeClick }) {
     Object.assign(labelSpan.style, { fontSize: '10px', marginTop: '2px' });
     labelSpan.textContent = key.charAt(0).toUpperCase() + key.slice(1);
     const hintSpan = document.createElement('span');
-    Object.assign(hintSpan.style, { fontSize: '9px', color: '#666', marginTop: '1px' });
+    Object.assign(hintSpan.style, { fontSize: '9px', color: COLOR.muted, marginTop: '1px' });
     hintSpan.textContent = MODE_HINTS[key];
     btn.append(labelSpan, hintSpan);
     Object.assign(btn.style, {
       flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center',
-      gap: '2px', padding: '6px 4px', border: '1px solid #333', borderRadius: '6px',
-      background: 'transparent', color: '#9ca3af', cursor: 'pointer',
-      fontSize: '11px', fontFamily: 'system-ui, sans-serif', transition: 'all 0.15s',
+      gap: '2px', padding: '6px 4px', border: `1px solid ${COLOR.border}`, borderRadius: '6px',
+      background: 'transparent', color: COLOR.secondary, cursor: 'pointer',
+      fontSize: '11px', fontFamily: FONT, transition: 'all 0.15s',
     });
     btn.addEventListener('click', () => onModeClick(key));
     buttons[key] = btn;
@@ -68,9 +69,9 @@ export function createModeBar({ onModeClick }) {
   function updateActive(currentMode) {
     for (const [key, btn] of Object.entries(buttons)) {
       const isActive = currentMode === key;
-      btn.style.background = isActive ? '#6366f1' : 'transparent';
-      btn.style.color = isActive ? '#fff' : '#9ca3af';
-      btn.style.borderColor = isActive ? '#6366f1' : '#333';
+      btn.style.background = isActive ? COLOR.primary : 'transparent';
+      btn.style.color = isActive ? COLOR.white : COLOR.secondary;
+      btn.style.borderColor = isActive ? COLOR.primary : COLOR.border;
     }
   }
 

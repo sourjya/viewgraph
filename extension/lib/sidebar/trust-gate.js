@@ -16,6 +16,7 @@
 import { ATTR } from '#lib/selector.js';
 import { shieldIcon } from '#lib/sidebar/icons.js';
 import * as transport from '#lib/transport.js';
+import { COLOR, FONT } from './styles.js';
 
 /**
  * Show inline trust gate when user tries to send from an untrusted URL.
@@ -34,13 +35,13 @@ export function showTrustGate(parent, anchorBtn, { onSend, onTrustUpdated, shado
   const gate = document.createElement('div');
   gate.setAttribute(ATTR, 'trust-gate');
   Object.assign(gate.style, {
-    padding: '10px 12px', background: '#2a2a1a', border: '1px solid #f59e0b',
-    borderRadius: '6px', margin: '4px 0', fontFamily: 'system-ui, sans-serif',
+    padding: '10px 12px', background: '#2a2a1a', border: `1px solid ${COLOR.warning}`,
+    borderRadius: '6px', margin: '4px 0', fontFamily: FONT,
   });
 
   const msg = document.createElement('div');
   msg.textContent = '\u26a0 Untrusted URL - captures from remote sites may contain malicious content.';
-  Object.assign(msg.style, { color: '#f59e0b', fontSize: '11px', marginBottom: '8px', lineHeight: '1.4' });
+  Object.assign(msg.style, { color: COLOR.warning, fontSize: '11px', marginBottom: '8px', lineHeight: '1.4' });
 
   const hostname = (() => { try { return new URL(window.location.href).hostname; } catch { return window.location.hostname; } })();
 
@@ -51,8 +52,8 @@ export function showTrustGate(parent, anchorBtn, { onSend, onTrustUpdated, shado
   addBtn.textContent = `Add "${hostname}" to trusted`;
   Object.assign(addBtn.style, {
     flex: '1', padding: '6px', border: 'none', borderRadius: '4px',
-    background: '#6366f1', color: '#fff', fontSize: '10px', fontWeight: '600',
-    cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+    background: COLOR.primary, color: COLOR.white, fontSize: '10px', fontWeight: '600',
+    cursor: 'pointer', fontFamily: FONT,
   });
   addBtn.addEventListener('click', async () => {
     try {
@@ -73,9 +74,9 @@ export function showTrustGate(parent, anchorBtn, { onSend, onTrustUpdated, shado
   const overrideBtn = document.createElement('button');
   overrideBtn.textContent = 'Send anyway';
   Object.assign(overrideBtn.style, {
-    padding: '6px 10px', border: '1px solid #333', borderRadius: '4px',
-    background: 'transparent', color: '#666', fontSize: '10px',
-    cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+    padding: '6px 10px', border: `1px solid ${COLOR.border}`, borderRadius: '4px',
+    background: 'transparent', color: COLOR.muted, fontSize: '10px',
+    cursor: 'pointer', fontFamily: FONT,
   });
   overrideBtn.addEventListener('click', () => { gate.remove(); onSend(true); });
 
