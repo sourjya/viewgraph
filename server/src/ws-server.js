@@ -36,7 +36,7 @@ const PING_INTERVAL_MS = 30000;
  * @returns {{ broadcast: function, getClientCount: function, close: function }}
  */
 export function createWebSocketServer(httpServer, options = {}) {
-  const wss = new WebSocketServer({ noServer: true });
+  const wss = new WebSocketServer({ noServer: true, maxPayload: 1 * 1024 * 1024 });
   const clients = new Set();
   let pingTimer = null;
 
@@ -53,6 +53,8 @@ export function createWebSocketServer(httpServer, options = {}) {
   });
 
   wss.on('connection', (ws) => {
+    // WS-2: Limit concurrent connections to prevent FD exhaustion
+    if (clients.size >= 10) { ws.close(1013, 'Too many connections'); return; }
     // Auth removed for beta (ADR-010) - all connections accepted immediately
     ws.isAlive = true;
     clients.add(ws);
