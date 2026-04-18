@@ -2,7 +2,7 @@
 
 ViewGraph is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
 
-Full license text: [COPYING](https://github.com/sourjya/viewgraph/blob/main/COPYING)
+Full license text: [COPYING](https://raw.githubusercontent.com/sourjya/viewgraph/main/COPYING)
 
 ## What This Means for You
 
