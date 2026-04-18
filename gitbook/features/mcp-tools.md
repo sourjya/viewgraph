@@ -1,76 +1,156 @@
-# MCP Tools (37)
+# 37 MCP Tools
 
-ViewGraph exposes 37 tools to your AI agent via the Model Context Protocol. The agent discovers them automatically - you don't call them directly.
+Your agent discovers these automatically. You don't call them - you describe what you want and the agent picks the right tool.
+
+> "Fix the annotations from my last review" → agent calls `get_unresolved`, `get_annotation_context`, `find_source`, then `resolve_annotation` for each fix.
 
 ![Kiro using ViewGraph MCP tools](../.gitbook/assets/mcp-tools-kiro.png)
 
-## Core (4 tools)
+---
 
-| Tool | Description |
+{% tabs %}
+
+{% tab title="All" %}
+
+**Core (5)**
+
+| Tool | What the agent does with it |
 |---|---|
-| `list_captures` | List available captures with URL filter and limit |
-| `get_capture` | Retrieve full capture JSON by filename |
-| `get_latest_capture` | Most recent capture (summary if >100KB) |
-| `get_page_summary` | Compact summary: URL, title, viewport, element counts, clusters |
+| `list_captures` | Find captures by URL, date, or count |
+| `get_capture` | Read full DOM structure of a page |
+| `get_latest_capture` | Quick access to the most recent capture |
+| `get_page_summary` | Lightweight overview before loading full capture |
+| `get_session_status` | Check what data is available before choosing tools |
 
-## Analysis (8 tools)
+**Analysis (8)**
 
-| Tool | Description |
+| Tool | What the agent does with it |
 |---|---|
-| `get_elements_by_role` | Filter nodes by role: buttons, links, inputs, headings, etc. |
-| `get_interactive_elements` | All clickable/editable elements with selectors and labels |
-| `find_missing_testids` | Interactive elements lacking data-testid, with suggestions |
-| `audit_accessibility` | A11y audit: missing aria-labels, alt text, form labels, contrast ratios, axe-core results |
-| `audit_layout` | Layout audit: element overflow, sibling overlap, viewport overflow |
-| `compare_captures` | Diff two captures: added/removed elements, layout shifts, testid changes |
-| `get_annotations` | Human annotations from review-mode captures |
-| `get_annotation_context` | Capture filtered to annotated nodes + comments |
+| `get_elements_by_role` | Find all buttons, links, inputs, headings, etc. |
+| `get_interactive_elements` | List every clickable/editable element with selectors |
+| `find_missing_testids` | Identify elements that need data-testid for testing |
+| `audit_accessibility` | Run 100+ WCAG rules via axe-core |
+| `audit_layout` | Detect overflow, overlap, and viewport issues |
+| `compare_captures` | Diff two captures for structural changes |
+| `get_annotations` | Read human feedback from review sessions |
+| `get_annotation_context` | Get full DOM context around annotated elements |
 
-## Bidirectional (3 tools)
+**Bidirectional (3)**
 
-| Tool | Description |
+| Tool | What the agent does with it |
 |---|---|
-| `request_capture` | Request a capture from the browser extension |
-| `get_request_status` | Poll for capture request completion |
-| `get_fidelity_report` | Compare capture against HTML snapshot for fidelity metrics |
+| `request_capture` | Ask the user to capture a specific page |
+| `get_request_status` | Check if the user accepted the capture request |
+| `get_fidelity_report` | Verify capture accuracy against HTML snapshot |
 
-## Baseline and Regression (3 tools)
+**Baseline & Regression (3)**
 
-| Tool | Description |
+| Tool | What the agent does with it |
 |---|---|
-| `set_baseline` | Promote a capture to golden baseline for its URL |
-| `compare_baseline` | Diff latest capture vs baseline - detect structural regressions |
-| `list_baselines` | List all stored baselines with metadata |
+| `set_baseline` | Save a capture as the golden reference |
+| `compare_baseline` | Detect regressions against the baseline |
+| `list_baselines` | See all stored baselines |
 
-## Annotation Intelligence (7 tools)
+**Annotation Intelligence (7)**
 
-| Tool | Description |
+| Tool | What the agent does with it |
 |---|---|
-| `resolve_annotation` | Mark annotation as fixed/wontfix/duplicate/invalid |
-| `get_unresolved` | Unresolved annotations from one or all captures |
-| `check_annotation_status` | Compare annotations against newer capture to detect resolved issues |
-| `diff_annotations` | Track persistent issues across multiple captures |
-| `detect_recurring_issues` | Find UI elements flagged repeatedly across captures |
-| `analyze_patterns` | Detect recurring issue patterns from resolved annotations |
-| `generate_spec` | Generate Kiro spec (requirements + tasks) from annotations |
+| `resolve_annotation` | Mark issues as fixed, wontfix, duplicate, or invalid |
+| `get_unresolved` | Find all open issues across captures |
+| `check_annotation_status` | Check if old issues are still present in new captures |
+| `diff_annotations` | Track which issues persist across deploys |
+| `detect_recurring_issues` | Find elements that keep getting flagged |
+| `analyze_patterns` | Generate recommendations from resolved issues |
+| `generate_spec` | Turn annotations into Kiro specs (requirements + tasks) |
 
-## Session and Journey (5 tools)
+**Session & Journey (5)**
 
-| Tool | Description |
+| Tool | What the agent does with it |
 |---|---|
-| `list_sessions` | List capture sessions (grouped user journeys) |
-| `get_session` | Full step sequence for a capture session |
-| `analyze_journey` | Analyze recorded user journey for issues across steps |
-| `visualize_flow` | Build Mermaid state machine diagram from session |
-| `get_capture_stats` | Aggregate statistics across all captures |
+| `list_sessions` | Find recorded user journeys |
+| `get_session` | Replay a multi-step flow |
+| `analyze_journey` | Check for issues across journey steps |
+| `visualize_flow` | Generate Mermaid state diagram from a session |
+| `get_capture_stats` | Aggregate stats across all captures |
 
-## Source and Quality (4 tools)
+**Source & Quality (6)**
 
-| Tool | Description |
+| Tool | What the agent does with it |
 |---|---|
-| `find_source` | Find source file that renders a DOM element (testid, label, selector, React fiber) |
-| `check_consistency` | Compare elements across pages for style inconsistencies |
-| `compare_screenshots` | Pixel-by-pixel screenshot comparison |
-| `compare_styles` | Diff computed CSS styles of an element between two captures |
-| `get_component_coverage` | Report data-testid coverage per framework component |
-| `validate_capture` | Check capture for quality issues (empty pages, missing data) |
+| `find_source` | Map a DOM element to its source file and line number |
+| `check_consistency` | Detect style drift across pages |
+| `compare_screenshots` | Pixel-by-pixel visual regression check |
+| `compare_styles` | Diff computed CSS of an element between captures |
+| `get_component_coverage` | Report testid coverage per framework component |
+| `validate_capture` | Check capture quality (empty pages, missing data) |
+
+{% endtab %}
+
+{% tab title="Core (5)" %}
+| Tool | What the agent does with it |
+|---|---|
+| `list_captures` | Find captures by URL, date, or count |
+| `get_capture` | Read full DOM structure of a page |
+| `get_latest_capture` | Quick access to the most recent capture |
+| `get_page_summary` | Lightweight overview before loading full capture |
+| `get_session_status` | Check what data is available before choosing tools |
+{% endtab %}
+
+{% tab title="Analysis (8)" %}
+| Tool | What the agent does with it |
+|---|---|
+| `get_elements_by_role` | Find all buttons, links, inputs, headings, etc. |
+| `get_interactive_elements` | List every clickable/editable element with selectors |
+| `find_missing_testids` | Identify elements that need data-testid for testing |
+| `audit_accessibility` | Run 100+ WCAG rules via axe-core |
+| `audit_layout` | Detect overflow, overlap, and viewport issues |
+| `compare_captures` | Diff two captures for structural changes |
+| `get_annotations` | Read human feedback from review sessions |
+| `get_annotation_context` | Get full DOM context around annotated elements |
+{% endtab %}
+
+{% tab title="Annotations (7)" %}
+| Tool | What the agent does with it |
+|---|---|
+| `resolve_annotation` | Mark issues as fixed, wontfix, duplicate, or invalid |
+| `get_unresolved` | Find all open issues across captures |
+| `check_annotation_status` | Check if old issues are still present in new captures |
+| `diff_annotations` | Track which issues persist across deploys |
+| `detect_recurring_issues` | Find elements that keep getting flagged |
+| `analyze_patterns` | Generate recommendations from resolved issues |
+| `generate_spec` | Turn annotations into Kiro specs (requirements + tasks) |
+{% endtab %}
+
+{% tab title="Regression (6)" %}
+| Tool | What the agent does with it |
+|---|---|
+| `set_baseline` | Save a capture as the golden reference |
+| `compare_baseline` | Detect regressions against the baseline |
+| `list_baselines` | See all stored baselines |
+| `request_capture` | Ask the user to capture a specific page |
+| `get_request_status` | Check if the user accepted the capture request |
+| `get_fidelity_report` | Verify capture accuracy against HTML snapshot |
+{% endtab %}
+
+{% tab title="Source (6)" %}
+| Tool | What the agent does with it |
+|---|---|
+| `find_source` | Map a DOM element to its source file and line number |
+| `check_consistency` | Detect style drift across pages |
+| `compare_screenshots` | Pixel-by-pixel visual regression check |
+| `compare_styles` | Diff computed CSS of an element between captures |
+| `get_component_coverage` | Report testid coverage per framework component |
+| `validate_capture` | Check capture quality (empty pages, missing data) |
+{% endtab %}
+
+{% tab title="Sessions (5)" %}
+| Tool | What the agent does with it |
+|---|---|
+| `list_sessions` | Find recorded user journeys |
+| `get_session` | Replay a multi-step flow |
+| `analyze_journey` | Check for issues across journey steps |
+| `visualize_flow` | Generate Mermaid state diagram from a session |
+| `get_capture_stats` | Aggregate stats across all captures |
+{% endtab %}
+
+{% endtabs %}
