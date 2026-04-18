@@ -70,9 +70,9 @@ That's it. Open your project, start your agent, and the server auto-configures o
 
 ![Send to Agent button](../.gitbook/assets/send-to-agent.png)
 
-After sending, the button confirms with a green checkmark:
+After sending, your annotations show "Sent to agent - waiting for fix...":
 
-![Send success](../.gitbook/assets/send-to-agent-success.png)
+![Annotations sent and waiting for agent to fix](../.gitbook/assets/sent-waiting-for-fix.png)
 
 ## 4. Let your agent fix it
 

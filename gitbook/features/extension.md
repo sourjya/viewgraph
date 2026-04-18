@@ -110,6 +110,10 @@ Pushes annotations + full DOM capture + all enrichment data to the MCP server. Y
 
 ![Send to Agent button and success confirmation](../.gitbook/assets/send-to-agent.png)
 
+After sending, each annotation shows its status - waiting for the agent to fix it:
+
+![Annotations waiting for agent fix](../.gitbook/assets/sent-waiting-for-fix.png)
+
 ### Copy Markdown
 
 Copies a structured bug report to clipboard:
