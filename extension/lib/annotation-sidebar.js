@@ -378,7 +378,11 @@ export function collapse() {
   if (collapsed || !sidebarEl) return;
   collapsed = true;
   sidebarEl.style.transform = 'translateX(100%)';
-  badgeEl.style.display = 'flex';
+  if (badgeEl) {
+    badgeEl.style.display = 'flex';
+    // Re-append if removed from DOM (some frameworks clean unknown children)
+    if (!badgeEl.parentElement) document.documentElement.appendChild(badgeEl);
+  }
   updateBadgeCount();
   if (_strip) _strip.updateModeButtons(getCaptureMode());
 
@@ -405,7 +409,9 @@ export function expand() {
   if (!collapsed || !sidebarEl) return;
   collapsed = false;
   sidebarEl.style.transform = 'translateX(0)';
-  badgeEl.style.display = 'none';
+  // Re-append host if removed from DOM
+  if (hostEl && !hostEl.parentElement) document.documentElement.appendChild(hostEl);
+  if (badgeEl) badgeEl.style.display = 'none';
   refresh();
 }
 
