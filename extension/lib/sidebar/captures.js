@@ -199,6 +199,7 @@ export async function renderCaptures(container) {
   Object.assign(baseInfo.style, { color: COLOR.muted, fontSize: '11px', flex: '1' });
   const baseBtn = document.createElement('button');
   baseBtn.setAttribute(ATTR, 'baseline-btn');
+  baseBtn.setAttribute('data-tooltip', 'Set or compare against golden baseline');
   Object.assign(baseBtn.style, { border: 'none', borderRadius: '10px', padding: '2px 10px', fontSize: '10px', fontWeight: '700', cursor: 'pointer', fontFamily: FONT, background: COLOR.border, color: COLOR.muted });
   baseRow.append(baseLabel, baseInfo, baseBtn);
   container.appendChild(baseRow);

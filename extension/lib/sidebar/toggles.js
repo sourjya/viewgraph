@@ -33,6 +33,7 @@ export async function renderToggles(container, callbacks = {}) {
   autoLabel.textContent = 'AUTO-CAPTURE';
   Object.assign(autoLabel.style, { ...LABEL_STYLE, flex: '1' });
   const autoToggle = document.createElement('button');
+  autoToggle.setAttribute('data-tooltip', 'Auto-capture on DOM changes and hot-reload');
   const watcherOn = isWatcherEnabled();
   autoToggle.textContent = watcherOn ? 'ON' : 'OFF';
   Object.assign(autoToggle.style, { ...TOGGLE_STYLE, ...(watcherOn ? TOGGLE_ON : TOGGLE_OFF) });
@@ -62,6 +63,7 @@ export async function renderToggles(container, callbacks = {}) {
   Object.assign(auditLabel.style, { ...LABEL_STYLE, flex: '1' });
   const auditToggle = document.createElement('button');
   auditToggle.setAttribute(ATTR, 'audit-toggle');
+  auditToggle.setAttribute('data-tooltip', 'Run a11y, layout, and testid audits after each capture');
   let auditEnabled = false;
   try {
     const cached = await chrome.storage.local.get('vg_project_config');
@@ -116,6 +118,7 @@ export async function renderToggles(container, callbacks = {}) {
   Object.assign(recInfo.style, { color: COLOR.muted, fontSize: '11px', flex: '1' });
   const recBtn = document.createElement('button');
   recBtn.setAttribute(ATTR, 'session-toggle');
+  recBtn.setAttribute('data-tooltip', recording ? 'Stop recording flow' : 'Record a multi-page user journey');
   recBtn.textContent = recording ? 'Stop' : 'Start';
   Object.assign(recBtn.style, {
     ...TOGGLE_STYLE,
