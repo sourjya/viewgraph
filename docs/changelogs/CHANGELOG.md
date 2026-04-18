@@ -8,7 +8,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ---
 
-## [Unreleased]
+## [0.4.0] - 2026-04-18
 
 ### Server Lifecycle Management
 - Server exits gracefully when parent agent dies (stdin close detection in MCP stdio and native messaging modes)
