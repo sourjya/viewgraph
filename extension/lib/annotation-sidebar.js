@@ -266,7 +266,11 @@ export function create() {
     primaryTabs.appendChild(btn);
   }
 
-  sidebarEl.append(_header.element, help.element, primaryTabs, reviewContent, inspectContent, settings.element, _header.statusBanner, _footer.element);
+  sidebarEl.append(_header.element, help.element, primaryTabs, reviewContent, inspectContent, settings.element, _footer.element);
+
+  // Insert status banner into footer, between export buttons and status row
+  const statusRow = _footer.element.querySelector(`[${ATTR}="status-dot"]`)?.parentElement;
+  if (statusRow) _footer.element.insertBefore(_header.statusBanner, statusRow);
 
   // ── Shadow DOM ──
   hostEl = document.createElement('div');

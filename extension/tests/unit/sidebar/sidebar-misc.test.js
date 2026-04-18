@@ -149,25 +149,19 @@ describe('settings', () => {
     destroy();
   });
 
-  it('(+) status banner has higher z-index than settings overlay', () => {
+  it('(+) status banner is inside footer, between buttons and status row', () => {
     start();
     create();
 
-    const banner = shadowQuery(`[${ATTR}="status-banner"]`);
-    const screen = shadowQuery(`[${ATTR}="settings-screen"]`);
-    expect(parseInt(banner.style.zIndex)).toBeGreaterThan(parseInt(screen.style.zIndex));
-
-    stop();
-    destroy();
-  });
-
-  it('(+) status banner is sibling of footer (visible on all views)', () => {
-    start();
-    create();
-
-    const banner = shadowQuery(`[${ATTR}="status-banner"]`);
     const footer = shadowQuery(`[${ATTR}="footer"]`);
-    expect(banner.parentElement).toBe(footer.parentElement);
+    const banner = footer?.querySelector(`[${ATTR}="status-banner"]`);
+    expect(banner).toBeTruthy();
+
+    // Banner should come after export buttons but before status dot
+    const children = [...footer.children].map((el) => el.getAttribute(ATTR) || el.tagName);
+    const bannerIdx = children.indexOf('status-banner');
+    const dotParentIdx = children.findIndex((_, i) => footer.children[i].querySelector?.(`[${ATTR}="status-dot"]`));
+    expect(bannerIdx).toBeLessThan(dotParentIdx);
 
     stop();
     destroy();
