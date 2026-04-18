@@ -13,7 +13,7 @@ Two steps. No install commands.
 Works in Edge, Brave, and Opera too (Chromium-based).
 
 {% hint style="warning" %}
-**Store versions may be outdated.** The Chrome Web Store and Firefox Add-ons review process can delay updates by days or weeks. After installing, check your extension version: click the ViewGraph icon → look for the version in the sidebar footer. If it shows an older version (e.g., v0.1.0 instead of the latest), install the latest ZIP directly from GitHub instead. See [Install from GitHub ZIP](#install-from-github-zip) below.
+**Store versions may lag behind.** Chrome and Firefox review new submissions, which can take days. After installing, check your version in the sidebar footer. If it's behind the [latest release](https://github.com/sourjya/viewgraph/releases/latest), grab the ZIP from GitHub instead. See [Install from GitHub ZIP](#install-from-github-zip) below.
 {% endhint %}
 
 ### 2. Add MCP config
