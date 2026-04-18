@@ -132,7 +132,7 @@ describe('renderSuggestionBar', () => {
     const onAdd = vi.fn();
     renderSuggestionBar(container, [makeSug({ severity: 'warning' })], { onAdd });
     container.querySelector('button').click(); // expand
-    const addBtn = [...container.querySelectorAll('button')].find((b) => b.textContent === 'Add');
+    const addBtn = [...container.querySelectorAll('button')].find((b) => b.textContent === '+');
     addBtn.click();
     // onAdd fires after 200ms fade
     await new Promise((r) => setTimeout(r, 250));
@@ -187,6 +187,15 @@ describe('renderSuggestionBar', () => {
     container.appendChild(document.createElement('div')); // existing content
     renderSuggestionBar(container, [makeSug()], {});
     expect(container.firstElementChild.getAttribute('data-vg-annotate')).toBe('suggestions-panel');
+  });
+
+  it('(+) add button shows + with shaded background', () => {
+    renderSuggestionBar(container, [makeSug()], {});
+    container.querySelector('button').click(); // expand
+    const addBtn = [...container.querySelectorAll('button')].find((b) => b.textContent === '+');
+    expect(addBtn).toBeDefined();
+    expect(addBtn.style.borderRadius).toBe('4px');
+    expect(addBtn.style.background).toContain('99, 102, 241');
   });
 
   it('(+) only one panel exists after multiple renders', () => {

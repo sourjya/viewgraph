@@ -53,4 +53,31 @@ describe('createFooter', () => {
     expect(f.sendBtn.disabled).toBe(false);
     expect(f.sendBtn.style.opacity).toBe('1');
   });
+
+  // ADR-012: status indicators moved from header to footer
+  it('(+) returns statusDot element', () => {
+    const f = createFooter({ onSend: vi.fn(), onShowSettings: vi.fn() });
+    expect(f.statusDot).toBeTruthy();
+    expect(f.statusDot.getAttribute('data-vg-annotate')).toBe('status-dot');
+  });
+
+  it('(+) statusDot is inside footer element', () => {
+    const f = createFooter({ onSend: vi.fn(), onShowSettings: vi.fn() });
+    expect(f.element.querySelector('[data-vg-annotate="status-dot"]')).toBeTruthy();
+  });
+
+  it('(+) setTrustLevel updates shield visibility and tooltip', () => {
+    const f = createFooter({ onSend: vi.fn(), onShowSettings: vi.fn() });
+    f.setTrustLevel({ level: 'trusted', reason: 'Localhost' });
+    const shield = f.element.querySelector('[data-vg-annotate="trust-shield"]');
+    expect(shield.style.display).toBe('inline-flex');
+    expect(shield.getAttribute('data-tooltip')).toBe('Trusted: Localhost');
+  });
+
+  it('(+) setTrustLevel capitalizes level in tooltip', () => {
+    const f = createFooter({ onSend: vi.fn(), onShowSettings: vi.fn() });
+    f.setTrustLevel({ level: 'untrusted', reason: 'Remote URL' });
+    const shield = f.element.querySelector('[data-vg-annotate="trust-shield"]');
+    expect(shield.getAttribute('data-tooltip')).toBe('Untrusted: Remote URL');
+  });
 });
