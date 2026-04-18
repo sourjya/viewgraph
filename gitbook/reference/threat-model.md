@@ -48,6 +48,13 @@ Nation-state actors, organized crime, hacktivists, and insider threats were eval
 | Session status tool (F18) | Agents get context-aware next-step suggestions | Implemented |
 | npm 2FA + package-lock | Reduces supply chain risk | Implemented |
 | .gitignore for .viewgraph/ | Prevents accidental commit of captures | Implemented |
+| Config schema validation (SRR-001) | PUT /config only accepts whitelisted keys | Implemented |
+| Auto-learn localhost-only (SRR-001) | URL patterns only auto-learned from localhost/file:// | Implemented |
+| Security response headers (SRR-001) | nosniff + no-store on all responses | Implemented |
+| WebSocket limits (SRR-001) | 1MB max payload, 10 concurrent connections | Implemented |
+| Error sanitization (SRR-001) | Error responses never leak filesystem paths | Implemented |
+| Closed shadow DOM (SRR-001) | Host page JS cannot access sidebar content | Implemented |
+| 16 CodeQL fixes | Path validation, URL parsing, crypto.randomUUID, CI permissions | Implemented |
 
 ## Roadmap: How We're Addressing Remaining Risks
 

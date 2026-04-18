@@ -172,3 +172,11 @@ server memory.
 ## Update: Auth Removed for Beta (2026-04-13)
 
 HTTP auth tokens have been removed for beta per [ADR-010](../decisions/ADR-010-remove-http-auth-beta.md). The token system caused BUG-011 (silent capture failures). The server remains localhost-only with format validation and path sanitization. Post-beta target: native messaging transport.
+| 8 | Payload size | Low | Mitigated | 5MB/10MB limits |
+
+---
+
+## Subsequent Reviews
+
+- **[SRR-001 (April 18, 2026)](../security/SRR-001-2026-04-18.md)** - Full codebase audit. 9 of 11 findings resolved: config schema validation, auto-learn localhost-only, shadow DOM closed, security headers, WebSocket limits, error sanitization, F19 wrapping gaps. 16 CodeQL alerts resolved.
+- **[Codebase Review (April 18, 2026)](codebase-review-2026-04-18.md)** - 18 findings, 5 themes. Phase 1-2 complete: jsonResponse/errorResponse, readAndParse helpers, test fixtures, mockChrome, styles.js COLOR constants.
