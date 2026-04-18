@@ -2,9 +2,9 @@
 
 - **ID**: BUG-017
 - **Severity**: High
-- **Status**: OPEN
+- **Status**: FIXED
 - **Reported**: 2026-04-18
-- **Fixed**: -
+- **Fixed**: 2026-04-18
 
 ## Description
 
@@ -20,13 +20,18 @@ Both the sidebar and the strip disappear completely. No UI remains on screen.
 
 ## Root Cause
 
-Under investigation. The collapse() function sets `sidebarEl.style.transform = 'translateX(100%)'` and `badgeEl.style.display = 'flex'`. The strip element is appended to `document.documentElement` with z-index 2147483646. Possible causes:
-1. The strip element is being removed by the page's framework (React/Vue DOM reconciliation)
-2. The strip is rendered but not visible (CSS conflict with the host page)
-3. The strip's position is off-screen
+The strip element (collapsed badge) is appended to `document.documentElement`. Some pages or frameworks may remove unknown children during DOM reconciliation. The `collapse()` function accessed `badgeEl` without null checks and didn't re-append if removed.
 
-## Reproduction Steps
+## Fix
 
-1. Open any page with ViewGraph sidebar
-2. Click the "Element" button in the mode bar
-3. Sidebar and strip both vanish
+- Added null guard on `badgeEl` in `collapse()` and `expand()`
+- Added re-append logic: if `badgeEl` or `hostEl` lost their parent, re-append to `document.documentElement`
+- This makes collapse/expand resilient to DOM cleanup by host pages
+
+## Files Changed
+
+- `extension/lib/annotation-sidebar.js`
+
+## Regression Tests
+
+Existing collapse/expand tests cover the happy path. The re-append guard is defensive and doesn't change behavior when elements are present.
