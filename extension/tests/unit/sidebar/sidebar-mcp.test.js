@@ -63,18 +63,18 @@ describe('sidebar MCP disconnected state', () => {
     expect(dlBtn.title).not.toContain('not connected');
   });
 
-  it('(+) status banner is positioned directly above footer buttons, not above tabs', async () => {
+  it('(+) status banner is positioned directly above footer, visible on both tabs', async () => {
     start();
     create();
     await new Promise((r) => setTimeout(r, 2000));
     const banner = shadowQuery(`[${ATTR}="status-banner"]`);
     if (banner && banner.style.display === 'block') {
+      // Banner should be at sidebar level, not inside reviewContent
       const reviewContent = shadowQuery(`[${ATTR}="review-content"]`);
-      expect(reviewContent.contains(banner)).toBe(true);
-      const children = [...reviewContent.children].map((el) => el.getAttribute(ATTR) || el.tagName);
-      const bannerIdx = children.indexOf('status-banner');
-      const listIdx = children.indexOf('list');
-      expect(bannerIdx).toBeGreaterThan(listIdx);
+      expect(reviewContent.contains(banner)).toBe(false);
+      // Banner should be a sibling of footer
+      const footer = shadowQuery(`[${ATTR}="footer"]`);
+      expect(banner.parentElement).toBe(footer.parentElement);
     } else {
       expect(banner).not.toBeNull();
     }
