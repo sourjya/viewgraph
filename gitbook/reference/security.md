@@ -68,21 +68,24 @@ The entire codebase is open source under AGPL-3.0. You can inspect every line:
 
 ## Security Audits Performed
 
-The project has undergone two internal security audits:
+The project undergoes periodic security reviews using a 3-tier model:
 
-**[Security Audit (April 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/audits/security-audit-2026-04-12.md):**
-- HTTP server endpoint review (15 endpoints)
+- **Tier 1 (every commit):** Secrets, unsafe execution, auth bypass - automated pre-commit check
+- **Tier 2 (feature complete):** Full OWASP S1-S17 audit of changed files
+- **Tier 3 (sprint end):** Full codebase + supply chain + AI-generation artifacts
+
+**[SRR-001 - Full Codebase Review (April 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-001-2026-04-18.md):**
+- 2 HIGH (both accepted risks pending native messaging), 5 MEDIUM (all fixed), 4 LOW (all fixed)
+- Config schema validation, auto-learn localhost-only, shadow DOM closed mode
+- Security headers, WebSocket limits, error sanitization, F19 wrapping gaps closed
+
+**[Security Assessment (April 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/security-assessment.md):**
+- HTTP server endpoint review (16 endpoints)
 - Input validation on all POST endpoints
 - Path traversal prevention on file writes
 - Payload size limits (5MB captures, 10MB snapshots)
-- XSS prevention in extension UI (Shadow DOM isolation)
+- XSS prevention in extension UI (closed Shadow DOM)
 - WebSocket connection handling
-
-**[Code Quality Audit (April 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/audits/code-quality-audit-2026-04-12.md):**
-- ESLint clean (0 errors)
-- No hardcoded secrets in source
-- No eval() or Function constructor in application code
-- All user input sanitized before file operations
 
 ## Localhost Server Security
 
@@ -92,8 +95,35 @@ The MCP server binds to `127.0.0.1` only - it is not accessible from the network
 - **Filename sanitization** - strips `..`, path traversal characters, and non-alphanumeric chars
 - **Directory scoping** - only writes to configured `.viewgraph/captures/` directories
 - **Payload limits** - 5MB max for captures, 10MB for snapshots
+- **Config schema validation** - PUT /config only accepts whitelisted keys, preventing config poisoning
+- **Auto-learn localhost-only** - URL patterns are only auto-learned from localhost/file:// URLs
+- **Security headers** - all responses include `X-Content-Type-Options: nosniff` and `Cache-Control: no-store`
+- **WebSocket limits** - 1MB max payload, 10 concurrent connections max
+- **Error sanitization** - error responses never leak filesystem paths
 
 Auth tokens were evaluated and removed for beta (see [ADR-010](https://github.com/sourjya/viewgraph/blob/main/docs/decisions/ADR-010-remove-http-auth-beta.md)). The transport abstraction layer (F11) is built - extension modules communicate through `transport.js` which will use native messaging when the host is installed, falling back to localhost HTTP. See [ADR-013](https://github.com/sourjya/viewgraph/blob/main/docs/decisions/ADR-013-native-messaging-transport.md) for the layered transport strategy.
+
+## Prompt Injection Defense (F19)
+
+ViewGraph captures DOM content from web pages and sends it to AI agents. A malicious page could embed instructions in DOM text that the agent might follow. ViewGraph uses 5 layers of defense:
+
+| Layer | What it does | What it stops |
+|---|---|---|
+| **1. Capture sanitization** | Strips HTML comments, caps data-* attributes at 100 chars, clears hidden element text | Comment injection, hidden text injection, oversized payloads |
+| **2. Transport wrapping** | Wraps page text in `[CAPTURED_TEXT]` delimiters, comments in `[USER_COMMENT]` delimiters | LLM confusing data with instructions |
+| **3. Suspicious detection** | Flags patterns like "ignore previous instructions", "system:", "act as" with `_warning` field | Common injection patterns |
+| **4. Prompt hardening** | SERVER_INSTRUCTIONS, steering docs, and all prompts include injection defense guidance | Casual injection attempts |
+| **5. Trust gate (F17)** | Blocks send-to-agent for untrusted URLs entirely | ALL injection from untrusted sites |
+
+No single layer is bulletproof, but combined they significantly reduce the attack surface. See [ADR-012](https://github.com/sourjya/viewgraph/blob/main/docs/decisions/ADR-012-prompt-injection-defense.md) for the full design rationale.
+
+## Shadow DOM Isolation
+
+The sidebar runs in a **closed Shadow DOM** (`mode: 'closed'`). The host page's JavaScript cannot:
+- Read annotation comments or sidebar content
+- Modify the sidebar UI or inject fake elements
+- Access the MCP server URL or connection status
+- Intercept extension message passing or storage
 
 ## Install Method Security Comparison
 
