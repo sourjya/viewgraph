@@ -161,7 +161,7 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
   Object.assign(typeFilterRow.style, { display: 'flex', gap: '2px', padding: '4px 8px', borderBottom: `1px solid ${COLOR.borderLight}`, alignItems: 'center' });
   const filterLabel = document.createElement('span');
   filterLabel.textContent = 'Filter';
-  Object.assign(filterLabel.style, { fontSize: '10px', color: COLOR.muted, marginRight: '4px', flexShrink: '0' });
+  Object.assign(filterLabel.style, { fontSize: '11px', color: COLOR.secondary, marginRight: '4px', flexShrink: '0', fontWeight: '600' });
   typeFilterRow.appendChild(filterLabel);
   const filterSpacer = document.createElement('span');
   filterSpacer.style.flex = '1';

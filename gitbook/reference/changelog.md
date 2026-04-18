@@ -6,6 +6,37 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ---
 
+## v0.4.1 - April 19, 2026
+
+### UI Polish
+- ADR-012: status indicators (connection dot, trust shield) moved from header to footer
+- Help card redesign: version info with highlighted pills, collapse chevron, links below version
+- Suggestion `+` button with shaded background (replaces text "Add")
+- Filter label added to type filter icon row
+- Trust shield tooltip capitalization (Trusted/Untrusted/Configured)
+- Esc key collapses expanded suggestions bar
+
+### Bug Fixes
+- BUG-015: auto-learn URL patterns when config exists but patterns empty
+- BUG-016: `npx viewgraph-init` 404 - updated all docs to use `npm install -g`
+- BUG-017: sidebar vanishes on Element click - re-append guard for DOM cleanup
+- BUG-018: settings showed wrong server for unmatched pages
+- BUG-019: suggestions panel stays open when adding individual items
+- Annotation count now reported correctly in `get_session_status`
+
+### Security (SRR-002)
+- S3-2 HIGH: auto-learn merges config instead of overwriting user keys
+- S5-4 MEDIUM: URL matching uses hostname+port, not String.includes()
+- S5-5 LOW: suggestions-ui state cleared on destroy
+
+### Documentation
+- Gitbook landing page, why-viewgraph, who-benefits, extension features, MCP tools rewritten
+- GitHub Releases callouts added across all user-facing pages
+- Privacy policy updated for storage collector and CSS custom properties
+- All install instructions updated for `npm install -g` flow
+
+---
+
 ## v0.4.0 - April 18, 2026
 
 ### Security
@@ -22,16 +53,6 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - M16 sidebar polish complete: keyboard nav, incremental tabs, strip active state, empty state, collapse toast
 - F17 URL trust indicator complete: SPA reclassification
 - 2 new enrichment collectors (16 total): client-side storage + CSS custom properties
-- ADR-012: status indicators (connection dot, trust shield) moved from header to footer
-- Help card redesign: version info with highlighted pills, collapse chevron, links below version
-
-### Bug Fixes
-- BUG-015: auto-learn URL patterns when config exists but patterns empty
-- BUG-016: `npx viewgraph-init` 404 - updated all docs to use `npm install -g`
-- BUG-017: sidebar vanishes on Element click - re-append guard for DOM cleanup
-- BUG-018: settings showed wrong server for unmatched pages
-- Trust shield tooltip capitalization (Trusted/Untrusted/Configured)
-- BUG-019: suggestions panel stays open when adding individual items
 
 ### Codebase
 - Phase 2 refactors: 74 files - jsonResponse/errorResponse, readAndParse/Pair/Multi, shared test fixtures, mockChrome, styles.js COLOR constants

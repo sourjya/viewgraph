@@ -49,6 +49,18 @@ The Inspect tab surfaces browser diagnostics without opening DevTools.
 
 Each section has **Copy** (clipboard) and **Add as Note** (+) buttons. One click turns a network failure or console error into an annotation - no DevTools, no copy-pasting.
 
+### Smart Suggestions
+
+After capture, ViewGraph scans for issues and shows clickable suggestions. Click `+` to add any suggestion to your review list.
+
+![Suggestions bar with filter and add buttons](../.gitbook/assets/suggestions.png)
+
+### Help Card
+
+Click `?` in the header for keyboard shortcuts, version info, and quick links.
+
+![Help card with version pills and shortcuts](../.gitbook/assets/help-card.png)
+
 ---
 
 ## 4. Export

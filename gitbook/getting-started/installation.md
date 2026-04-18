@@ -42,9 +42,12 @@ Add to your agent's config file:
 
 1. Open your app in the browser
 2. Click the ViewGraph toolbar icon
-3. Green dot in the sidebar header = connected
+3. Check the footer status dot:
 
-![Green connection dot in sidebar](../.gitbook/assets/green-dot.png)
+| Status | Meaning |
+|---|---|
+| ![Green dot](../.gitbook/assets/green-dot.png) | Connected to MCP server |
+| ![Red dot](../.gitbook/assets/red-dot.png) | Server not running or no matching project |
 
 ### Requirements
 
