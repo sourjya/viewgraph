@@ -671,14 +671,7 @@ to specific ViewGraph features, tools, workflows, and remaining gaps.
 | 16.8 | Inspect tab empty state | Show green "No issues detected" when all diagnostic sections are clean. |
 | 16.9 | Report button feedback | Change "Saving..." to "Saved!" with checkmark, matching Send/Copy pattern. |
 | 16.10 | Collapsed strip active state | Highlight active mode icon in strip (indigo background) when mode is set. |
-
-### Remaining (deferred)
-
-| # | Task | Details |
-|---|---|---|
-| 16.3 | Separate capture controls in Inspect tab | Wrap auto-capture, record flow, snapshots in a collapsible "Capture Controls" section instead of mixing with diagnostics. |
-| 16.4 | Mode bar collapse feedback | Show first-time toast on collapse: "Click elements on the page. Tap here to expand." Track in storage. |
-| 16.11 | Decompose inspect.js | Split ~400-line `inspect.js` into `diagnostics.js` (sections), `toggles.js` (auto-capture/audit/recording), keeping `inspect.js` as ~50-line orchestrator. `captures.js` already separate. |
+| 16.11 | Decompose inspect.js | Split into diagnostics.js, toggles.js orchestrator pattern. |
 
 ---
 
