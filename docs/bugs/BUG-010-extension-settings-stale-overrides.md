@@ -15,7 +15,7 @@ Two parallel config systems create confusion: patterns added via `--url` don't a
 
 1. Remove the manual override toggle and mapping editor from the extension options page
 2. Replace with a read-only display of all connected servers and their URL patterns (from `/info`)
-3. Add help text: "To add URL patterns, run `npx viewgraph-init --url <pattern>` or edit `.viewgraph/config.json`"
+3. Add help text: "To add URL patterns, run `viewgraph-init --url <pattern>` or edit `.viewgraph/config.json`"
 4. Remove the `OVERRIDE_KEY` and `PROJECT_MAPPINGS_KEY` code paths from `lookupCapturesDir()` in background.js
 
 ## Files Involved

@@ -9,7 +9,7 @@ For most users, the init script handles everything:
 ```bash
 cd ~/my-project
 npm install @viewgraph/core
-npx viewgraph-init
+viewgraph-init
 ```
 
 This creates `.viewgraph/captures/`, detects your AI agent, writes the MCP config, and starts the server. You're done.
@@ -17,7 +17,7 @@ This creates `.viewgraph/captures/`, detects your AI agent, writes the MCP confi
 **Custom URL?** If your app runs on a specific host:port (e.g., `localhost:3000`), add `--url` so ViewGraph knows which pages belong to this project:
 
 ```bash
-npx viewgraph-init --url localhost:3000
+viewgraph-init --url localhost:3000
 ```
 
 ## Manual Setup (advanced)
@@ -74,7 +74,7 @@ curl http://127.0.0.1:9876/health
 | Problem | Solution |
 |---|---|
 | Server won't start | Check Node.js version: `node --version` (must be 20+) |
-| Port already in use | Another server is running. Use `npx viewgraph-init` which auto-finds a free port (9876-9879) |
+| Port already in use | Another server is running. Use `viewgraph-init` which auto-finds a free port (9876-9879) |
 | Extension can't connect | Verify server is running. Check sidebar for green/red dot. |
 | No captures appearing | Check `.viewgraph/captures/` exists and is writable |
-| MCP tools not showing | Restart your AI agent after running `npx viewgraph-init` |
+| MCP tools not showing | Restart your AI agent after running `viewgraph-init` |

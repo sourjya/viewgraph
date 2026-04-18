@@ -18,8 +18,8 @@ No. ViewGraph runs alongside your project as a standalone tool. It reads the DOM
 
 ### How do I install it?
 ```bash
-npm install @viewgraph/core
-npx viewgraph-init
+npm install -g @viewgraph/core
+viewgraph-init
 ```
 Then install the browser extension from the Chrome Web Store or Firefox Add-ons. See [Installation](../getting-started/installation.md) for details.
 
@@ -75,19 +75,19 @@ The server binds to localhost only and is not accessible from the network. Auth 
 ## Troubleshooting
 
 ### The sidebar shows a red dot
-The server isn't running. Run `npx viewgraph-init` from your project folder.
+The server isn't running. Run `viewgraph-init` from your project folder.
 
 ### "Send to Agent" shows green checkmark but no capture appears
-Kill all servers and re-init: `pkill -f "node.*server/index.js"` then `npx viewgraph-init`.
+Kill all servers and re-init: `pkill -f "node.*server/index.js"` then `viewgraph-init`.
 
 ### Wrong project shown in sidebar
-Add a URL pattern so ViewGraph routes captures to the correct project: `npx viewgraph-init --url localhost:3000`. See [Multi-Project Setup](../getting-started/multi-project.md).
+Add a URL pattern so ViewGraph routes captures to the correct project: `viewgraph-init --url localhost:3000`. See [Multi-Project Setup](../getting-started/multi-project.md).
 
 ### The page looks unstyled when opened as a file
 Chrome blocks cross-origin requests for `file://` URLs. Serve the files via HTTP instead: `npx serve .`
 
 ### How do I reset project settings?
-Delete `.viewgraph/config.json` and re-run `npx viewgraph-init`. The init script recreates it with defaults.
+Delete `.viewgraph/config.json` and re-run `viewgraph-init`. The init script recreates it with defaults.
 
 ### Where are screenshots and HTML snapshots saved?
 In `.viewgraph/screenshots/` (PNG) and `.viewgraph/snapshots/` (HTML). Enable them in the sidebar settings (footer link). They're saved alongside the JSON capture on every "Send to Agent" or manual capture.

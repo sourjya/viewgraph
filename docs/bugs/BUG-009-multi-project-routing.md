@@ -11,8 +11,8 @@ When two ViewGraph servers run simultaneously for different projects (e.g., `~/d
 
 ## Reproduction
 
-1. `cd ~/demos/app-one && npx viewgraph-init` - starts server on port 9876
-2. `cd ~/demos/app-two && npx viewgraph-init` - starts server on port 9877
+1. `cd ~/demos/app-one && viewgraph-init` - starts server on port 9876
+2. `cd ~/demos/app-two && viewgraph-init` - starts server on port 9877
 3. Open `app-one/index.html` in Chrome
 4. Click ViewGraph icon - sidebar shows green dot
 5. Sidebar shows `app-two`'s captures directory, not `app-one`'s

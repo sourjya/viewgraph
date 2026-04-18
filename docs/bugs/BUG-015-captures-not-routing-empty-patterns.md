@@ -17,7 +17,7 @@ This happens when:
 
 ## Reproduction Steps
 
-1. Run `npx viewgraph-init` in a project without `--url`
+1. Run `viewgraph-init` in a project without `--url`
 2. Open the app in browser, annotate, click Send to Agent
 3. Captures don't appear in the project's `.viewgraph/captures/`
 4. They may appear in another project's captures dir (whichever server the extension finds first)
@@ -28,7 +28,7 @@ The extension's `discoverServer()` scans ports 9876-9879 and matches by URL patt
 
 ## Workaround
 
-Run init with explicit URL: `npx viewgraph-init --url localhost:8040`
+Run init with explicit URL: `viewgraph-init --url localhost:8040`
 
 Or manually edit `.viewgraph/config.json`:
 ```json

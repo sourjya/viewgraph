@@ -1,6 +1,6 @@
 # Kiro Power (Hooks & Prompts)
 
-When you run `npx viewgraph-init` in a Kiro project, ViewGraph installs hooks, prompts, and steering docs that automate common workflows. These work in both Kiro IDE and Kiro CLI.
+When you run `viewgraph-init` in a Kiro project, ViewGraph installs hooks, prompts, and steering docs that automate common workflows. These work in both Kiro IDE and Kiro CLI.
 
 ## Hooks (8)
 

@@ -7,7 +7,7 @@
 | # | Video | Duration | Purpose | Script location |
 |---|---|---|---|---|
 | V0 | **Channel Intro: "Evolving with AI"** | 45-60s | YouTube channel intro, placeholder | Text animation storyboard in chat history |
-| V1 | **Zero to Connected** | 30-45s | Show `npx viewgraph-init` in two projects, green dots | Demo script in chat history |
+| V1 | **Zero to Connected** | 30-45s | Show `viewgraph-init` in two projects, green dots | Demo script in chat history |
 | V2 | **See Bug, Fix Bug** (hero demo) | 90-120s | Annotate 3 bugs, fix with Kiro IDE + CLI | Full script in chat history |
 | V3 | **Instant A11y Audit** | 60s | `@vg-audit` finds and fixes 4 issues | docs/demo/README.md Demo 2 |
 
@@ -140,7 +140,7 @@ V4-V7 in order of impact.
 
 Before recording any video:
 - [ ] Run `bash ~/coding/prep-demo.sh` to reset demo folders
-- [ ] Run `npx viewgraph-init` in both demo folders
+- [ ] Run `viewgraph-init` in both demo folders
 - [ ] Reload extension in Chrome
 - [ ] Verify green dots on both projects
 - [ ] Set terminal font size to 14-16pt (readable on YouTube)

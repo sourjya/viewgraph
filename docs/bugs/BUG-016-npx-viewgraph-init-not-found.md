@@ -1,19 +1,19 @@
-# BUG-016: npx viewgraph-init Doesn't Work
+# BUG-016: viewgraph-init Doesn't Work
 
 - **ID**: BUG-016
 - **Severity**: High
-- **Status**: OPEN
+- **Status**: FIXED
 - **Reported**: 2026-04-18
-- **Fixed**: -
+- **Fixed**: 2026-04-18
 
 ## Description
 
-`npx viewgraph-init` fails with `E404 - Not found` because there's no npm package called `viewgraph-init`. The bin entry is part of `@viewgraph/core` but npx can't resolve it by bin name alone.
+`viewgraph-init` fails with `E404 - Not found` because there's no npm package called `viewgraph-init`. The bin entry is part of `@viewgraph/core` but npx can't resolve it by bin name alone.
 
 ## Reproduction
 
 ```bash
-npx viewgraph-init
+viewgraph-init
 # npm error 404 Not Found - 'viewgraph-init@*' is not in this registry
 ```
 
@@ -40,4 +40,4 @@ npm's `npx` resolves by package name, not bin name. The package is `@viewgraph/c
 
 ## Affected Docs
 
-~20 references to `npx viewgraph-init` across gitbook, runbooks, and tutorials.
+~20 references to `viewgraph-init` across gitbook, runbooks, and tutorials.

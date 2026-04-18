@@ -292,7 +292,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - Added "How ViewGraph Compares" section with 10-row comparison matrix vs Playwright MCP, Chromatic, Replay.io, axe MCP
 - Linked Node.js to nodejs.org in Getting Started
 - Added GitBook docs site links (chaoslabz.gitbook.io/viewgraph) to header, Documentation section
-- Updated init command from `node /path/to/...` to `npx viewgraph-init`
+- Updated init command from `node /path/to/...` to `viewgraph-init`
 - Added "For test automation teams" workflow section with Playwright examples
 - Updated test counts to 984 (331 server + 653 extension)
 - Added packages/playwright/ to Components table and Project Structure
@@ -376,7 +376,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - Added npm, Chrome Web Store, and Firefox Add-ons links (placeholder where pending review)
 
 #### Sub-Project README Updates (2026-04-13)
-- server/README.md: added docs links, updated init command to `npx viewgraph-init`
+- server/README.md: added docs links, updated init command to `viewgraph-init`
 - extension/README.md: added docs links
 - power/README.md: added docs links
 - packages/playwright/README.md: added docs footer links

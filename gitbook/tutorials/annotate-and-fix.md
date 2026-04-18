@@ -9,7 +9,7 @@ The core ViewGraph workflow: see a bug, click it, describe it, agent fixes it. T
 ## Prerequisites
 
 * ViewGraph extension installed and connected (green dot in sidebar)
-* MCP server running (`npx viewgraph-init` from your project)
+* MCP server running (`viewgraph-init` from your project)
 * An AI agent (Kiro, Claude Code, Cursor, etc.)
 
 ## Step 1: Open your app and activate ViewGraph

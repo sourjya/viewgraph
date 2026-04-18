@@ -49,7 +49,7 @@ Every prompt now handles edge cases:
 - No captures: "Capture a page first using the ViewGraph extension"
 - No annotations: "No unresolved annotations found"
 - Fewer than 2 captures for diff: "Need at least 2 captures to compare"
-- Server not connected: "Run `npx viewgraph-init` from your project folder"
+- Server not connected: "Run `viewgraph-init` from your project folder"
 - Capture declined: "Please accept it in the ViewGraph sidebar"
 - No missing testids: "All interactive elements have data-testid attributes"
 

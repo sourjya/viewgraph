@@ -61,13 +61,13 @@ The extension normalizes URLs automatically:
 ### During init
 
 ```bash
-npx viewgraph-init --url localhost:3000
+viewgraph-init --url localhost:3000
 ```
 
 Multiple patterns:
 
 ```bash
-npx viewgraph-init --url localhost:3000 --url staging.myapp.com
+viewgraph-init --url localhost:3000 --url staging.myapp.com
 ```
 
 ### Adding patterns later
@@ -75,7 +75,7 @@ npx viewgraph-init --url localhost:3000 --url staging.myapp.com
 Re-run init with the new `--url` flag. It appends without duplicating:
 
 ```bash
-npx viewgraph-init --url staging.myapp.com
+viewgraph-init --url staging.myapp.com
 # config.json now has: ["localhost:3000", "staging.myapp.com"]
 ```
 
@@ -99,12 +99,12 @@ Changes take effect within 15 seconds (the extension's registry refresh interval
 ```bash
 # Terminal 1
 cd ~/projects/frontend
-npx viewgraph-init --url localhost:3000
+viewgraph-init --url localhost:3000
 #   Started (PID 12345, port 9876)
 
 # Terminal 2
 cd ~/projects/admin
-npx viewgraph-init --url localhost:3001
+viewgraph-init --url localhost:3001
 #   Started (PID 12346, port 9877)
 ```
 
@@ -139,7 +139,7 @@ The sidebar's green dot tooltip shows which server the current page is connected
 | Problem | Cause | Fix |
 |---|---|---|
 | Wrong project in sidebar | URL pattern missing | Add `--url` pattern or edit `.viewgraph/config.json` |
-| No server detected | Server not running | Run `npx viewgraph-init` in the project folder |
+| No server detected | Server not running | Run `viewgraph-init` in the project folder |
 | 127.0.0.1 vs localhost | Handled automatically | Extension normalizes both to `localhost` |
 | Custom hostname not matching | Port fallback handles this | `--url localhost:3000` matches any hostname on port 3000 |
 | Config changes not visible | 15-second cache | Close and reopen the sidebar to force refresh |

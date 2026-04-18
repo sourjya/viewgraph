@@ -18,13 +18,13 @@ When you capture a page, the extension needs to know which project's server to s
 
 ```bash
 cd ~/myproject
-npx viewgraph-init --url localhost:3000
+viewgraph-init --url localhost:3000
 ```
 
 Multiple patterns:
 
 ```bash
-npx viewgraph-init --url localhost:3000 --url staging.myapp.com --url myapp.com
+viewgraph-init --url localhost:3000 --url staging.myapp.com --url myapp.com
 ```
 
 ### Option 2: Re-run init to add more patterns
@@ -33,10 +33,10 @@ Already initialized? Just run init again with the new `--url` flag. It appends t
 
 ```bash
 # First time
-npx viewgraph-init --url localhost:3000
+viewgraph-init --url localhost:3000
 
 # Later, add staging
-npx viewgraph-init --url staging.myapp.com
+viewgraph-init --url staging.myapp.com
 
 # config.json now has: ["localhost:3000", "staging.myapp.com"]
 ```
@@ -85,11 +85,11 @@ Two projects, each with a dev server:
 ```bash
 # Terminal 1: Frontend project
 cd ~/projects/frontend
-npx viewgraph-init --url localhost:3000
+viewgraph-init --url localhost:3000
 
 # Terminal 2: Admin dashboard
 cd ~/projects/admin
-npx viewgraph-init --url localhost:3001
+viewgraph-init --url localhost:3001
 ```
 
 Output:
@@ -138,7 +138,7 @@ In the extension sidebar, the green dot tooltip shows which server the current p
 | Problem | Cause | Fix |
 |---|---|---|
 | Wrong project shown in sidebar | URL pattern missing or matching wrong server | Check `.viewgraph/config.json` in both projects. Add the correct `--url` pattern. |
-| "No project connected" | No server running, or URL doesn't match any pattern | Run `npx viewgraph-init --url <your-url>` in the project folder |
+| "No project connected" | No server running, or URL doesn't match any pattern | Run `viewgraph-init --url <your-url>` in the project folder |
 | Both projects on same port | Init killed the first server | This is fixed - init auto-finds a free port (9876-9879). If you see the same port, kill all servers and re-init both. |
 | File URLs work but localhost doesn't | No URL pattern configured | File URLs match by path automatically. Localhost needs `--url localhost:PORT`. |
 | Config changes not taking effect | Extension caches server registry for 15 seconds | Wait 15 seconds, or close and reopen the sidebar |
