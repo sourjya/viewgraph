@@ -50,6 +50,7 @@ export function createFooter({ onSend, onShowSettings }) {
   // Send to Agent (primary)
   const sendBtn = document.createElement('button');
   sendBtn.setAttribute(ATTR, 'send');
+  sendBtn.setAttribute('data-tooltip', 'Send annotations to your AI agent');
   sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent'));
   Object.assign(sendBtn.style, { ...BTN_STYLE, background: COLOR.primary, width: '100%', padding: '9px 4px', marginBottom: '4px' });
   sendBtn.title = 'Send annotations to your AI coding agent via MCP';
@@ -60,6 +61,7 @@ export function createFooter({ onSend, onShowSettings }) {
   // Copy Markdown
   const copyBtn = document.createElement('button');
   copyBtn.setAttribute(ATTR, 'copy-md');
+  copyBtn.setAttribute('data-tooltip', 'Copy as Markdown for Jira/GitHub');
   copyBtn.replaceChildren(docIcon(14), document.createTextNode('Copy MD'));
   Object.assign(copyBtn.style, { ...BTN_STYLE, background: 'transparent', color: COLOR.secondary, flex: '1', border: `1px solid ${COLOR.border}` });
   copyBtn.title = 'Copy as Markdown';
@@ -77,6 +79,7 @@ export function createFooter({ onSend, onShowSettings }) {
   // Download Report
   const dlBtn = document.createElement('button');
   dlBtn.setAttribute(ATTR, 'download');
+  dlBtn.setAttribute('data-tooltip', 'Download ZIP report with screenshots');
   dlBtn.replaceChildren(downloadIcon(14), document.createTextNode('Report'));
   Object.assign(dlBtn.style, { ...BTN_STYLE, background: 'transparent', color: COLOR.secondary, flex: '1', border: `1px solid ${COLOR.border}` });
   dlBtn.title = 'Download Report (Markdown + Screenshots)';

@@ -40,6 +40,7 @@ import { createFooter } from './sidebar/footer.js';
 import { createModeBar, MODE_ICONS, MODE_HINTS } from './sidebar/mode-bar.js';
 import { showTrustGate } from './sidebar/trust-gate.js';
 import { sendIcon, checkIcon } from './sidebar/icons.js';
+import { createTooltip } from './tooltip.js';
 import { COLOR } from './sidebar/styles.js';
 import { KEYS, set as storageSet } from './storage.js';
 import { discoverServer, getAgentName, classifyTrust } from './constants.js';
@@ -68,6 +69,7 @@ let _header = null;
 let _footer = null;
 let _modeBar = null;
 let _popstateHandler = null;
+let _tooltip = null;
 
 /** Create and mount the sidebar. */
 export function create() {
@@ -291,6 +293,7 @@ export function create() {
   const scrollStyle = document.createElement('style');
   scrollStyle.textContent = `:host{scrollbar-color:#2a2a3a transparent}*::-webkit-scrollbar{width:8px}*::-webkit-scrollbar-track{background:transparent}*::-webkit-scrollbar-thumb{background:#2a2a3a;border-radius:4px}*::-webkit-scrollbar-thumb:hover{background:#3a3a4a}@keyframes vg-bell-pulse{0%,100%{transform:rotate(0)}15%{transform:rotate(14deg)}30%{transform:rotate(-14deg)}45%{transform:rotate(8deg)}60%{transform:rotate(-8deg)}75%{transform:rotate(0)}}@keyframes vg-pulse{0%,100%{opacity:1}50%{opacity:0.3}}`;
   shadow.append(scrollStyle, sidebarEl);
+  _tooltip = createTooltip(shadow);
   document.documentElement.appendChild(hostEl);
 
   // ── Collapsed strip ──
@@ -543,6 +546,7 @@ export function destroy() {
   if (hostEl) { hostEl.remove(); hostEl = null; }
   if (sidebarEl) { sidebarEl = null; }
   _shadowRoot = null;
+  if (_tooltip) { _tooltip.destroy(); _tooltip = null; }
   if (badgeEl) { badgeEl.remove(); badgeEl = null; }
   _header = null;
   _footer = null;
