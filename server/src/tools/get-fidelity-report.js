@@ -11,8 +11,7 @@ import { readFile } from 'fs/promises';
 import path from 'path';
 import { PROJECT_NAME } from '#src/constants.js';
 import { parseSnapshot, compareFidelity } from '#src/analysis/fidelity.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
-import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
+import { jsonResponse, errorResponse, readAndParse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the get_fidelity_report MCP tool.
@@ -29,22 +28,13 @@ export function register(server, _indexer, capturesDir) {
       filename: z.string().describe('Capture JSON filename (e.g., viewgraph-localhost-20260408-120612.json)'),
     },
     async ({ filename }) => {
-      let capturePath;
-      try {
-        capturePath = validateCapturePath(filename, capturesDir);
-      } catch {
-        return errorResponse(`Error: Invalid filename "${filename}"`);
-      }
+      const { ok, parsed, error } = await readAndParse(filename, capturesDir);
+      if (!ok) return error;
 
       const stem = filename.replace(/\.json$/, '');
       const snapshotPath = path.join(capturesDir, '..', 'snapshots', `${stem}.html`);
 
-      let captureJson, snapshotHtml;
-      try {
-        captureJson = JSON.parse(await readFile(capturePath, 'utf-8'));
-      } catch {
-        return errorResponse(`Error: Capture "${filename}" not found`);
-      }
+      let snapshotHtml;
       try {
         snapshotHtml = await readFile(snapshotPath, 'utf-8');
       } catch {
@@ -52,7 +42,7 @@ export function register(server, _indexer, capturesDir) {
       }
 
       const snapshot = parseSnapshot(snapshotHtml);
-      const report = compareFidelity(captureJson, snapshot);
+      const report = compareFidelity(parsed, snapshot);
       report.captureFile = filename;
       report.snapshotFile = `${stem}.html`;
 

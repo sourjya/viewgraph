@@ -10,12 +10,10 @@
  */
 
 import { z } from 'zod';
-import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
 import { wrapComment } from '#src/utils/sanitize.js';
 import { generateSpec } from '#src/analysis/spec-generator.js';
-import { jsonResponse } from '#src/utils/tool-helpers.js';
+import { jsonResponse, readAndParseMulti } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the generate_spec MCP tool.
@@ -34,20 +32,16 @@ export function register(server, indexer, capturesDir) {
     },
     async ({ filenames, spec_name }) => {
       const sources = filenames || indexer.list().map((e) => e.filename);
+      const results = await readAndParseMulti(sources, capturesDir);
       const annotations = [];
-
-      for (const filename of sources) {
-        try {
-          const filePath = validateCapturePath(filename, capturesDir);
-          const raw = JSON.parse(await readFile(filePath, 'utf-8'));
-          if (!raw.annotations?.length) continue;
-          for (const ann of raw.annotations) {
-            annotations.push({
-              comment: wrapComment(ann.comment), severity: ann.severity, category: ann.category,
-              selector: ann.ancestor, page: raw.metadata?.url, resolved: ann.resolved,
-            });
-          }
-        } catch { continue; }
+      for (const { parsed } of results) {
+        if (!parsed.annotations?.length) continue;
+        for (const ann of parsed.annotations) {
+          annotations.push({
+            comment: wrapComment(ann.comment), severity: ann.severity, category: ann.category,
+            selector: ann.ancestor, page: parsed.metadata?.url, resolved: ann.resolved,
+          });
+        }
       }
 
       if (annotations.length === 0) {

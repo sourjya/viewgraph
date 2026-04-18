@@ -9,12 +9,9 @@
  */
 
 import { z } from 'zod';
-import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
-import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { flattenNodes } from '#src/analysis/node-queries.js';
-import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
+import { jsonResponse, errorResponse, readAndParseMulti } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the analyze_journey MCP tool.
@@ -31,16 +28,8 @@ export function register(server, _indexer, capturesDir) {
       filenames: z.array(z.string()).min(2).max(20).describe('Capture filenames in step order'),
     },
     async ({ filenames }) => {
-      const steps = [];
-      for (const filename of filenames) {
-        try {
-          const filePath = validateCapturePath(filename, capturesDir);
-          const raw = await readFile(filePath, 'utf-8');
-          const result = parseCapture(raw);
-          if (!result.ok) continue;
-          steps.push({ filename, data: result.data });
-        } catch { continue; }
-      }
+      const results = await readAndParseMulti(filenames, capturesDir);
+      const steps = results.map((r) => ({ filename: r.filename, data: r.parsed }));
 
       if (steps.length < 2) {
         return errorResponse('Need at least 2 valid captures to analyze a journey');

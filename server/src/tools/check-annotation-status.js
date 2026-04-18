@@ -13,12 +13,9 @@
  */
 
 import { z } from 'zod';
-import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
+import { jsonResponse, readAndParsePair } from '#src/utils/tool-helpers.js';
 import { wrapComment } from '#src/utils/sanitize.js';
-import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { flattenNodes } from '#src/analysis/node-queries.js';
 
 /**
@@ -37,26 +34,8 @@ export function register(server, indexer, capturesDir) {
       latest_capture: z.string().describe('Filename of the newer capture to check against'),
     },
     async ({ annotated_capture, latest_capture }) => {
-      let annotatedPath, latestPath;
-      try { annotatedPath = validateCapturePath(annotated_capture, capturesDir); } catch (e) {
-        return errorResponse(`Error: ${e.message}`);
-      }
-      try { latestPath = validateCapturePath(latest_capture, capturesDir); } catch (e) {
-        return errorResponse(`Error: ${e.message}`);
-      }
-
-      let annotatedData, latestData;
-      try {
-        const rawA = await readFile(annotatedPath, 'utf-8');
-        const rawL = await readFile(latestPath, 'utf-8');
-        const parsedA = JSON.parse(rawA);
-        const parsedL = parseCapture(rawL);
-        if (!parsedL.ok) return errorResponse('Error: Could not parse latest capture');
-        annotatedData = parsedA;
-        latestData = parsedL.data;
-      } catch (e) {
-        return errorResponse(`Error reading captures: ${e.message}`);
-      }
+      const { ok, a: annotatedData, b: latestData, error } = await readAndParsePair(annotated_capture, latest_capture, capturesDir);
+      if (!ok) return error;
 
       const annotations = annotatedData.annotations || [];
       if (annotations.length === 0) {

@@ -11,10 +11,8 @@
  * @see docs/roadmap/roadmap.md - Capture Sessions
  */
 
-import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
-import { jsonResponse } from '#src/utils/tool-helpers.js';
+import { jsonResponse, readAndParseMulti } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the list_sessions MCP tool.
@@ -29,29 +27,26 @@ export function register(server, indexer, capturesDir) {
     'into named user journeys (e.g., "checkout flow"). Returns session ID, name, step count, and time range.',
     {},
     async () => {
+      const filenames = indexer.list().map((e) => e.filename);
+      const results = await readAndParseMulti(filenames, capturesDir);
       const sessions = {};
-      for (const entry of indexer.list()) {
-        let filePath;
-        try { filePath = validateCapturePath(entry.filename, capturesDir); } catch { continue; }
-        try {
-          const raw = JSON.parse(await readFile(filePath, 'utf-8'));
-          const session = raw.metadata?.session;
-          if (!session?.id) continue;
-          if (!sessions[session.id]) {
-            sessions[session.id] = {
-              id: session.id,
-              name: session.name || null,
-              steps: [],
-            };
-          }
-          sessions[session.id].steps.push({
-            step: session.step,
-            note: session.note || null,
-            filename: entry.filename,
-            url: raw.metadata?.url,
-            timestamp: raw.metadata?.timestamp,
-          });
-        } catch { continue; }
+      for (const { filename, parsed } of results) {
+        const session = parsed.metadata?.session;
+        if (!session?.id) continue;
+        if (!sessions[session.id]) {
+          sessions[session.id] = {
+            id: session.id,
+            name: session.name || null,
+            steps: [],
+          };
+        }
+        sessions[session.id].steps.push({
+          step: session.step,
+          note: session.note || null,
+          filename,
+          url: parsed.metadata?.url,
+          timestamp: parsed.metadata?.timestamp,
+        });
       }
 
       // Sort steps within each session and compute time range

@@ -9,11 +9,8 @@
  */
 
 import { z } from 'zod';
-import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
-import { parseCapture } from '#src/parsers/viewgraph-v2.js';
+import { jsonResponse, errorResponse, readAndParsePair } from '#src/utils/tool-helpers.js';
 import { getNodeDetails } from '#src/analysis/node-queries.js';
 
 /**
@@ -33,26 +30,11 @@ export function register(server, _indexer, capturesDir) {
       element_id: z.string().describe('Node ID to compare (e.g., "btn001")'),
     },
     async ({ file_a, file_b, element_id }) => {
-      let pathA, pathB;
-      try { pathA = validateCapturePath(file_a, capturesDir); } catch {
-        return errorResponse(`Error: Invalid filename - ${file_a}`);
-      }
-      try { pathB = validateCapturePath(file_b, capturesDir); } catch {
-        return errorResponse(`Error: Invalid filename - ${file_b}`);
-      }
+      const { ok, a, b, error } = await readAndParsePair(file_a, file_b, capturesDir);
+      if (!ok) return error;
 
-      let capA, capB;
-      try {
-        const [rawA, rawB] = await Promise.all([readFile(pathA, 'utf-8'), readFile(pathB, 'utf-8')]);
-        capA = parseCapture(rawA);
-        capB = parseCapture(rawB);
-        if (!capA.ok || !capB.ok) return errorResponse('Error: Failed to parse captures');
-      } catch (err) {
-        return errorResponse(`Error: ${err.message}`);
-      }
-
-      const detailsA = getNodeDetails(capA.data, element_id);
-      const detailsB = getNodeDetails(capB.data, element_id);
+      const detailsA = getNodeDetails(a, element_id);
+      const detailsB = getNodeDetails(b, element_id);
 
       if (!detailsA && !detailsB) {
         return errorResponse(`Error: Element "${element_id}" not found in either capture`);

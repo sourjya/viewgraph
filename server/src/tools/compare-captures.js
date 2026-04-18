@@ -6,11 +6,8 @@
  */
 
 import { z } from 'zod';
-import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
-import { parseCapture } from '#src/parsers/viewgraph-v2.js';
+import { jsonResponse, errorResponse, readAndParsePair } from '#src/utils/tool-helpers.js';
 import { diffCaptures } from '#src/analysis/capture-diff.js';
 
 /**
@@ -30,23 +27,10 @@ export function register(server, _indexer, capturesDir) {
       file_b: z.string().describe('Second capture filename (after)'),
     },
     async ({ file_a, file_b }) => {
-      let pathA, pathB;
-      try { pathA = validateCapturePath(file_a, capturesDir); } catch {
-        return errorResponse(`Error: Invalid filename - ${file_a}`);
-      }
-      try { pathB = validateCapturePath(file_b, capturesDir); } catch {
-        return errorResponse(`Error: Invalid filename - ${file_b}`);
-      }
+      const { ok, a, b, error } = await readAndParsePair(file_a, file_b, capturesDir);
+      if (!ok) return error;
       try {
-        const [contentA, contentB] = await Promise.all([
-          readFile(pathA, 'utf-8'), readFile(pathB, 'utf-8'),
-        ]);
-        const resultA = parseCapture(contentA);
-        const resultB = parseCapture(contentB);
-        if (!resultA.ok) return errorResponse(`Error parsing ${file_a}: ${resultA.error}`);
-        if (!resultB.ok) return errorResponse(`Error parsing ${file_b}: ${resultB.error}`);
-
-        const diff = diffCaptures(resultA.data, resultB.data);
+        const diff = diffCaptures(a, b);
         const summary = {
           added: diff.added.map((n) => ({ id: n.id, tag: n.tag, text: n.text })),
           removed: diff.removed.map((n) => ({ id: n.id, tag: n.tag, text: n.text })),

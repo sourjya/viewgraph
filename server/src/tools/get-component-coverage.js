@@ -9,11 +9,8 @@
  */
 
 import { z } from 'zod';
-import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
-import { parseCapture } from '#src/parsers/viewgraph-v2.js';
+import { jsonResponse, readAndParse } from '#src/utils/tool-helpers.js';
 import { flattenNodes, filterInteractive, getNodeDetails } from '#src/analysis/node-queries.js';
 
 /**
@@ -31,24 +28,12 @@ export function register(server, _indexer, capturesDir) {
       filename: z.string().describe('Capture filename'),
     },
     async ({ filename }) => {
-      let filePath;
-      try { filePath = validateCapturePath(filename, capturesDir); } catch {
-        return errorResponse(`Error: Invalid filename - ${filename}`);
-      }
+      const { ok, parsed, error } = await readAndParse(filename, capturesDir);
+      if (!ok) return error;
 
-      let parsed;
-      try {
-        const raw = await readFile(filePath, 'utf-8');
-        parsed = parseCapture(raw);
-        if (!parsed.ok) return errorResponse('Error: Failed to parse capture');
-      } catch (err) {
-        if (err.code === 'ENOENT') return errorResponse(`Error: Capture not found: ${filename}`);
-        return errorResponse(`Error: ${err.message}`);
-      }
-
-      const allNodes = flattenNodes(parsed.data);
+      const allNodes = flattenNodes(parsed);
       const interactive = filterInteractive(allNodes);
-      const components = parsed.data.enrichment?.components?.tree || [];
+      const components = parsed.enrichment?.components?.tree || [];
 
       // Build component -> node mapping from enrichment data
       // Components collector stores: { name, nodeIds, framework }
@@ -68,7 +53,7 @@ export function register(server, _indexer, capturesDir) {
         // Use data-component, data-testid prefix, or tag as fallback grouping
         const groups = new Map();
         for (const node of interactive) {
-          const details = getNodeDetails(parsed.data, node.id);
+          const details = getNodeDetails(parsed, node.id);
           const group = details?.attributes?.['data-component'] || node.tag || 'unknown';
           if (!groups.has(group)) groups.set(group, []);
           groups.get(group).push({ id: node.id, details });
@@ -109,7 +94,7 @@ export function register(server, _indexer, capturesDir) {
       for (const [name, comp] of componentMap) {
         const compInteractive = comp.nodeIds.filter((id) => interactiveIds.has(id));
         const withTestid = compInteractive.filter((id) => {
-          const details = getNodeDetails(parsed.data, id);
+          const details = getNodeDetails(parsed, id);
           return details?.attributes?.['data-testid'];
         });
 
@@ -121,7 +106,7 @@ export function register(server, _indexer, capturesDir) {
           missingTestid: compInteractive.length - withTestid.length,
           coverage: compInteractive.length > 0 ? Math.round((withTestid.length / compInteractive.length) * 100) : 100,
           missingElements: compInteractive.filter((id) => {
-            const details = getNodeDetails(parsed.data, id);
+            const details = getNodeDetails(parsed, id);
             return !details?.attributes?.['data-testid'];
           }),
         });

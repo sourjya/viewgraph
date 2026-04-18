@@ -10,12 +10,9 @@
  */
 
 import { z } from 'zod';
-import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { validateCapturePath } from '#src/utils/validate-path.js';
-import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { buildStateMachine } from '#src/analysis/state-machine.js';
-import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
+import { jsonResponse, errorResponse, readAndParseMulti } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the visualize_flow MCP tool.
@@ -32,21 +29,15 @@ export function register(server, _indexer, capturesDir) {
       filenames: z.array(z.string()).min(2).max(20).describe('Capture filenames in step order'),
     },
     async ({ filenames }) => {
-      const steps = [];
-      for (let i = 0; i < filenames.length; i++) {
-        try {
-          const filePath = validateCapturePath(filenames[i], capturesDir);
-          const raw = await readFile(filePath, 'utf-8');
-          const result = parseCapture(raw);
-          if (!result.ok) continue;
-          const session = result.data.session;
-          steps.push({
-            step: session?.step ?? i + 1,
-            note: session?.note || result.data.metadata?.title || `Step ${i + 1}`,
-            parsed: result.data,
-          });
-        } catch { continue; }
-      }
+      const results = await readAndParseMulti(filenames, capturesDir);
+      const steps = results.map((r, i) => {
+        const session = r.parsed.session;
+        return {
+          step: session?.step ?? i + 1,
+          note: session?.note || r.parsed.metadata?.title || `Step ${i + 1}`,
+          parsed: r.parsed,
+        };
+      });
 
       if (steps.length < 2) {
         return errorResponse('Need at least 2 valid captures to build a flow');
