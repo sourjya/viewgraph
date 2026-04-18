@@ -2,7 +2,7 @@
 
 When you run `viewgraph-init` in a Kiro project, ViewGraph installs hooks, prompts, and steering docs that automate common workflows. These work in both Kiro IDE and Kiro CLI.
 
-## Hooks (8)
+## Hooks (3)
 
 | Hook | Trigger | What it does |
 |---|---|---|
@@ -10,7 +10,7 @@ When you run `viewgraph-init` in a Kiro project, ViewGraph installs hooks, promp
 | **Fix ViewGraph Annotations** | Manual (IDE sidebar) or `@vg-review` (CLI) | Pulls unresolved annotations, maps them to source files, implements fixes in sequence, marks each resolved. |
 | **Check TestID Coverage** | Auto on UI file edit | When you edit `.html`, `.jsx`, `.tsx`, `.vue`, `.svelte`, or `.css` files, checks if interactive elements in recent captures are missing `data-testid`. |
 
-## Prompt Shortcuts (8)
+## Prompt Shortcuts (9)
 
 In Kiro CLI, type `@vg` then Tab to see all shortcuts:
 
@@ -23,9 +23,10 @@ In Kiro CLI, type `@vg` then Tab to see all shortcuts:
 | `@vg-testids` | Find and add missing data-testid attributes |
 | `@vg-a11y` | Deep a11y audit with automatic source fixes |
 | `@vg-tests` | Generate Playwright E2E tests from capture |
+| `@vg-ideate` | Generate feature specs from idea-mode annotations |
 | `@vg-help` | List all ViewGraph tools with explanations |
 
-## Steering Docs (4)
+## Steering Docs (3)
 
 Installed to `.kiro/steering/` to guide the agent's behavior:
 
