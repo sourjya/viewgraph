@@ -103,7 +103,7 @@ export function create() {
       if (!_header) return;
       if (url) {
         _header.statusDot.style.background = COLOR.success;
-        _header.statusDot.title = `MCP server: ${url}`;
+        _header.statusDot.setAttribute('data-tooltip', `MCP server: ${url}`);
         _header.statusBanner.style.display = 'none';
         try {
           const info = await transport.getInfo();
@@ -127,7 +127,7 @@ export function create() {
         } catch (e) { console.error('[ViewGraph] info/trust error:', e); }
       } else {
         _header.statusDot.style.background = COLOR.errorLight;
-        _header.statusDot.title = 'MCP server offline';
+        _header.statusDot.setAttribute('data-tooltip', 'MCP server offline');
         _header.statusBanner.textContent = 'No project connected. Copy MD and Report available.';
         _header.statusBanner.style.display = 'block';
         _footer.setOfflineMode();

@@ -37,7 +37,7 @@ export function createStrip(opts) {
   stripIcon.width = 28;
   stripIcon.height = 28;
   Object.assign(stripIcon.style, { cursor: 'pointer', padding: '2px' });
-  stripIcon.title = 'ViewGraph';
+  stripIcon.setAttribute('data-tooltip', 'ViewGraph');
   stripIcon.addEventListener('click', onExpand);
   el.appendChild(stripIcon);
 
@@ -48,7 +48,7 @@ export function createStrip(opts) {
     border: 'none', background: 'transparent', color: COLOR.primaryLight,
     cursor: 'pointer', padding: '2px', borderRadius: '4px', display: 'flex',
   });
-  expandBtn.title = 'Expand sidebar';
+  expandBtn.setAttribute('data-tooltip', 'Expand sidebar');
   expandBtn.addEventListener('click', onExpand);
   el.appendChild(expandBtn);
 
@@ -62,7 +62,7 @@ export function createStrip(opts) {
   for (const [key, icon] of Object.entries(modeIcons)) {
     const btn = document.createElement('button');
     btn.innerHTML = icon.replace(/width="16" height="16"/, 'width="28" height="28"');
-    btn.title = modeHints[key];
+    btn.setAttribute('data-tooltip', modeHints[key]);
     btn.dataset.mode = key;
     Object.assign(btn.style, {
       border: 'none', background: 'transparent', color: COLOR.secondary,

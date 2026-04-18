@@ -170,7 +170,7 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
     btn.setAttribute(ATTR, 'type-filter');
     btn.dataset.type = ft.key;
     btn.innerHTML = getFilterIcon(ft.key);
-    btn.title = ft.label;
+    btn.setAttribute('data-tooltip', ft.label);
     const isOn = activeTypeFilters.has(ft.key) || (ft.key === 'element' && activeTypeFilters.has('region'));
     Object.assign(btn.style, {
       border: 'none', borderRadius: '4px', padding: '3px 6px', cursor: 'pointer',
@@ -188,7 +188,7 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
   const trashBtn = document.createElement('button');
   trashBtn.setAttribute(ATTR, 'trash');
   trashBtn.appendChild(trashIcon(12, COLOR.muted));
-  trashBtn.title = 'Clear all annotations';
+  trashBtn.setAttribute('data-tooltip', 'Clear all annotations');
   Object.assign(trashBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
     padding: '6px 8px', display: 'flex', alignItems: 'center', flexShrink: '0',
@@ -277,7 +277,7 @@ function createRequestEntry(req, callbacks) {
 
   const capBtn = document.createElement('button');
   capBtn.appendChild(cameraIcon(16));
-  capBtn.title = 'Capture now';
+  capBtn.setAttribute('data-tooltip', 'Capture now');
   Object.assign(capBtn.style, {
     padding: '5px', border: 'none', borderRadius: '6px',
     background: COLOR.warning, color: '#000', display: 'flex', cursor: 'pointer',
@@ -286,7 +286,7 @@ function createRequestEntry(req, callbacks) {
 
   const decBtn = document.createElement('button');
   decBtn.appendChild(closeIcon(16, 'currentColor'));
-  decBtn.title = 'Decline capture request';
+  decBtn.setAttribute('data-tooltip', 'Decline capture request');
   Object.assign(decBtn.style, {
     padding: '5px', border: `1px solid ${COLOR.border}`, borderRadius: '6px',
     background: 'transparent', color: COLOR.secondary, display: 'flex', cursor: 'pointer',
@@ -390,7 +390,7 @@ function createEntry(ann, callbacks) {
     padding: '1px 5px', borderRadius: '3px', marginRight: '3px',
     fontFamily: FONT, flexShrink: '0',
   });
-  numBadge.title = `Annotation ${ann.id}`;
+  numBadge.setAttribute('data-tooltip', `Annotation ${ann.id}`);
   line1.appendChild(numBadge);
 
   if (ann.severity) {
@@ -403,7 +403,7 @@ function createEntry(ann, callbacks) {
       padding: '1px 4px', borderRadius: '3px',
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
     });
-    sevIcon.title = ann.severity;
+    sevIcon.setAttribute('data-tooltip', ann.severity);
     line1.appendChild(sevIcon);
   } else {
     const spacer = document.createElement('span');
@@ -449,14 +449,14 @@ function createEntry(ann, callbacks) {
       color: COLOR.dim, fontSize: '9px', cursor: 'pointer', flexShrink: '0',
       marginLeft: '4px', transition: 'transform 0.15s', userSelect: 'none',
     });
-    chevron.title = 'Expand comment';
+    chevron.setAttribute('data-tooltip', 'Expand comment');
     chevron.addEventListener('click', (e) => {
       e.stopPropagation();
       expanded = !expanded;
       line1.style.whiteSpace = expanded ? 'normal' : 'nowrap';
       line1.style.maxHeight = expanded ? '120px' : '20px';
       chevron.style.transform = expanded ? 'rotate(90deg)' : '';
-      chevron.title = expanded ? 'Collapse comment' : 'Expand comment';
+      chevron.setAttribute('data-tooltip', expanded ? 'Collapse comment' : 'Expand comment');
     });
     line1.appendChild(chevron);
   }
@@ -497,7 +497,7 @@ function createEntry(ann, callbacks) {
     const resolveBtn = document.createElement('button');
     resolveBtn.setAttribute(ATTR, 'btn');
     resolveBtn.appendChild(circleIcon(12, COLOR.muted));
-    resolveBtn.title = 'Mark resolved';
+    resolveBtn.setAttribute('data-tooltip', 'Mark resolved');
     Object.assign(resolveBtn.style, { border: 'none', background: 'transparent', cursor: 'pointer', padding: '2px', flexShrink: '0' });
     resolveBtn.addEventListener('click', (e) => {
       e.stopPropagation();

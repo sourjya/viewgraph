@@ -65,7 +65,7 @@ export function showTrustGate(parent, anchorBtn, { onSend, onTrustUpdated, shado
       onTrustUpdated(newTrust);
       // Update shield in shadow DOM
       const shield = shadowRoot?.querySelector(`[${ATTR}="trust-shield"]`);
-      if (shield) { shield.replaceChildren(shieldIcon(16, '#60a5fa', 'check')); shield.title = `configured: ${hostname}`; }
+      if (shield) { shield.replaceChildren(shieldIcon(16, '#60a5fa', 'check')); shield.setAttribute('data-tooltip', `configured: ${hostname}`); }
     } catch { /* best effort */ }
     gate.remove();
     onSend();

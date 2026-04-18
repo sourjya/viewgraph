@@ -143,7 +143,7 @@ function renderExpanded(wrapper, suggestions, callbacks) {
     // Add button - text style to distinguish from annotation action icons
     const addBtn = document.createElement('button');
     addBtn.textContent = 'Add';
-    addBtn.title = 'Add to review list';
+    addBtn.setAttribute('data-tooltip', 'Add to review list');
     Object.assign(addBtn.style, {
       border: 'none', background: 'transparent',
       color: COLOR.primary, fontSize: '10px', fontWeight: '600', cursor: 'pointer',

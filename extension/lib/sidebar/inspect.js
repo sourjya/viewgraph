@@ -79,7 +79,7 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
   copyBtn.setAttribute(ATTR, 'section-copy');
   copyBtn.dataset.section = title;
   copyBtn.appendChild(copyIcon(12));
-  copyBtn.title = `Copy ${title} data`;
+  copyBtn.setAttribute('data-tooltip', `Copy ${title} data`);
   Object.assign(copyBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer', color: COLOR.dim,
     padding: '2px', borderRadius: '3px', display: 'flex', flexShrink: '0',
@@ -107,7 +107,7 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
   noteBtn.setAttribute(ATTR, 'section-note');
   noteBtn.dataset.section = title;
   noteBtn.appendChild(noteIcon(14));
-  noteBtn.title = 'Add as note for agent';
+  noteBtn.setAttribute('data-tooltip', 'Add as note for agent');
   const alreadyNoted = getAnnotations().some((a) => a.diagnostic?.section === title);
   Object.assign(noteBtn.style, {
     border: 'none', background: 'transparent', cursor: alreadyNoted ? 'default' : 'pointer',
@@ -117,7 +117,7 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
   });
   if (alreadyNoted) {
     noteBtn.replaceChildren(checkIcon(12, COLOR.success));
-    noteBtn.title = 'Note added';
+    noteBtn.setAttribute('data-tooltip', 'Note added');
   }
   noteBtn.addEventListener('mouseenter', () => { noteBtn.style.color = COLOR.primaryHover; });
   noteBtn.addEventListener('mouseleave', () => { if (noteBtn.dataset.noted !== 'true') noteBtn.style.color = COLOR.primary; });
@@ -134,7 +134,7 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
       noteBtn.style.color = COLOR.success;
       noteBtn.style.opacity = '0.4';
       noteBtn.style.pointerEvents = 'none';
-      noteBtn.title = 'Note added';
+      noteBtn.setAttribute('data-tooltip', 'Note added');
     }
   });
   headerRow.appendChild(noteBtn);

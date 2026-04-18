@@ -68,7 +68,7 @@ export async function renderCaptures(container) {
   const copyBtn = document.createElement('button');
   copyBtn.setAttribute(ATTR, 'copy-id');
   copyBtn.textContent = 'Copy';
-  copyBtn.title = 'Copy capture ID';
+  copyBtn.setAttribute('data-tooltip', 'Copy capture ID');
   Object.assign(copyBtn.style, { border: 'none', background: COLOR.bgDark, color: COLOR.muted, fontSize: '10px', padding: '1px 6px', borderRadius: '3px', cursor: 'pointer', flexShrink: '0', fontFamily: FONT });
   copyBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(latest.filename).then(() => {
