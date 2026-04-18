@@ -140,18 +140,18 @@ function renderExpanded(wrapper, suggestions, callbacks) {
       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
     });
 
-    // Add button - text style to distinguish from annotation action icons
+    // Add button - plus icon with shaded background
     const addBtn = document.createElement('button');
-    addBtn.textContent = 'Add';
+    addBtn.textContent = '+';
     addBtn.setAttribute('data-tooltip', 'Add to review list');
     Object.assign(addBtn.style, {
-      border: 'none', background: 'transparent',
-      color: COLOR.primary, fontSize: '10px', fontWeight: '600', cursor: 'pointer',
-      padding: '2px 6px', flexShrink: '0', fontFamily: FONT,
-      transition: 'color 0.15s',
+      border: 'none', background: 'rgba(99,102,241,0.15)',
+      color: COLOR.primary, fontSize: '14px', fontWeight: '700', cursor: 'pointer',
+      padding: '0 6px', flexShrink: '0', fontFamily: FONT, borderRadius: '4px',
+      lineHeight: '22px', transition: 'background 0.15s',
     });
-    addBtn.addEventListener('mouseenter', () => { addBtn.style.color = COLOR.primaryHover; });
-    addBtn.addEventListener('mouseleave', () => { addBtn.style.color = COLOR.primary; });
+    addBtn.addEventListener('mouseenter', () => { addBtn.style.background = 'rgba(99,102,241,0.3)'; });
+    addBtn.addEventListener('mouseleave', () => { addBtn.style.background = 'rgba(99,102,241,0.15)'; });
     addBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       row.style.opacity = '0';
