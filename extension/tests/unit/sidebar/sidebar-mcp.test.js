@@ -35,7 +35,30 @@ describe('sidebar MCP disconnected state', () => {
       expect(banner?.style.display).toBe('block');
     });
     const banner = shadowQuery(`[${ATTR}="status-banner"]`);
-    expect(banner.textContent).toContain('No project connected');
+    expect(banner.textContent).toContain('No server connected');
+  });
+
+  it('(+) offline banner shows restart hint', async () => {
+    start();
+    create();
+    await vi.waitFor(() => {
+      const banner = shadowQuery(`[${ATTR}="status-banner"]`);
+      expect(banner?.style.display).toBe('block');
+    });
+    const banner = shadowQuery(`[${ATTR}="status-banner"]`);
+    expect(banner.textContent).toContain('Restart your AI agent');
+    expect(banner.textContent).toContain('viewgraph-init');
+  });
+
+  it('(+) offline status dot tooltip mentions restart', async () => {
+    start();
+    create();
+    await vi.waitFor(() => {
+      const dot = shadowQuery(`[${ATTR}="status-dot"]`);
+      expect(dot?.getAttribute('data-tooltip')).toContain('offline');
+    });
+    const dot = shadowQuery(`[${ATTR}="status-dot"]`);
+    expect(dot.getAttribute('data-tooltip')).toContain('restart');
   });
 
   it('(+) hides Send button and promotes exports when MCP server is offline', async () => {
