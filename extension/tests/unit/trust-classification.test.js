@@ -108,4 +108,14 @@ describe('classifyTrust', () => {
     // 'localhost:3000' doesn't substring-match 'evil.com:3000'
     expect(r.level).toBe('untrusted');
   });
+
+  it('(-) S5-6: query param containing trusted pattern does not bypass trust gate', () => {
+    const r = classifyTrust('https://evil.com/redirect?to=staging.myapp.com', ['staging.myapp.com']);
+    expect(r.level).toBe('untrusted');
+  });
+
+  it('(-) S5-6: path containing trusted pattern does not bypass trust gate', () => {
+    const r = classifyTrust('https://evil.com/staging.myapp.com/page', ['staging.myapp.com']);
+    expect(r.level).toBe('untrusted');
+  });
 });

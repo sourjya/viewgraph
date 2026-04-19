@@ -209,4 +209,35 @@ describe('server lifecycle', () => {
     child.kill('SIGTERM');
     await exitPromise;
   }, 10000);
+
+  it('S8-1: logs fallback mode when idle timeout=0 and stdin closes', async () => {
+    const { child, exitPromise, getStderr } = spawnServer({
+      VIEWGRAPH_HTTP_PORT: '19881',
+      VIEWGRAPH_IDLE_TIMEOUT_MINUTES: '0',
+    });
+
+    await new Promise((resolve) => {
+      child.stderr.on('data', (chunk) => {
+        if (chunk.toString().includes('MCP server running')) resolve();
+      });
+      setTimeout(resolve, 3000);
+    });
+
+    // Close stdin - should switch to HTTP-only mode even with timeout=0
+    child.stdin.end();
+
+    await new Promise((resolve) => {
+      child.stderr.on('data', (chunk) => {
+        if (chunk.toString().includes('HTTP-only mode')) resolve();
+      });
+      setTimeout(resolve, 3000);
+    });
+
+    expect(getStderr()).toContain('HTTP-only mode');
+    // Server should still be alive (fallback timer is 60 min, not immediate)
+    expect(child.killed).toBe(false);
+
+    child.kill('SIGTERM');
+    await exitPromise;
+  }, 10000);
 });
