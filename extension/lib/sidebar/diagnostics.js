@@ -20,6 +20,7 @@ import { collectScrollContainers } from '#lib/collectors/scroll-collector.js';
 import { collectLandmarks } from '#lib/collectors/landmark-collector.js';
 import { checkRendered } from '#lib/collectors/visibility-collector.js';
 import { collectStorage } from '#lib/collectors/storage-collector.js';
+import { collectTransient } from '#lib/collectors/transient-collector.js';
 import { collectCSSCustomProperties } from '#lib/collectors/css-custom-properties-collector.js';
 import { groupRequests, smartPath } from '#lib/network-grouper.js';
 import { createSection } from './inspect.js';
@@ -259,9 +260,30 @@ export function renderDiagnostics(container, callbacks = {}) {
     container.appendChild(cssSection);
   }
 
+  // Transient UI state section (ADR-014)
+  const transientData = collectTransient();
+  if (transientData.issues.length > 0 || transientData.timeline.length > 0) {
+    const badge = transientData.issues.length > 0 ? `${transientData.issues.length} issues` : `${transientData.timeline.length} events`;
+    const { section: transientSection, body: transientBody } = createSection('Transient', badge, '#f59e0b', callbacks.onRefresh);
+    for (const issue of transientData.issues) {
+      const row = document.createElement('div');
+      Object.assign(row.style, { fontSize: '11px', padding: '2px 0', color: issue.severity === 'major' ? COLOR.errorLight : COLOR.warning });
+      row.textContent = issue.message;
+      transientBody.appendChild(row);
+    }
+    if (transientData.timeline.length > 0 && transientData.issues.length === 0) {
+      const row = document.createElement('div');
+      Object.assign(row.style, { fontSize: '10px', color: COLOR.muted, padding: '2px 0' });
+      row.textContent = `${transientData.timeline.length} DOM changes in last 30s (no issues)`;
+      transientBody.appendChild(row);
+    }
+    container.appendChild(transientSection);
+  }
+
   // Empty state: all diagnostics clean
   const hasIssues = failedReqs.length > 0 || errCount > 0 || lmIssues > 0
-    || hiddenList.length > 0 || (stacking.issues?.length > 0) || (focus.issues?.length > 0);
+    || hiddenList.length > 0 || (stacking.issues?.length > 0) || (focus.issues?.length > 0)
+    || transientData.issues.length > 0;
   if (!hasIssues) {
     const cleanRow = document.createElement('div');
     cleanRow.setAttribute(ATTR, 'inspect-clean');
