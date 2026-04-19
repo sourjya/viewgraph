@@ -134,7 +134,7 @@ describe('settings card design', () => {
     const s = createSettings();
     const card = s.element.querySelector('[data-vg-annotate="server-card"]');
     expect(card).not.toBeNull();
-    expect(card.children.length).toBe(3); // header, body, footer
+    expect(card.children.length).toBe(4); // header, body, footer, all-servers
   });
 
   it('(+) body is always visible (never display:none)', () => {
@@ -268,5 +268,25 @@ describe('settings card design', () => {
   it('(+) settings screen has bottom offset to not cover footer', () => {
     const s = createSettings();
     expect(s.element.style.bottom).toBe('42px');
+  });
+
+  it('(+) all-servers section exists and starts hidden', () => {
+    const s = createSettings();
+    const section = s.element.querySelector('[data-vg-annotate="all-servers"]');
+    expect(section).toBeTruthy();
+    expect(section.style.display).toBe('none');
+  });
+
+  it('(+) All servers link toggles section visibility', () => {
+    const s = createSettings();
+    const links = [...s.element.querySelectorAll('a')];
+    const allLink = links.find((a) => a.textContent.includes('All servers'));
+    const section = s.element.querySelector('[data-vg-annotate="all-servers"]');
+
+    allLink.click();
+    expect(section.style.display).toBe('block');
+
+    allLink.click();
+    expect(section.style.display).toBe('none');
   });
 });

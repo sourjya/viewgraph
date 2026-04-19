@@ -88,15 +88,64 @@ export function createSettings() {
   helpLink.addEventListener('mouseenter', () => { helpLink.style.textDecoration = 'underline'; });
   helpLink.addEventListener('mouseleave', () => { helpLink.style.textDecoration = 'none'; });
   const advLink = document.createElement('a');
-  advLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>All servers \u2192';
+  advLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>All servers';
   advLink.href = '#';
-  Object.assign(advLink.style, { color: COLOR.primaryHover, fontSize: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' });
+  Object.assign(advLink.style, { color: COLOR.primaryHover, fontSize: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', cursor: 'pointer' });
   advLink.addEventListener('mouseenter', () => { advLink.style.textDecoration = 'underline'; });
   advLink.addEventListener('mouseleave', () => { advLink.style.textDecoration = 'none'; });
-  advLink.addEventListener('click', (e) => { e.preventDefault(); chrome.runtime.sendMessage({ type: 'open-options' }); });
+
+  // Inline all-servers section (collapsible)
+  const allServersSection = document.createElement('div');
+  allServersSection.setAttribute(ATTR, 'all-servers');
+  Object.assign(allServersSection.style, { display: 'none', padding: '8px 10px', borderTop: `1px solid ${COLOR.borderLight}`, fontSize: '11px' });
+
+  advLink.addEventListener('click', async (e) => {
+    e.preventDefault();
+    if (allServersSection.style.display === 'none') {
+      allServersSection.style.display = 'block';
+      advLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><polyline points="18 15 12 9 6 15"/></svg>All servers';
+      // Fetch all servers
+      allServersSection.textContent = 'Scanning...';
+      try {
+        const servers = [];
+        for (let p = 9876; p < 9880; p++) {
+          try {
+            const res = await fetch(`http://127.0.0.1:${p}/info`, { signal: AbortSignal.timeout(1000) });
+            if (res.ok) { const info = await res.json(); servers.push({ port: p, ...info }); }
+          } catch { /* port not responding */ }
+        }
+        allServersSection.replaceChildren();
+        if (servers.length === 0) {
+          allServersSection.textContent = 'No servers running.';
+        } else {
+          for (const s of servers) {
+            const row = document.createElement('div');
+            Object.assign(row.style, { padding: '4px 0', borderBottom: `1px solid ${COLOR.borderLight}` });
+            const port = document.createElement('span');
+            port.textContent = `:${s.port}`;
+            Object.assign(port.style, { color: COLOR.primary, fontFamily: 'monospace', marginRight: '6px' });
+            const root = document.createElement('span');
+            root.textContent = s.projectRoot || 'unknown';
+            Object.assign(root.style, { color: COLOR.dim, fontFamily: 'monospace', fontSize: '10px' });
+            row.append(port, root);
+            if (s.urlPatterns?.length) {
+              const pats = document.createElement('div');
+              pats.textContent = s.urlPatterns.join(', ');
+              Object.assign(pats.style, { color: COLOR.muted, fontSize: '9px', marginTop: '2px' });
+              row.appendChild(pats);
+            }
+            allServersSection.appendChild(row);
+          }
+        }
+      } catch { allServersSection.textContent = 'Failed to scan.'; }
+    } else {
+      allServersSection.style.display = 'none';
+      advLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>All servers';
+    }
+  });
   cardFooter.append(helpLink, advLink);
 
-  serverCard.append(cardHeader, cardBody, cardFooter);
+  serverCard.append(cardHeader, cardBody, cardFooter, allServersSection);
 
   // Capture options
   const captureOpts = document.createElement('div');
