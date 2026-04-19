@@ -8,6 +8,7 @@ Tracks all security reviews, findings, and their resolution status.
 |---|---|---|---|---|---|
 | SRR-001 | 2026-04-18 | T2 | Full codebase | 2 HIGH, 5 MEDIUM, 4 LOW, 3 INFO | [SRR-001](SRR-001-2026-04-18.md) |
 | SRR-002 | 2026-04-19 | T2 | Changes since SRR-001 | 1 HIGH, 3 MEDIUM, 2 LOW | [SRR-002](SRR-002-2026-04-19-T2.md) |
+| SRR-003 | 2026-04-19 | T2 | stdin lifecycle, auto-learn, dynamic import, settings, footer, bin | 0 HIGH, 2 MEDIUM, 3 LOW, 1 INFO | [SRR-003](SRR-003-2026-04-19-T2.md) |
 
 ## Open Findings
 
@@ -15,6 +16,8 @@ Tracks all security reviews, findings, and their resolution status.
 |---|---|---|---|
 | S1-2 | HIGH | POST /captures unauthenticated injection | Accepted risk (ADR-010) - fix: M17c native messaging |
 | S5-2 | MEDIUM | /info exposes filesystem paths | Accepted risk |
+| S5-6 | MEDIUM | classifyTrust uses pageUrl.includes() - trust gate bypass via query string | NEW (SRR-003) |
+| S8-1 | MEDIUM | Server persists indefinitely when idle timeout=0 and stdin closes | NEW (SRR-003) |
 | S7-3 | MEDIUM | innerHTML with hardcoded SVG in settings.js | Deferred - not exploitable |
 | Q3-3 | MEDIUM | F19 wrapping missing on 4 compare tools | Deferred - roadmap |
 

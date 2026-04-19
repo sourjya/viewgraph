@@ -246,7 +246,7 @@ async function main() {
     // The idle timer will shut down the server if no HTTP activity occurs.
     process.stdin.on('end', () => {
       console.error(`${LOG_PREFIX} stdin closed - switching to HTTP-only mode (idle timeout: ${IDLE_TIMEOUT_MINUTES}min)`);
-      resetIdleTimer();
+      startStdinCloseFallback();
     });
     console.error(`${LOG_PREFIX} Native messaging host mode + HTTP (port ${HTTP_PORT ?? 9876})`);
   } else if (!process.stdin.isTTY) {
@@ -256,7 +256,7 @@ async function main() {
     // The idle timer will shut down the server if no HTTP activity occurs.
     process.stdin.on('end', () => {
       console.error(`${LOG_PREFIX} stdin closed - switching to HTTP-only mode (idle timeout: ${IDLE_TIMEOUT_MINUTES}min)`);
-      resetIdleTimer();
+      startStdinCloseFallback();
     });
     console.error(`${LOG_PREFIX} MCP server running on stdio + HTTP (port ${HTTP_PORT ?? 9876})`);
   } else {
@@ -281,6 +281,20 @@ function resetIdleTimer() {
   if (IDLE_TIMEOUT_MS <= 0) return;
   if (idleTimer) clearTimeout(idleTimer);
   idleTimer = setTimeout(() => shutdown('idle-timeout'), IDLE_TIMEOUT_MS);
+  idleTimer.unref();
+}
+
+/** Fallback timeout for stdin close when idle timeout is disabled (60 min). */
+const STDIN_CLOSE_FALLBACK_MS = 60 * 60_000;
+
+/**
+ * Start a fallback shutdown timer after stdin closes.
+ * Used when idle timeout is disabled (0) to prevent orphaned processes.
+ */
+function startStdinCloseFallback() {
+  if (IDLE_TIMEOUT_MS > 0) { resetIdleTimer(); return; }
+  if (idleTimer) clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => shutdown('stdin-close-fallback'), STDIN_CLOSE_FALLBACK_MS);
   idleTimer.unref();
 }
 

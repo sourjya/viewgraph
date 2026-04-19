@@ -96,8 +96,13 @@ export async function updateConfig(updates) {
 export function classifyTrust(pageUrl, trustedPatterns = []) {
   if (!pageUrl) return { level: 'untrusted', reason: 'Empty URL' };
   if (isLocalUrl(pageUrl)) return { level: 'trusted', reason: 'Localhost' };
-  for (const pattern of trustedPatterns) {
-    if (pageUrl.includes(pattern)) return { level: 'configured', reason: pattern };
-  }
+  // S5-6: Match hostname+port only, not full URL (prevents query param bypass)
+  try {
+    const parsed = new URL(pageUrl);
+    const hostPort = `${parsed.hostname}${parsed.port ? ':' + parsed.port : ''}`;
+    for (const pattern of trustedPatterns) {
+      if (hostPort.includes(pattern)) return { level: 'configured', reason: pattern };
+    }
+  } catch { /* invalid URL */ }
   return { level: 'untrusted', reason: 'Remote URL' };
 }
