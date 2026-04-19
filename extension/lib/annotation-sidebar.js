@@ -30,6 +30,7 @@ import { createHelpCard } from './sidebar/help.js';
 import { createStrip } from './sidebar/strip.js';
 import { createSettings } from './sidebar/settings.js';
 import { createInspectTab } from './sidebar/inspect.js';
+import { startTransientObserver, stopTransientObserver } from './collectors/transient-collector.js';
 import { renderReviewList } from './sidebar/review.js';
 import { scanForSuggestions } from './sidebar/suggestions.js';
 import { renderSuggestionBar, collapseSuggestions, resetSuggestions } from './sidebar/suggestions-ui.js';
@@ -371,6 +372,9 @@ export function create() {
     if (msg.audit) _bus.emit(EVENTS.AUDIT_RESULTS, { audit: msg.audit, filename: msg.filename });
   });
 
+  // ── Transient UI observer (ADR-014) ──
+  startTransientObserver();
+
   // ── Keyboard shortcuts ──
   startShortcuts({
     onEscape: () => {
@@ -595,6 +599,7 @@ export function _getShadowRoot() { return _shadowRoot; }
 export function destroy() {
   stopShortcuts();
   stopJourney();
+  stopTransientObserver();
   stopRequestPolling();
   stopResolutionPolling();
   transport.reset();
