@@ -61,6 +61,46 @@ describe('sidebar MCP disconnected state', () => {
     expect(dot.getAttribute('data-tooltip')).toContain('30 min');
   });
 
+  it('(+) shows no-match message when servers exist but page doesn\'t match', async () => {
+    // Mock: server exists on port 9876 but with non-matching URL pattern
+    globalThis.fetch = vi.fn((url) => {
+      const u = typeof url === 'string' ? url : url.toString();
+      if (u.includes('/health')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
+      if (u.includes('/info')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ projectRoot: '/other-project', urlPatterns: ['localhost:9999'], agent: 'Kiro', serverVersion: '0.4.2' }) });
+      return Promise.reject(new Error('unmocked'));
+    });
+    resetServerCache();
+    start();
+    create();
+    await vi.waitFor(() => {
+      const banner = shadowQuery(`[${ATTR}="status-banner"]`);
+      expect(banner?.style.display).toBe('block');
+    }, { timeout: 3000 });
+    const banner = shadowQuery(`[${ATTR}="status-banner"]`);
+    expect(banner.textContent).toContain('No matching project');
+    const dot = shadowQuery(`[${ATTR}="status-dot"]`);
+    expect(dot.getAttribute('data-tooltip')).toContain('No matching project');
+  });
+
+  it('(+) no-match state shows gray dot, not red', async () => {
+    globalThis.fetch = vi.fn((url) => {
+      const u = typeof url === 'string' ? url : url.toString();
+      if (u.includes('/health')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
+      if (u.includes('/info')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ projectRoot: '/other', urlPatterns: ['localhost:9999'], serverVersion: '0.4.2' }) });
+      return Promise.reject(new Error('unmocked'));
+    });
+    resetServerCache();
+    start();
+    create();
+    await vi.waitFor(() => {
+      const dot = shadowQuery(`[${ATTR}="status-dot"]`);
+      expect(dot?.getAttribute('data-tooltip')).toContain('No matching');
+    }, { timeout: 3000 });
+    const dot = shadowQuery(`[${ATTR}="status-dot"]`);
+    // Gray (muted), not red (errorLight)
+    expect(dot.style.background).not.toContain('239');  // not errorLight red
+  });
+
   it('(+) hides Send button and promotes exports when MCP server is offline', async () => {
     start();
     create();
