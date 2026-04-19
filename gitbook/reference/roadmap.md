@@ -8,7 +8,7 @@ What's shipped, what's next, and where ViewGraph is heading.
 - Click/drag annotation with severity and category
 - Two-tab sidebar: Review (annotations, export) + Inspect (network, console, diagnostics)
 - Three export modes: Send to Agent, Copy Markdown, Download ZIP
-- 16 enrichment collectors (network, console, a11y, layout, components, and more)
+- 17 enrichment collectors (network, console, a11y, layout, components, and more)
 - Multi-project support with automatic URL routing
 - Session recording for multi-step user journeys
 - Auto-capture on HMR/file changes

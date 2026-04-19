@@ -15,6 +15,7 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - Filter label added to type filter icon row
 - Trust shield tooltip capitalization (Trusted/Untrusted/Configured)
 - Esc key collapses expanded suggestions bar
+- F20: Transient UI State Capture - new collector (17 total) captures toasts, flash content, animation jank, render thrashing via 30s mutation buffer
 
 ### Bug Fixes
 - BUG-015: auto-learn URL patterns when config exists but patterns empty

@@ -73,7 +73,7 @@
 **Rationale:** F19 and F17 are security-first (threat model driven). F18 is low-effort, high-impact UX. F6/F9/F10 are feature work. F11 is the big architectural change that eliminates most localhost threats.
 | M17: Telemetry | Deferred (post-traction) | Anonymous usage analytics - not needed until product has adoption |
 
-**Current totals:** 1545 tests (1075 extension + 470 server), 37 MCP tools, 16 enrichment collectors
+**Current totals:** 1562 tests (1092 extension + 470 server), 37 MCP tools, 17 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and
