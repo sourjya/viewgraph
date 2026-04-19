@@ -27,7 +27,7 @@ describe('sidebar MCP disconnected state', () => {
   });
   afterEach(() => { globalThis.fetch = origFetch; });
 
-  it('(+) shows status banner when MCP server is offline', async () => {
+  it('(+) shows status banner when no server running', async () => {
     start();
     create();
     await vi.waitFor(() => {
@@ -35,10 +35,10 @@ describe('sidebar MCP disconnected state', () => {
       expect(banner?.style.display).toBe('block');
     });
     const banner = shadowQuery(`[${ATTR}="status-banner"]`);
-    expect(banner.textContent).toContain('No server connected');
+    expect(banner.textContent).toContain('No server running');
   });
 
-  it('(+) offline banner shows restart hint', async () => {
+  it('(+) offline banner shows restart hint with idle timeout mention', async () => {
     start();
     create();
     await vi.waitFor(() => {
@@ -50,7 +50,7 @@ describe('sidebar MCP disconnected state', () => {
     expect(banner.textContent).toContain('viewgraph-init');
   });
 
-  it('(+) offline status dot tooltip mentions restart', async () => {
+  it('(+) offline dot tooltip mentions idle timeout', async () => {
     start();
     create();
     await vi.waitFor(() => {
@@ -58,7 +58,7 @@ describe('sidebar MCP disconnected state', () => {
       expect(dot?.getAttribute('data-tooltip')).toContain('offline');
     });
     const dot = shadowQuery(`[${ATTR}="status-dot"]`);
-    expect(dot.getAttribute('data-tooltip')).toContain('restart');
+    expect(dot.getAttribute('data-tooltip')).toContain('30 min');
   });
 
   it('(+) hides Send button and promotes exports when MCP server is offline', async () => {

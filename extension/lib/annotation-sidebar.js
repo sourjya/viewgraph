@@ -127,14 +127,30 @@ export function create() {
           _footer.setTrustLevel(trust);
         } catch (e) { console.error('[ViewGraph] info/trust error:', e); }
       } else {
-        _footer.statusDot.style.background = COLOR.errorLight;
-        _footer.statusDot.setAttribute('data-tooltip', 'Server offline - restart your AI agent to reconnect');
-        _header.statusBanner.textContent = '';
-        const bannerText = document.createTextNode('No server connected. ');
-        const restartHint = document.createElement('span');
-        restartHint.textContent = 'Restart your AI agent or run viewgraph-init.';
-        restartHint.style.color = COLOR.primaryHover;
-        _header.statusBanner.append(bannerText, restartHint);
+        // Distinguish: servers exist but no match vs no servers at all
+        const { getAllServers } = await import('./discovery.js');
+        const servers = await getAllServers();
+        if (servers.length > 0) {
+          // Servers running but this page doesn't match any project
+          _footer.statusDot.style.background = COLOR.muted;
+          _footer.statusDot.setAttribute('data-tooltip', 'No matching project for this page');
+          _header.statusBanner.textContent = '';
+          const txt = document.createTextNode('No matching project. ');
+          const hint = document.createElement('span');
+          hint.textContent = 'Add a URL pattern with viewgraph-init --url or use Copy MD.';
+          hint.style.color = COLOR.primaryHover;
+          _header.statusBanner.append(txt, hint);
+        } else {
+          // No servers running at all
+          _footer.statusDot.style.background = COLOR.errorLight;
+          _footer.statusDot.setAttribute('data-tooltip', 'Server offline - may have stopped after 30 min idle. Restart your AI agent.');
+          _header.statusBanner.textContent = '';
+          const txt = document.createTextNode('No server running. ');
+          const hint = document.createElement('span');
+          hint.textContent = 'Restart your AI agent or run viewgraph-init.';
+          hint.style.color = COLOR.primaryHover;
+          _header.statusBanner.append(txt, hint);
+        }
         _header.statusBanner.style.display = 'block';
         _footer.setOfflineMode();
       }
