@@ -57,7 +57,7 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 ### Codebase
 - Phase 2 refactors: 74 files - jsonResponse/errorResponse, readAndParse/Pair/Multi, shared test fixtures, mockChrome, styles.js COLOR constants
 - Test split: annotation-sidebar.test.js (1366 lines) to 7 focused files
-- 1520 tests (463 server + 1057 extension)
+- 1538 tests (470 server + 1068 extension)
 
 ## v0.3.7 - April 17, 2026
 
