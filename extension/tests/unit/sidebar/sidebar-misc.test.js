@@ -136,6 +136,27 @@ describe('settings', () => {
     destroy();
   });
 
+  it('(+) settings link restored after back button (<) closes settings', () => {
+    start();
+    create();
+
+    const link = shadowQuery(`[${ATTR}="settings-link"]`);
+    link.click();
+    expect(link.style.display).toBe('none');
+
+    // Click the back button inside settings
+    const backBtn = shadowQuery(`[${ATTR}="settings-screen"]`)?.querySelector('button');
+    backBtn.click();
+
+    expect(link.style.display).toBe('flex');
+
+    stop();
+    destroy();
+  });
+
+  // Note: Esc → settings close → link restore is tested manually.
+  // jsdom doesn't propagate capture-phase keydown events to our handler.
+
   it('(+) settings screen does not cover footer (bottom offset)', () => {
     start();
     create();

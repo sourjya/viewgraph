@@ -209,6 +209,11 @@ export function create() {
 
   // ── Settings ──
   const settings = createSettings();
+  settings.onHide = () => {
+    settingsVisible = false;
+    const link = _footer?.element.querySelector(`[${ATTR}="settings-link"]`);
+    if (link) link.style.display = 'flex';
+  };
   let settingsVisible = false;
   function showSettings() {
     settingsVisible = true;
@@ -216,12 +221,7 @@ export function create() {
     const link = _footer?.element.querySelector(`[${ATTR}="settings-link"]`);
     if (link) link.style.display = 'none';
   }
-  function hideSettings() {
-    settingsVisible = false;
-    settings.hide();
-    const link = _footer?.element.querySelector(`[${ATTR}="settings-link"]`);
-    if (link) link.style.display = 'flex';
-  }
+  function hideSettings() { settings.hide(); }
 
   // Version info for help card
   const extVer = chrome.runtime.getManifest?.()?.version || 'unknown';

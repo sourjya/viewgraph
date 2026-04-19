@@ -254,13 +254,15 @@ export function createSettings() {
   }
 
   let visible = false;
+  let _onHide = null;
   function show() { visible = true; screen.style.display = 'block'; refreshServerInfo(); }
-  function hide() { visible = false; screen.style.display = 'none'; }
+  function hide() { visible = false; screen.style.display = 'none'; if (_onHide) _onHide(); }
 
   return {
     element: screen,
     show,
     hide,
     isVisible() { return visible; },
+    set onHide(fn) { _onHide = fn; },
   };
 }
