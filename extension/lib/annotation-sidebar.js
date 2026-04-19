@@ -128,8 +128,13 @@ export function create() {
         } catch (e) { console.error('[ViewGraph] info/trust error:', e); }
       } else {
         _footer.statusDot.style.background = COLOR.errorLight;
-        _footer.statusDot.setAttribute('data-tooltip', 'MCP server offline');
-        _header.statusBanner.textContent = 'No project connected. Copy MD and Report available.';
+        _footer.statusDot.setAttribute('data-tooltip', 'Server offline - restart your AI agent to reconnect');
+        _header.statusBanner.textContent = '';
+        const bannerText = document.createTextNode('No server connected. ');
+        const restartHint = document.createElement('span');
+        restartHint.textContent = 'Restart your AI agent or run viewgraph-init.';
+        restartHint.style.color = COLOR.primaryHover;
+        _header.statusBanner.append(bannerText, restartHint);
         _header.statusBanner.style.display = 'block';
         _footer.setOfflineMode();
       }
