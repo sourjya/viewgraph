@@ -2,9 +2,9 @@
 
 - **ID**: BUG-021
 - **Severity**: Medium
-- **Status**: OPEN
+- **Status**: FIXED
 - **Reported**: 2026-04-19
-- **Fixed**: -
+- **Fixed**: 2026-04-19
 
 ## Description
 

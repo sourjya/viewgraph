@@ -54,10 +54,11 @@ describe('MCP server stdio initialization', () => {
       params: { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'test', version: '1.0' } },
     });
     const result = execSync(
-      `echo '${initMsg}' | timeout 5 node server/index.js 2>/dev/null`,
+      `echo '${initMsg}' | timeout -s KILL 3 node server/index.js 2>/dev/null || true`,
       { cwd: ROOT, encoding: 'utf8', timeout: 10000 },
     );
-    const response = JSON.parse(result.trim().split('\n').pop());
+    const lines = result.trim().split('\n').filter((l) => l.startsWith('{'));
+    const response = JSON.parse(lines.pop());
     expect(response.jsonrpc).toBe('2.0');
     expect(response.id).toBe(1);
     expect(response.result).toBeDefined();
@@ -70,10 +71,11 @@ describe('MCP server stdio initialization', () => {
       params: { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'test', version: '1.0' } },
     });
     const result = execSync(
-      `echo '${initMsg}' | timeout 5 node server/index.js 2>/dev/null`,
+      `echo '${initMsg}' | timeout -s KILL 3 node server/index.js 2>/dev/null || true`,
       { cwd: ROOT, encoding: 'utf8', timeout: 10000 },
     );
-    const response = JSON.parse(result.trim().split('\n').pop());
+    const lines = result.trim().split('\n').filter((l) => l.startsWith('{'));
+    const response = JSON.parse(lines.pop());
     expect(response.result.serverInfo.version).toBe(pkg.version);
   });
 });

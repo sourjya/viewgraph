@@ -46,7 +46,7 @@ function spawnServer(env = {}, args = []) {
 }
 
 describe('server lifecycle', () => {
-  it('exits when stdin closes (MCP stdio mode)', async () => {
+  it('switches to HTTP-only mode when stdin closes (MCP stdio)', async () => {
     const { child, exitPromise, getStderr } = spawnServer();
 
     // Wait for server to start (look for startup message on stderr)
@@ -61,17 +61,22 @@ describe('server lifecycle', () => {
     // Close stdin - simulates parent agent dying
     child.stdin.end();
 
-    // Server should exit within 5 seconds
-    const timeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Server did not exit within 5s after stdin close')), 5000),
-    );
+    // Server should NOT exit - it switches to HTTP-only mode
+    await new Promise((resolve) => {
+      child.stderr.on('data', (chunk) => {
+        if (chunk.toString().includes('HTTP-only mode')) resolve();
+      });
+      setTimeout(resolve, 3000);
+    });
 
-    const result = await Promise.race([exitPromise, timeout]);
-    expect(result.code).toBe(0);
-    expect(getStderr()).toContain('stdin-closed');
+    expect(getStderr()).toContain('HTTP-only mode');
+
+    // Clean up - kill the server since it won't exit on its own
+    child.kill('SIGTERM');
+    await exitPromise;
   }, 10000);
 
-  it('exits when stdin closes (native messaging mode)', async () => {
+  it('switches to HTTP-only mode when stdin closes (native messaging)', async () => {
     const { child, exitPromise, getStderr } = spawnServer(
       { VIEWGRAPH_HTTP_PORT: '19877' },
       ['--native-host'],
@@ -88,13 +93,17 @@ describe('server lifecycle', () => {
     // Close stdin - simulates browser closing the native host
     child.stdin.end();
 
-    const timeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Server did not exit within 5s after stdin close (native)')), 5000),
-    );
+    await new Promise((resolve) => {
+      child.stderr.on('data', (chunk) => {
+        if (chunk.toString().includes('HTTP-only mode')) resolve();
+      });
+      setTimeout(resolve, 3000);
+    });
 
-    const result = await Promise.race([exitPromise, timeout]);
-    expect(result.code).toBe(0);
-    expect(getStderr()).toContain('stdin-closed');
+    expect(getStderr()).toContain('HTTP-only mode');
+
+    child.kill('SIGTERM');
+    await exitPromise;
   }, 10000);
 
   it('exits after idle timeout', async () => {
@@ -196,8 +205,8 @@ describe('server lifecycle', () => {
     expect(isAlive).toBe(true);
     expect(getStderr()).not.toContain('idle-timeout');
 
-    // Clean up - close stdin to trigger shutdown
-    child.stdin.end();
+    // Clean up
+    child.kill('SIGTERM');
     await exitPromise;
   }, 10000);
 });
