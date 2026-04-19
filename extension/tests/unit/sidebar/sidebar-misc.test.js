@@ -157,6 +157,39 @@ describe('settings', () => {
   // Note: Esc → settings close → link restore is tested manually.
   // jsdom doesn't propagate capture-phase keydown events to our handler.
 
+  it('(+) export buttons hidden when settings is open', () => {
+    start();
+    create();
+
+    const link = shadowQuery(`[${ATTR}="settings-link"]`);
+    link.click();
+
+    const btns = shadowQuery(`[${ATTR}="export-buttons"]`);
+    expect(btns.style.display).toBe('none');
+
+    stop();
+    destroy();
+  });
+
+  it('(+) export buttons restored after back button closes settings', () => {
+    start();
+    create();
+
+    const link = shadowQuery(`[${ATTR}="settings-link"]`);
+    link.click();
+
+    const btns = shadowQuery(`[${ATTR}="export-buttons"]`);
+    expect(btns.style.display).toBe('none');
+
+    const backBtn = shadowQuery(`[${ATTR}="settings-screen"]`)?.querySelector('button');
+    backBtn.click();
+
+    expect(btns.style.display).toBe('');
+
+    stop();
+    destroy();
+  });
+
   it('(+) settings screen does not cover footer (bottom offset)', () => {
     start();
     create();

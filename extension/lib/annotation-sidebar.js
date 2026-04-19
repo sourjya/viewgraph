@@ -213,6 +213,8 @@ export function create() {
     settingsVisible = false;
     const link = _footer?.element.querySelector(`[${ATTR}="settings-link"]`);
     if (link) link.style.display = 'flex';
+    const btns = _footer?.element.querySelector(`[${ATTR}="export-buttons"]`);
+    if (btns) btns.style.display = '';
   };
   let settingsVisible = false;
   function showSettings() {
@@ -220,6 +222,8 @@ export function create() {
     settings.show();
     const link = _footer?.element.querySelector(`[${ATTR}="settings-link"]`);
     if (link) link.style.display = 'none';
+    const btns = _footer?.element.querySelector(`[${ATTR}="export-buttons"]`);
+    if (btns) btns.style.display = 'none';
   }
   function hideSettings() { settings.hide(); }
 

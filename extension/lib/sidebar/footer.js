@@ -130,7 +130,12 @@ export function createFooter({ onSend, onShowSettings }) {
   settingsLink.addEventListener('click', onShowSettings);
 
   statusRow.append(statusDot, trustShield, spacer, settingsLink);
-  footer.append(sendBtn, secondaryRow, statusRow);
+  // Export buttons wrapper (hidden when settings panel is open)
+  const exportBtns = document.createElement('div');
+  exportBtns.setAttribute(ATTR, 'export-buttons');
+  exportBtns.append(sendBtn, secondaryRow);
+
+  footer.append(exportBtns, statusRow);
 
   /** Flash a button green with a success message, then restore. */
   function flashButton(btn, msg, iconFn, label) {
