@@ -5,6 +5,7 @@
   "type": "module",
   "main": "server/index.js",
   "bin": {
+    "viewgraph": "server/index.js",
     "viewgraph-init": "scripts/viewgraph-init.js",
     "viewgraph-status": "scripts/viewgraph-status.js",
     "viewgraph-doctor": "scripts/viewgraph-doctor.js"

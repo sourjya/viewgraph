@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { WS_MESSAGES } from '#src/ws-message-types.js';
 /**
  * ViewGraph MCP Server  -  Entry Point
