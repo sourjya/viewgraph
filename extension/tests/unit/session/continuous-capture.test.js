@@ -50,17 +50,29 @@ describe('continuous capture watcher', () => {
   });
 
   it('(+) rate limits to 1 capture per 5s', async () => {
+    vi.useFakeTimers();
     const cb = vi.fn();
     startWatcher(cb);
     const app = document.getElementById('app');
-    // First mutation
+
+    // First mutation → debounce fires after 2s
     app.appendChild(document.createElement('span'));
-    await new Promise((r) => setTimeout(r, 2200));
+    await vi.advanceTimersByTimeAsync(2100);
     expect(cb).toHaveBeenCalledTimes(1);
-    // Second mutation immediately after - should be rate limited
+
+    // Second mutation 1s later (total 3.1s since first capture) → rate limited
     app.appendChild(document.createElement('div'));
-    await new Promise((r) => setTimeout(r, 2200));
-    expect(cb).toHaveBeenCalledTimes(1); // still 1
+    await vi.advanceTimersByTimeAsync(2100);
+    expect(cb).toHaveBeenCalledTimes(1); // still 1 - within 5s window
+
+    // Advance past the 5s rate limit window
+    await vi.advanceTimersByTimeAsync(3000);
+    // Third mutation - should now be allowed
+    app.appendChild(document.createElement('p'));
+    await vi.advanceTimersByTimeAsync(2100);
+    expect(cb).toHaveBeenCalledTimes(2);
+
+    vi.useRealTimers();
   });
 
   it('(-) ignores mutations inside ViewGraph UI elements', async () => {
