@@ -16,7 +16,9 @@ See a bug. Click it. Describe it. Your agent fixes it.
 
 ## The Problem
 
-AI coding agents can read your source code. They cannot see your rendered UI.
+{% hint style="danger" %}
+**AI coding agents can read your source code. They cannot see your rendered UI.**
+{% endhint %}
 
 - The agent **guesses** CSS fixes instead of seeing the actual layout
 - Bug reports land as **vague screenshots** instead of structured evidence
