@@ -18,6 +18,7 @@ import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { diffCaptures } from '#src/analysis/capture-diff.js';
 import { getBaseline } from '#src/baselines.js';
 import { flattenNodes } from '#src/analysis/node-queries.js';
+import { wrapCapturedText } from '#src/utils/sanitize.js';
 
 /**
  * Register the compare_baseline MCP tool.
@@ -70,8 +71,8 @@ export function register(server, indexer, capturesDir) {
           hasBaseline: true,
           url: captureUrl,
           diff: {
-            added: diff.added.map((n) => ({ id: n.id, tag: n.tag, text: n.text, selector: n.selector })),
-            removed: diff.removed.map((n) => ({ id: n.id, tag: n.tag, text: n.text, selector: n.selector })),
+            added: diff.added.map((n) => ({ id: n.id, tag: n.tag, text: wrapCapturedText(n.text), selector: n.selector })),
+            removed: diff.removed.map((n) => ({ id: n.id, tag: n.tag, text: wrapCapturedText(n.text), selector: n.selector })),
             moved: diff.moved,
             testidChanges: diff.testidChanges,
             interactiveCount: { baseline: baselineInteractive, current: currentInteractive, delta: currentInteractive - baselineInteractive },

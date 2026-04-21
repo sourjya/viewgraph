@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { jsonResponse, errorResponse, readAndParsePair } from '#src/utils/tool-helpers.js';
 import { diffCaptures } from '#src/analysis/capture-diff.js';
+import { wrapCapturedText } from '#src/utils/sanitize.js';
 
 /**
  * Register the compare_captures MCP tool.
@@ -32,8 +33,8 @@ export function register(server, _indexer, capturesDir) {
       try {
         const diff = diffCaptures(a, b);
         const summary = {
-          added: diff.added.map((n) => ({ id: n.id, tag: n.tag, text: n.text })),
-          removed: diff.removed.map((n) => ({ id: n.id, tag: n.tag, text: n.text })),
+          added: diff.added.map((n) => ({ id: n.id, tag: n.tag, text: wrapCapturedText(n.text) })),
+          removed: diff.removed.map((n) => ({ id: n.id, tag: n.tag, text: wrapCapturedText(n.text) })),
           moved: diff.moved,
           testidChanges: diff.testidChanges,
         };
