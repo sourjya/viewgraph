@@ -121,3 +121,9 @@ AGPL-3.0 licensed. Full source on [GitHub](https://github.com/sourjya/viewgraph)
 
 **Docs:** [chaoslabz.gitbook.io/viewgraph](https://chaoslabz.gitbook.io/viewgraph)
 {% endhint %}
+
+---
+
+## Acknowledgments
+
+ViewGraph's capture format was inspired by [Element to LLM](https://addons.mozilla.org/en-US/firefox/addon/element-to-llm/) (E2LLM) by [insitu.im](https://insitu.im/) - the first browser extension to frame DOM capture as a structured perception layer for AI agents. The core insight that agents need a purpose-built intermediate representation, not raw HTML, came from E2LLM. ViewGraph extended these foundations through [format research](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/viewgraph-format-research.md) that produced 20 improvement proposals across token efficiency, accessibility, enrichment, and MCP integration. [Full comparison](comparison/capture-format.md#acknowledgments).
