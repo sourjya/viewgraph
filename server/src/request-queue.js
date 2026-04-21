@@ -104,6 +104,14 @@ export function createRequestQueue({ maxSize = 10, ttlMs = 300000 } = {}) {
         .filter((r) => r.status === 'pending');
     },
 
+    /** Find a pending/acknowledged request by exact ID. */
+    findById(id) {
+      const req = requests.get(id);
+      if (!req) return null;
+      applyExpiry(req);
+      return (req.status === 'pending' || req.status === 'acknowledged') ? req : null;
+    },
+
     /** Find the first pending/acknowledged request matching a URL. */
     findByUrl(url) {
       const normalized = normalizeUrl(url);

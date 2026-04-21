@@ -292,8 +292,9 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         }
       } catch { /* best effort - non-blocking */ }
 
-      // Check if this completes a pending request
-      const match = queue.findByUrl(capture.metadata.url);
+      // Check if this completes a pending request (BUG-022: match by requestId first)
+      const matchById = capture.metadata.requestId ? queue.findById(capture.metadata.requestId) : null;
+      const match = matchById || queue.findByUrl(capture.metadata.url);
       if (match) queue.complete(match.id, filename);
 
       // Post-capture auto-audit: run if enabled in project config, push via WS

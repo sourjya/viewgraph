@@ -548,7 +548,7 @@ export function refresh() {
       capBtn.textContent = '\u23f3';
       (async () => {
         try { await transport.ackRequest(req.id); } catch { /* best effort */ }
-        chrome.runtime.sendMessage({ type: 'capture', includeSnapshot: true, keepSidebar: true }, () => {
+        chrome.runtime.sendMessage({ type: 'capture', includeSnapshot: true, keepSidebar: true, requestId: req.id }, () => {
           entry.style.transition = 'background 0.3s, opacity 0.5s';
           entry.style.background = 'rgba(74, 222, 128, 0.15)';
           capBtn.textContent = '\u2713';

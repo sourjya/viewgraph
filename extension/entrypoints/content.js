@@ -73,6 +73,7 @@ export default defineContentScript({
               enrichment.session = getCaptureMetadata();
             }
             const capture = serialize(scored, relations, enrichment);
+            if (message.requestId) capture.metadata.requestId = message.requestId;
             const snapshot = message.includeSnapshot ? captureSnapshot() : null;
             sendResponse({ ok: true, capture, snapshot });
           } catch (err) {

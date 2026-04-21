@@ -114,4 +114,21 @@ describe('request-queue', () => {
     expect(pending).toHaveLength(1);
     expect(pending[0].url).toBe('http://localhost:5173/b');
   });
+
+  it('(+) BUG-022: findById returns pending request by exact ID', () => {
+    const req = queue.create('http://localhost:5173/page');
+    const found = queue.findById(req.id);
+    expect(found).not.toBeNull();
+    expect(found.id).toBe(req.id);
+  });
+
+  it('(-) BUG-022: findById returns null for completed request', () => {
+    const req = queue.create('http://localhost:5173/page');
+    queue.complete(req.id, 'capture.json');
+    expect(queue.findById(req.id)).toBeNull();
+  });
+
+  it('(-) BUG-022: findById returns null for unknown ID', () => {
+    expect(queue.findById('nonexistent')).toBeNull();
+  });
 });
