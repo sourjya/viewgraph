@@ -68,8 +68,9 @@
 | 6 | F9: Cross-Page Consistency | F6 | Medium | Complete: consistency section in Inspect tab, Compare button copies agent prompt |
 | 7 | F10: Live DOM Watcher | F2, F3 | Medium | Partial: auto-capture via MutationObserver (continuous-capture.js). Smart alerts deferred. |
 | 8 | F11: Remote MCP + Native Messaging | F17 | High | Phase 1-5 shipped: protocol, registration, transport abstraction, message handler |
-| 9 | F20: Transient UI State Capture | None | Medium | Capture bugs in motion: toasts, animations, flash content. ADR-014. |
-| 10 | F21: HMAC-Signed Localhost Auth | None | Medium | Replay-proof request signing. Mitigates STRIDE threats #1, #3. ADR-015. |
+| 9 | F20: Transient UI State Capture | None | Medium | Complete: 17 collectors, toast/animation/flash/reflow detection. ADR-014. |
+| 10 | F22: Native Messaging Default | F11 | Medium | Auto-detect native messaging, HTTP fallback. Zero-config secure path. ADR-016. |
+| 11 | F21: HMAC-Signed Localhost Auth | None | Medium | HTTP fallback signing. Only needed when native messaging unavailable. ADR-015. |
 
 **Rationale:** F19 and F17 are security-first (threat model driven). F18 is low-effort, high-impact UX. F6/F9/F10 are feature work. F11 is the big architectural change that eliminates most localhost threats.
 | M17: Telemetry | Deferred (post-traction) | Anonymous usage analytics - not needed until product has adoption |
