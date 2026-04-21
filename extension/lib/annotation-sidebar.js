@@ -136,21 +136,35 @@ export function create() {
           _footer.statusDot.style.background = COLOR.muted;
           _footer.statusDot.setAttribute('data-tooltip', 'No matching project for this page');
           _header.statusBanner.textContent = '';
-          const txt = document.createTextNode('No matching project. ');
-          const hint = document.createElement('span');
-          hint.textContent = 'Add a URL pattern with viewgraph-init --url or use Copy MD.';
-          hint.style.color = COLOR.primaryHover;
-          _header.statusBanner.append(txt, hint);
+          const txt = document.createTextNode('No matching project. Run ');
+          const code = document.createElement('code');
+          code.textContent = 'viewgraph-init --url';
+          Object.assign(code.style, { background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px', fontSize: '10px' });
+          const txt2 = document.createTextNode(' in your project folder. ');
+          const link = document.createElement('a');
+          link.textContent = 'Setup guide';
+          link.href = 'https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project';
+          link.target = '_blank';
+          link.rel = 'noopener';
+          Object.assign(link.style, { color: COLOR.primaryHover, textDecoration: 'underline', fontSize: '11px' });
+          _header.statusBanner.append(txt, code, txt2, link);
         } else {
           // No servers running at all
           _footer.statusDot.style.background = COLOR.errorLight;
           _footer.statusDot.setAttribute('data-tooltip', 'Server offline - may have stopped after 30 min idle. Restart your AI agent.');
           _header.statusBanner.textContent = '';
-          const txt = document.createTextNode('No server running. ');
-          const hint = document.createElement('span');
-          hint.textContent = 'Restart your AI agent or run viewgraph-init.';
-          hint.style.color = COLOR.primaryHover;
-          _header.statusBanner.append(txt, hint);
+          const txt = document.createTextNode('No server running. Restart your AI agent or run ');
+          const code = document.createElement('code');
+          code.textContent = 'viewgraph-init';
+          Object.assign(code.style, { background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px', fontSize: '10px' });
+          const txt2 = document.createTextNode(' in your project folder. ');
+          const link = document.createElement('a');
+          link.textContent = 'Help';
+          link.href = 'https://chaoslabz.gitbook.io/viewgraph/reference/faq#troubleshooting';
+          link.target = '_blank';
+          link.rel = 'noopener';
+          Object.assign(link.style, { color: COLOR.primaryHover, textDecoration: 'underline', fontSize: '11px' });
+          _header.statusBanner.append(txt, code, txt2, link);
         }
         _header.statusBanner.style.display = 'block';
         _footer.setOfflineMode();
