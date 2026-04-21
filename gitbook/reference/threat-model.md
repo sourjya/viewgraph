@@ -55,6 +55,35 @@ Nation-state actors, organized crime, hacktivists, and insider threats were eval
 | Error sanitization (SRR-001) | Error responses never leak filesystem paths | Implemented |
 | Closed shadow DOM (SRR-001) | Host page JS cannot access sidebar content | Implemented |
 | 16 CodeQL fixes | Path validation, URL parsing, crypto.randomUUID, CI permissions | Implemented |
+| Auto-learn config merge (SRR-002) | Preserves existing config keys on auto-learn | Implemented |
+| URL hostname matching (SRR-002) | Trust gate matches hostname+port only, not full URL | Implemented |
+| classifyTrust hostname matching (SRR-003) | Prevents query param trust gate bypass | Implemented |
+| Stdin close fallback (SRR-003) | 60-min fallback prevents orphaned processes | Implemented |
+| Native messaging config whitelist (SRR-004) | updateConfig uses shared ALLOWED_CONFIG_KEYS | Implemented |
+| Request ID matching (BUG-022) | Captures carry requestId for exact request matching | Implemented |
+| Transport centralization | All server communication via transport.js/discovery.js | Implemented |
+
+## Security Review History
+
+| Review | Date | Tier | Findings | Key Fixes |
+|---|---|---|---|---|
+| [SRR-001](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-001-2026-04-18.md) | Apr 18 | T2 | 2H, 5M, 4L | Config whitelist, shadow DOM closed, WS limits |
+| [SRR-002](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-002-2026-04-19-T2.md) | Apr 19 | T2 | 1H, 3M, 2L | Auto-learn merge, hostname matching |
+| [SRR-003](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-003-2026-04-19-T2.md) | Apr 19 | T2 | 0H, 2M, 3L | Trust gate bypass, orphan prevention |
+| [SRR-004](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-004-2026-04-21-T3.md) | Apr 21 | T3 | 2H, 5M, 4L | Native messaging whitelist, full codebase audit |
+
+## Native Messaging (Future Default)
+
+ViewGraph currently uses localhost HTTP for extension-to-server communication. Native messaging (Chrome/Firefox API) is implemented but not yet the default path. When enabled, it eliminates the entire class of localhost threats:
+
+| Concern | Localhost HTTP (current) | Native Messaging (future) |
+|---|---|---|
+| Port exposure | 9876-9879 visible to local processes | No ports open |
+| Authentication | None (ADR-010) | Browser enforces extension ID |
+| Injection by other apps | Possible | Impossible |
+| Process discovery | Port scan reveals server | Invisible |
+
+Native messaging code exists (F11 Phase 1-5). Making it the default is tracked in the roadmap.
 
 ## Roadmap: How We're Addressing Remaining Risks
 
