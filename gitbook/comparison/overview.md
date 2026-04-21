@@ -4,24 +4,53 @@ ViewGraph occupies a unique position: the UI context layer for AI coding agents.
 
 ## Comparison Matrix
 
-| Capability | ViewGraph | Cursor Browser | Antigravity Browser | Playwright MCP | Chromatic |
-|---|---|---|---|---|---|
-| **How it works** | Browser extension + MCP server | Built-in headless browser in IDE | Built-in Chromium in IDE | Headless browser automation | Component screenshot pipeline |
-| **Human annotations** | Click/drag + comments + severity + categories | No | No (agent-only screenshots) | No | Component review |
-| **Review & collab workflow** | Annotate → Send to Agent / Copy MD / ZIP report | No | Artifact trail (screenshots, logs) | No | Visual review |
-| **Non-technical users** | PMs, QA, designers can click and describe | Developers only | Developers only | Developers only | Developers only |
-| **Structured DOM capture** | Full snapshot: styles, bbox, selectors, 17 enrichment collectors | Screenshot + accessibility tree | Screenshot + page state | Accessibility tree | Component screenshots |
-| **MCP tools** | 37 tools (query, audit, diff, annotate, generate) | Browser tool (screenshot, click, type) | Browser agent (navigate, screenshot) | Browser automation | Component metadata |
-| **Accessibility audit** | axe-core 100+ rules + smart suggestions | No | No | Needs axe-playwright | WCAG violations |
-| **Source file linking** | testid/label/selector grep + React fiber | No | No | No | No |
-| **Transient state capture** | Toast detection, animation jank, flash content (30s buffer) | No | No | No | No |
-| **Structural regression** | Baseline comparison + structural diff | No | No | No | Visual diff |
-| **Export without AI** | Copy Markdown (Jira/GitHub) + ZIP report | No | No | No | Visual review |
-| **Works with any agent** | Any MCP agent (Kiro, Claude, Cursor, Windsurf, Cline) | Cursor only | Antigravity only | Any MCP agent | CI/CD |
-| **Works with any web app** | Any URL, any backend, any framework | Any URL | Any URL | Any URL | Storybook required |
-| **No code required** | Browser extension - click and annotate | Agent writes code to interact | Agent navigates autonomously | Test scripts needed | Stories needed |
-| **Measured accuracy** | 92.1% composite across 48 sites | No | No | No | No |
-| **Privacy** | All data stays local, no cloud | IDE-local | Google cloud | Local | Cloud |
+{% tabs %}
+
+{% tab title="vs IDE Browsers" %}
+| Capability | ViewGraph | Cursor Browser | Antigravity Browser |
+|---|---|---|---|
+| **How it works** | Browser extension + MCP server | Built-in headless browser in IDE | Built-in Chromium in IDE |
+| **Human annotations** | Click/drag + comments + severity + categories | No | No (agent-only screenshots) |
+| **Review & collab** | Annotate → Send to Agent / Copy MD / ZIP report | No | Artifact trail (screenshots, logs) |
+| **Non-technical users** | PMs, QA, designers can click and describe | Developers only | Developers only |
+| **Structured DOM capture** | Full snapshot: styles, bbox, selectors, 17 enrichment collectors | Screenshot + accessibility tree | Screenshot + page state |
+| **MCP tools** | 37 tools (query, audit, diff, annotate, generate) | Browser tool (screenshot, click, type) | Browser agent (navigate, screenshot) |
+| **Transient state capture** | Toast detection, animation jank, flash content (30s buffer) | No | No |
+| **Works with any agent** | Any MCP agent (Kiro, Claude, Cursor, Windsurf, Cline) | Cursor only | Antigravity only |
+| **Export without AI** | Copy Markdown (Jira/GitHub) + ZIP report | No | No |
+| **Privacy** | All data stays local, no cloud | IDE-local | Google cloud |
+{% endtab %}
+
+{% tab title="vs Browser Automation" %}
+| Capability | ViewGraph | Playwright MCP | axe MCP |
+|---|---|---|---|
+| **How it works** | Browser extension + MCP server | Headless browser automation | Accessibility scanning via MCP |
+| **Human annotations** | Click/drag + comments + severity | No | No |
+| **Structured DOM capture** | Full snapshot with styles, bbox, selectors | Accessibility tree only | Violations only |
+| **Accessibility audit** | WCAG + contrast + axe-core (100+ rules) | Needs axe-playwright | Industry standard (axe-core) |
+| **Layout analysis** | Overflow, overlap, viewport | No | No |
+| **Source file linking** | testid/label/selector grep + React fiber | No | No |
+| **Multi-step flows** | Session recording + journey analysis | Test scripts | No |
+| **No code required** | Browser extension - click and annotate | Test scripts needed | Extension + MCP |
+| **Works with any web app** | Any URL, any backend | Any URL | Any URL |
+{% endtab %}
+
+{% tab title="vs Visual Regression" %}
+| Capability | ViewGraph | Chromatic | Replay.io |
+|---|---|---|---|
+| **How it works** | Browser extension + MCP server | Component screenshot pipeline | Runtime recording |
+| **Human annotations** | Click/drag + comments + severity | Component review | No |
+| **Structural regression** | Baseline comparison + structural diff | Visual diff (pixel) | No |
+| **Pixel-level comparison** | PNG diff with threshold | Full pipeline | No |
+| **Design consistency** | Cross-page style drift detection | Within Storybook | No |
+| **Source file linking** | testid/label/selector grep + React fiber | No | Source maps |
+| **Works with any web app** | Any URL, any backend | Storybook required | Any URL |
+| **No code required** | Browser extension | Stories needed | Recording setup |
+| **Standalone (no AI)** | Copy MD / ZIP export | Visual review | Debugging UI |
+| **Measured accuracy** | 92.1% composite, 7 dimensions | No | No |
+{% endtab %}
+
+{% endtabs %}
 
 ## The Key Difference
 
