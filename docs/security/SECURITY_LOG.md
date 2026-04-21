@@ -15,13 +15,14 @@ Tracks all security reviews, findings, and their resolution status.
 
 | ID | Severity | Summary | Status |
 |---|---|---|---|
-| S7-8 | HIGH | F19 wrapping missing on 8+ tools returning user text | Open - roadmap |
 | S5-2 | MEDIUM | /info exposes filesystem paths | Accepted risk |
 | S7-3 | MEDIUM | innerHTML with hardcoded SVG in settings.js | Deferred - not exploitable |
 
 ## Recently Resolved
 
 | ID | Severity | Summary | Resolved |
+|---|---|---|---|
+| S7-8 | HIGH | F19 wrapping missing on tools returning user text | 2026-04-21 - wrapped compare-captures, compare-baseline, get-latest + standardized notices |
 |---|---|---|---|
 | S1-3 | HIGH | Native messaging updateConfig bypasses config whitelist | 2026-04-21 (SRR-004) - shared ALLOWED_CONFIG_KEYS |
 
