@@ -60,3 +60,21 @@ export function isVisuallyHidden(el) {
 export function isVGUI(el) {
   return !!el.closest(`[${ATTR}]`);
 }
+
+/**
+ * Get a simple CSS selector for an element.
+ * Prefers data-testid, then id, then tag+class.
+ * Used by collectors that need to identify elements without importing selector.js.
+ * @param {Element} el
+ * @returns {string}
+ */
+export function getSelector(el) {
+  const tag = el.tagName?.toLowerCase() || 'unknown';
+  const testid = el.getAttribute?.('data-testid');
+  if (testid) return `${tag}[data-testid="${testid}"]`;
+  if (el.id) return `${tag}#${el.id}`;
+  const cls = el.className && typeof el.className === 'string'
+    ? '.' + el.className.trim().split(/\s+/).filter((c) => c.length < 25 && !c.startsWith('_')).slice(0, 2).join('.')
+    : '';
+  return cls ? `${tag}${cls}` : tag;
+}

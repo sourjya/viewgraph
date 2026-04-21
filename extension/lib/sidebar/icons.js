@@ -51,7 +51,7 @@ export function checkIcon(size = 12, color = '#4ade80') {
 }
 
 /** X / close icon. Used for close buttons and delete. */
-export function closeIcon(size = 18, color = '#666') {
+export function closeIcon(size = 18, color = '#666' /* COLOR.muted */) {
   const s = svg(size, { stroke: color });
   s.appendChild(el('path', { d: 'M18 6L6 18M6 6l12 12' }));
   return s;
@@ -65,7 +65,7 @@ export function chevronLeftIcon(size = 18, color = '#a5b4fc') {
 }
 
 /** Chevron right. Used for collapse/expand. */
-export function chevronRightIcon(size = 18, color = '#666') {
+export function chevronRightIcon(size = 18, color = '#666' /* COLOR.muted */) {
   const s = svg(size, { stroke: color });
   s.appendChild(el('polyline', { points: '9 18 15 12 9 6' }));
   return s;
@@ -114,7 +114,7 @@ export function downloadIcon(size = 14) {
 }
 
 /** Trash / delete icon. */
-export function trashIcon(size = 12, color = '#666') {
+export function trashIcon(size = 12, color = '#666' /* COLOR.muted */) {
   const s = svg(size, { stroke: color });
   s.appendChild(el('polyline', { points: '3 6 5 6 21 6' }));
   s.appendChild(el('path', { d: 'M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2' }));
@@ -130,7 +130,7 @@ export function cameraIcon(size = 16) {
 }
 
 /** Circle (empty) icon. Used for unresolved annotation marker. */
-export function circleIcon(size = 12, color = '#666') {
+export function circleIcon(size = 12, color = '#666' /* COLOR.muted */) {
   const s = svg(size, { stroke: color });
   s.appendChild(el('circle', { cx: '12', cy: '12', r: '10' }));
   return s;

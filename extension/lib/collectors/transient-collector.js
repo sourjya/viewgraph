@@ -13,6 +13,7 @@
  */
 
 import { ATTR } from '#lib/selector.js';
+import { getSelector } from './collector-utils.js';
 
 /** Max buffer entries before FIFO eviction. */
 const MAX_BUFFER = 100;
@@ -42,21 +43,6 @@ const LAYOUT_TRIGGERS = new Set(['top', 'left', 'right', 'bottom', 'width', 'hei
 let buffer = [];
 let observer = null;
 let elementTimestamps = new Map();
-
-/**
- * Get a simple CSS selector for an element.
- * Uses the shared pattern from collector-utils but inlined to avoid circular deps.
- */
-function getSelector(el) {
-  const tag = el.tagName?.toLowerCase() || 'unknown';
-  const testid = el.getAttribute?.('data-testid');
-  if (testid) return `${tag}[data-testid="${testid}"]`;
-  if (el.id) return `${tag}#${el.id}`;
-  const cls = el.className && typeof el.className === 'string'
-    ? '.' + el.className.trim().split(/\s+/).filter((c) => c.length < 25 && !c.startsWith('_')).slice(0, 2).join('.')
-    : '';
-  return cls ? `${tag}${cls}` : tag;
-}
 
 /**
  * Check if an element matches the toast heuristic:
