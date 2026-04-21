@@ -22,6 +22,7 @@ import {
   SERVER_NAME, SERVER_VERSION, SERVER_DESCRIPTION, SERVER_INSTRUCTIONS, LOG_PREFIX,
 } from '#src/constants.js';
 import { resolveConfig } from '#src/config.js';
+import { ALLOWED_CONFIG_KEYS } from '#src/constants.js';
 import { createWatcher } from '#src/watcher.js';
 import { createIndexer } from '#src/indexer.js';
 import { parseMetadata } from '#src/parsers/viewgraph-v2.js';
@@ -213,7 +214,12 @@ async function main() {
         const cfgPath = path.resolve(configDir, 'config.json');
         let cfg = {};
         try { cfg = JSON.parse(readFileSync(cfgPath, 'utf-8')); } catch { /* new */ }
-        Object.assign(cfg, updates);
+        // S1-3: Apply same whitelist as HTTP PUT /config
+        const sanitized = {};
+        for (const [k, v] of Object.entries(updates)) {
+          if (ALLOWED_CONFIG_KEYS.has(k)) sanitized[k] = v;
+        }
+        Object.assign(cfg, sanitized);
         writeFileSync(cfgPath, JSON.stringify(cfg, null, 2));
         return cfg;
       },

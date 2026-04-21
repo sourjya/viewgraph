@@ -71,3 +71,6 @@ PERFORMANCE:
 - Use get_elements_by_role or get_interactive_elements for targeted queries instead of full capture
 - Capture responses over 100KB are automatically summarized
 - Use validate_capture to check capture quality before deep analysis`;
+
+/** Whitelist of config keys accepted by PUT /config and native messaging updateConfig. */
+export const ALLOWED_CONFIG_KEYS = new Set(['urlPatterns', 'trustedPatterns', 'autoAudit', 'smartSuggestions', 'captureQuality', 'includeScreenshot', 'includeSnapshot', 'baselineAutoCompare']);

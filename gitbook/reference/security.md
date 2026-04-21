@@ -65,6 +65,7 @@ The entire codebase is open source under AGPL-3.0. You can inspect every line:
 - [Security assessment](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/security-assessment.md)
 - [SRR-001 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-001-2026-04-18.md)
 - [SRR-002 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-002-2026-04-19-T2.md)
+- [SRR-004 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-004-2026-04-21-T3.md)
 - [Codebase Review](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/codebase-review-2026-04-18.md)
 
 ## Security Audits Performed
@@ -74,6 +75,11 @@ The project undergoes periodic security reviews using a 3-tier model:
 - **Tier 1 (every commit):** Secrets, unsafe execution, auth bypass - automated pre-commit check
 - **Tier 2 (feature complete):** Full OWASP S1-S17 audit of changed files
 - **Tier 3 (sprint end):** Full codebase + supply chain + AI-generation artifacts
+
+**[SRR-004 - Tier 3 Sprint End Review (April 21, 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-004-2026-04-21-T3.md):**
+- 0 CRITICAL, 2 HIGH (1 fixed: config whitelist bypass, 1 roadmap: F19 wrapping), 5 MEDIUM, 4 LOW
+- Native messaging config whitelist enforced (shared ALLOWED_CONFIG_KEYS constant)
+- All previous remediations from SRR-001/002/003 verified intact
 
 **[SRR-002 - Tier 2 Review (April 19, 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-002-2026-04-19-T2.md):**
 - 1 HIGH (fixed: auto-learn config merge), 3 MEDIUM (2 fixed, 2 deferred), 2 LOW (1 fixed)

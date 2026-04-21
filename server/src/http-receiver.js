@@ -17,7 +17,7 @@ import { createServer } from 'http';
 import { writeFile, mkdir, readFile } from 'fs/promises';
 import { existsSync, accessSync, constants as fsConstants, readFileSync, mkdirSync, writeFileSync } from 'fs';
 import path from 'path';
-import { LOG_PREFIX, SERVER_VERSION, DEFAULT_HTTP_PORT } from './constants.js';
+import { LOG_PREFIX, SERVER_VERSION, DEFAULT_HTTP_PORT, ALLOWED_CONFIG_KEYS } from './constants.js';
 import { validateCapturePath } from './utils/validate-path.js';
 import { runPostCaptureAudit } from '#src/analysis/post-capture-audit.js';
 import { createWebSocketServer } from './ws-server.js';
@@ -177,7 +177,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         return json(res, 400, { error: 'Invalid JSON body' });
       }
       // S1-1: Whitelist allowed config keys to prevent config poisoning from malicious websites
-      const ALLOWED_CONFIG_KEYS = new Set(['urlPatterns', 'trustedPatterns', 'autoAudit', 'smartSuggestions', 'captureQuality', 'includeScreenshot', 'includeSnapshot', 'baselineAutoCompare']);
+      // S1-3: Use shared whitelist from constants.js
       const sanitized = {};
       for (const [k, v] of Object.entries(updates)) {
         if (ALLOWED_CONFIG_KEYS.has(k)) sanitized[k] = v;
