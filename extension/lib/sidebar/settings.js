@@ -107,13 +107,8 @@ export function createSettings() {
       // Fetch all servers
       allServersSection.textContent = 'Scanning...';
       try {
-        const servers = [];
-        for (let p = 9876; p < 9880; p++) {
-          try {
-            const res = await fetch(`http://127.0.0.1:${p}/info`, { signal: AbortSignal.timeout(1000) });
-            if (res.ok) { const info = await res.json(); servers.push({ port: p, ...info }); }
-          } catch { /* port not responding */ }
-        }
+        const { getAllServers } = await import('#lib/discovery.js');
+        const servers = await getAllServers();
         allServersSection.replaceChildren();
         if (servers.length === 0) {
           allServersSection.textContent = 'No servers running.';
@@ -122,7 +117,8 @@ export function createSettings() {
             const row = document.createElement('div');
             Object.assign(row.style, { padding: '4px 0', borderBottom: `1px solid ${COLOR.borderLight}` });
             const port = document.createElement('span');
-            port.textContent = `:${s.port}`;
+            const portNum = s.url ? new URL(s.url).port || '9876' : '?';
+            port.textContent = `:${portNum}`;
             Object.assign(port.style, { color: COLOR.primary, fontFamily: 'monospace', marginRight: '6px' });
             const root = document.createElement('span');
             root.textContent = s.projectRoot || 'unknown';
