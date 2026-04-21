@@ -6,6 +6,37 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ---
 
+## v0.4.3 - April 21, 2026
+
+### Features
+- F20: Transient UI State Capture - "Page Activity" section in Inspect tab. Captures toasts, flash content, animation jank, render thrashing via 30s mutation buffer. 17 enrichment collectors total.
+- ADR-013 Phase 2: All servers list inline in sidebar settings
+- Reload hint after agent resolves issues ("Reload to verify" with button)
+- Comparison page: Cursor Browser + Antigravity + 7 competitors in tabbed layout
+- Architecture SVG diagram on landing page
+
+### Bug Fixes
+- BUG-022 (Critical): request_capture matches by requestId, not just URL
+- Ghost border lines in footer removed
+- Settings link restored on back button click
+- Export buttons hidden in settings view
+- Flaky continuous-capture test fixed with fake timers
+
+### Security
+- SRR-004: Tier 3 full codebase review - S1-3 native messaging config whitelist fixed
+- S7-8 HIGH resolved: F19 wrapping gaps closed on all tools + standardized notice constants
+- STRIDE threat model: 9 threats, 9 mitigations, Threat Composer JSON export
+- Transport centralization: all server communication via transport.js/discovery.js
+- 0 open HIGH findings
+
+### Codebase
+- addHover() helper consolidates 12 hover listener pairs
+- getSelector() extracted to collector-utils.js
+- 4 standardized F19 notice constants in tool-helpers.js
+- 1583 tests (1099 extension + 484 server)
+
+---
+
 ## v0.4.1 - April 19, 2026
 
 ### UI Polish
