@@ -252,3 +252,38 @@ describe('suggestions panel survives refresh', () => {
     expect(panels?.length).toBe(1);
   });
 });
+
+describe('reload hint after resolution', () => {
+  it('(+) showReloadHint renders hint inside suggestions panel', () => {
+    start();
+    create();
+    const list = shadowQuery(`[${ATTR}="list"]`);
+    const { showReloadHint: show } = require('#lib/sidebar/suggestions-ui.js');
+    show(list, 3);
+    const hint = list.querySelector(`[${ATTR}="reload-hint"]`);
+    expect(hint).toBeTruthy();
+    expect(hint.textContent).toContain('3 issues resolved');
+    expect(hint.textContent).toContain('Reload');
+  });
+
+  it('(-) showReloadHint does not duplicate on multiple calls', () => {
+    start();
+    create();
+    const list = shadowQuery(`[${ATTR}="list"]`);
+    const { showReloadHint: show } = require('#lib/sidebar/suggestions-ui.js');
+    show(list, 2);
+    show(list, 1);
+    const hints = list.querySelectorAll(`[${ATTR}="reload-hint"]`);
+    expect(hints.length).toBe(1);
+  });
+});
+
+describe('status banner border', () => {
+  it('(-) status banner has no borderBottom (prevents ghost lines)', () => {
+    start();
+    create();
+    const banner = shadowQuery(`[${ATTR}="status-banner"]`);
+    expect(banner).toBeTruthy();
+    expect(banner.style.borderBottom).toBe('');
+  });
+});
