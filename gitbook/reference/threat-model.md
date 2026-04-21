@@ -106,9 +106,11 @@ The shield is always visible regardless of server connection. "Add to trusted" w
 
 **Mitigates:** Threats #1 (spoofing), #2 (prompt injection), #8 (sensitive data)
 
-### Native Messaging (in progress - Phase 1-5 complete)
+### Native Messaging (code complete, not yet default - ADR-016)
 
-Replaces localhost HTTP with Chrome native messaging for extension-to-server communication. Provides cryptographic caller identity - only the registered ViewGraph extension can talk to the server.
+Replaces localhost HTTP with Chrome/Firefox native messaging for extension-to-server communication. Browser enforces that only the registered ViewGraph extension can communicate - no ports, no auth needed.
+
+**Current state:** Implementation exists (F11 Phase 1-5) but requires `--native-host` flag. Not the default path. ADR-016 plans auto-detection: extension tries native messaging first, falls back to HTTP if unavailable. `viewgraph-init` will register the native host manifest automatically.
 
 | # | Threat | Before (localhost HTTP) | After (native messaging) |
 |---|---|---|---|
