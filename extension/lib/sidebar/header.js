@@ -16,7 +16,7 @@
 
 import { ATTR } from '#lib/selector.js';
 import { chevronRightIcon, closeIcon, bellIcon } from '#lib/sidebar/icons.js';
-import { COLOR, FONT } from '#lib/sidebar/styles.js';
+import { COLOR, FONT, addHover } from '#lib/sidebar/styles.js';
 
 /**
  * Create the sidebar header row.
@@ -62,8 +62,7 @@ export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellCl
     padding: '8px', display: 'none', alignItems: 'center', borderRadius: '6px',
     color: COLOR.warning, position: 'relative',
   });
-  bellBtn.addEventListener('mouseenter', () => { bellBtn.style.background = COLOR.bgHoverLight; });
-  bellBtn.addEventListener('mouseleave', () => { bellBtn.style.background = 'transparent'; });
+  addHover(bellBtn);
   bellBtn.addEventListener('click', onBellClick);
 
   // Help button
@@ -76,8 +75,7 @@ export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellCl
     padding: '8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
     color: COLOR.muted, fontSize: '14px', fontWeight: '700', fontFamily: FONT,
   });
-  helpBtn.addEventListener('mouseenter', () => { helpBtn.style.background = COLOR.bgHoverLight; });
-  helpBtn.addEventListener('mouseleave', () => { helpBtn.style.background = 'transparent'; });
+  addHover(helpBtn);
   helpBtn.addEventListener('click', onHelpToggle);
 
   // Collapse chevron
@@ -89,8 +87,7 @@ export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellCl
     border: 'none', background: 'transparent', cursor: 'pointer',
     padding: '8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
   });
-  collapseBtn.addEventListener('mouseenter', () => { collapseBtn.style.background = COLOR.bgHoverLight; });
-  collapseBtn.addEventListener('mouseleave', () => { collapseBtn.style.background = 'transparent'; });
+  addHover(collapseBtn);
   collapseBtn.addEventListener('click', onToggleCollapse);
 
   // Close button
@@ -102,8 +99,7 @@ export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellCl
     padding: '8px', display: 'flex', alignItems: 'center', borderRadius: '6px',
   });
   closeBtn.setAttribute('data-tooltip', 'Close review mode');
-  closeBtn.addEventListener('mouseenter', () => { closeBtn.style.background = 'rgba(255,255,255,0.05)'; });
-  closeBtn.addEventListener('mouseleave', () => { closeBtn.style.background = 'transparent'; });
+  addHover(closeBtn, 'rgba(255,255,255,0.05)');
   closeBtn.addEventListener('click', onClose);
 
   header.append(toggle, bellBtn, helpBtn, collapseBtn, closeBtn);

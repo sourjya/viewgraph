@@ -60,3 +60,25 @@ describe('sidebar/styles', () => {
     expect(DIVIDER_SUBTLE_STYLE.borderTop).toContain('#2a2a3a');
   });
 });
+
+describe('addHover', () => {
+  it('(+) sets background on mouseenter and resets on mouseleave', () => {
+    const { addHover } = require('#lib/sidebar/styles.js');
+    const el = document.createElement('button');
+    addHover(el, 'red', 'blue');
+    el.dispatchEvent(new Event('mouseenter'));
+    expect(el.style.background).toBe('red');
+    el.dispatchEvent(new Event('mouseleave'));
+    expect(el.style.background).toBe('blue');
+  });
+
+  it('(+) uses defaults when no args provided', () => {
+    const { addHover, COLOR } = require('#lib/sidebar/styles.js');
+    const el = document.createElement('button');
+    addHover(el);
+    el.dispatchEvent(new Event('mouseenter'));
+    expect(el.style.background).toContain('255, 255, 255');
+    el.dispatchEvent(new Event('mouseleave'));
+    expect(el.style.background).toBe('transparent');
+  });
+});

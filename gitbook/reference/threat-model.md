@@ -4,6 +4,10 @@ ViewGraph undergoes structured threat modeling using the [STRIDE methodology](ht
 
 For the full engineering report, see [GitHub](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-stride.md).
 
+{% hint style="info" %}
+**Latest threat model** (April 21, 2026): [Full STRIDE report](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-2026-04-21.md) | [Threat Composer JSON](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-2026-04-21.json) - 9 threats, 9 mitigations, all linked.
+{% endhint %}
+
 ## Scope
 
 ViewGraph is a localhost-only developer tool. The threat model assumes a trusted developer on their own machine. The primary risks come from other software on the same machine - specifically malicious websites and browser extensions - interacting with the localhost server.

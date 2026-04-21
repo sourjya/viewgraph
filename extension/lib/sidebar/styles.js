@@ -44,6 +44,18 @@ export const COLOR = {
   bgHoverSubtle: 'rgba(255,255,255,0.08)',
 };
 
+/**
+ * Add hover background effect to a button element.
+ * Consolidates the 40+ mouseenter/mouseleave pairs across sidebar modules.
+ * @param {HTMLElement} el - The element to add hover to
+ * @param {string} [hoverBg] - Background on hover (default: COLOR.bgHoverLight)
+ * @param {string} [restBg] - Background at rest (default: 'transparent')
+ */
+export function addHover(el, hoverBg = COLOR.bgHoverLight, restBg = 'transparent') {
+  el.addEventListener('mouseenter', () => { el.style.background = hoverBg; });
+  el.addEventListener('mouseleave', () => { el.style.background = restBg; });
+}
+
 /** Common style for section/toggle labels (uppercase, small, muted). */
 export const LABEL_STYLE = {
   fontWeight: '600', fontSize: '11px', color: '#9ca3af',

@@ -264,7 +264,7 @@ export function renderDiagnostics(container, callbacks = {}) {
   const transientData = collectTransient();
   if (transientData.issues.length > 0 || transientData.timeline.length > 0) {
     const badge = transientData.issues.length > 0 ? `${transientData.issues.length} issues` : `${transientData.timeline.length} events`;
-    const { section: transientSection, body: transientBody } = createSection('Transient', badge, '#f59e0b', callbacks.onRefresh);
+    const { section: transientSection, body: transientBody } = createSection('Page Activity', badge, '#f59e0b', callbacks.onRefresh);
     for (const issue of transientData.issues) {
       const row = document.createElement('div');
       Object.assign(row.style, { fontSize: '11px', padding: '2px 0', color: issue.severity === 'major' ? COLOR.errorLight : COLOR.warning });
