@@ -9,7 +9,7 @@
  */
 
 import { ATTR } from '#lib/selector.js';
-import { COLOR, FONT } from './styles.js';
+import { COLOR, FONT, addHover } from './styles.js';
 
 /** Tier display config: label, background color, text color. */
 const TIERS = {
@@ -170,8 +170,7 @@ function renderExpanded(wrapper, suggestions, callbacks) {
       display: 'flex', alignItems: 'center', gap: '6px',
       padding: '4px 0', cursor: 'pointer', transition: 'background 0.1s', borderRadius: '4px',
     });
-    row.addEventListener('mouseenter', () => { row.style.background = COLOR.bgDark; });
-    row.addEventListener('mouseleave', () => { row.style.background = 'transparent'; });
+    addHover(row, COLOR.bgDark);
 
     // Severity icon
     const sevEl = document.createElement('span');
@@ -206,8 +205,7 @@ function renderExpanded(wrapper, suggestions, callbacks) {
       padding: '0 6px', flexShrink: '0', fontFamily: FONT, borderRadius: '4px',
       lineHeight: '22px', transition: 'background 0.15s',
     });
-    addBtn.addEventListener('mouseenter', () => { addBtn.style.background = 'rgba(99,102,241,0.3)'; });
-    addBtn.addEventListener('mouseleave', () => { addBtn.style.background = 'rgba(99,102,241,0.15)'; });
+    addHover(addBtn, 'rgba(99,102,241,0.3)', 'rgba(99,102,241,0.15)');
     addBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       row.style.opacity = '0';

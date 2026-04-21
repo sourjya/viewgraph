@@ -15,7 +15,7 @@
 
 import { ATTR } from '#lib/selector.js';
 import { sendIcon, checkIcon, docIcon, downloadIcon, gearIcon, shieldIcon } from '#lib/sidebar/icons.js';
-import { COLOR, FONT } from './styles.js';
+import { COLOR, FONT, addHover } from './styles.js';
 import { formatMarkdown } from '#lib/export/export-markdown.js';
 import { getAnnotations } from '#lib/annotate.js';
 import { collectNetworkState } from '#lib/collectors/network-collector.js';
@@ -53,8 +53,7 @@ export function createFooter({ onSend, onShowSettings }) {
   sendBtn.setAttribute('data-tooltip', 'Send annotations to your AI agent');
   sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent'));
   Object.assign(sendBtn.style, { ...BTN_STYLE, background: COLOR.primary, width: '100%', padding: '9px 4px', marginBottom: '4px' });
-  sendBtn.addEventListener('mouseenter', () => { sendBtn.style.background = '#5558e6'; });
-  sendBtn.addEventListener('mouseleave', () => { sendBtn.style.background = COLOR.primary; });
+  addHover(sendBtn, '#5558e6', COLOR.primary);
   sendBtn.addEventListener('click', onSend);
 
   // Copy Markdown
@@ -63,8 +62,7 @@ export function createFooter({ onSend, onShowSettings }) {
   copyBtn.setAttribute('data-tooltip', 'Copy as Markdown for Jira/GitHub');
   copyBtn.replaceChildren(docIcon(14), document.createTextNode('Copy MD'));
   Object.assign(copyBtn.style, { ...BTN_STYLE, background: 'transparent', color: COLOR.secondary, flex: '1', border: `1px solid ${COLOR.border}` });
-  copyBtn.addEventListener('mouseenter', () => { copyBtn.style.background = 'rgba(255,255,255,0.05)'; });
-  copyBtn.addEventListener('mouseleave', () => { copyBtn.style.background = 'transparent'; });
+  addHover(copyBtn, 'rgba(255,255,255,0.05)');
   copyBtn.addEventListener('click', () => {
     const meta = { title: document.title, url: location.href, timestamp: new Date().toISOString(), viewport: { width: window.innerWidth, height: window.innerHeight }, browser: navigator.userAgent.match(/Chrome\/[\d.]+|Firefox\/[\d.]+/)?.[0] || 'Unknown' };
     const enrichment = { network: collectNetworkState(), console: getConsoleState(), breakpoints: collectBreakpoints(), stacking: collectStackingContexts(), focus: collectFocusChain(), scroll: collectScrollContainers(), landmarks: collectLandmarks(), components: collectComponents() };
@@ -80,8 +78,7 @@ export function createFooter({ onSend, onShowSettings }) {
   dlBtn.setAttribute('data-tooltip', 'Download ZIP report with screenshots');
   dlBtn.replaceChildren(downloadIcon(14), document.createTextNode('Report'));
   Object.assign(dlBtn.style, { ...BTN_STYLE, background: 'transparent', color: COLOR.secondary, flex: '1', border: `1px solid ${COLOR.border}` });
-  dlBtn.addEventListener('mouseenter', () => { dlBtn.style.background = 'rgba(255,255,255,0.05)'; });
-  dlBtn.addEventListener('mouseleave', () => { dlBtn.style.background = 'transparent'; });
+  addHover(dlBtn, 'rgba(255,255,255,0.05)');
   dlBtn.addEventListener('click', () => {
     chrome.runtime.sendMessage({ type: 'download-report' });
     flashButton(dlBtn, 'Saved!', downloadIcon, 'Report');
