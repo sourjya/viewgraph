@@ -47,19 +47,26 @@ There are three categories of browser tools for AI agents:
 
 5. **17 enrichment collectors** in every capture: network, console, accessibility, stacking, focus, scroll, landmarks, components, animations, storage, CSS variables, transient state, and more. IDE browsers capture screenshots; ViewGraph captures the full diagnostic picture.
 
-## Token Efficiency
+## Token Efficiency: The Biggest Win
 
-ViewGraph's capture format minimizes LLM token consumption. Agents get the most actionable context per token:
+IDE browser tools (Cursor, Antigravity) give agents **screenshots**. A single screenshot costs 100,000+ tokens as base64 - and the agent still can't extract a CSS selector, computed style, or source file path from pixels.
 
-| Approach | Tokens (500-element page) | Actionable? |
-|---|---|---|
-| Raw HTML dump | 50,000-100,000 | Low - agent drowns in noise |
-| Screenshot (base64) | 100,000+ | Low - no selectors, no structure |
-| Accessibility tree | 5,000-15,000 | Medium - no styles, no layout |
-| **ViewGraph summary** | **500** | **High - key elements, counts** |
-| **ViewGraph interactive** | **2,000** | **High - every actionable element** |
-| **ViewGraph full capture** | **20,000-40,000** | **High - salience-filtered structure** |
+ViewGraph gives agents **structured data** at a fraction of the cost:
 
-Key techniques: salience filtering (60-80% style token reduction), progressive disclosure (agents request only what they need), text truncation, field filtering.
+| What the agent receives | Tokens | Can fix CSS? | Can find source? | Can audit a11y? |
+|---|---|---|---|---|
+| **Screenshot** (Cursor/Antigravity) | 100,000+ | No - guesses from pixels | No | No |
+| Raw HTML dump | 50,000-100,000 | Partially - no computed styles | No | No |
+| Accessibility tree | 5,000-15,000 | No - no styles, no layout | No | Partially |
+| **ViewGraph summary** | **500** | Yes - key styles included | Yes - selectors | Yes - axe-core |
+| **ViewGraph interactive** | **2,000** | Yes - full computed styles | Yes - testids + selectors | Yes |
+| **ViewGraph full capture** | **20,000-40,000** | Yes - salience-filtered | Yes - React fiber paths | Yes - 100+ rules |
 
-For the full format research including benchmarks and design rationale, see [The Capture Format](capture-format.md).
+**That's 50-200x fewer tokens for more actionable data.** A screenshot tells the agent "there's a big heading." ViewGraph tells it "h1 at `index.html:38` has `font-size: 56px`, selector `h1.hero-title`, missing `aria-label`."
+
+Key techniques:
+- **Salience filtering** - only high-importance elements get full style data (60-80% token reduction)
+- **Progressive disclosure** - agents call `get_page_summary` (500 tokens) first, drill down only when needed
+- **Field filtering** - default CSS values omitted (`display: block` on a `<div>` is not stored)
+
+For the full format spec and benchmarks, see [The Capture Format](capture-format.md).
