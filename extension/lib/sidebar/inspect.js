@@ -102,25 +102,27 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
   });
   headerRow.appendChild(copyBtn);
 
-  // Note button
+  // Note button - + style matching suggestions panel (ADR-012 consistency)
   const noteBtn = document.createElement('button');
   noteBtn.setAttribute(ATTR, 'section-note');
   noteBtn.dataset.section = title;
-  noteBtn.appendChild(noteIcon(14));
+  noteBtn.textContent = '+';
   noteBtn.setAttribute('data-tooltip', 'Add as note for agent');
   const alreadyNoted = getAnnotations().some((a) => a.diagnostic?.section === title);
   Object.assign(noteBtn.style, {
-    border: 'none', background: 'transparent', cursor: alreadyNoted ? 'default' : 'pointer',
+    border: 'none', background: alreadyNoted ? 'transparent' : 'rgba(99,102,241,0.15)',
+    cursor: alreadyNoted ? 'default' : 'pointer',
     color: alreadyNoted ? COLOR.success : COLOR.primary,
-    padding: '2px', borderRadius: '3px', display: 'flex', flexShrink: '0',
+    padding: '0 5px', borderRadius: '4px', display: 'flex', flexShrink: '0',
+    fontSize: '14px', fontWeight: '700', lineHeight: '20px',
     opacity: alreadyNoted ? '0.4' : '1', pointerEvents: alreadyNoted ? 'none' : 'auto',
   });
   if (alreadyNoted) {
-    noteBtn.replaceChildren(checkIcon(12, COLOR.success));
+    noteBtn.textContent = '✓';
     noteBtn.setAttribute('data-tooltip', 'Note added');
   }
-  noteBtn.addEventListener('mouseenter', () => { noteBtn.style.color = COLOR.primaryHover; });
-  noteBtn.addEventListener('mouseleave', () => { if (noteBtn.dataset.noted !== 'true') noteBtn.style.color = COLOR.primary; });
+  noteBtn.addEventListener('mouseenter', () => { if (!alreadyNoted) noteBtn.style.background = 'rgba(99,102,241,0.3)'; });
+  noteBtn.addEventListener('mouseleave', () => { if (!alreadyNoted) noteBtn.style.background = 'rgba(99,102,241,0.15)'; });
   noteBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     const fullData = body.textContent.trim();
@@ -130,8 +132,9 @@ function createSection(title, badgeText, badgeColor, onRefresh) {
       ann.diagnostic = { section: title, data: fullData };
       if (onRefresh) onRefresh();
       noteBtn.dataset.noted = 'true';
-      noteBtn.replaceChildren(checkIcon(12, COLOR.success));
+      noteBtn.textContent = '✓';
       noteBtn.style.color = COLOR.success;
+      noteBtn.style.background = 'transparent';
       noteBtn.style.opacity = '0.4';
       noteBtn.style.pointerEvents = 'none';
       noteBtn.setAttribute('data-tooltip', 'Note added');
