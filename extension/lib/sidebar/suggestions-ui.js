@@ -43,6 +43,41 @@ export function collapseSuggestions() {
 export function resetSuggestions() { _expandedState = null; }
 
 /**
+ * Show a reload hint in the suggestions panel when agent resolves issues.
+ * @param {HTMLElement} container - The list container
+ * @param {number} resolvedCount - Number of newly resolved annotations
+ */
+export function showReloadHint(container, resolvedCount) {
+  const panel = container.querySelector(`[${ATTR}="suggestions-panel"]`);
+  if (!panel) return;
+  // Don't duplicate
+  if (panel.querySelector(`[${ATTR}="reload-hint"]`)) return;
+  const hint = document.createElement('div');
+  hint.setAttribute(ATTR, 'reload-hint');
+  Object.assign(hint.style, {
+    display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px',
+    background: 'rgba(74, 222, 128, 0.1)', borderBottom: `1px solid ${COLOR.borderLight}`,
+    fontSize: '11px', fontFamily: FONT,
+  });
+  const icon = document.createElement('span');
+  icon.textContent = '✅';
+  Object.assign(icon.style, { fontSize: '13px', flexShrink: '0' });
+  const text = document.createElement('span');
+  text.textContent = `${resolvedCount} issue${resolvedCount > 1 ? 's' : ''} resolved. Reload to verify.`;
+  Object.assign(text.style, { color: COLOR.success, flex: '1' });
+  const btn = document.createElement('button');
+  btn.textContent = 'Reload';
+  Object.assign(btn.style, {
+    border: `1px solid ${COLOR.success}`, borderRadius: '4px', background: 'transparent',
+    color: COLOR.success, fontSize: '10px', padding: '2px 8px', cursor: 'pointer', fontFamily: FONT,
+  });
+  btn.addEventListener('click', () => location.reload());
+  hint.append(icon, text, btn);
+  panel.style.display = 'block';
+  panel.prepend(hint);
+}
+
+/**
  * Render the suggestion bar: collapsed badge or expanded checklist.
  * @param {HTMLElement} container - Element to prepend into
  * @param {Array} suggestions - From scanForSuggestions()

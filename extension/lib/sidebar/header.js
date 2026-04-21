@@ -114,7 +114,7 @@ export function createHeader({ onToggleCollapse, onClose, onHelpToggle, onBellCl
   Object.assign(statusBanner.style, {
     display: 'none', padding: '6px 12px', fontSize: '11px',
     fontFamily: FONT, color: COLOR.warning,
-    background: '#2a2a1a', borderBottom: `1px solid ${COLOR.border}`,
+    background: '#2a2a1a',
     flexShrink: '0',
   });
 

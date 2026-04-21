@@ -33,7 +33,7 @@ import { createInspectTab } from './sidebar/inspect.js';
 import { startTransientObserver, stopTransientObserver } from './collectors/transient-collector.js';
 import { renderReviewList } from './sidebar/review.js';
 import { scanForSuggestions } from './sidebar/suggestions.js';
-import { renderSuggestionBar, collapseSuggestions, resetSuggestions } from './sidebar/suggestions-ui.js';
+import { renderSuggestionBar, collapseSuggestions, resetSuggestions, showReloadHint } from './sidebar/suggestions-ui.js';
 import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from './sidebar/sync.js';
 import { EVENTS, createEventBus } from './sidebar/events.js';
 import { createHeader } from './sidebar/header.js';
@@ -360,9 +360,19 @@ export function create() {
   _strip = strip;
   document.documentElement.appendChild(badgeEl);
 
+  let _lastResolvedCount = getAnnotations().filter((a) => a.resolved).length;
   refresh();
   syncResolved(() => _bus.emit(EVENTS.REFRESH));
-  startResolutionPolling(() => _bus.emit(EVENTS.REFRESH));
+  startResolutionPolling(() => {
+    const newResolved = getAnnotations().filter((a) => a.resolved).length;
+    if (newResolved > _lastResolvedCount) {
+      const diff = newResolved - _lastResolvedCount;
+      _lastResolvedCount = newResolved;
+      const list = sidebarEl?.querySelector(`[${ATTR}="list"]`);
+      if (list) showReloadHint(list, diff);
+    }
+    _bus.emit(EVENTS.REFRESH);
+  });
   startRequestPolling((reqs) => { pendingRequests = reqs || []; });
 
   transport.onEvent('annotation:resolved', (msg) => {
