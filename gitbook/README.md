@@ -38,12 +38,7 @@ The agent receives the element's exact CSS selector, computed styles, accessibil
 
 No screenshots with arrows. No copy-pasting from DevTools. No "the button is somewhere on the settings page."
 
-```
-Your app (any stack) --> Browser renders it --> Extension captures DOM
-                                                       |
-                                                       v
-Kiro / Claude / Cursor  <-- MCP protocol <-- ViewGraph server
-```
+![ViewGraph architecture: Your App → Browser → Extension captures DOM → Server → Agent fixes code](.gitbook/assets/viewgraph-architecture.svg)
 
 Works with any web app regardless of backend. Python, Ruby, Java, Go, PHP - if it renders HTML, ViewGraph captures it.
 
