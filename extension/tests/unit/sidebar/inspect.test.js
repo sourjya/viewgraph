@@ -35,4 +35,28 @@ describe('createInspectTab', () => {
     // Should not accumulate - same count after second refresh
     expect(tab.element.children.length).toBe(firstCount);
   });
+
+  it('(+) note buttons use + text with shaded background', () => {
+    const tab = createInspectTab();
+    tab.refresh();
+    const noteBtns = tab.element.querySelectorAll('[data-vg-annotate="section-note"]');
+    for (const btn of noteBtns) {
+      expect(btn.textContent).toBe('+');
+      expect(btn.style.borderRadius).toBe('4px');
+      expect(btn.style.fontSize).toBe('14px');
+      expect(btn.style.fontWeight).toBe('700');
+    }
+  });
+
+  it('(+) note buttons have indigo background matching suggestions panel', () => {
+    const tab = createInspectTab();
+    tab.refresh();
+    const noteBtns = tab.element.querySelectorAll('[data-vg-annotate="section-note"]');
+    for (const btn of noteBtns) {
+      if (btn.style.opacity !== '0.4') {
+        // Active (not already noted) buttons have indigo background
+        expect(btn.style.background).toContain('99, 102, 241');
+      }
+    }
+  });
 });
