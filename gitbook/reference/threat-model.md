@@ -76,18 +76,37 @@ Nation-state actors, organized crime, hacktivists, and insider threats were eval
 | [SRR-003](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-003-2026-04-19-T2.md) | Apr 19 | T2 | 0H, 2M, 3L | Trust gate bypass, orphan prevention |
 | [SRR-004](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-004-2026-04-21-T3.md) | Apr 21 | T3 | 2H, 5M, 4L | Native messaging whitelist, full codebase audit |
 
-## Native Messaging (Future Default)
+## Security Indicators
 
-ViewGraph currently uses localhost HTTP for extension-to-server communication. Native messaging (Chrome/Firefox API) is implemented but not yet the default path. When enabled, it eliminates the entire class of localhost threats:
+ViewGraph has two security indicators that protect different aspects of the workflow:
 
-| Concern | Localhost HTTP (current) | Native Messaging (future) |
+| | Trust Shield (F17) | Auth Lock (F21) |
 |---|---|---|
-| Port exposure | 9876-9879 visible to local processes | No ports open |
-| Authentication | None (ADR-010) | Browser enforces extension ID |
-| Injection by other apps | Possible | Impossible |
-| Process discovery | Port scan reveals server | Invisible |
+| **What it shows** | Is this PAGE trustworthy? | Is the SERVER connection authenticated? |
+| **Protects against** | Sending sensitive page data to the agent | Other processes injecting fake captures |
+| **States** | 🟢 Trusted (localhost) / 🔵 Configured / 🟠 Untrusted | 🔒 Signed / 🔓 Unsigned |
+| **User action** | Blocks "Send to Agent" on untrusted pages | Informational only (auto-detected) |
+| **Location** | Footer, next to status dot | Status dot tooltip |
 
-Native messaging code exists (F11 Phase 1-5). Making it the default is tracked in the roadmap.
+The trust shield answers: "Should I send this page's content to my AI agent?" The auth lock answers: "Is the pipe between extension and server secure?" Both can be active simultaneously.
+
+## Communication Security
+
+Three layers of transport security, from strongest to fallback:
+
+| Layer | How it works | Status |
+|---|---|---|
+| **Native Messaging** (ADR-016) | Browser-enforced extension identity. No ports, no network. | Code complete, not yet default |
+| **HMAC-Signed HTTP** (ADR-015) | File-based secret, replay-proof signatures, 30s timestamp window | **Implemented (F21)** |
+| **Unsigned HTTP** (ADR-010) | Any local process can connect. Localhost-only binding. | Default (beta) |
+
+| Concern | Unsigned HTTP | HMAC-Signed HTTP | Native Messaging |
+|---|---|---|---|
+| Port exposure | 9876-9879 visible | 9876-9879 visible | No ports open |
+| Authentication | None | HMAC signature | Browser enforces extension ID |
+| Injection by other apps | Possible | Requires session key | Impossible |
+| Replay attacks | Possible | 30s timestamp window | N/A |
+| Process discovery | Port scan reveals | Port scan reveals | Invisible |
 
 ## Roadmap: How We're Addressing Remaining Risks
 

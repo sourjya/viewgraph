@@ -23,6 +23,7 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - Flaky continuous-capture test fixed with fake timers
 
 ### Security
+- F21: HMAC-signed localhost auth - session key, challenge-response handshake, signed requests (31 auth tests)
 - SRR-004: Tier 3 full codebase review - S1-3 native messaging config whitelist fixed
 - S7-8 HIGH resolved: F19 wrapping gaps closed on all tools + standardized notice constants
 - STRIDE threat model: 9 threats, 9 mitigations, Threat Composer JSON export

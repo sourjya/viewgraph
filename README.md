@@ -145,7 +145,7 @@ Full methodology, per-site breakdowns, and run history: [`scripts/experiments/bu
 - [Multi-Project Setup](https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project) - URL patterns, routing
 - [@viewgraph/playwright](https://www.npmjs.com/package/@viewgraph/playwright) - Playwright fixture on npm
 - [Roadmap](./docs/roadmap/roadmap.md) - milestone plan and completion status
-- [Security Assessment](./docs/architecture/security-assessment.md) - threat model and mitigations
+- [Security Assessment](./docs/architecture/security-assessment.md) - threat model, HMAC auth, 4 security reviews
 - [Spec Index](./.kiro/specs/README.md) - Kiro specs, ADRs, architecture docs
 - [ViewGraph v2 Format Spec](./docs/architecture/viewgraph-v2-format.md) - capture format (v2.1.0)
 - [Format Research](./docs/architecture/viewgraph-format-research.md) - format analysis and design rationale

@@ -61,7 +61,7 @@ The entire codebase is open source under AGPL-3.0. You can inspect every line:
 
 - [Extension source](https://github.com/sourjya/viewgraph/tree/main/extension)
 - [Server source](https://github.com/sourjya/viewgraph/tree/main/server)
-- [STRIDE Threat Model](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-stride.md) - 8 threats, 8 mitigations, 4 threat actors (April 2026)
+- [STRIDE Threat Model](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-stride.md) - 9 threats, 9 mitigations, 4 threat actors
 - [Security assessment](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/security-assessment.md)
 - [SRR-001 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-001-2026-04-18.md)
 - [SRR-002 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-002-2026-04-19-T2.md)
