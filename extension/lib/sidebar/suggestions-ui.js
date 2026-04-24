@@ -187,13 +187,41 @@ function renderExpanded(wrapper, suggestions, callbacks) {
       background: tier.bg, color: tier.color,
     });
 
-    // Title
+    // Title (clickable to expand/collapse detail)
     const title = document.createElement('span');
     title.textContent = sug.title;
     Object.assign(title.style, {
       fontSize: '11px', color: COLOR.text, flex: '1',
       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
     });
+
+    // Detail panel (hidden by default, shown on click)
+    const detail = document.createElement('div');
+    detail.textContent = sug.detail || sug.title;
+    Object.assign(detail.style, {
+      display: 'none', fontSize: '10px', color: COLOR.muted,
+      padding: '4px 0 4px 24px', lineHeight: '1.4',
+      whiteSpace: 'normal', wordBreak: 'break-word',
+    });
+
+    // Click row to toggle detail (accordion - one at a time)
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('button')) return; // don't toggle when clicking +
+      const isOpen = detail.style.display !== 'none';
+      // Close all other details first
+      wrapper.querySelectorAll(`[${ATTR}="suggestion-detail"]`).forEach((d) => {
+        d.style.display = 'none';
+      });
+      if (!isOpen) {
+        detail.style.display = 'block';
+        title.style.whiteSpace = 'normal';
+        title.style.overflow = 'visible';
+      } else {
+        title.style.whiteSpace = 'nowrap';
+        title.style.overflow = 'hidden';
+      }
+    });
+    detail.setAttribute(ATTR, 'suggestion-detail');
 
     // Add button - plus icon with shaded background
     const addBtn = document.createElement('button');
@@ -222,6 +250,7 @@ function renderExpanded(wrapper, suggestions, callbacks) {
 
     row.append(sevEl, pill, title, addBtn);
     wrapper.appendChild(row);
+    wrapper.appendChild(detail);
   }
 
   // Bottom actions
