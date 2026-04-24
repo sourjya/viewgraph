@@ -25,7 +25,7 @@
  */
 
 import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
-import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker, updateSeverity, updateComment } from './annotate.js';
+import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker, updateSeverity, updateComment, updateResolvedMarkerVisibility } from './annotate.js';
 import { createHelpCard } from './sidebar/help.js';
 import { createStrip } from './sidebar/strip.js';
 import { createSettings } from './sidebar/settings.js';
@@ -602,7 +602,7 @@ export function refresh() {
     onResolve: (id) => { resolveAnnotation(id); hidePanel(); refresh(); },
     onClear: () => { clearAnnotations(); save(); refresh(); },
     onSpotlight: (id) => spotlightMarker(id),
-    onFilterChange: (key) => { activeFilter = key; refresh(); },
+    onFilterChange: (key) => { activeFilter = key; updateResolvedMarkerVisibility(key); refresh(); },
     onTypeFilterToggle: (key) => {
       if (key === 'element') {
         if (activeTypeFilters.has('element')) { activeTypeFilters.delete('element'); activeTypeFilters.delete('region'); }

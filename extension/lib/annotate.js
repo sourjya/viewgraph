@@ -577,6 +577,19 @@ function dimMarker(id) {
 export function dimResolvedMarker(id) { dimMarker(id); }
 
 /**
+ * Show or hide resolved markers based on active filter tab.
+ * @param {string} filter - 'open', 'resolved', or 'all'
+ */
+export function updateResolvedMarkerVisibility(filter) {
+  for (const ann of annotations) {
+    if (!ann.resolved) continue;
+    const el = document.querySelector(`[${ATTR}="marker-${ann.id}"]`);
+    if (!el) continue;
+    el.style.display = (filter === 'resolved' || filter === 'all') ? '' : 'none';
+  }
+}
+
+/**
  * Briefly pulse a resolved marker to draw attention when clicked in sidebar.
  * @param {number} id - Annotation ID
  */
@@ -629,7 +642,15 @@ export async function load() {
   annotations = stored.annotations;
   nextId = stored.nextId || annotations.length + 1;
   nextPageNoteId = stored.nextPageNoteId || annotations.filter((a) => a.type === 'page-note').length + 1;
-  for (const ann of annotations) { if (!ann.resolved) createMarker(ann, null); }
+  for (const ann of annotations) {
+    createMarker(ann, null);
+    if (ann.resolved) {
+      dimMarker(ann.id);
+      // Hide resolved markers by default - shown when user switches to Resolved/All tab
+      const el = document.querySelector(`[${ATTR}="marker-${ann.id}"]`);
+      if (el) el.style.display = 'none';
+    }
+  }
   return true;
 }
 
@@ -660,6 +681,9 @@ export function resolveAnnotation(id) {
   if (!ann || ann.resolved) return null;
   ann.resolved = true;
   dimMarker(id);
+  // Hide immediately - will show when user switches to Resolved/All tab
+  const el = document.querySelector(`[${ATTR}="marker-${id}"]`);
+  if (el) el.style.display = 'none';
   save();
   return true;
 }
