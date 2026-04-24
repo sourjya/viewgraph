@@ -136,7 +136,7 @@ try {
   if (res.ok) {
     const { version: latest } = await res.json();
     if (latest !== CURRENT_VERSION && latest > CURRENT_VERSION) {
-      console.log(`  \x1b[33m⚠ ViewGraph ${latest} available (you have ${CURRENT_VERSION}). Run: npm update -g @viewgraph/core\x1b[0m\n`);
+      console.log(`  \x1b[33m⚠  ViewGraph ${latest} available (you have ${CURRENT_VERSION}). Run: npm update -g @viewgraph/core\x1b[0m\n`);
     }
   }
 } catch { /* offline or timeout - skip silently */ }
@@ -356,22 +356,26 @@ if (!process.argv.includes('--skip-native-host')) {
       const result = installHost(hostScript, CHROME_EXT_ID, 'chrome');
       console.log(`  ✓ Native messaging host registered for Chrome`);
       console.log(`    ${result.path}`);
-    } catch (e) { console.log(`  ⚠ Chrome native host: ${e.message}`); }
+    } catch (e) { console.log(`  ⚠  Chrome native host: ${e.message}`); }
 
     // Firefox
     try {
       const result = installHost(hostScript, FIREFOX_EXT_ID, 'firefox');
       console.log(`  ✓ Native messaging host registered for Firefox`);
       console.log(`    ${result.path}`);
-    } catch (e) { console.log(`  ⚠ Firefox native host: ${e.message}`); }
+    } catch (e) { console.log(`  ⚠  Firefox native host: ${e.message}`); }
 
-    console.log('  🔒 Extension will use native messaging (more secure than HTTP)');
+    console.log('');
+    console.log('  \x1b[32m🔒 Security mode: Native messaging (browser-enforced)\x1b[0m');
+    console.log('     Fallback: HMAC-signed HTTP → Unsigned HTTP');
+    console.log('     The extension auto-detects the best available mode.');
   } catch (err) {
-    console.log(`  ⚠ Native host registration skipped: ${err.message}`);
-    console.log('  Extension will fall back to HMAC-signed HTTP');
+    console.log(`  ⚠  Native host registration skipped: ${err.message}`);
+    console.log('  \x1b[33m🔒 Security mode: HMAC-signed HTTP (fallback)\x1b[0m');
+    console.log('     Run viewgraph-init again to enable native messaging.');
   }
 } else {
-  console.log('  ⚠ Native host registration skipped (--skip-native-host)');
+  console.log('  ⚠  Native host registration skipped (--skip-native-host)');
 }
 
 console.log('\nDone.\n');
