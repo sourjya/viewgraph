@@ -87,4 +87,57 @@ describe('createFooter', () => {
     const statusRow = dot.parentElement;
     expect(statusRow.style.borderTop).toBe('');
   });
+
+  // F21: Auth lock indicator
+  it('(+) auth lock indicator exists in footer', () => {
+    const f = createFooter({ onSend: vi.fn(), onShowSettings: vi.fn() });
+    const lock = f.element.querySelector('[data-vg-annotate="auth-lock"]');
+    expect(lock).toBeTruthy();
+    expect(lock.textContent).toBe('🔓');
+  });
+
+  it('(+) auth lock starts as unsigned (dimmed)', () => {
+    const f = createFooter({ onSend: vi.fn(), onShowSettings: vi.fn() });
+    const lock = f.element.querySelector('[data-vg-annotate="auth-lock"]');
+    expect(lock.style.opacity).toBe('0.5');
+    expect(lock.getAttribute('data-tooltip')).toBe('Unsigned mode');
+  });
+
+  it('(+) setAuthMode(true) shows locked icon at full opacity', () => {
+    const f = createFooter({ onSend: vi.fn(), onShowSettings: vi.fn() });
+    f.setAuthMode(true);
+    const lock = f.element.querySelector('[data-vg-annotate="auth-lock"]');
+    expect(lock.textContent).toBe('🔒');
+    expect(lock.style.opacity).toBe('1');
+    expect(lock.getAttribute('data-tooltip')).toBe('Signed connection (HMAC)');
+  });
+
+  it('(+) setAuthMode(false) shows unlocked icon dimmed', () => {
+    const f = createFooter({ onSend: vi.fn(), onShowSettings: vi.fn() });
+    f.setAuthMode(true);
+    f.setAuthMode(false);
+    const lock = f.element.querySelector('[data-vg-annotate="auth-lock"]');
+    expect(lock.textContent).toBe('🔓');
+    expect(lock.style.opacity).toBe('0.5');
+  });
+
+  it('(+) footer status row order: dot, lock, shield', () => {
+    const f = createFooter({ onSend: vi.fn(), onShowSettings: vi.fn() });
+    const dot = f.element.querySelector('[data-vg-annotate="status-dot"]');
+    const lock = f.element.querySelector('[data-vg-annotate="auth-lock"]');
+    const shield = f.element.querySelector('[data-vg-annotate="trust-shield"]');
+    const row = dot.parentElement;
+    const children = [...row.children];
+    expect(children.indexOf(dot)).toBeLessThan(children.indexOf(lock));
+    expect(children.indexOf(lock)).toBeLessThan(children.indexOf(shield));
+  });
+
+  it('(+) all footer status indicators use data-tooltip (themed, not native)', () => {
+    const f = createFooter({ onSend: vi.fn(), onShowSettings: vi.fn() });
+    const dot = f.element.querySelector('[data-vg-annotate="status-dot"]');
+    const lock = f.element.querySelector('[data-vg-annotate="auth-lock"]');
+    expect(lock.getAttribute('data-tooltip')).toBeTruthy();
+    expect(lock.hasAttribute('title')).toBe(false);
+    expect(dot.hasAttribute('title')).toBe(false);
+  });
 });
