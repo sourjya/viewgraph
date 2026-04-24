@@ -113,10 +113,14 @@ export async function discoverServer(pageUrl = null, targetDir = null) {
   const url = await _discoverServerImpl(pageUrl, targetDir);
   if (url) {
     transport.init(url);
-    // F21: Attempt HMAC handshake once (non-blocking, falls back to unsigned)
+    // F22: Skip HMAC if native messaging is available (more secure, no HTTP)
     if (!_authAttempted) {
       _authAttempted = true;
-      try { const { authenticate } = await import('./auth.js'); await authenticate(url); } catch { /* unsigned mode */ }
+      const nativeAvailable = await transport.isNative();
+      if (!nativeAvailable) {
+        // F21: Attempt HMAC handshake for HTTP fallback
+        try { const { authenticate } = await import('./auth.js'); await authenticate(url); } catch { /* unsigned mode */ }
+      }
     }
   } else {
     transport.reset();

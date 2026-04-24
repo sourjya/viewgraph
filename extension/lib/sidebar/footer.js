@@ -199,10 +199,16 @@ export function createFooter({ onSend, onShowSettings }) {
    * Update the auth lock indicator.
    * @param {boolean} signed - Whether the connection is HMAC-signed
    */
-  function setAuthMode(signed) {
-    authLock.textContent = signed ? '🔒' : '🔓';
-    authLock.style.opacity = signed ? '1' : '0.5';
-    authLock.setAttribute('data-tooltip', signed ? 'Connection secured' : 'Connection not secured - run viewgraph-init');
+  function setAuthMode(signed, mode) {
+    if (mode === 'native') {
+      authLock.textContent = '🔒';
+      authLock.style.opacity = '1';
+      authLock.setAttribute('data-tooltip', 'Native messaging (browser-enforced security)');
+    } else {
+      authLock.textContent = signed ? '🔒' : '🔓';
+      authLock.style.opacity = signed ? '1' : '0.5';
+      authLock.setAttribute('data-tooltip', signed ? 'Connection secured (HMAC)' : 'Connection not secured - run viewgraph-init');
+    }
   }
 
   return { element: footer, sendBtn, copyBtn, dlBtn, statusDot, setOfflineMode, updateDisabledState, flashSend, setTrustLevel, setAuthMode };
