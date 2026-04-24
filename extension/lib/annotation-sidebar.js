@@ -684,7 +684,7 @@ export function refresh() {
   });
 
   updateBadgeCount();
-  _footer.updateDisabledState(anns.length > 0);
+  _footer.updateDisabledState(anns.some((a) => !a.resolved));
 }
 
 // ──────────────────────────────────────────────
