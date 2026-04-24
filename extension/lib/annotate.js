@@ -555,6 +555,39 @@ function removeMarker(id) {
   if (el) el.remove();
 }
 
+/**
+ * Dim a marker to indicate resolved state.
+ * Reduces opacity, grays the border, adds a ✓ to the badge.
+ * Marker stays visible so user can see what was fixed.
+ */
+function dimMarker(id) {
+  const el = document.querySelector(`[${ATTR}="marker-${id}"]`);
+  if (!el) return;
+  el.style.opacity = '0.3';
+  el.style.borderColor = '#666';
+  el.style.background = 'rgba(102,102,102,0.05)';
+  const badge = el.querySelector(`[${ATTR}="badge"]`);
+  if (badge) {
+    badge.style.background = '#666';
+    badge.textContent = '✓';
+  }
+}
+
+/** Dim a marker when its annotation is resolved (called by sync). */
+export function dimResolvedMarker(id) { dimMarker(id); }
+
+/**
+ * Briefly pulse a resolved marker to draw attention when clicked in sidebar.
+ * @param {number} id - Annotation ID
+ */
+export function spotlightResolvedMarker(id) {
+  const el = document.querySelector(`[${ATTR}="marker-${id}"]`);
+  if (!el) return;
+  el.style.transition = 'opacity 0.3s';
+  el.style.opacity = '0.7';
+  setTimeout(() => { el.style.opacity = '0.3'; }, 2000);
+}
+
 function flashElements(selRect) {
   const elements = document.body.querySelectorAll('*');
   for (let i = 0; i < elements.length; i++) {
@@ -626,7 +659,7 @@ export function resolveAnnotation(id) {
   const ann = annotations.find((a) => a.id === id);
   if (!ann || ann.resolved) return null;
   ann.resolved = true;
-  removeMarker(id);
+  dimMarker(id);
   save();
   return true;
 }

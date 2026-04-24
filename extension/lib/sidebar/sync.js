@@ -34,10 +34,18 @@ export async function syncResolved(onChanged) {
       if (ann) {
         ann.resolved = true;
         ann.resolution = resolution;
+        // Dim the on-page marker to show it's been fixed
+        const { dimResolvedMarker } = await import('#lib/annotate.js');
+        dimResolvedMarker(ann.id);
         changed = true;
       }
     }
-    if (changed && onChanged) onChanged();
+    if (changed && onChanged) {
+      // Persist resolved state so next reload doesn't flash unresolved
+      const { save } = await import('#lib/annotate.js');
+      await save();
+      onChanged();
+    }
   } catch { /* server offline - no sync */ }
 }
 
