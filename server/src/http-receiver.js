@@ -18,6 +18,8 @@ import { writeFile, mkdir, readFile } from 'fs/promises';
 import { existsSync, accessSync, constants as fsConstants, readFileSync, mkdirSync, writeFileSync } from 'fs';
 import path from 'path';
 import { LOG_PREFIX, SERVER_VERSION, DEFAULT_HTTP_PORT, ALLOWED_CONFIG_KEYS } from './constants.js';
+import { createAuthMiddleware } from './auth/middleware.js';
+import { generateSessionKey } from './auth/session-key.js';
 import { validateCapturePath } from './utils/validate-path.js';
 import { runPostCaptureAudit } from '#src/analysis/post-capture-audit.js';
 import { createWebSocketServer } from './ws-server.js';
@@ -96,6 +98,12 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
   let server;
   let wsServer;
 
+  // F21: Generate session key and create auth middleware
+  const configDir = path.resolve(capturesDir, '..');
+  let sessionSecret;
+  try { sessionSecret = generateSessionKey(configDir); } catch { sessionSecret = null; }
+  const auth = sessionSecret ? createAuthMiddleware({ secret: sessionSecret, requireAuth: false }) : null;
+
   /**
    * Verify the shared secret on mutating requests. Returns true if
    * authorized, false (and sends 401) if not.
@@ -124,9 +132,37 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       res.writeHead(204, {
         'access-control-allow-origin': '*',
         'access-control-allow-methods': 'GET, POST, PUT, OPTIONS',
-        'access-control-allow-headers': 'content-type, authorization, x-capture-filename, x-captures-dir',
+        'access-control-allow-headers': 'content-type, authorization, x-capture-filename, x-captures-dir, x-vg-session, x-vg-timestamp, x-vg-signature',
       });
       return res.end();
+    }
+
+    // F21: Handshake endpoints
+    if (auth && method === 'GET' && url === '/handshake') {
+      const result = auth.handleHandshake();
+      res.writeHead(200, { 'content-type': 'application/json', 'access-control-allow-origin': '*' });
+      return res.end(JSON.stringify(result));
+    }
+
+    if (auth && method === 'POST' && url === '/handshake/verify') {
+      const body = await readBody(req);
+      const parsed = JSON.parse(body || '{}');
+      const result = auth.handleVerify(parsed);
+      if (result) {
+        res.writeHead(200, { 'content-type': 'application/json', 'access-control-allow-origin': '*' });
+        return res.end(JSON.stringify(result));
+      }
+      res.writeHead(401, { 'content-type': 'application/json', 'access-control-allow-origin': '*' });
+      return res.end(JSON.stringify({ error: 'Invalid handshake response' }));
+    }
+
+    // F21: Validate auth on all other requests (if auth middleware exists)
+    if (auth) {
+      const authResult = auth.validateRequest({ method, url, headers: req.headers, body: '' });
+      if (!authResult.valid) {
+        res.writeHead(401, { 'content-type': 'application/json', 'access-control-allow-origin': '*' });
+        return res.end(JSON.stringify({ error: 'Unauthorized', reason: authResult.reason }));
+      }
     }
 
     // GET /health - server status, captures dir, and writability check
