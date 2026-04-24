@@ -42,7 +42,7 @@ export function createAuthMiddleware({ secret, requireAuth = false }) {
     for (const [c, t] of pendingChallenges) {
       if (Date.now() - t > CHALLENGE_TTL_MS) pendingChallenges.delete(c);
     }
-    return { challenge };
+    return { challenge, key: secret };
   }
 
   /**

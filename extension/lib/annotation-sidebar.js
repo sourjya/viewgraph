@@ -31,6 +31,7 @@ import { createStrip } from './sidebar/strip.js';
 import { createSettings } from './sidebar/settings.js';
 import { createInspectTab } from './sidebar/inspect.js';
 import { startTransientObserver, stopTransientObserver } from './collectors/transient-collector.js';
+import { clearAuth } from './auth.js';
 import { renderReviewList } from './sidebar/review.js';
 import { scanForSuggestions } from './sidebar/suggestions.js';
 import { renderSuggestionBar, collapseSuggestions, resetSuggestions, showReloadHint } from './sidebar/suggestions-ui.js';
@@ -105,7 +106,9 @@ export function create() {
       if (!_footer) return;
       if (url) {
         _footer.statusDot.style.background = COLOR.success;
-        _footer.statusDot.setAttribute('data-tooltip', `MCP server: ${url}`);
+        const { isAuthenticated: isAuthed } = await import('./auth.js');
+        const authMode = isAuthed() ? '🔒 signed' : '🔓 unsigned';
+        _footer.statusDot.setAttribute('data-tooltip', `MCP server: ${url} (${authMode})`);
         _header.statusBanner.style.display = 'none';
         try {
           const info = await transport.getInfo();
@@ -624,6 +627,7 @@ export function destroy() {
   stopShortcuts();
   stopJourney();
   stopTransientObserver();
+  clearAuth();
   stopRequestPolling();
   stopResolutionPolling();
   transport.reset();

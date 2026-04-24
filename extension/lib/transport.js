@@ -12,6 +12,15 @@
  * @see .kiro/specs/native-messaging/design.md
  */
 
+// F21: Auth imported lazily to avoid test environment issues (no crypto.subtle in jsdom)
+let _authModule = null;
+async function getAuth() {
+  if (!_authModule) {
+    try { _authModule = await import('./auth.js'); } catch { _authModule = { signRequest: async () => ({}), isAuthenticated: () => false }; }
+  }
+  return _authModule;
+}
+
 /** Native messaging host name (must match manifest). */
 const HOST_NAME = 'com.viewgraph.host';
 
@@ -185,7 +194,8 @@ async function _query(endpoint, params = {}) {
   if (!_serverUrl) return null;
   const qs = Object.entries(params).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
   const url = `${_serverUrl}/${endpoint}${qs ? '?' + qs : ''}`;
-  const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
+  const authHeaders = (await getAuth()).isAuthenticated() ? await (await getAuth()).signRequest('GET', `/${endpoint}`) : {};
+  const res = await fetch(url, { signal: AbortSignal.timeout(3000), headers: authHeaders });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
@@ -197,10 +207,12 @@ async function _send(endpoint, data, headers = {}, method = 'POST') {
     return _nativeRequest({ type, payload: data });
   }
   if (!_serverUrl) return null;
+  const body = JSON.stringify(data);
+  const authHeaders = (await getAuth()).isAuthenticated() ? await (await getAuth()).signRequest(method, `/${endpoint}`, body) : {};
   const res = await fetch(`${_serverUrl}/${endpoint}`, {
     method,
-    headers: { 'Content-Type': 'application/json', ...headers },
-    body: JSON.stringify(data),
+    headers: { 'Content-Type': 'application/json', ...headers, ...authHeaders },
+    body,
     signal: AbortSignal.timeout(5000),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);

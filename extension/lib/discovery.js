@@ -33,6 +33,7 @@ const REGISTRY_TTL = 15000;
 export function resetServerCache() {
   _serverRegistry = new Map();
   _registryExpiry = 0;
+  _authAttempted = false;
   transport.reset();
 }
 
@@ -103,10 +104,23 @@ export async function getAllServers() {
  * @param {string|null} targetDir - Explicit capturesDir override
  * @returns {Promise<string|null>} Server base URL
  */
+let _authAttempted = false;
+
+/**
+ * Find the best server for a given page URL and initialize transport.
+ */
 export async function discoverServer(pageUrl = null, targetDir = null) {
   const url = await _discoverServerImpl(pageUrl, targetDir);
-  if (url) transport.init(url);
-  else transport.reset();
+  if (url) {
+    transport.init(url);
+    // F21: Attempt HMAC handshake once (non-blocking, falls back to unsigned)
+    if (!_authAttempted) {
+      _authAttempted = true;
+      try { const { authenticate } = await import('./auth.js'); await authenticate(url); } catch { /* unsigned mode */ }
+    }
+  } else {
+    transport.reset();
+  }
   return url;
 }
 

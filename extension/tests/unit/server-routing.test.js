@@ -484,11 +484,11 @@ describe('edge cases', () => {
   it('(+) registry caches and reuses', async () => {
     addServer(9876, '/home/user/app');
     await discoverServer('file:///home/user/app/index.html');
-    const callCount = fetch.mock.calls.length;
+    const callCountAfterFirst = fetch.mock.calls.length;
 
-    // Second call should use cache, not re-fetch
+    // Second call should use cache, not re-fetch (auth handshake also cached)
     await discoverServer('file:///home/user/app/other.html');
-    expect(fetch.mock.calls.length).toBe(callCount);
+    expect(fetch.mock.calls.length).toBe(callCountAfterFirst);
   });
 
   it('(+) resetServerCache clears the cache', async () => {
