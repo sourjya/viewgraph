@@ -77,6 +77,11 @@ The project undergoes periodic security reviews using a 3-tier model:
 - **Tier 2 (feature complete):** Full OWASP S1-S17 audit of changed files
 - **Tier 3 (sprint end):** Full codebase + supply chain + AI-generation artifacts
 
+**[SRR-005 - Tier 2 Review (April 24, 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-005-2026-04-24-T2.md):**
+- 1 HIGH (fixed: timing-safe handshake verify), 2 MEDIUM (1 fixed, 1 accepted), 1 LOW (fixed)
+- HMAC key in handshake accepted risk (native messaging is the fix)
+- F22: Native messaging auto-configured by viewgraph-init (Linux, macOS, Windows - not WSL)
+
 **[SRR-004 - Tier 3 Sprint End Review (April 21, 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-004-2026-04-21-T3.md):**
 - 0 CRITICAL, 2 HIGH (1 fixed: config whitelist bypass, 1 roadmap: F19 wrapping), 5 MEDIUM, 4 LOW
 - Native messaging config whitelist enforced (shared ALLOWED_CONFIG_KEYS constant)

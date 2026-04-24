@@ -54,8 +54,13 @@ viewgraph-init
 | Captures directory created | ✅ | ✅ |
 | URL patterns learned | ✅ (auto from first capture) | ✅ (or explicit `--url`) |
 | 🔒 Signed connection (HMAC) | ✅ | ✅ |
+| 🔒 Native messaging | ❌ | ✅ (Linux, macOS, Windows - not WSL) |
 | Kiro Power (hooks, prompts, steering) | ❌ | ✅ |
 | Custom URL pattern | ❌ (auto-detected) | ✅ (`--url localhost:3000`) |
+
+{% hint style="warning" %}
+**WSL users:** Native messaging is not supported when Chrome runs on Windows and the server runs in WSL. `viewgraph-init` detects this and uses HMAC-signed HTTP instead. Everything else works normally.
+{% endhint %}
 
 {% hint style="info" %}
 You don't need `viewgraph-init` to get started. Run it later when you want Kiro Power files or explicit URL patterns for multi-project setups.

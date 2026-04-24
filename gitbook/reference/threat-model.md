@@ -123,7 +123,32 @@ This is documented as accepted risk S4-2 in [SRR-005](https://github.com/sourjya
 
 ### Native Messaging Status
 
-Native messaging code is complete (F11 Phase 1-5) but not yet the default path. ADR-016 plans auto-detection: extension tries native messaging first, falls back to HMAC-signed HTTP if unavailable. `viewgraph-init` will register the native messaging host manifest automatically. This is the highest-priority security improvement on the roadmap.
+Native messaging is now auto-configured by `viewgraph-init` (F22). The extension auto-detects the best available security mode:
+
+```
+viewgraph-init → registers native messaging host
+Extension opens → tries native messaging → falls back to HMAC → falls back to unsigned
+```
+
+**Platform compatibility:**
+
+| Platform | Native Messaging | HMAC-Signed HTTP | Notes |
+|---|---|---|---|
+| **Linux** (native) | ✅ Works | ✅ Fallback | `viewgraph-init` registers host automatically |
+| **macOS** | ✅ Works | ✅ Fallback | `viewgraph-init` registers host automatically |
+| **Windows** (native Node.js) | ✅ Works | ✅ Fallback | `viewgraph-init` registers host automatically |
+| **WSL** (Linux in Windows) | ❌ Not supported | ✅ **Primary** | Chrome runs on Windows, server in WSL - different OS. `viewgraph-init` detects WSL and skips native messaging. |
+| **npx only** (no viewgraph-init) | ❌ Not registered | ✅ **Primary** | No host manifest installed. HMAC handshake is automatic. |
+
+{% hint style="warning" %}
+**WSL users:** Native messaging requires the browser and server to be on the same OS. Since Chrome runs on Windows but the ViewGraph server runs inside WSL, native messaging cannot work. HMAC-signed HTTP is used instead - this still provides replay protection and session tracking.
+{% endhint %}
+
+**What `viewgraph-init` does:**
+1. Detects your OS and installed browsers
+2. Writes native messaging host manifests for Chrome and Firefox
+3. Points to a wrapper script that launches the server with `--native-host`
+4. On WSL: skips registration, shows HMAC as the active security mode
 
 ## Roadmap: How We're Addressing Remaining Risks
 
