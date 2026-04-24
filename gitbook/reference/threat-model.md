@@ -109,6 +109,22 @@ Three layers of transport security, from strongest to fallback:
 | Replay attacks | Possible | 30s timestamp window | N/A |
 | Process discovery | Port scan reveals | Port scan reveals | Invisible |
 
+### Known Limitation: HMAC Key in Handshake
+
+The HMAC handshake sends the session key in the `/handshake` response. This means any localhost process that calls `/handshake` can obtain the key and sign requests. HMAC does NOT prevent a determined local attacker - it prevents casual/accidental injection and provides:
+
+- **Replay protection** - 30-second timestamp window, each signature is unique
+- **Session tracking** - sessionId ties requests to a specific handshake
+- **Tamper detection** - signature covers method + path + timestamp + body hash
+
+What it doesn't prevent: a malicious localhost process that actively performs the handshake first. **Native messaging (ADR-016) is the real fix** - it eliminates HTTP entirely and uses browser-enforced extension identity.
+
+This is documented as accepted risk S4-2 in [SRR-005](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-005-2026-04-24-T2.md).
+
+### Native Messaging Status
+
+Native messaging code is complete (F11 Phase 1-5) but not yet the default path. ADR-016 plans auto-detection: extension tries native messaging first, falls back to HMAC-signed HTTP if unavailable. `viewgraph-init` will register the native messaging host manifest automatically. This is the highest-priority security improvement on the roadmap.
+
 ## Roadmap: How We're Addressing Remaining Risks
 
 ### F17: URL Trust Indicator (implemented)
