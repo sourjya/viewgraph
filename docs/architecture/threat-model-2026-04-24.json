@@ -1,0 +1,321 @@
+{
+  "schema": 1,
+  "applicationInfo": {
+    "name": "Threat Model Export",
+    "description": "ViewGraph v0.4.5 - browser extension + MCP server for AI-powered UI capture. HMAC-signed localhost communication (F21), 17 enrichment collectors, 37 MCP tools, 5 security reviews passed. All data local, no cloud. Distributed via Chrome/Firefox stores, npm, GitHub."
+  },
+  "architecture": {
+    "description": ""
+  },
+  "dataflow": {
+    "description": ""
+  },
+  "assumptions": [
+    {
+      "id": "A001",
+      "numericId": 1,
+      "content": "Server binds to 127.0.0.1 only - not accessible from the network",
+      "displayOrder": 1,
+      "metadata": []
+    },
+    {
+      "id": "A002",
+      "numericId": 2,
+      "content": "HTTP endpoints are unauthenticated - any local process can reach them",
+      "displayOrder": 2,
+      "metadata": []
+    },
+    {
+      "id": "A003",
+      "numericId": 3,
+      "content": "Extension runs in a closed shadow DOM - host page cannot access sidebar content",
+      "displayOrder": 3,
+      "metadata": []
+    },
+    {
+      "id": "A004",
+      "numericId": 4,
+      "content": "All capture data stays on the local filesystem - no cloud transmission",
+      "displayOrder": 4,
+      "metadata": []
+    }
+  ],
+  "mitigations": [
+    {
+      "id": "71250b5a-677d-432c-88a2-e984f430ef0a",
+      "numericId": 1,
+      "status": "mitigationIdentified",
+      "content": "HMAC-signed requests (ADR-015) + native messaging default (ADR-016). File-based secret means only local processes with filesystem access can authenticate. Native messaging eliminates HTTP entirely.",
+      "displayOrder": 1,
+      "metadata": []
+    },
+    {
+      "id": "f5077362-c686-4ba6-8359-554b659aec5d",
+      "numericId": 2,
+      "status": "mitigationIdentified",
+      "content": "F19 5-layer prompt injection defense: capture sanitization, transport wrapping with delimiters, suspicious pattern detection, prompt hardening, URL trust gate.",
+      "displayOrder": 2,
+      "metadata": []
+    },
+    {
+      "id": "fbb04eea-d6f1-415b-9831-678a9b6cf37f",
+      "numericId": 3,
+      "status": "mitigationIdentified",
+      "content": "Security response headers (nosniff, no-store), error sanitization (no filesystem paths in errors), HMAC auth on /info endpoint (ADR-015), native messaging eliminates /info exposure (ADR-016).",
+      "displayOrder": 3,
+      "metadata": []
+    },
+    {
+      "id": "d984f688-7aeb-4bd5-acab-64c34a148cff",
+      "numericId": 4,
+      "status": "mitigationIdentified",
+      "content": "5MB payload limit on POST /captures, 1MB WebSocket max payload, 10 concurrent WS connections, idle timeout (30 min) prevents resource accumulation.",
+      "displayOrder": 4,
+      "metadata": []
+    },
+    {
+      "id": "29236b0d-38d5-42e5-9366-eb8e84d69fed",
+      "numericId": 5,
+      "status": "mitigationIdentified",
+      "content": "validateCapturePath() + safeConfigPath() + ENV_ALLOWED_DIRS constant. All file writes validated against allowed directory list. Path components sanitized (no .., no absolute paths).",
+      "displayOrder": 5,
+      "metadata": []
+    },
+    {
+      "id": "24b06536-57f5-4ca8-bab2-3eadc43eb2ca",
+      "numericId": 6,
+      "status": "mitigationIdentified",
+      "content": "npm 2FA on publish, package-lock.json committed, dependabot alerts enabled, npm audit in CI, minimal dependency tree (97 packages).",
+      "displayOrder": 6,
+      "metadata": []
+    },
+    {
+      "id": "3491bea0-a121-4be4-8ef3-6f0895860d4f",
+      "numericId": 7,
+      "status": "mitigationIdentified",
+      "content": ".gitignore includes .viewgraph/, user controls what pages to capture, storage collector redacts sensitive values (tokens, passwords, keys), URL trust indicator warns on untrusted pages.",
+      "displayOrder": 7,
+      "metadata": []
+    },
+    {
+      "id": "81f0a781-9a45-4b28-8476-92ab04d687fc",
+      "numericId": 8,
+      "status": "mitigationIdentified",
+      "content": "ALLOWED_CONFIG_KEYS whitelist (shared constant) applied on both HTTP PUT /config and native messaging updateConfig. Auto-learn restricted to localhost/file URLs only. Config merge preserves existing keys.",
+      "displayOrder": 8,
+      "metadata": []
+    },
+    {
+      "id": "087ca446-4a17-433a-8568-57af820daddc",
+      "numericId": 9,
+      "status": "mitigationIdentified",
+      "content": "Closed shadow DOM (mode: closed) prevents host page from accessing or mimicking the sidebar. Extension UI elements marked with data-vg-annotate attribute for internal identification.",
+      "displayOrder": 9,
+      "metadata": []
+    }
+  ],
+  "assumptionLinks": [],
+  "mitigationLinks": [
+    {
+      "linkedId": "f87b6889-fadf-4719-aca5-067eaa35138c",
+      "mitigationId": "71250b5a-677d-432c-88a2-e984f430ef0a"
+    },
+    {
+      "linkedId": "464a26cf-1783-4d91-8109-4ca82cfdf38d",
+      "mitigationId": "f5077362-c686-4ba6-8359-554b659aec5d"
+    },
+    {
+      "linkedId": "24d5581d-94f5-420f-9cdb-4b32feaeb0c8",
+      "mitigationId": "fbb04eea-d6f1-415b-9831-678a9b6cf37f"
+    },
+    {
+      "linkedId": "050473f1-ea76-4a5b-94c9-23a29fa1511c",
+      "mitigationId": "d984f688-7aeb-4bd5-acab-64c34a148cff"
+    },
+    {
+      "linkedId": "888a5772-720f-4bd2-b174-cd2a104a628a",
+      "mitigationId": "29236b0d-38d5-42e5-9366-eb8e84d69fed"
+    },
+    {
+      "linkedId": "9f3b98e8-4fce-4cab-b98d-6665feba0183",
+      "mitigationId": "24b06536-57f5-4ca8-bab2-3eadc43eb2ca"
+    },
+    {
+      "linkedId": "0f9cada9-7200-4d67-906f-4857a0bab568",
+      "mitigationId": "3491bea0-a121-4be4-8ef3-6f0895860d4f"
+    },
+    {
+      "linkedId": "03c49f02-a7e8-47d9-8c57-e874b97eb704",
+      "mitigationId": "81f0a781-9a45-4b28-8476-92ab04d687fc"
+    },
+    {
+      "linkedId": "d7e8b2f0-0f48-4bd4-9c61-5314075c219a",
+      "mitigationId": "087ca446-4a17-433a-8568-57af820daddc"
+    }
+  ],
+  "threats": [
+    {
+      "id": "f87b6889-fadf-4719-aca5-067eaa35138c",
+      "numericId": 1,
+      "threatSource": "malicious website or local process",
+      "prerequisites": "with access to localhost network",
+      "threatAction": "POST fake capture JSON to /captures endpoint",
+      "threatImpact": "agent acts on fabricated DOM data, makes wrong code changes",
+      "impactedGoal": [],
+      "impactedAssets": [],
+      "statement": "A malicious website or local process with access to localhost network can POST fake capture JSON to /captures endpoint, which leads to agent acts on fabricated DOM data, makes wrong code changes",
+      "displayOrder": 1,
+      "status": "threatIdentified",
+      "tags": [
+        "STRIDE-S",
+        "localhost"
+      ],
+      "metadata": []
+    },
+    {
+      "id": "464a26cf-1783-4d91-8109-4ca82cfdf38d",
+      "numericId": 2,
+      "threatSource": "malicious web page",
+      "prerequisites": "with control of page content",
+      "threatAction": "embed instructions in DOM text, HTML comments, or aria attributes that the agent follows",
+      "threatImpact": "agent executes attacker instructions, modifies wrong files, exfiltrates data",
+      "impactedGoal": [],
+      "impactedAssets": [],
+      "statement": "A malicious web page with control of page content can embed instructions in DOM text, HTML comments, or aria attributes that the agent follows, which leads to agent executes attacker instructions, modifies wrong files, exfiltrates data",
+      "displayOrder": 2,
+      "status": "threatIdentified",
+      "tags": [
+        "STRIDE-T",
+        "prompt-injection",
+        "F19"
+      ],
+      "metadata": []
+    },
+    {
+      "id": "24d5581d-94f5-420f-9cdb-4b32feaeb0c8",
+      "numericId": 3,
+      "threatSource": "malicious website via fetch to localhost",
+      "prerequisites": "with ability to reach localhost",
+      "threatAction": "call GET /info to learn project root, captures dir, URL patterns",
+      "threatImpact": "attacker learns filesystem paths and project structure",
+      "impactedGoal": [],
+      "impactedAssets": [],
+      "statement": "A malicious website via fetch to localhost with ability to reach localhost can call GET /info to learn project root, captures dir, URL patterns, which leads to attacker learns filesystem paths and project structure",
+      "displayOrder": 3,
+      "status": "threatIdentified",
+      "tags": [
+        "STRIDE-I",
+        "localhost"
+      ],
+      "metadata": []
+    },
+    {
+      "id": "050473f1-ea76-4a5b-94c9-23a29fa1511c",
+      "numericId": 4,
+      "threatSource": "malicious local process",
+      "prerequisites": "with ability to reach localhost",
+      "threatAction": "flood POST /captures with large payloads to fill disk",
+      "threatImpact": "disk space exhaustion, server becomes unresponsive",
+      "impactedGoal": [],
+      "impactedAssets": [],
+      "statement": "A malicious local process with ability to reach localhost can flood POST /captures with large payloads to fill disk, which leads to disk space exhaustion, server becomes unresponsive",
+      "displayOrder": 4,
+      "status": "threatIdentified",
+      "tags": [
+        "STRIDE-D",
+        "localhost"
+      ],
+      "metadata": []
+    },
+    {
+      "id": "888a5772-720f-4bd2-b174-cd2a104a628a",
+      "numericId": 5,
+      "threatSource": "malicious local process",
+      "prerequisites": "with ability to POST to /captures",
+      "threatAction": "craft capture filename with ../ to write outside captures directory",
+      "threatImpact": "arbitrary file write on developer machine",
+      "impactedGoal": [],
+      "impactedAssets": [],
+      "statement": "A malicious local process with ability to POST to /captures can craft capture filename with ../ to write outside captures directory, which leads to arbitrary file write on developer machine",
+      "displayOrder": 5,
+      "status": "threatIdentified",
+      "tags": [
+        "STRIDE-T",
+        "path-traversal"
+      ],
+      "metadata": []
+    },
+    {
+      "id": "9f3b98e8-4fce-4cab-b98d-6665feba0183",
+      "numericId": 6,
+      "threatSource": "compromised npm dependency",
+      "prerequisites": "with compromised npm package in dependency tree",
+      "threatAction": "execute arbitrary code via npx with full Node.js permissions",
+      "threatImpact": "full system compromise, data exfiltration, backdoor installation",
+      "impactedGoal": [],
+      "impactedAssets": [],
+      "statement": "A compromised npm dependency with compromised npm package in dependency tree can execute arbitrary code via npx with full Node.js permissions, which leads to full system compromise, data exfiltration, backdoor installation",
+      "displayOrder": 6,
+      "status": "threatIdentified",
+      "tags": [
+        "STRIDE-E",
+        "supply-chain"
+      ],
+      "metadata": []
+    },
+    {
+      "id": "0f9cada9-7200-4d67-906f-4857a0bab568",
+      "numericId": 7,
+      "threatSource": "developer capturing production or staging pages",
+      "prerequisites": "when capturing pages with sensitive data",
+      "threatAction": "capture page containing PII, credentials, or sensitive business data",
+      "threatImpact": "sensitive data persisted in JSON files on disk, potentially committed to git",
+      "impactedGoal": [],
+      "impactedAssets": [],
+      "statement": "A developer capturing production or staging pages when capturing pages with sensitive data can capture page containing PII, credentials, or sensitive business data, which leads to sensitive data persisted in JSON files on disk, potentially committed to git",
+      "displayOrder": 7,
+      "status": "threatIdentified",
+      "tags": [
+        "STRIDE-I",
+        "data-leakage"
+      ],
+      "metadata": []
+    },
+    {
+      "id": "03c49f02-a7e8-47d9-8c57-e874b97eb704",
+      "numericId": 8,
+      "threatSource": "malicious local process",
+      "prerequisites": "with ability to PUT to /config endpoint",
+      "threatAction": "modify urlPatterns to route captures to attacker-controlled directory",
+      "threatImpact": "captures written to wrong location, config corruption",
+      "impactedGoal": [],
+      "impactedAssets": [],
+      "statement": "A malicious local process with ability to PUT to /config endpoint can modify urlPatterns to route captures to attacker-controlled directory, which leads to captures written to wrong location, config corruption",
+      "displayOrder": 8,
+      "status": "threatIdentified",
+      "tags": [
+        "STRIDE-T",
+        "config"
+      ],
+      "metadata": []
+    },
+    {
+      "id": "d7e8b2f0-0f48-4bd4-9c61-5314075c219a",
+      "numericId": 9,
+      "threatSource": "malicious web page",
+      "prerequisites": "with access to page DOM",
+      "threatAction": "attempt to inject fake UI elements mimicking ViewGraph sidebar",
+      "threatImpact": "user interacts with fake UI, credentials or annotations stolen",
+      "impactedGoal": [],
+      "impactedAssets": [],
+      "statement": "A malicious web page with access to page DOM can attempt to inject fake UI elements mimicking ViewGraph sidebar, which leads to user interacts with fake UI, credentials or annotations stolen",
+      "displayOrder": 9,
+      "status": "threatIdentified",
+      "tags": [
+        "STRIDE-S",
+        "shadow-dom"
+      ],
+      "metadata": []
+    }
+  ]
+}

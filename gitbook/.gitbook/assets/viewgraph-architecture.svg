@@ -95,5 +95,5 @@
 
   <!-- Security row -->
   <rect x="42" y="302" width="718" height="16" rx="8" fill="rgba(5,150,105,0.08)"/>
-  <text x="401" y="313" text-anchor="middle" fill="#059669" font-size="8" font-weight="600">🔒 HMAC-signed requests | Native messaging (planned) | Closed shadow DOM | 5 security reviews | 0 open HIGH</text>
+  <text x="401" y="313" text-anchor="middle" fill="#059669" font-size="8" font-weight="600">🔒 HMAC-signed requests | Native messaging (planned) | Closed shadow DOM | 6 security reviews | 0 open HIGH</text>
 </svg>

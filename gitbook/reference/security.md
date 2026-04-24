@@ -66,6 +66,7 @@ The entire codebase is open source under AGPL-3.0. You can inspect every line:
 - [SRR-001 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-001-2026-04-18.md)
 - [SRR-002 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-002-2026-04-19-T2.md)
 - [SRR-004 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-004-2026-04-21-T3.md)
+- [SRR-005 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-005-2026-04-24-T2.md)
 - [Codebase Review](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/codebase-review-2026-04-18.md)
 
 ## Security Audits Performed

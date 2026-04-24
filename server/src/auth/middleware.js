@@ -38,9 +38,13 @@ export function createAuthMiddleware({ secret, requireAuth = false }) {
   function handleHandshake() {
     const challenge = randomBytes(32).toString('hex');
     pendingChallenges.set(challenge, Date.now());
-    // Clean expired challenges
+    // Clean expired challenges and enforce max size
     for (const [c, t] of pendingChallenges) {
       if (Date.now() - t > CHALLENGE_TTL_MS) pendingChallenges.delete(c);
+    }
+    if (pendingChallenges.size > 50) {
+      const oldest = [...pendingChallenges.entries()].sort((a, b) => a[1] - b[1])[0];
+      if (oldest) pendingChallenges.delete(oldest[0]);
     }
     return { challenge, key: secret };
   }
@@ -60,7 +64,7 @@ export function createAuthMiddleware({ secret, requireAuth = false }) {
       }
       // Compute expected: HMAC(secret, challenge)
       const expected = sign(secret, 'HANDSHAKE', challenge, '', '');
-      if (body.response === expected) {
+      if (body.response.length === expected.length && verify(secret, 'HANDSHAKE', challenge, '', '', body.response)) {
         pendingChallenges.delete(challenge);
         const { sessionId } = sessionStore.create(challenge);
         return { sessionId, mode: 'signed' };

@@ -10,34 +10,34 @@ Tracks all security reviews, findings, and their resolution status.
 | SRR-002 | 2026-04-19 | T2 | Changes since SRR-001 | 1 HIGH, 3 MEDIUM, 2 LOW | [SRR-002](SRR-002-2026-04-19-T2.md) |
 | SRR-003 | 2026-04-19 | T2 | stdin lifecycle, auto-learn, dynamic import, settings, footer, bin | 0 HIGH, 2 MEDIUM, 3 LOW, 1 INFO | [SRR-003](SRR-003-2026-04-19-T2.md) |
 | SRR-004 | 2026-04-21 | T3 | Full codebase (sprint end) | 2 HIGH, 5 MEDIUM, 4 LOW, 3 INFO | [SRR-004](SRR-004-2026-04-21-T3.md) |
+| SRR-005 | 2026-04-24 | T2 | HMAC auth, resolved markers, sync save, Firefox bump, svgFromString, transport | 1 CRITICAL, 2 HIGH, 2 MEDIUM, 2 LOW, 6 INFO | [SRR-005](SRR-005-2026-04-24-T2.md) |
 
 ## Open Findings
 
 | ID | Severity | Summary | Status |
 |---|---|---|---|
-| S5-2 | MEDIUM | /info exposes filesystem paths | Accepted risk |
-| S7-3 | MEDIUM | innerHTML with hardcoded SVG in settings.js | Deferred - not exploitable |
+| S4-2 | MEDIUM | HMAC secret in /handshake response (localhost-only) | Accepted risk - native messaging is the fix |
+| S4-3 | HIGH | Request body not included in HMAC verification | NEW (SRR-005) |
+| S4-4 | HIGH | Timing attack on handshake verify | FIXED (SRR-005) - uses timingSafeEqual |
+| S5-8 | MEDIUM | Unguarded JSON.parse on /handshake/verify | FIXED (SRR-005) - try/catch added |
+| S4-5 | MEDIUM | requireAuth defaults to false — auth is opt-in only | NEW (SRR-005) - intentional for beta |
+| S9-1 | MEDIUM | Storage collector misses common session cookie names | NEW (SRR-004) |
+| S5-7 | MEDIUM | /info exposes filesystem paths | Accepted risk (ADR-010) |
+| S16-1 | MEDIUM | Log injection via unsanitized filenames in watcher | NEW (SRR-004) |
+| S7-9 | MEDIUM | innerHTML with hardcoded SVG in 5 sidebar files | Deferred - not exploitable |
+| Q3-1 | MEDIUM | Native messaging writeCapture skips validateCapturePath | NEW (SRR-004) |
+| S4-6 | LOW | Session store no proactive cleanup | NEW (SRR-005) |
+| S4-7 | LOW | Pending challenges not bounded | NEW (SRR-005) |
+| S4-1 | LOW | Math.random for chunk IDs in native messaging | NEW (SRR-004) |
+| S14-1 | LOW | No rate limit on POST /captures | Accepted risk (localhost-only) |
+| D3-1 | LOW | .gitignore missing .pem/.key patterns | NEW (SRR-004) |
 
 ## Recently Resolved
 
 | ID | Severity | Summary | Resolved |
 |---|---|---|---|
-| S7-8 | HIGH | F19 wrapping missing on tools returning user text | 2026-04-21 - wrapped compare-captures, compare-baseline, get-latest + standardized notices |
-|---|---|---|---|
 | S1-3 | HIGH | Native messaging updateConfig bypasses config whitelist | 2026-04-21 (SRR-004) - shared ALLOWED_CONFIG_KEYS |
-
-| ID | Severity | Summary | Status |
-|---|---|---|---|
-| S1-3 | HIGH | Native messaging config:put bypasses ALLOWED_CONFIG_KEYS whitelist | NEW (SRR-004) |
-| S7-8 | HIGH | F19 wrapping missing on 8+ tools returning user text | NEW (SRR-004) |
-| S9-1 | MEDIUM | Storage collector misses common session cookie names (connect.sid, PHPSESSID) | NEW (SRR-004) |
-| S5-7 | MEDIUM | /info exposes filesystem paths | Accepted risk (ADR-010) |
-| S16-1 | MEDIUM | Log injection via unsanitized filenames in watcher | NEW (SRR-004) |
-| S7-9 | MEDIUM | innerHTML with hardcoded SVG in 5 sidebar files | Deferred - not exploitable |
-| Q3-1 | MEDIUM | Native messaging writeCapture skips validateCapturePath | NEW (SRR-004) |
-| S4-1 | LOW | Math.random for chunk IDs in native messaging | NEW (SRR-004) |
-| S14-1 | LOW | No rate limit on POST /captures | Accepted risk (localhost-only) |
-| D3-1 | LOW | .gitignore missing .pem/.key patterns | NEW (SRR-004) |
+| S7-8 | HIGH | F19 wrapping missing on tools returning user text | 2026-04-21 - wrapped compare-captures, compare-baseline, get-latest + standardized notices |
 
 ## Resolved Findings
 

@@ -146,7 +146,8 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
 
     if (auth && method === 'POST' && url === '/handshake/verify') {
       const body = await readBody(req);
-      const parsed = JSON.parse(body || '{}');
+      let parsed;
+      try { parsed = JSON.parse(body || '{}'); } catch { parsed = {}; }
       const result = auth.handleVerify(parsed);
       if (result) {
         res.writeHead(200, { 'content-type': 'application/json', 'access-control-allow-origin': '*' });

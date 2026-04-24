@@ -5,7 +5,7 @@ ViewGraph undergoes structured threat modeling using the [STRIDE methodology](ht
 For the full engineering report, see [GitHub](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-stride.md).
 
 {% hint style="info" %}
-**Latest threat model** (April 21, 2026): [Full STRIDE report](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-2026-04-21.md) | [Threat Composer JSON](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-2026-04-21.json) - 9 threats, 9 mitigations, all linked.
+**Latest threat model** (April 24, 2026): [Full STRIDE report](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-2026-04-24.md) | [Threat Composer JSON](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-2026-04-24.json) - 9 threats, 9 mitigations, all linked. 6 security reviews passed.
 {% endhint %}
 
 ## Scope
@@ -75,6 +75,7 @@ Nation-state actors, organized crime, hacktivists, and insider threats were eval
 | [SRR-002](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-002-2026-04-19-T2.md) | Apr 19 | T2 | 1H, 3M, 2L | Auto-learn merge, hostname matching |
 | [SRR-003](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-003-2026-04-19-T2.md) | Apr 19 | T2 | 0H, 2M, 3L | Trust gate bypass, orphan prevention |
 | [SRR-004](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-004-2026-04-21-T3.md) | Apr 21 | T3 | 2H, 5M, 4L | Native messaging whitelist, full codebase audit |
+| [SRR-005](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-005-2026-04-24-T2.md) | Apr 24 | T2 | 1H, 2M, 1L | HMAC timing fix, JSON guard, challenge limit |
 
 ## Security Indicators
 
