@@ -156,6 +156,7 @@ export function create() {
           _header.statusBanner.append(txt, code, txt2, link);
         } else {
           // No servers running at all
+          if (!_footer) return;
           _footer.statusDot.style.background = COLOR.errorLight;
           _footer.statusDot.setAttribute('data-tooltip', 'Server offline - may have stopped after 30 min idle. Restart your AI agent.');
           _header.statusBanner.textContent = '';
@@ -306,6 +307,7 @@ export function create() {
         Object.assign(link.style, { color: COLOR.primaryHover, textDecoration: 'underline', fontSize: '11px' });
         _header.statusBanner.append(txt, code, txt2, link);
       } else {
+        if (!_footer) return;
         _footer.statusDot.style.background = COLOR.errorLight;
         _footer.statusDot.setAttribute('data-tooltip', 'Server offline - may have stopped after 30 min idle. Restart your AI agent.');
         _header.statusBanner.textContent = '';
