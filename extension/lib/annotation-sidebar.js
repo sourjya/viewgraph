@@ -132,11 +132,13 @@ export function create() {
           _footer.setTrustLevel(trust);
         } catch (e) { console.error('[ViewGraph] info/trust error:', e); }
       } else {
+        if (!_footer) return;
         // Distinguish: servers exist but no match vs no servers at all
         const { getAllServers } = await import('./discovery.js');
         const servers = await getAllServers();
         if (servers.length > 0) {
           // Servers running but this page doesn't match any project
+        if (!_footer) return;
           _footer.statusDot.style.background = COLOR.muted;
           _footer.statusDot.setAttribute('data-tooltip', 'No matching project for this page');
           _header.statusBanner.textContent = '';
@@ -283,6 +285,7 @@ export function create() {
         }
       } catch (e) { console.error('[ViewGraph] info/trust error:', e); }
     } else {
+      if (!_footer) return;
       // Distinguish: servers exist but no match vs no servers at all
       const { getAllServers } = await import('./discovery.js');
       const servers = await getAllServers();
