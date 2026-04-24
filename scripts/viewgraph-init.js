@@ -349,7 +349,7 @@ const FIREFOX_EXT_ID = 'viewgraph@chaoslabz.com';
 if (!process.argv.includes('--skip-native-host')) {
   try {
     const { installHost } = await import(path.resolve(__dirname, '..', 'server', 'src', 'native-host-register.js'));
-    const hostScript = path.resolve(__dirname, '..', 'server', 'index.js');
+    const hostScript = path.resolve(__dirname, 'viewgraph-native-host.sh');
 
     // Chrome
     try {

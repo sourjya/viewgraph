@@ -15,6 +15,7 @@
     "server/src/",
     "server/package.json",
     "scripts/viewgraph-init.js",
+    "scripts/viewgraph-native-host.sh",
     "scripts/viewgraph-status.js",
     "scripts/viewgraph-doctor.js",
     "power/",
