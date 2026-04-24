@@ -100,7 +100,7 @@ describe('createFooter', () => {
     const f = createFooter({ onSend: vi.fn(), onShowSettings: vi.fn() });
     const lock = f.element.querySelector('[data-vg-annotate="auth-lock"]');
     expect(lock.style.opacity).toBe('0.5');
-    expect(lock.getAttribute('data-tooltip')).toBe('Unsigned mode');
+    expect(lock.getAttribute('data-tooltip')).toContain('not secured');
   });
 
   it('(+) setAuthMode(true) shows locked icon at full opacity', () => {
@@ -109,7 +109,7 @@ describe('createFooter', () => {
     const lock = f.element.querySelector('[data-vg-annotate="auth-lock"]');
     expect(lock.textContent).toBe('🔒');
     expect(lock.style.opacity).toBe('1');
-    expect(lock.getAttribute('data-tooltip')).toBe('Signed connection (HMAC)');
+    expect(lock.getAttribute('data-tooltip')).toBe('Connection secured');
   });
 
   it('(+) setAuthMode(false) shows unlocked icon dimmed', () => {

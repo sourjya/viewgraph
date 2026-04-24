@@ -107,7 +107,7 @@ export function createFooter({ onSend, onShowSettings }) {
   const authLock = document.createElement('span');
   authLock.setAttribute(ATTR, 'auth-lock');
   authLock.textContent = '🔓';
-  authLock.setAttribute('data-tooltip', 'Unsigned mode');
+  authLock.setAttribute('data-tooltip', 'Connection not secured - run viewgraph-init');
   Object.assign(authLock.style, {
     fontSize: '10px', marginLeft: '6px', flexShrink: '0', opacity: '0.5',
     transition: 'opacity 0.3s',
@@ -202,7 +202,7 @@ export function createFooter({ onSend, onShowSettings }) {
   function setAuthMode(signed) {
     authLock.textContent = signed ? '🔒' : '🔓';
     authLock.style.opacity = signed ? '1' : '0.5';
-    authLock.setAttribute('data-tooltip', signed ? 'Signed connection (HMAC)' : 'Unsigned mode');
+    authLock.setAttribute('data-tooltip', signed ? 'Connection secured' : 'Connection not secured - run viewgraph-init');
   }
 
   return { element: footer, sendBtn, copyBtn, dlBtn, statusDot, setOfflineMode, updateDisabledState, flashSend, setTrustLevel, setAuthMode };
