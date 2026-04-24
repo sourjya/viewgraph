@@ -215,3 +215,15 @@ export function shieldIcon(size = 14, color = '#4ade80', inner = 'none') {
   }
   return s;
 }
+
+/**
+ * Parse an SVG string into a DOM element without innerHTML.
+ * Uses DOMParser which is safe (no script execution) and avoids
+ * Firefox store innerHTML warnings.
+ * @param {string} svgString - SVG markup
+ * @returns {Element}
+ */
+export function svgFromString(svgString) {
+  const doc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
+  return document.importNode(doc.documentElement, true);
+}

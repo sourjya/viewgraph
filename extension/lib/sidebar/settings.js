@@ -11,6 +11,7 @@ import { ATTR } from '#lib/selector.js';
 import { chevronLeftIcon } from './icons.js';
 import * as transport from '#lib/transport.js';
 import { COLOR, FONT } from './styles.js';
+import { svgFromString } from './icons.js';
 
 /**
  * Create the settings screen element.
@@ -81,7 +82,7 @@ export function createSettings() {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
   });
   const helpLink = document.createElement('a');
-  helpLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>URL mapping docs';
+  helpLink.replaceChildren(svgFromString('<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>'), document.createTextNode('URL mapping docs'));
   helpLink.href = 'https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project';
   helpLink.target = '_blank';
   Object.assign(helpLink.style, { color: COLOR.primaryHover, fontSize: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' });
