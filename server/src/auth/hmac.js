@@ -21,7 +21,7 @@ import { createHmac, createHash, timingSafeEqual } from 'crypto';
  */
 export function sign(secret, method, path, timestamp, bodyHash) {
   const message = `${method}\n${path}\n${timestamp}\n${bodyHash}`;
-  return createHmac('sha256', secret).update(message).digest('hex');
+  return createHmac('sha256', Buffer.from(secret, 'hex')).update(message).digest('hex');
 }
 
 /**

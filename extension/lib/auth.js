@@ -47,7 +47,8 @@ export async function authenticate(serverUrl) {
     _secret = key;
     _authenticated = true;
     return true;
-  } catch {
+  } catch (err) {
+    console.error('[ViewGraph] Auth handshake failed:', err?.message || err);
     _authenticated = false;
     return false;
   }
