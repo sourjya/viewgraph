@@ -217,6 +217,28 @@ export function createSettings() {
     let hasContent = false;
     const rowStyle = { display: 'flex', gap: '6px', marginBottom: '2px', alignItems: 'baseline' };
     const lblStyle = { color: COLOR.muted, fontSize: '11px', flexShrink: '0' };
+    const valStyle = { fontSize: '11px' };
+    const pillStyle = { background: 'rgba(99,102,241,0.15)', color: COLOR.primaryLight, padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontFamily: 'monospace' };
+
+    // Version info row
+    const extVer = chrome.runtime.getManifest?.()?.version || '?';
+    const srvVer = data.serverVersion || '?';
+    const port = data._port || '?';
+    const verRow = document.createElement('div');
+    Object.assign(verRow.style, { ...rowStyle, marginBottom: '6px', paddingBottom: '6px', borderBottom: `1px solid ${COLOR.borderLight}` });
+    for (const [label, value] of [['Ext', `v${extVer}`], ['Server', `v${srvVer}`], ['Port', port]]) {
+      const lbl = document.createElement('span');
+      lbl.textContent = label;
+      Object.assign(lbl.style, { ...lblStyle, marginRight: '2px' });
+      const val = document.createElement('span');
+      val.textContent = value;
+      Object.assign(val.style, pillStyle);
+      const spacer = document.createElement('span');
+      spacer.style.marginRight = '8px';
+      verRow.append(lbl, val, spacer);
+    }
+    cardBody.appendChild(verRow);
+
     if (data.agent) {
       const row = document.createElement('div');
       Object.assign(row.style, rowStyle);
@@ -287,7 +309,7 @@ export function createSettings() {
         cardBody.replaceChildren();
         return;
       }
-      renderProjectInfo(info);
+      renderProjectInfo({ ...info, _port: transport.getServerUrl?.()?.match(/:(\d+)/)?.[1] || '?' });
       statusDotEl.style.background = COLOR.success;
       statusText.textContent = 'Server Connected';
       statusText.style.color = COLOR.success;

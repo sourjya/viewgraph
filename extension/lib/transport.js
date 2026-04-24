@@ -58,6 +58,9 @@ export function reset() {
   _listeners.clear();
 }
 
+/** Get the current server URL. */
+export function getServerUrl() { return _serverUrl; }
+
 /**
  * Check if native messaging is available. Result is cached.
  * @returns {Promise<boolean>}

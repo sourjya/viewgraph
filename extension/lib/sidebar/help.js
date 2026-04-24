@@ -118,15 +118,6 @@ export function createHelpCard() {
     a.addEventListener('mouseleave', () => { txt.style.textDecoration = 'none'; });
     linkRow.appendChild(a);
   }
-  // Version info slot - populated by sidebar core
-  const versionEl = document.createElement('div');
-  versionEl.setAttribute(ATTR, 'help-version');
-  Object.assign(versionEl.style, {
-    marginTop: '12px', padding: '6px 8px', borderRadius: '4px',
-    background: COLOR.bgCard, fontSize: '11px', color: COLOR.secondary, fontFamily: 'monospace',
-  });
-  helpCard.appendChild(versionEl);
-
   Object.assign(linkRow.style, { display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '10px', paddingTop: '8px', borderTop: `1px solid ${COLOR.border}` });
   helpCard.appendChild(linkRow);
 
@@ -146,28 +137,6 @@ export function createHelpCard() {
       setTimeout(() => { if (!visible) helpCard.style.display = 'none'; }, 200);
     },
     isVisible() { return visible; },
-    setVersion(text, warn) {
-      versionEl.replaceChildren();
-      const parts = text.split(' | ');
-      parts.forEach((part) => {
-        const row = document.createElement('div');
-        Object.assign(row.style, { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2px 0' });
-        const colonIdx = part.indexOf(':');
-        if (colonIdx === -1) { row.textContent = part; versionEl.appendChild(row); return; }
-        const label = document.createElement('span');
-        label.textContent = part.slice(0, colonIdx);
-        Object.assign(label.style, { color: COLOR.muted, fontSize: '11px' });
-        const val = document.createElement('span');
-        val.textContent = part.slice(colonIdx + 1).trim();
-        Object.assign(val.style, {
-          background: 'rgba(99,102,241,0.15)', color: COLOR.primaryLight,
-          padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontFamily: 'monospace',
-        });
-        row.append(label, val);
-        versionEl.appendChild(row);
-      });
-      if (warn) { versionEl.style.color = COLOR.warning; versionEl.style.background = '#451a03'; }
-    },
   };
   _onCollapse = () => api.hide();
   return api;

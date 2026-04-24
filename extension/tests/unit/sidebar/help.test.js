@@ -8,14 +8,13 @@ import { describe, it, expect } from 'vitest';
 import { createHelpCard } from '#lib/sidebar/help.js';
 
 describe('createHelpCard', () => {
-  it('(+) returns element with show/hide/toggle/isVisible/setVersion', () => {
+  it('(+) returns element with show/hide/toggle/isVisible', () => {
     const h = createHelpCard();
     expect(h.element).toBeTruthy();
     expect(typeof h.show).toBe('function');
     expect(typeof h.hide).toBe('function');
     expect(typeof h.toggle).toBe('function');
     expect(typeof h.isVisible).toBe('function');
-    expect(typeof h.setVersion).toBe('function');
   });
 
   it('(+) starts hidden', () => {
@@ -60,17 +59,5 @@ describe('createHelpCard', () => {
     expect(links[0].href).toContain('gitbook.io');
   });
 
-  it('(+) setVersion updates version text', () => {
-    const h = createHelpCard();
-    h.setVersion('Extension: v1.0.0 | Server: v1.0.0');
-    const versionEl = h.element.querySelector('[data-vg-annotate="help-version"]');
-    expect(versionEl.textContent).toContain('v1.0.0');
-  });
 
-  it('(+) setVersion with warn flag changes color', () => {
-    const h = createHelpCard();
-    h.setVersion('Mismatch', true);
-    const versionEl = h.element.querySelector('[data-vg-annotate="help-version"]');
-    expect(versionEl.style.color).toMatch(/f59e0b|rgb\(245, 158, 11\)/);
-  });
 });

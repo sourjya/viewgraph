@@ -248,16 +248,81 @@ export function create() {
 
   // Version info for help card
   const extVer = chrome.runtime.getManifest?.()?.version || 'unknown';
-  help.setVersion(`Extension: v${extVer}`);
+  // Version info now shown in Settings panel, not help card
   discoverServer(window.location.href).then(async (url) => {
+    if (!_footer) return;
     if (url) {
-      const port = new URL(url).port || '9876';
+      _footer.statusDot.style.background = COLOR.success;
+      _footer.statusDot.setAttribute('data-tooltip', `MCP server: ${url}`);
+      _header.statusBanner.style.display = 'none';
       try {
         const info = await transport.getInfo();
-        const mismatch = info.serverVersion && extVer && extVer < info.serverVersion;
-        help.setVersion(`Extension: v${extVer} | Server: v${info.serverVersion || '?'} | Port: ${port}${mismatch ? ' - rebuild extension' : ''}`, mismatch);
-      } catch { help.setVersion(`Extension: v${extVer} | Server: offline | Port: ${port}`); }
-    } else { help.setVersion(`Extension: v${extVer} | Server: not connected | Port: n/a`); }
+        const extVersion = chrome.runtime.getManifest?.()?.version;
+        if (info.serverVersion && extVersion && extVersion < info.serverVersion) {
+          if (!_header) return;
+          _header.statusBanner.textContent = '';
+          _header.statusBanner.appendChild(document.createTextNode(`Extension v${extVersion} is behind server v${info.serverVersion}. `));
+          const link = document.createElement('a');
+          link.href = 'https://chaoslabz.gitbook.io/viewgraph/getting-started/manual-install';
+          link.target = '_blank';
+          link.rel = 'noopener';
+          link.textContent = 'Update extension';
+          Object.assign(link.style, { color: COLOR.primaryHover, textDecoration: 'underline' });
+          _header.statusBanner.appendChild(link);
+          _header.statusBanner.style.display = 'block';
+        }
+        const trust = classifyTrust(window.location.href, info.trustedPatterns || []);
+        _trustLevel = trust;
+        _footer.setTrustLevel(trust);
+        const { isAuthenticated: isAuthed } = await import('./auth.js');
+        if (_footer.setAuthMode) _footer.setAuthMode(isAuthed());
+      } catch (e) { console.error('[ViewGraph] info/trust error:', e); }
+    } else {
+      // Distinguish: servers exist but no match vs no servers at all
+      const { getAllServers } = await import('./discovery.js');
+      const servers = await getAllServers();
+      if (servers.length > 0) {
+        _footer.statusDot.style.background = COLOR.muted;
+        _footer.statusDot.setAttribute('data-tooltip', 'No matching project for this page');
+        _header.statusBanner.textContent = '';
+        const txt = document.createTextNode('No matching project. Run ');
+        const code = document.createElement('code');
+        code.textContent = 'viewgraph-init --url';
+        Object.assign(code.style, { background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px', fontSize: '10px' });
+        const txt2 = document.createTextNode(' in your project folder. ');
+        const link = document.createElement('a');
+        link.textContent = 'Setup guide';
+        link.href = 'https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project';
+        link.target = '_blank';
+        link.rel = 'noopener';
+        Object.assign(link.style, { color: COLOR.primaryHover, textDecoration: 'underline', fontSize: '11px' });
+        _header.statusBanner.append(txt, code, txt2, link);
+      } else {
+        _footer.statusDot.style.background = COLOR.errorLight;
+        _footer.statusDot.setAttribute('data-tooltip', 'Server offline - may have stopped after 30 min idle. Restart your AI agent.');
+        _header.statusBanner.textContent = '';
+        const txt = document.createTextNode('No server running. Restart your AI agent or run ');
+        const code = document.createElement('code');
+        code.textContent = 'viewgraph-init';
+        Object.assign(code.style, { background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px', fontSize: '10px' });
+        const txt2 = document.createTextNode(' in your project folder. ');
+        const link = document.createElement('a');
+        link.textContent = 'Help';
+        link.href = 'https://chaoslabz.gitbook.io/viewgraph/reference/faq#troubleshooting';
+        link.target = '_blank';
+        link.rel = 'noopener';
+        Object.assign(link.style, { color: COLOR.primaryHover, textDecoration: 'underline', fontSize: '11px' });
+        _header.statusBanner.append(txt, code, txt2, link);
+      }
+      _header.statusBanner.style.display = 'block';
+      _footer.setOfflineMode();
+    }
+    // Always classify trust based on URL even without server
+    if (!_trustLevel && _footer) {
+      const trust = classifyTrust(window.location.href, []);
+      _trustLevel = trust;
+      _footer.setTrustLevel(trust);
+    }
   });
 
   // ── Scrollable list ──
