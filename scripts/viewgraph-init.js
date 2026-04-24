@@ -16,6 +16,7 @@
 
 import { existsSync, mkdirSync, writeFileSync, readFileSync, appendFileSync, accessSync, chmodSync, readdirSync, statSync, constants as fsConstants } from 'fs';
 import path from 'path';
+import os from 'os';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -347,7 +348,14 @@ const CHROME_EXT_ID = 'dmgbneoidgmkdcfnlegmfijkedijjnjj';
 const FIREFOX_EXT_ID = 'viewgraph@chaoslabz.com';
 
 if (!process.argv.includes('--skip-native-host')) {
-  try {
+  // WSL: Chrome runs on Windows but init runs in Linux - native messaging won't work
+  const isWSL = os.release().toLowerCase().includes('microsoft') || existsSync('/proc/sys/fs/binfmt_misc/WSLInterop');
+  if (isWSL) {
+    console.log('  ⚠  WSL detected - native messaging not supported (Chrome runs on Windows)');
+    console.log('  🔒 Security mode: HMAC-signed HTTP');
+    console.log('     Native messaging requires Chrome and server on the same OS.');
+  } else {
+    try {
     const { installHost } = await import(path.resolve(__dirname, '..', 'server', 'src', 'native-host-register.js'));
     const hostScript = path.resolve(__dirname, 'viewgraph-native-host.sh');
 
@@ -374,6 +382,7 @@ if (!process.argv.includes('--skip-native-host')) {
     console.log('  \x1b[33m🔒 Security mode: HMAC-signed HTTP (fallback)\x1b[0m');
     console.log('     Run viewgraph-init again to enable native messaging.');
   }
+  } // end WSL else
 } else {
   console.log('  ⚠  Native host registration skipped (--skip-native-host)');
 }
