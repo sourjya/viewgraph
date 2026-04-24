@@ -103,6 +103,16 @@ export function createFooter({ onSend, onShowSettings }) {
     border: '1px solid rgba(255,255,255,0.1)',
   });
 
+  // Auth lock indicator (F21)
+  const authLock = document.createElement('span');
+  authLock.setAttribute(ATTR, 'auth-lock');
+  authLock.textContent = '🔓';
+  authLock.setAttribute('data-tooltip', 'Unsigned mode');
+  Object.assign(authLock.style, {
+    fontSize: '10px', marginLeft: '6px', flexShrink: '0', opacity: '0.5',
+    transition: 'opacity 0.3s',
+  });
+
   const trustShield = document.createElement('span');
   trustShield.setAttribute(ATTR, 'trust-shield');
   Object.assign(trustShield.style, {
@@ -126,7 +136,7 @@ export function createFooter({ onSend, onShowSettings }) {
   settingsLink.addEventListener('mouseleave', () => { settingsLink.style.color = COLOR.dim; });
   settingsLink.addEventListener('click', onShowSettings);
 
-  statusRow.append(statusDot, trustShield, spacer, settingsLink);
+  statusRow.append(statusDot, authLock, trustShield, spacer, settingsLink);
   // Export buttons wrapper (hidden when settings panel is open)
   const exportBtns = document.createElement('div');
   exportBtns.setAttribute(ATTR, 'export-buttons');
@@ -185,5 +195,15 @@ export function createFooter({ onSend, onShowSettings }) {
     trustShield.style.display = 'inline-flex';
   }
 
-  return { element: footer, sendBtn, copyBtn, dlBtn, statusDot, setOfflineMode, updateDisabledState, flashSend, setTrustLevel };
+  /**
+   * Update the auth lock indicator.
+   * @param {boolean} signed - Whether the connection is HMAC-signed
+   */
+  function setAuthMode(signed) {
+    authLock.textContent = signed ? '🔒' : '🔓';
+    authLock.style.opacity = signed ? '1' : '0.5';
+    authLock.setAttribute('data-tooltip', signed ? 'Signed connection (HMAC)' : 'Unsigned mode');
+  }
+
+  return { element: footer, sendBtn, copyBtn, dlBtn, statusDot, setOfflineMode, updateDisabledState, flashSend, setTrustLevel, setAuthMode };
 }

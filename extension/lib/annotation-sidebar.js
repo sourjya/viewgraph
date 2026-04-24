@@ -108,7 +108,8 @@ export function create() {
         _footer.statusDot.style.background = COLOR.success;
         const { isAuthenticated: isAuthed } = await import('./auth.js');
         const authMode = isAuthed() ? '🔒 signed' : '🔓 unsigned';
-        _footer.statusDot.setAttribute('data-tooltip', `MCP server: ${url} (${authMode})`);
+        _footer.statusDot.setAttribute('data-tooltip', `MCP server: ${url}`);
+        if (_footer.setAuthMode) _footer.setAuthMode(isAuthed());
         _header.statusBanner.style.display = 'none';
         try {
           const info = await transport.getInfo();
