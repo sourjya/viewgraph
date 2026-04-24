@@ -38,6 +38,29 @@ Add to your agent's config file:
 
 **Done.** The server runs automatically via `npx`, creates `.viewgraph/captures/`, and learns your URL pattern from the first capture.
 
+### Optional: Run viewgraph-init for extra features
+
+The zero-config MCP setup works immediately, but running `viewgraph-init` in your project folder unlocks additional features:
+
+```bash
+npm install -g @viewgraph/core
+cd ~/my-project
+viewgraph-init
+```
+
+| Feature | MCP config only | + viewgraph-init |
+|---|---|---|
+| Server starts automatically | ✅ | ✅ |
+| Captures directory created | ✅ | ✅ |
+| URL patterns learned | ✅ (auto from first capture) | ✅ (or explicit `--url`) |
+| 🔒 Signed connection (HMAC) | ✅ | ✅ |
+| Kiro Power (hooks, prompts, steering) | ❌ | ✅ |
+| Custom URL pattern | ❌ (auto-detected) | ✅ (`--url localhost:3000`) |
+
+{% hint style="info" %}
+You don't need `viewgraph-init` to get started. Run it later when you want Kiro Power files or explicit URL patterns for multi-project setups.
+{% endhint %}
+
 ### Verify
 
 1. Open your app in the browser
