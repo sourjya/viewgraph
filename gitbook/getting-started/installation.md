@@ -151,6 +151,8 @@ npm run build:ext:firefox            # Firefox only
 
 **Load in Chrome:** `chrome://extensions/` → Developer mode → Load unpacked → select `extension/.output/chrome-mv3`
 
+![Chrome Developer Mode - Load unpacked extension](../.gitbook/assets/chrome-developer-mode-load-unpacked.png)
+
 **Load in Firefox:** `about:debugging#/runtime/this-firefox` → Load Temporary Add-on → select any file in `extension/.output/firefox-mv3`
 
 **Run the server:** `npm run dev:server`
