@@ -274,8 +274,13 @@ export function create() {
         const trust = classifyTrust(window.location.href, info.trustedPatterns || []);
         _trustLevel = trust;
         _footer.setTrustLevel(trust);
-        const { isAuthenticated: isAuthed } = await import('./auth.js');
-        if (_footer.setAuthMode) _footer.setAuthMode(isAuthed());
+        const nativeActive = await transport.isNative();
+        if (nativeActive) {
+          if (_footer.setAuthMode) _footer.setAuthMode(true, 'native');
+        } else {
+          const { isAuthenticated: isAuthed } = await import('./auth.js');
+          if (_footer.setAuthMode) _footer.setAuthMode(isAuthed());
+        }
       } catch (e) { console.error('[ViewGraph] info/trust error:', e); }
     } else {
       // Distinguish: servers exist but no match vs no servers at all

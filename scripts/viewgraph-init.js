@@ -339,22 +339,39 @@ const server = spawn('node', [SERVER_ENTRY], {
 server.unref();
 console.log(`  Started (PID ${server.pid}, port ${port})`);
 console.log('  Extension popup should show green dot.\n');
-// ── Native messaging host registration (optional) ──
-if (process.argv.includes('--register-native-host')) {
+
+// ── Native messaging host registration (automatic) ──
+// Registers for both Chrome and Firefox so the extension can use
+// native messaging instead of localhost HTTP (more secure).
+const CHROME_EXT_ID = 'dmgbneoidgmkdcfnlegmfijkedijjnjj';
+const FIREFOX_EXT_ID = 'viewgraph@chaoslabz.com';
+
+if (!process.argv.includes('--skip-native-host')) {
   try {
     const { installHost } = await import(path.resolve(__dirname, '..', 'server', 'src', 'native-host-register.js'));
     const hostScript = path.resolve(__dirname, '..', 'server', 'index.js');
-    const extensionId = process.argv[process.argv.indexOf('--register-native-host') + 1] || '';
-    if (!extensionId) {
-      console.log('  ⚠ --register-native-host requires extension ID as next argument');
-      console.log('    Usage: viewgraph-init --register-native-host <chrome-extension-id>');
-    } else {
-      const manifestPath = installHost(hostScript, extensionId, 'chrome');
-      console.log(`  ✓ Native messaging host registered: ${manifestPath}`);
-    }
+
+    // Chrome
+    try {
+      const result = installHost(hostScript, CHROME_EXT_ID, 'chrome');
+      console.log(`  ✓ Native messaging host registered for Chrome`);
+      console.log(`    ${result.path}`);
+    } catch (e) { console.log(`  ⚠ Chrome native host: ${e.message}`); }
+
+    // Firefox
+    try {
+      const result = installHost(hostScript, FIREFOX_EXT_ID, 'firefox');
+      console.log(`  ✓ Native messaging host registered for Firefox`);
+      console.log(`    ${result.path}`);
+    } catch (e) { console.log(`  ⚠ Firefox native host: ${e.message}`); }
+
+    console.log('  🔒 Extension will use native messaging (more secure than HTTP)');
   } catch (err) {
-    console.log(`  ⚠ Native host registration failed: ${err.message}`);
+    console.log(`  ⚠ Native host registration skipped: ${err.message}`);
+    console.log('  Extension will fall back to HMAC-signed HTTP');
   }
+} else {
+  console.log('  ⚠ Native host registration skipped (--skip-native-host)');
 }
 
-console.log('Done.\n');
+console.log('\nDone.\n');

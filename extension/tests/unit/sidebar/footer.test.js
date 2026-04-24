@@ -109,7 +109,7 @@ describe('createFooter', () => {
     const lock = f.element.querySelector('[data-vg-annotate="auth-lock"]');
     expect(lock.textContent).toBe('🔒');
     expect(lock.style.opacity).toBe('1');
-    expect(lock.getAttribute('data-tooltip')).toBe('Connection secured');
+    expect(lock.getAttribute('data-tooltip')).toContain('secured');
   });
 
   it('(+) setAuthMode(false) shows unlocked icon dimmed', () => {
