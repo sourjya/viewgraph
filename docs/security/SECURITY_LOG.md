@@ -36,6 +36,8 @@ Tracks all security reviews, findings, and their resolution status.
 
 | ID | Severity | Summary | Resolved |
 |---|---|---|---|
+| S3-3 | MEDIUM | CodeQL js/path-injection - configFile write used unvalidated path | 2026-04-25 - re-validate via safeConfigPath before writeFileSync |
+| D4-1 | MODERATE | uuid < 14.0.0 missing buffer bounds check (GHSA-w5hq-g745-h8pq) | 2026-04-25 - npm override pins uuid@14.0.0 |
 | S1-3 | HIGH | Native messaging updateConfig bypasses config whitelist | 2026-04-21 (SRR-004) - shared ALLOWED_CONFIG_KEYS |
 | S7-8 | HIGH | F19 wrapping missing on tools returning user text | 2026-04-21 - wrapped compare-captures, compare-baseline, get-latest + standardized notices |
 

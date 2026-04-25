@@ -21,6 +21,10 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - Settings panel shows server idle timeout (read-only, resets on activity)
 - Timeout banner shows Kiro IDE/CLI recovery steps with link to FAQ guide
 
+### Security
+- uuid upgraded to 14.0.0 (GHSA-w5hq-g745-h8pq buffer bounds check)
+- CodeQL path injection fix (S3-3) in config auto-learn write
+
 ---
 
 ## v0.4.3 - April 21, 2026
