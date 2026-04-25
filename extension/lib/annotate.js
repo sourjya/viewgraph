@@ -291,13 +291,15 @@ function freeze() {
   // Dedup: reopen existing annotation if same element clicked again.
   // Primary: match by full selector (available for in-session annotations).
   // Fallback: match by ancestor + exact region (works for loaded annotations too).
+  // BUG-023: Skip resolved annotations - allow new follow-up notes on same element.
   const existing = annotations.find((a) =>
-    (a.element && a.element.selector === fullSelector
+    !a.resolved
+    && ((a.element && a.element.selector === fullSelector
       && a.region.x === region.x && a.region.y === region.y
       && a.region.width === region.width && a.region.height === region.height)
     || (a.ancestor === ancestor
       && a.region.x === region.x && a.region.y === region.y
-      && a.region.width === region.width && a.region.height === region.height));
+      && a.region.width === region.width && a.region.height === region.height)));
   if (existing) {
     frozen = true;
     hideHoverUI();

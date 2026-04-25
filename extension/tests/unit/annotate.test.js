@@ -492,6 +492,91 @@ describe('click dedup', () => {
 });
 
 // ---------------------------------------------------------------------------
+// BUG-023: Resolved annotation must not block new annotation on same element
+// ---------------------------------------------------------------------------
+
+describe('BUG-023: dedup skips resolved annotations', () => {
+  /**
+   * Simulates the dedup predicate from onClick (annotate.js ~291).
+   * This is the exact logic used to decide whether to reopen an existing
+   * annotation vs create a new one when the same element is clicked.
+   *
+   * @param {Array} annotations - existing annotations to search
+   * @param {string} fullSelector - CSS selector of the clicked element
+   * @param {string} ancestor - selectorSegment of the clicked element
+   * @param {object} region - bounding box { x, y, width, height }
+   * @returns {object|undefined} matching annotation, or undefined
+   */
+  function findDedup(annotations, fullSelector, ancestor, region) {
+    return annotations.find((a) =>
+      !a.resolved
+      && ((a.element && a.element.selector === fullSelector
+        && a.region.x === region.x && a.region.y === region.y
+        && a.region.width === region.width && a.region.height === region.height)
+      || (a.ancestor === ancestor
+        && a.region.x === region.x && a.region.y === region.y
+        && a.region.width === region.width && a.region.height === region.height)));
+  }
+
+  const region = { x: 10, y: 10, width: 100, height: 50 };
+  const selector = 'body > div.card > h1';
+  const ancestor = 'h1';
+
+  it('(+) unresolved annotation on same element IS a dedup match', () => {
+    const anns = [
+      { id: 1, element: { selector }, region, ancestor, resolved: false, comment: 'Fix heading' },
+    ];
+    const match = findDedup(anns, selector, ancestor, region);
+    expect(match).toBeTruthy();
+    expect(match.id).toBe(1);
+  });
+
+  it('(+) resolved annotation on same element is NOT a dedup match', () => {
+    const anns = [
+      { id: 1, element: { selector }, region, ancestor, resolved: true, comment: 'Fix heading',
+        resolution: { action: 'fixed', by: 'kiro', summary: 'Done' } },
+    ];
+    const match = findDedup(anns, selector, ancestor, region);
+    expect(match).toBeUndefined();
+  });
+
+  it('(+) mix of resolved and unresolved - only unresolved matches', () => {
+    const anns = [
+      { id: 1, element: { selector }, region, ancestor, resolved: true, comment: 'Old fix' },
+      { id: 2, element: { selector }, region, ancestor, resolved: false, comment: 'New issue' },
+    ];
+    const match = findDedup(anns, selector, ancestor, region);
+    expect(match).toBeTruthy();
+    expect(match.id).toBe(2);
+  });
+
+  it('(+) all resolved on same element - no match, allows new annotation', () => {
+    const anns = [
+      { id: 1, element: { selector }, region, ancestor, resolved: true },
+      { id: 2, element: { selector }, region, ancestor, resolved: true },
+    ];
+    const match = findDedup(anns, selector, ancestor, region);
+    expect(match).toBeUndefined();
+  });
+
+  it('(+) ancestor-only match (no element field) respects resolved flag', () => {
+    const anns = [
+      { id: 1, region, ancestor, resolved: true, comment: 'Old' },
+    ];
+    const match = findDedup(anns, selector, ancestor, region);
+    expect(match).toBeUndefined();
+  });
+
+  it('(-) different element on same page is never a dedup match', () => {
+    const anns = [
+      { id: 1, element: { selector: 'body > div.card > p' }, region: { x: 200, y: 200, width: 50, height: 20 }, ancestor: 'p', resolved: false },
+    ];
+    const match = findDedup(anns, selector, ancestor, region);
+    expect(match).toBeUndefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Full-viewport element skip
 // ---------------------------------------------------------------------------
 
