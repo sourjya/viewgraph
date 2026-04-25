@@ -10,6 +10,7 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ### Bug Fixes
 - BUG-023: Resolved annotations no longer block new follow-up notes on the same element
+- BUG-024: Collapsed strip is now vertically draggable with hover grip indicator
 - BUG-025: Annotation panel textarea scrollbar now uses dark theme
 - BUG-026: Auto-capture toggle now persists across page reloads
 - BUG-027: Accepted capture requests now show in Resolved tab with smooth collapse animation
@@ -23,7 +24,6 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - CodeQL path injection fix (S3-3) in config auto-learn write
 
 ### Known Issues (deferred)
-- BUG-024: Collapsed strip not repositionable
 - BUG-028: No visual separation between sent and unsent annotations on multi-send
 
 ---

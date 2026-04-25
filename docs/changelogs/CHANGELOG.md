@@ -12,6 +12,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ### Fixed
 - BUG-023: Resolved annotations no longer block new follow-up notes on the same element (dedup filter now skips resolved)
+- BUG-024: Collapsed strip is now vertically draggable - hover VG icon for grip, drag to reposition, persists across reloads
 - BUG-025: Annotation panel textarea scrollbar now uses dark theme (was system default)
 - BUG-026: Auto-capture toggle persists across page reloads via chrome.storage.local
 - BUG-027: Accepted capture requests now show in Resolved tab with smooth height collapse animation
@@ -25,7 +26,6 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - Fixed CodeQL js/path-injection (S3-3): re-validate config path via safeConfigPath before writeFileSync
 
 ### Documented (deferred)
-- BUG-024: Collapsed strip not repositionable - elements hidden underneath cannot be annotated
 - BUG-028: No visual separation between sent and unsent annotations on multi-send
 
 ---

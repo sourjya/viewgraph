@@ -31,14 +31,85 @@ export function createStrip(opts) {
     boxShadow: '-2px 0 8px rgba(0,0,0,0.3)', alignItems: 'center',
   });
 
-  // VG icon
+  // VG icon - doubles as drag handle (BUG-024)
   const stripIcon = document.createElement('img');
   stripIcon.src = chrome.runtime.getURL('icon-16.png');
   stripIcon.width = 28;
   stripIcon.height = 28;
-  Object.assign(stripIcon.style, { cursor: 'pointer', padding: '2px' });
+  Object.assign(stripIcon.style, { cursor: 'pointer', padding: '2px', userSelect: 'none' });
   stripIcon.setAttribute('data-tooltip', 'ViewGraph');
-  stripIcon.addEventListener('click', onExpand);
+  stripIcon.draggable = false; // prevent native img drag
+
+  // Grip indicator - 3 horizontal dots, hidden by default, shown on hover
+  const grip = document.createElement('div');
+  grip.setAttribute('data-vg-grip', '');
+  grip.textContent = '\u22ee'; // vertical ellipsis
+  Object.assign(grip.style, {
+    fontSize: '10px', color: COLOR.muted, textAlign: 'center', lineHeight: '1',
+    opacity: '0', transition: 'opacity 0.15s', pointerEvents: 'none', userSelect: 'none',
+  });
+  el.appendChild(grip);
+
+  // Hover: show grip + grab cursor
+  stripIcon.addEventListener('mouseenter', () => {
+    stripIcon.style.cursor = 'grab';
+    grip.style.opacity = '1';
+  });
+  stripIcon.addEventListener('mouseleave', () => {
+    stripIcon.style.cursor = 'pointer';
+    grip.style.opacity = '0';
+  });
+
+  // ── Drag logic (BUG-024) ──
+  // Distinguishes click (< 4px movement) from drag (>= 4px).
+  // Drag: repositions strip vertically. Click: expands sidebar.
+  let dragStartY = 0;
+  let dragStartTop = 0;
+  let totalDragDist = 0;
+  let dragging = false;
+
+  /** Clamp top to viewport bounds. */
+  function clampTop(top) {
+    const maxTop = Math.max(0, window.innerHeight - (el.offsetHeight || 200));
+    return Math.max(0, Math.min(top, maxTop));
+  }
+
+  function onDragMove(e) {
+    const dy = e.clientY - dragStartY;
+    totalDragDist += Math.abs(dy - (totalDragDist ? 0 : 0));
+    totalDragDist = Math.abs(e.clientY - dragStartY);
+    if (totalDragDist > 4) {
+      dragging = true;
+      el.style.top = `${clampTop(dragStartTop + (e.clientY - dragStartY))}px`;
+    }
+  }
+
+  function onDragEnd() {
+    document.removeEventListener('mousemove', onDragMove);
+    document.removeEventListener('mouseup', onDragEnd);
+    if (dragging) {
+      // Persist position
+      const top = parseInt(el.style.top, 10) || 60;
+      chrome.storage.local.set({ vg_strip_top: top });
+    } else {
+      // Click - expand sidebar
+      onExpand();
+    }
+    dragging = false;
+  }
+
+  stripIcon.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragStartY = e.clientY;
+    dragStartTop = parseInt(el.style.top, 10) || 60;
+    totalDragDist = 0;
+    dragging = false;
+    document.addEventListener('mousemove', onDragMove);
+    document.addEventListener('mouseup', onDragEnd);
+  });
+
+  // Remove the old click handler - drag/click is handled by mousedown/mouseup
   el.appendChild(stripIcon);
 
   // Expand chevron
@@ -79,6 +150,15 @@ export function createStrip(opts) {
   const sep2 = document.createElement('div');
   Object.assign(sep2.style, { height: '1px', width: '100%', background: COLOR.border, margin: '3px 0' });
   el.appendChild(sep2);
+
+  // BUG-024: Restore saved vertical position from storage
+  try {
+    chrome.storage.local.get('vg_strip_top', (data) => {
+      if (data?.vg_strip_top != null) {
+        el.style.top = `${clampTop(data.vg_strip_top)}px`;
+      }
+    });
+  } catch { /* storage unavailable */ }
 
   return {
     element: el,
