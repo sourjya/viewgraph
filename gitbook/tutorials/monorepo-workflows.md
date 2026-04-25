@@ -19,36 +19,88 @@ ViewGraph adds the missing piece: **the agent can now see the rendered UI too**,
 
 ---
 
-## Example Monorepo Structure
+## Example Structures
+
+ViewGraph works with any monorepo layout. Here are three common patterns - from simple to full-stack.
+
+### Backend with templates (Python/Go/Ruby)
+
+Server-rendered apps where the backend serves HTML directly. ViewGraph captures the rendered output regardless of the templating engine.
+
+```
+my-api/
+├── .viewgraph/
+│   ├── captures/
+│   └── config.json          # patterns: [localhost:8000]
+├── src/
+│   ├── routes/
+│   ├── services/
+│   ├── models/
+│   └── templates/           # Jinja2, Go html/template, ERB, Blade
+│       ├── dashboard.html
+│       └── settings.html
+├── static/
+│   ├── css/
+│   └── js/
+└── .kiro/settings/mcp.json
+```
+
+The agent sees the rendered HTML via ViewGraph, traces it to the template file via `find_source`, and can fix both the template markup and the backend route that feeds it data.
+
+### Frontend SPA (standalone)
+
+A single-page app with an API client layer that talks to a separate backend.
+
+```
+my-frontend/
+├── .viewgraph/
+│   ├── captures/
+│   └── config.json          # patterns: [localhost:3000]
+├── src/
+│   ├── features/
+│   │   ├── auth/
+│   │   ├── dashboard/
+│   │   └── settings/
+│   ├── shared/
+│   │   ├── components/
+│   │   └── hooks/
+│   └── services/            # API client - fetch/axios calls
+├── package.json
+└── .kiro/settings/mcp.json
+```
+
+ViewGraph captures the DOM. The agent fixes components, styles, and a11y issues. When the Inspect tab shows a failed API call (Network section), the agent can fix the client-side fetch logic - but the backend lives elsewhere.
+
+### Full-stack monorepo
+
+Frontend, backend, and shared code in one repo. This is where ViewGraph + monorepo shines - the agent can trace a UI bug all the way to a database query.
 
 ```
 my-app/
-├── .viewgraph/              # ViewGraph captures and config
-│   ├── captures/            # DOM snapshots from the browser
-│   └── config.json          # URL patterns (e.g., localhost:3000)
+├── .viewgraph/
+│   ├── captures/
+│   └── config.json          # patterns: [localhost:3000]
 ├── packages/
 │   ├── api/                 # Backend - Express/FastAPI/Go/etc.
 │   │   ├── src/
-│   │   │   ├── routes/
-│   │   │   ├── services/
-│   │   │   └── models/
+│   │   │   ├── routes/      # API endpoints
+│   │   │   ├── services/    # Business logic
+│   │   │   └── models/      # Database models
 │   │   └── package.json
 │   ├── web/                 # Frontend - React/Vue/Svelte/etc.
 │   │   ├── src/
-│   │   │   ├── features/
-│   │   │   ├── shared/
+│   │   │   ├── features/    # Feature modules
+│   │   │   ├── shared/      # Reusable components
 │   │   │   └── services/    # API client layer
 │   │   └── package.json
-│   └── shared/              # Shared types, constants, validation
-│       ├── types/
-│       └── validators/
+│   └── shared/              # Cross-stack contracts
+│       ├── types/           # TypeScript interfaces used by both
+│       └── validators/      # Zod/Yup schemas used by both
 ├── package.json             # Workspace root
-└── .kiro/
-    └── settings/
-        └── mcp.json         # ViewGraph MCP server config
+└── .kiro/settings/mcp.json
 ```
 
-ViewGraph sits at the repo root. The `.viewgraph/` directory captures DOM snapshots from the running frontend. The agent reads those captures via MCP tools and has direct file access to both `packages/api/` and `packages/web/` to make fixes.
+ViewGraph sits at the repo root. The agent reads captures via MCP and has file access to `packages/api/`, `packages/web/`, and `packages/shared/` - so when an annotation points to a broken UI element, the agent can follow the data flow from component to API client to route to database query, all in one conversation.
 
 ---
 
