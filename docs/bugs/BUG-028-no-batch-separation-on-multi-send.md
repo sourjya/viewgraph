@@ -79,7 +79,146 @@ Each state has a distinct visual treatment in the timeline.
 
 ## Files to Change
 
-- `extension/lib/annotation-sidebar.js` - doSend: add sentAt, filter new-only for capture
-- `extension/entrypoints/content.js` - send-review: accept filter for which annotations to include
-- `extension/lib/sidebar/review.js` - render batch separators, update Send button label
-- `extension/lib/annotate.js` - add sentAt field to annotation model
+### 1. `extension/lib/annotate.js` - Data model
+
+Add `sentAt` field to annotation creation (lines ~310, ~416, ~715):
+
+```js
+// Current
+const annotation = { id, uuid, type, region, comment: '', severity: '', ... };
+
+// New - add sentAt: null
+const annotation = { id, uuid, type, region, comment: '', severity: '', sentAt: null, ... };
+```
+
+Update `save()` serialization to include `sentAt`. Update `load()` to read it back.
+
+### 2. `extension/lib/annotation-sidebar.js` - doSend() (line ~516)
+
+Replace blanket `pending = true` with `sentAt` timestamp. Only mark unsent annotations:
+
+```js
+// Current
+function doSend(trustOverride = false) {
+  // ...
+  for (const ann of getAnnotations()) {
+    if (!ann.resolved) ann.pending = true;
+  }
+}
+
+// New
+function doSend(trustOverride = false) {
+  const now = new Date().toISOString();
+  const unsent = getAnnotations().filter((a) => !a.resolved && !a.sentAt);
+  for (const ann of unsent) {
+    ann.sentAt = now;
+    ann.pending = true;  // keep for backward compat with existing rendering
+  }
+  save();
+  // ...
+}
+```
+
+### 3. `extension/entrypoints/content.js` - send-review handler (line ~147)
+
+Add option to filter annotations in the capture payload:
+
+```js
+// Current
+capture.annotations = serializeAnnotations(getAnnotations());
+
+// New - accept a filter mode from the message
+const anns = getAnnotations();
+const filtered = message.sendNewOnly
+  ? anns.filter((a) => !a.resolved && !a.sentAt)  // only unsent
+  : anns;                                           // all (first send, or explicit full send)
+capture.annotations = serializeAnnotations(filtered);
+```
+
+The sidebar passes `sendNewOnly: true` when there are already-sent annotations:
+
+```js
+// In doSend():
+const hasAlreadySent = getAnnotations().some((a) => a.sentAt && !a.resolved);
+chrome.runtime.sendMessage({
+  type: 'send-review', includeCapture: true, includeSnapshot: true,
+  sendNewOnly: hasAlreadySent,  // only new batch if previous send exists
+  sessionNote, trustOverride
+}, () => {});
+```
+
+### 4. `extension/lib/sidebar/review.js` - Batch separators (renderReviewList)
+
+After sorting annotations, group by `sentAt` value and insert separator elements:
+
+```js
+// In renderReviewList, after filtering:
+const batches = groupByBatch(visible);
+// batches = [
+//   { label: 'Sent 5 min ago', annotations: [...] },
+//   { label: 'Not yet sent', annotations: [...] },
+// ]
+
+for (const batch of batches) {
+  // Render separator
+  const sep = document.createElement('div');
+  sep.textContent = `── ${batch.label} ──`;
+  // ... styling
+  list.appendChild(sep);
+  // Render entries
+  for (const ann of batch.annotations) {
+    list.appendChild(createEntry(ann, callbacks));
+  }
+}
+```
+
+Grouping logic:
+- Group by `sentAt` value (same timestamp = same batch)
+- Sort batches: most recent sent first, unsent last
+- Label format: "Sent Xm ago" / "Sent Xh ago" / "Not yet sent"
+
+### 5. `extension/lib/sidebar/footer.js` - Send button label
+
+Update the Send button text when there are mixed sent/unsent annotations:
+
+```js
+// In updateDisabledState or a new updateSendLabel method:
+const total = anns.filter((a) => !a.resolved).length;
+const unsent = anns.filter((a) => !a.resolved && !a.sentAt).length;
+const hasSent = total > unsent;
+
+if (hasSent && unsent > 0) {
+  sendBtn.textContent = `Send ${unsent} new`;
+} else {
+  sendBtn.textContent = 'Send to Agent';  // default
+}
+```
+
+## Edge Cases
+
+| Scenario | Expected behavior |
+|---|---|
+| First send (no prior sentAt) | All annotations sent, all get sentAt. Button says "Send to Agent". |
+| Second send with new annotations | Only new annotations in capture. Button says "Send 2 new". |
+| Agent resolves some, user adds more | Resolved ones disappear from Open tab. New ones show in "Not yet sent" batch. |
+| All annotations resolved, user adds new | Fresh state - no batches, just new annotations. Button says "Send to Agent". |
+| User closes sidebar between sends | sentAt persists in storage. Reopening shows correct batch grouping. |
+| Agent resolves via sync while sidebar is open | Resolved annotations move to Resolved tab. Batch separator updates count. |
+| User clicks Send with 0 unsent annotations | Button is disabled (all already sent or resolved). |
+
+## Migration
+
+Existing annotations in storage won't have `sentAt`. Treat `sentAt === undefined` the same as `sentAt === null` (unsent). The `pending` boolean is kept for backward compatibility but `sentAt` is the source of truth going forward.
+
+## Test Plan
+
+| Test | Type |
+|---|---|
+| First send sets sentAt on all unresolved annotations | Unit (annotate.js) |
+| Second send only marks unsent annotations | Unit (annotation-sidebar.js) |
+| Capture payload filters to new-only when sendNewOnly=true | Unit (content.js) |
+| Batch separator renders between sent and unsent groups | Unit (review.js) |
+| Send button shows "Send N new" when mixed batches exist | Unit (footer.js) |
+| sentAt persists across sidebar close/reopen | Integration |
+| Resolved annotations don't appear in any batch | Unit (review.js) |
+| Empty unsent batch disables Send button | Unit (footer.js) |
