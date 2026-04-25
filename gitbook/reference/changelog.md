@@ -6,6 +6,14 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ---
 
+## Unreleased
+
+### Known Issues Documented
+- BUG-023: Resolved annotation reopens on same element click, blocking follow-up notes
+- BUG-024: Collapsed strip not repositionable - elements hidden underneath cannot be annotated
+
+---
+
 ## v0.4.3 - April 21, 2026
 
 ### Features

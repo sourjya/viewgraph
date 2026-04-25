@@ -8,6 +8,14 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ---
 
+## [Unreleased]
+
+### Documented
+- BUG-023: Resolved annotation reopens on same element click, blocking new follow-up notes (dedup filter missing `!a.resolved` check)
+- BUG-024: Collapsed strip not repositionable - elements hidden underneath cannot be annotated (proposed: vertical drag with hover-revealed grip)
+
+---
+
 ## [0.4.0] - 2026-04-18
 
 ### Server Lifecycle Management
