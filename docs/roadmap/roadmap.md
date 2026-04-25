@@ -8,7 +8,7 @@
 
 | Milestone | Status | Key Deliverables |
 |---|---|---|
-| M0-M8: Foundation | Complete | 37 MCP tools, extension core, Kiro Power |
+| M0-M8: Foundation | Complete | 38 MCP tools, extension core, Kiro Power |
 | M9.5: Settings Page | Complete | Auto-capture, server URL, quality settings |
 | M10.1: Element Flash | Complete | Visual feedback on select |
 | M10.2: Annotation Status | Complete | Stale annotation detection |
@@ -39,6 +39,9 @@
 | Redundancy Centralization | Complete | selector(), ATTR, readAndParse() helpers extracted |
 | M16: Sidebar UX Polish | Complete | Help overlay, keyboard shortcuts, settings to footer, VG icon, strip redesign |
 | Server Lifecycle | Complete | Stdin close detection, idle timeout, orphan prevention |
+| v0.4.7 Bug Fixes | Complete | BUG-023 dedup, BUG-024 strip drag, BUG-025 scrollbar, BUG-026 auto-capture persist, BUG-027 request history |
+| Rolling Archive | Complete | Auto-archive resolved captures, index.json, list_archived tool, get_capture fallback |
+| UUID Dedup | Complete | get_unresolved deduplicates across captures on repeat sends |
 ### Completed Features
 
 | Feature | Status | Description |
@@ -75,7 +78,7 @@
 **Rationale:** F19 and F17 are security-first (threat model driven). F18 is low-effort, high-impact UX. F6/F9/F10 are feature work. F11 is the big architectural change that eliminates most localhost threats.
 | M17: Telemetry | Deferred (post-traction) | Anonymous usage analytics - not needed until product has adoption |
 
-**Current totals:** 1562 tests (1092 extension + 470 server), 37 MCP tools, 17 enrichment collectors
+**Current totals:** 1646 tests (1132 extension + 514 server), 38 MCP tools, 17 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and

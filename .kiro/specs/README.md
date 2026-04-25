@@ -36,6 +36,13 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | ADR-007 | [`capture-json-source-of-truth`](../../docs/decisions/ADR-007-jsonl-history-store.md) | Capture JSON as single source of truth (no separate history store) |
 | ADR-008 | [`kiro-power-packaging`](../../docs/decisions/ADR-008-kiro-power-packaging.md) | Package ViewGraph as a Kiro Power for one-click install |
 | ADR-009 | [`agpl-licensing`](../../docs/decisions/ADR-009-agpl-licensing.md) | AGPL-3.0 licensing rationale |
+| ADR-010 | [`remove-http-auth-beta`](../../docs/decisions/ADR-010-remove-http-auth-beta.md) | Remove HTTP auth for beta (localhost-only accepted risk) |
+| ADR-011 | [`mcp-server-instructions`](../../docs/decisions/ADR-011-mcp-server-instructions.md) | Server instructions for agent guidance |
+| ADR-012 | [`prompt-injection-defense`](../../docs/decisions/ADR-012-prompt-injection-defense.md) | 5-layer prompt injection defense strategy |
+| ADR-013 | [`native-messaging-transport`](../../docs/decisions/ADR-013-native-messaging-transport.md) | Layered transport: native messaging > HMAC > unsigned |
+| ADR-014 | [`transient-ui-state-capture`](../../docs/decisions/ADR-014-transient-ui-state-capture.md) | Transient DOM mutation capture (toasts, flash, reflow) |
+| ADR-015 | [`hmac-signed-localhost`](../../docs/decisions/ADR-015-hmac-signed-localhost.md) | HMAC-signed HTTP for localhost auth |
+| ADR-016 | [`native-messaging-default`](../../docs/decisions/ADR-016-native-messaging-default.md) | Native messaging as default transport |
 
 ## Architecture Docs
 
@@ -46,6 +53,7 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | [Scans and Recommendations](../../docs/architecture/scans-and-recommendations.md) | 22 automated scans across 6 categories |
 | [Security Assessment](../../docs/architecture/security-assessment.md) | Threat model and mitigations |
 | [UX Design](../../docs/architecture/ux-analysis.md) | Two-tab sidebar model, design decisions, user journeys |
+| [Ideation Pipeline](../../docs/architecture/ideation-pipeline.md) | Idea mode data flow, annotation-to-spec pipeline |
 
 ## Ideas (not yet specced)
 
@@ -54,3 +62,5 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | [Extension UX and Intelligence](../../docs/architecture/extension-ux-and-intelligence.md) | Annotation UI patterns, memory/intelligence features |
 | [Product Positioning](../../docs/architecture/product-positioning.md) | GTM strategy, messaging, audience |
 | [Problem-Feature Mapping](../../docs/architecture/problem-feature-mapping.md) | 7 core USPs mapped to features and gaps |
+| [Live Annotation Status](../../docs/ideas/live-annotation-status.md) | Real-time lifecycle updates (draft > sent > fixing > resolved) |
+| [Rolling Archive](../../docs/ideas/rolling-archive.md) | Auto-archive resolved captures with index.json (implemented v0.4.7) |
