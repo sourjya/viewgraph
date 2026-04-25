@@ -20,7 +20,7 @@ Add to your AI agent's MCP config:
 
 The server runs automatically via `npx`, auto-creates `.viewgraph/captures/`, and learns your URL pattern from the first capture. No `viewgraph-init` needed.
 
-**Alternative:** `npm install -g @viewgraph/core && viewgraph-init` for explicit version pinning and config control.
+**Alternative:** `npm install -g @viewgraph/core` for explicit version pinning, then run `viewgraph-init` from each project folder to configure URL patterns and capture routing.
 
 ## Tools (37)
 
@@ -189,14 +189,14 @@ These are used by the extension, not by end users directly.
 Run from the **ViewGraph root directory**:
 
 ```bash
-npm run test:server      # 324 tests
+npm run test:server      # 496 tests
 npm run test:server -- --watch   # watch mode
 ```
 
 Or from the `server/` directory:
 
 ```bash
-npm test                 # same 324 tests
+npm test                 # same 496 tests
 ```
 
 ## Architecture

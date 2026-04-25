@@ -21,7 +21,7 @@ These appear in the **Agent Hooks** section of the Kiro IDE sidebar, or can be t
 
 The annotation hook is the most powerful workflow: annotate issues in the browser, click the hook in the sidebar, and Kiro fixes them all in sequence.
 
-### CLI Prompt Shortcuts (7)
+### CLI Prompt Shortcuts (9)
 
 In Kiro CLI, type `@vg` then Tab to see all shortcuts:
 
@@ -33,7 +33,13 @@ In Kiro CLI, type `@vg` then Tab to see all shortcuts:
 | `@vg-diff` | Compare two most recent captures |
 | `@vg-testids` | Find and add missing data-testid attributes |
 | `@vg-a11y` | Deep a11y audit with automatic source fixes |
+| `@vg-tests` | Generate Playwright E2E tests from capture |
+| `@vg-ideate` | Generate feature specs from idea-mode annotations |
 | `@vg-help` | ViewGraph usage guide and tool reference |
+
+{% hint style="info" %}
+**Kiro IDE users:** Use the Hooks panel in the sidebar instead of `@` shortcuts. Typing `@vg-review` in IDE chat triggers a "new spec" prompt. See [Kiro Power](https://chaoslabz.gitbook.io/viewgraph/features/kiro-power#kiro-ide-vs-kiro-cli) for details.
+{% endhint %}
 
 ### Steering Docs (`.kiro/steering/`)
 
@@ -66,6 +72,8 @@ These fire automatically during agent workflows:
 | `vg-diff` | `@vg-diff` | Compare two most recent captures |
 | `vg-testids` | `@vg-testids [scope]` | Find and fix missing data-testid attributes |
 | `vg-a11y` | `@vg-a11y` | Deep a11y audit with source code fixes |
+| `vg-tests` | `@vg-tests` | Generate Playwright E2E tests from capture |
+| `vg-ideate` | `@vg-ideate` | Generate feature specs from idea annotations |
 | `vg-help` | `@vg-help` | ViewGraph usage guide and tool reference |
 
 ## Install / Update

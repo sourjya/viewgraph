@@ -26,7 +26,7 @@ These are the features you interact with directly:
 
 These run automatically during capture:
 
-- **14 Enrichment Collectors** - network, console, breakpoints, stacking contexts, focus chain, scroll containers, landmarks, components, axe-core, event listeners, performance, animations, intersection state, visibility
+- **17 Enrichment Collectors** - network, console, breakpoints, stacking contexts, focus chain, scroll containers, landmarks, components, axe-core, event listeners, performance, animations, intersection state, visibility, CSS custom properties, storage, transient UI state
 - **Auto-Capture on HMR** - detects Vite/webpack hot-reload and auto-captures after DOM settles
 - **Journey Recording** - auto-captures on SPA navigation, groups into named sessions
 - **WebSocket Collaboration** - real-time annotation sync with MCP server
@@ -69,6 +69,9 @@ Each collector is wrapped in `safeCollect()` - if one fails, the rest still run 
 | `animation-collector` | CSS animations/transitions (running, paused, pending) |
 | `intersection-collector` | Viewport visibility state via IntersectionObserver |
 | `visibility-collector` | isRendered ancestor walk (opacity, clip-path, off-screen) |
+| `css-custom-properties-collector` | CSS custom properties (variables) defined on the page |
+| `storage-collector` | localStorage, sessionStorage, and cookie entries |
+| `transient-collector` | Transient DOM mutations (toasts, flash content, render thrashing) |
 
 ## Development
 
@@ -127,7 +130,7 @@ lib/
   salience.js            Element salience scoring (interactivity, testid, aria, viewport)
   selector.js            Shared CSS selector builder + ATTR constant
   html-snapshot.js       HTML snapshot serializer for fidelity measurement
-  enrichment.js          Orchestrator for all 14 collectors (safeCollect wrapper)
+  enrichment.js          Orchestrator for all 17 collectors (safeCollect wrapper)
   safe-collect.js        Error boundary wrapper for collectors
   export-markdown.js     Markdown bug report formatter (with environment section)
   export-zip.js          ZIP assembly (markdown + screenshots + network.json + console.json)
@@ -147,7 +150,7 @@ lib/
   storage.js             Chrome storage abstraction (local)
   url-checks.js          Injectable page detection (chrome://, about:, etc.)
   hmr-detector.js        Vite/webpack HMR event detection
-  (14 *-collector.js)    Enrichment collectors (see table above)
+  (17 *-collector.js)    Enrichment collectors (see table above)
 public/                  Static assets (icons)
 tests/                   Extension tests (599 tests)
 ```
