@@ -14,6 +14,7 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ### Bug Fixes
 - BUG-025: Annotation panel textarea scrollbar now uses dark theme
+- BUG-026: Auto-capture toggle now persists across page reloads
 
 ---
 

@@ -34,7 +34,17 @@ export async function renderToggles(container, callbacks = {}) {
   Object.assign(autoLabel.style, { ...LABEL_STYLE, flex: '1' });
   const autoToggle = document.createElement('button');
   autoToggle.setAttribute('data-tooltip', 'Auto-capture on DOM changes and hot-reload');
-  const watcherOn = isWatcherEnabled();
+  let watcherOn = isWatcherEnabled();
+
+  // Restore persisted auto-capture state across page reloads
+  try {
+    const stored = await chrome.storage.local.get('vg_auto_capture');
+    if (stored.vg_auto_capture && !watcherOn) {
+      startWatcher(() => { chrome.runtime.sendMessage({ type: 'capture-page' }); });
+      watcherOn = true;
+    }
+  } catch { /* storage unavailable */ }
+
   autoToggle.textContent = watcherOn ? 'ON' : 'OFF';
   Object.assign(autoToggle.style, { ...TOGGLE_STYLE, ...(watcherOn ? TOGGLE_ON : TOGGLE_OFF) });
   autoToggle.addEventListener('click', () => {
@@ -42,10 +52,12 @@ export async function renderToggles(container, callbacks = {}) {
       stopWatcher();
       autoToggle.textContent = 'OFF';
       Object.assign(autoToggle.style, TOGGLE_OFF);
+      chrome.storage.local.set({ vg_auto_capture: false });
     } else {
       startWatcher(() => { chrome.runtime.sendMessage({ type: 'capture-page' }); });
       autoToggle.textContent = 'ON';
       Object.assign(autoToggle.style, TOGGLE_ON);
+      chrome.storage.local.set({ vg_auto_capture: true });
     }
   });
   autoRow.append(autoLabel, autoToggle);

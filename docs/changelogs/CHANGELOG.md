@@ -16,6 +16,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ### Fixed
 - BUG-025: Annotation panel textarea scrollbar now uses dark theme (was system default)
+- BUG-026: Auto-capture toggle persists across page reloads via chrome.storage.local
 
 ---
 
