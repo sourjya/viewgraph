@@ -65,15 +65,22 @@ The sidebar already has WebSocket sync for resolved annotations (`syncResolved` 
 
 ### Capture JSON
 
-Add an optional `status` field to the annotation schema:
+Add optional agent-writable fields to the annotation schema. These are empty by default and populated by the agent via MCP tools as it works through annotations:
 
 ```json
 {
   "id": 1,
-  "uuid": "...",
+  "uuid": "a1b2c3d4-...",
   "comment": "Fix heading size",
   "resolved": false,
   "status": "fixing",
+  "agentContext": {
+    "status": "fixing",
+    "startedAt": "2026-04-25T22:00:12Z",
+    "sourceFile": "src/components/Header.tsx:42",
+    "notes": "Changing font-size from 56px to 28px"
+  },
+  "resolution": null,
   "statusHistory": [
     { "status": "sent", "at": "2026-04-25T22:00:00Z" },
     { "status": "queued", "at": "2026-04-25T22:00:05Z" },
@@ -82,7 +89,35 @@ Add an optional `status` field to the annotation schema:
 }
 ```
 
-The `statusHistory` array is optional and only populated when the server tracks transitions. It enables the timeline to show "started fixing 30s ago" relative timestamps.
+### Fields the agent can write
+
+| Field | Type | Set by | Purpose |
+|---|---|---|---|
+| `resolved` | boolean | `resolve_annotation` tool | Already exists - marks annotation as done |
+| `resolution` | object | `resolve_annotation` tool | Already exists - action, summary, filesChanged, by, at |
+| `status` | string | Server (inferred from tool calls) | New - current lifecycle state |
+| `agentContext` | object | Future `update_annotation_status` tool | New - agent's working notes |
+| `agentContext.status` | string | Agent | Current state: queued, fixing, blocked, failed |
+| `agentContext.startedAt` | string | Agent | When the agent started working on this |
+| `agentContext.sourceFile` | string | Agent | File the agent identified via find_source |
+| `agentContext.notes` | string | Agent | Free-text working notes (what the agent is doing) |
+| `statusHistory` | array | Server | New - audit trail of state transitions |
+
+### What already exists vs what's new
+
+**Already implemented:**
+- `resolved` + `resolution` - written by `resolve_annotation` tool
+- WebSocket `annotation:resolved` event - notifies extension on resolve
+
+**New (this feature):**
+- `status` field - inferred by server from tool call patterns
+- `agentContext` object - written by a new `update_annotation_status` tool (or inferred)
+- `statusHistory` array - appended by server on each transition
+- WebSocket `annotation:status` event - notifies extension on any status change
+
+### Backward compatibility
+
+All new fields are optional. Existing captures without these fields continue to work. The extension treats missing `status` as `draft` and missing `agentContext` as empty. The `resolve_annotation` tool continues to work exactly as before - it just also appends to `statusHistory` when the feature is active.
 
 ## Visual Design
 
