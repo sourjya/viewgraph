@@ -322,8 +322,12 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
               existing.urlPatterns = [pattern];
               if (!('autoAudit' in existing)) existing.autoAudit = false;
               if (!('smartSuggestions' in existing)) existing.smartSuggestions = true;
-              writeFileSync(configFile, JSON.stringify(existing, null, 2));
-              console.error(`${LOG_PREFIX} Auto-configured: ${configFile} (pattern: ${pattern})`);
+              // S3-3: Re-validate config path before write (CodeQL js/path-injection)
+              const validatedConfig = safeConfigPath(targetDir);
+              if (validatedConfig) {
+                writeFileSync(validatedConfig, JSON.stringify(existing, null, 2));
+                console.error(`${LOG_PREFIX} Auto-configured: ${validatedConfig} (pattern: ${pattern})`);
+              }
             }
           }
         }
