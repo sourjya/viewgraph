@@ -18,6 +18,7 @@ import { captureSnapshot } from '../lib/capture/html-snapshot.js';
 import { collectAllEnrichment } from '../lib/enrichment.js';
 import { installConsoleInterceptor } from '../lib/collectors/console-collector.js';
 import { startAutoCapture, stopAutoCapture, isAutoCapturing } from '../lib/session/auto-capture.js';
+import { startWatcher as startContinuousWatcher, isWatcherEnabled } from '../lib/session/continuous-capture.js';
 import { isRecording, addStep, getCaptureMetadata } from '../lib/session/session-manager.js';
 import {
   start as startAnnotate, stop as stopAnnotate, isActive as isAnnotating,
@@ -53,6 +54,13 @@ export default defineContentScript({
       const s = result['viewgraph-settings'] || {};
       if (s.autoCaptureEnabled) {
         startAutoCapture({ debounceMs: s.debounceMs || 1000 });
+      }
+    });
+
+    // Restore continuous capture watcher if it was enabled before reload (BUG-026)
+    chrome.storage.local.get('vg_auto_capture', (result) => {
+      if (result.vg_auto_capture && !isWatcherEnabled()) {
+        startContinuousWatcher(() => { chrome.runtime.sendMessage({ type: 'capture-page' }); });
       }
     });
 

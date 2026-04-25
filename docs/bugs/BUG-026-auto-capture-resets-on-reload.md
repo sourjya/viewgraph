@@ -20,7 +20,9 @@ This defeats the primary use case: enabling auto-capture *before* a page load to
 
 1. Persist toggle state to `chrome.storage.local` (key: `vg_auto_capture`) on toggle click
 2. On `renderToggles()` init, read from storage and auto-start the watcher if it was enabled
+3. In the content script (`content.js`), restore the continuous capture watcher on page load from storage - this runs independently of the sidebar, so auto-capture survives page reloads even without reopening the sidebar
 
 ## Files Changed
 
 - `extension/lib/sidebar/toggles.js` - persist and restore auto-capture state
+- `extension/entrypoints/content.js` - restore continuous watcher on page load
