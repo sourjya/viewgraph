@@ -21,7 +21,7 @@ Future paid add-on components will live in separate private repositories under a
 ## Why AGPL-3.0
 
 - **Open source**: anyone can use, study, modify, and redistribute the core
-- **Network copyleft**: if someone modifies the code and deploys it as a network service (SaaS), they must release their modifications under AGPL-3.0 -- this is the key protection against competitors forking and hosting a closed version
+- **Network copyleft**: if someone modifies the code and deploys it as a network service (SaaS), they must release their modifications under AGPL-3.0 - this is the key protection against competitors forking and hosting a closed version
 - **Dual-licensing compatible**: since the author retains sole copyright, the same code can be offered under a commercial license to organizations that cannot comply with AGPL obligations
 - **Proven model**: used by GitLab (CE), Grafana, MongoDB (SSPL is similar), and Nextcloud for the same open-core pattern
 
@@ -29,14 +29,14 @@ Future paid add-on components will live in separate private repositories under a
 
 | License | Rejected Because |
 |---------|-----------------|
-| MIT | No copyleft -- competitors can fork, close the source, and sell it freely |
-| Apache-2.0 | Same problem as MIT -- permissive, no SaaS protection |
-| GPL-3.0 | Covers distribution but NOT network/SaaS use -- someone could host a modified version without releasing changes |
-| BSL 1.1 | Not OSI-approved -- technically not "open source" until the change date passes |
+| MIT | No copyleft - competitors can fork, close the source, and sell it freely |
+| Apache-2.0 | Same problem as MIT - permissive, no SaaS protection |
+| GPL-3.0 | Covers distribution but NOT network/SaaS use - someone could host a modified version without releasing changes |
+| BSL 1.1 | Not OSI-approved - technically not "open source" until the change date passes |
 
 ## Consequences
 
 - All contributors must agree to a CLA or assign copyright so dual-licensing remains possible
 - Paid add-ons must be developed in separate repositories with proprietary licenses
 - Companies that cannot accept AGPL terms can purchase a commercial license
-- The AGPL copyleft applies to the entire core -- any modifications to core code that are deployed must be shared
+- The AGPL copyleft applies to the entire core - any modifications to core code that are deployed must be shared

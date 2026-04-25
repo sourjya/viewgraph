@@ -20,7 +20,7 @@ Tracks all security reviews, findings, and their resolution status.
 | S4-3 | HIGH | Request body not included in HMAC verification | NEW (SRR-005) |
 | S4-4 | HIGH | Timing attack on handshake verify | FIXED (SRR-005) - uses timingSafeEqual |
 | S5-8 | MEDIUM | Unguarded JSON.parse on /handshake/verify | FIXED (SRR-005) - try/catch added |
-| S4-5 | MEDIUM | requireAuth defaults to false — auth is opt-in only | NEW (SRR-005) - intentional for beta |
+| S4-5 | MEDIUM | requireAuth defaults to false - auth is opt-in only | NEW (SRR-005) - intentional for beta |
 | S9-1 | MEDIUM | Storage collector misses common session cookie names | NEW (SRR-004) |
 | S5-7 | MEDIUM | /info exposes filesystem paths | Accepted risk (ADR-010) |
 | S16-1 | MEDIUM | Log injection via unsanitized filenames in watcher | NEW (SRR-004) |
