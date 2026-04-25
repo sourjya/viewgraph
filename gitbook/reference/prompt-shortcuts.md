@@ -1,6 +1,12 @@
 # Prompt Shortcuts Reference
 
-9 prompt shortcuts for Kiro CLI. Type `@vg` then Tab to see all options.
+9 prompt shortcuts for common ViewGraph workflows.
+
+{% hint style="info" %}
+**Kiro CLI:** Type `@vg-review`, `@vg-audit`, etc. The `@` prefix triggers prompt expansion.
+
+**Kiro IDE:** Use the Hooks panel in the sidebar, or type the shortcut name **without `@`** in chat (e.g., `vg-review`). Typing `@vg-review` in IDE chat will trigger a "new spec" prompt - that's a Kiro IDE behavior, not a ViewGraph issue.
+{% endhint %}
 
 ## @vg-audit
 

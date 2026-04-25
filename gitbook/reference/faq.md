@@ -86,6 +86,9 @@ The server binds to localhost only and is not accessible from the network. Auth 
 The `viewgraph-init` command requires a one-time global install: `npm install -g @viewgraph/core`. If you're using the zero-config setup (MCP JSON only), you don't need `viewgraph-init` at all.
 {% endhint %}
 
+### Typing `@vg-review` in Kiro IDE asks me to create a new spec
+That's expected - Kiro IDE interprets `@` as a spec reference. Use the **Hooks panel** in the sidebar instead, or type the shortcut **without `@`** (e.g., `vg-review`). The `@` prefix is for Kiro CLI only. See [Kiro Power](../features/kiro-power.md#kiro-ide-vs-kiro-cli) for the full IDE vs CLI guide.
+
 ### The sidebar shows a red dot
 The server isn't running. This usually means it timed out after inactivity. See [Server timed out](#server-timed-out) below.
 
