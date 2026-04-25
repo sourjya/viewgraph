@@ -23,6 +23,9 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - Settings panel shows server idle timeout (read-only) with "resets on activity" hint
 - Timeout banner shows specific recovery steps for Kiro IDE (Reconnect MCP) and CLI (restart with -r flag) with link to FAQ guide
 
+### Security
+- Upgraded uuid to 14.0.0 via npm override (fixes missing buffer bounds check in v3/v5/v6, GHSA-w5hq-g745-h8pq)
+
 ---
 
 ## [0.4.0] - 2026-04-18
