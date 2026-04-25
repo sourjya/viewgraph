@@ -240,6 +240,20 @@ export function createSettings() {
     }
     cardBody.appendChild(verRow);
 
+    // Idle timeout info
+    if (data.idleTimeoutMinutes != null) {
+      const idleRow = document.createElement('div');
+      Object.assign(idleRow.style, { ...rowStyle, marginBottom: '4px' });
+      const idleLbl = document.createElement('span');
+      idleLbl.textContent = 'Idle timeout:';
+      Object.assign(idleLbl.style, lblStyle);
+      const idleVal = document.createElement('span');
+      idleVal.textContent = data.idleTimeoutMinutes > 0 ? `${data.idleTimeoutMinutes}min (resets on activity)` : 'disabled';
+      Object.assign(idleVal.style, { ...valStyle, color: COLOR.dim });
+      idleRow.append(idleLbl, idleVal);
+      cardBody.appendChild(idleRow);
+    }
+
     if (data.agent) {
       const row = document.createElement('div');
       Object.assign(row.style, rowStyle);

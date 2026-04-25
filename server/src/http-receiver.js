@@ -94,7 +94,7 @@ function json(res, status, data) {
  *   requests must include an `Authorization: Bearer <secret>` header. GET
  *   endpoints (/health, /requests/pending) remain open so monitoring works.
  */
-export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port = DEFAULT_HTTP_PORT, indexer = null, onActivity = null }) {
+export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port = DEFAULT_HTTP_PORT, indexer = null, onActivity = null, idleTimeoutMinutes = 30 }) {
   let server;
   let wsServer;
 
@@ -191,7 +191,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         urlPatterns = cfg.urlPatterns || [];
         trustedPatterns = cfg.trustedPatterns || [];
       } catch { /* no config */ }
-      return json(res, 200, { capturesDir: absCaptures, projectRoot, agent, urlPatterns, trustedPatterns, serverVersion: SERVER_VERSION });
+      return json(res, 200, { capturesDir: absCaptures, projectRoot, agent, urlPatterns, trustedPatterns, serverVersion: SERVER_VERSION, idleTimeoutMinutes });
     }
 
     // GET /config - read project config

@@ -17,6 +17,9 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - BUG-026: Auto-capture toggle now persists across page reloads
 - BUG-027: Accepted capture requests now show in Resolved tab with smooth collapse animation
 
+### Improved
+- Settings panel shows server idle timeout (read-only, resets on activity)
+
 ---
 
 ## v0.4.3 - April 21, 2026

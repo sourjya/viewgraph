@@ -180,7 +180,7 @@ async function main() {
   // Server binds to localhost only. Format validation provides defense.
 
   // Start HTTP receiver for extension communication
-  httpReceiver = createHttpReceiver({ queue: requestQueue, capturesDir: CAPTURES_DIR, allowedDirs: ALLOWED_DIRS, port: HTTP_PORT ?? 9876, indexer, onActivity: resetIdleTimer });
+  httpReceiver = createHttpReceiver({ queue: requestQueue, capturesDir: CAPTURES_DIR, allowedDirs: ALLOWED_DIRS, port: HTTP_PORT ?? 9876, indexer, onActivity: resetIdleTimer, idleTimeoutMinutes: IDLE_TIMEOUT_MINUTES });
   await httpReceiver.start();
 
   // Start idle timeout (resets on any activity)
