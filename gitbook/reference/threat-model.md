@@ -99,7 +99,7 @@ Three layers of transport security, from strongest to fallback:
 
 | Layer | How it works | Status |
 |---|---|---|
-| **Native Messaging** (ADR-016) | Browser-enforced extension identity. No ports, no network. | Code complete, not yet default |
+| **Native Messaging** ([Chrome](https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging), [Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging)) | Browser-enforced extension identity. No ports, no network. | Code complete, not yet default |
 | **HMAC-Signed HTTP** (ADR-015) | File-based secret, replay-proof signatures, 30s timestamp window | **Implemented (F21)** |
 | **Unsigned HTTP** (ADR-010) | Any local process can connect. Localhost-only binding. | Default (beta) |
 
@@ -125,7 +125,7 @@ This is documented as accepted risk S4-2 in [SRR-005](https://github.com/sourjya
 
 ### Native Messaging Status
 
-Native messaging is now auto-configured by `viewgraph-init` (F22). The extension auto-detects the best available security mode:
+[Native messaging](https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging) ([Firefox docs](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging)) is now auto-configured by `viewgraph-init` (F22). The extension auto-detects the best available security mode:
 
 ```
 viewgraph-init → registers native messaging host

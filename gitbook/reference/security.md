@@ -119,7 +119,7 @@ The MCP server binds to `127.0.0.1` only - it is not accessible from the network
 - **WebSocket limits** - 1MB max payload, 10 concurrent connections max
 - **Error sanitization** - error responses never leak filesystem paths
 
-Auth tokens were evaluated and removed for beta (see [ADR-010](https://github.com/sourjya/viewgraph/blob/main/docs/decisions/ADR-010-remove-http-auth-beta.md)). The transport abstraction layer (F11) is built - extension modules communicate through `transport.js` which will use native messaging when the host is installed, falling back to localhost HTTP. See [ADR-013](https://github.com/sourjya/viewgraph/blob/main/docs/decisions/ADR-013-native-messaging-transport.md) for the layered transport strategy.
+Auth tokens were evaluated and removed for beta (see [ADR-010](https://github.com/sourjya/viewgraph/blob/main/docs/decisions/ADR-010-remove-http-auth-beta.md)). The transport abstraction layer (F11) is built - extension modules communicate through `transport.js` which will use [native messaging](https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging) ([Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging)) when the host is installed, falling back to localhost HTTP. See [ADR-013](https://github.com/sourjya/viewgraph/blob/main/docs/decisions/ADR-013-native-messaging-transport.md) for the layered transport strategy.
 
 ## Prompt Injection Defense (F19)
 

@@ -54,7 +54,7 @@ viewgraph-init
 | Captures directory created | ✅ | ✅ |
 | URL patterns learned | ✅ (auto from first capture) | ✅ (or explicit `--url`) |
 | 🔒 Signed connection (HMAC) | ✅ | ✅ |
-| 🔒 Native messaging | ❌ | ✅ (Linux, macOS, Windows - not WSL) |
+| 🔒 [Native messaging](https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging) | ❌ | ✅ (Linux, macOS, Windows - not WSL) |
 | Kiro Power (hooks, prompts, steering) | ❌ | ✅ |
 | Custom URL pattern | ❌ (auto-detected) | ✅ (`--url localhost:3000`) |
 

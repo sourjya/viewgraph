@@ -78,7 +78,7 @@ No. All captures stay on your local machine. The extension communicates only wit
 Yes. ViewGraph only reads the DOM - it never modifies the page, submits forms, or makes network requests on behalf of the site. It's a read-only observer.
 
 ### Why is there no authentication on the local server?
-The server binds to localhost only and is not accessible from the network. Auth tokens were removed for beta because they caused more problems than they solved (silent failures, token sync issues). Post-beta, native messaging will replace localhost HTTP entirely. See [ADR-010](https://github.com/sourjya/viewgraph/blob/main/docs/decisions/ADR-010-remove-http-auth-beta.md) for the full security analysis.
+The server binds to localhost only and is not accessible from the network. Auth tokens were removed for beta because they caused more problems than they solved (silent failures, token sync issues). Post-beta, [native messaging](https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging) will replace localhost HTTP entirely. See [ADR-010](https://github.com/sourjya/viewgraph/blob/main/docs/decisions/ADR-010-remove-http-auth-beta.md) for the full security analysis.
 
 ## Troubleshooting
 
