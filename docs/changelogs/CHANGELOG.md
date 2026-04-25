@@ -13,6 +13,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 ### Documented
 - BUG-023: Resolved annotation reopens on same element click, blocking new follow-up notes (dedup filter missing `!a.resolved` check)
 - BUG-024: Collapsed strip not repositionable - elements hidden underneath cannot be annotated (proposed: vertical drag with hover-revealed grip)
+- BUG-028: No visual separation between sent and unsent annotations on multi-send (proposed: sentAt timestamp, batch separators, send-only-new)
 
 ### Fixed
 - BUG-025: Annotation panel textarea scrollbar now uses dark theme (was system default)

@@ -11,6 +11,7 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 ### Known Issues Documented
 - BUG-023: Resolved annotation reopens on same element click, blocking follow-up notes
 - BUG-024: Collapsed strip not repositionable - elements hidden underneath cannot be annotated
+- BUG-028: No visual separation between sent and unsent annotations on multi-send
 
 ### Bug Fixes
 - BUG-025: Annotation panel textarea scrollbar now uses dark theme
