@@ -20,6 +20,7 @@
 * [Detect Regressions](tutorials/detect-regressions.md)
 * [Record a User Journey](tutorials/record-journey.md)
 * [Generate Feature Specs from UI](tutorials/ideation.md)
+* [Monorepo Workflows](tutorials/monorepo-workflows.md)
 
 ## Features
 
