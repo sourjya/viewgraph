@@ -11,11 +11,11 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 ### Known Issues Documented
 - BUG-023: Resolved annotation reopens on same element click, blocking follow-up notes
 - BUG-024: Collapsed strip not repositionable - elements hidden underneath cannot be annotated
-- BUG-027: Accepted capture request has no history trace and disappears abruptly
 
 ### Bug Fixes
 - BUG-025: Annotation panel textarea scrollbar now uses dark theme
 - BUG-026: Auto-capture toggle now persists across page reloads
+- BUG-027: Accepted capture requests now show in Resolved tab with smooth collapse animation
 
 ---
 

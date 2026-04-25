@@ -2,9 +2,9 @@
 
 - **ID**: BUG-027
 - **Severity**: Low
-- **Status**: OPEN
+- **Status**: FIXED
 - **Reported**: 2026-04-25
-- **Fixed**: -
+- **Fixed**: 2026-04-25
 
 ## Description
 

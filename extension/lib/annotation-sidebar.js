@@ -628,17 +628,44 @@ export function refresh() {
       (async () => {
         try { await transport.ackRequest(req.id); } catch { /* best effort */ }
         chrome.runtime.sendMessage({ type: 'capture', includeSnapshot: true, keepSidebar: true, requestId: req.id }, () => {
-          entry.style.transition = 'background 0.3s, opacity 0.5s';
+          // Phase 1: checkmark + green flash
           entry.style.background = 'rgba(74, 222, 128, 0.15)';
           capBtn.textContent = '\u2713';
           capBtn.style.background = COLOR.success;
+
+          // Phase 2: height collapse after brief pause
           setTimeout(() => {
+            const h = entry.offsetHeight;
+            entry.style.maxHeight = `${h}px`;
+            entry.style.overflow = 'hidden';
+            entry.style.transition = 'max-height 0.35s ease-out, padding 0.35s ease-out, opacity 0.35s ease-out';
+            // Force reflow before animating
+            void entry.offsetHeight;
+            entry.style.maxHeight = '0';
+            entry.style.padding = '0 12px';
             entry.style.opacity = '0';
-            setTimeout(() => {
+
+            entry.addEventListener('transitionend', function onEnd(e) {
+              if (e.propertyName !== 'max-height') return;
+              entry.removeEventListener('transitionend', onEnd);
+
+              // Add completed request as resolved annotation for history
+              const PURPOSE_LABELS = { inspect: '\ud83d\udd0d Inspect', verify: '\u2705 Verify', capture: '\ud83d\udd14 Capture' };
+              const label = PURPOSE_LABELS[req.purpose] || 'Capture';
+              const comment = `Agent ${label}: ${req.guidance || req.url}`;
+              const ann = addPageNote();
+              if (ann) {
+                ann.comment = comment;
+                ann.category = 'agent-request';
+                ann.resolved = true;
+                ann.resolution = { action: 'completed', by: 'user', summary: `Captured for agent request ${req.id}` };
+                save();
+              }
+
               pendingRequests = pendingRequests.filter((r) => r.id !== req.id);
               storageSet(KEYS.pendingRequests, pendingRequests);
               refresh();
-            }, 500);
+            });
           }, 800);
         });
       })();
@@ -646,15 +673,23 @@ export function refresh() {
     onRequestDecline: (req, entry) => {
       (async () => {
         try { await transport.declineRequest(req.id, 'User declined from extension'); } catch { /* best effort */ }
-        entry.style.transition = 'background 0.3s, opacity 0.5s';
         entry.style.background = 'rgba(248, 113, 113, 0.15)';
         setTimeout(() => {
+          const h = entry.offsetHeight;
+          entry.style.maxHeight = `${h}px`;
+          entry.style.overflow = 'hidden';
+          entry.style.transition = 'max-height 0.35s ease-out, padding 0.35s ease-out, opacity 0.35s ease-out';
+          void entry.offsetHeight;
+          entry.style.maxHeight = '0';
+          entry.style.padding = '0 12px';
           entry.style.opacity = '0';
-          setTimeout(() => {
+          entry.addEventListener('transitionend', function onEnd(e) {
+            if (e.propertyName !== 'max-height') return;
+            entry.removeEventListener('transitionend', onEnd);
             pendingRequests = pendingRequests.filter((r) => r.id !== req.id);
             storageSet(KEYS.pendingRequests, pendingRequests);
             refresh();
-          }, 500);
+          });
         }, 600);
       })();
     },
