@@ -522,6 +522,7 @@ function doSend(trustOverride = false) {
   for (const ann of getAnnotations()) {
     if (!ann.resolved) ann.pending = true;
   }
+  save(); // Persist pending state so it survives page reload
   refresh();
   _footer.flashSend();
 }
