@@ -94,18 +94,40 @@ Panic capture fills the gap: instant, full-state, mid-action, no UI disruption.
 
 ## Configuration
 
-In `.viewgraph/config.json`:
+The shortcut is registered via the browser's extension commands API (`manifest.json`), which means users can customize it through the browser's built-in shortcut settings - no ViewGraph config needed:
+
+- **Chrome**: `chrome://extensions/shortcuts`
+- **Firefox**: `about:addons` → gear icon → Manage Extension Shortcuts
+
+This is the standard browser pattern. Users who have conflicts with `Ctrl+Shift+V` (paste-without-formatting in some apps) can remap it to any combo they want through the browser UI.
+
+### manifest.json entry
 
 ```json
 {
-  "panicCapture": {
-    "enabled": true,
-    "shortcut": "Ctrl+Shift+V",
-    "includeScreenshot": true,
-    "flashFeedback": true
+  "commands": {
+    "panic-capture": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+V",
+        "mac": "Command+Shift+V"
+      },
+      "description": "Instant snapshot - capture DOM + screenshot mid-action"
+    }
   }
 }
 ```
+
+The browser handles the keystroke globally (even when the page has focus) and sends a `chrome.commands.onCommand` event to the background script. No content script keydown listener needed - the browser's command system is more reliable and doesn't interfere with page event handlers.
+
+### Settings panel display
+
+The sidebar Settings panel shows the current shortcut (read from `chrome.commands.getAll()`) with a link to the browser's shortcut settings page:
+
+```
+Panic capture: Ctrl+Shift+V  [Customize]
+```
+
+The "Customize" link opens `chrome://extensions/shortcuts` (Chrome) or the Firefox equivalent.
 
 ## Implementation Order
 
