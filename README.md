@@ -74,7 +74,7 @@ The server runs automatically via `npx` - no install needed. It auto-creates `.v
 
 > **GitHub Releases = latest version, always.** Chrome/Firefox store reviews can delay updates by days or weeks. [GitHub Releases](https://github.com/sourjya/viewgraph/releases/latest) always has the newest extension ZIPs and changelog. For the bleeding edge, get it from GitHub.
 
-**Alternative:** `npm install -g @viewgraph/core && viewgraph-init` for explicit version pinning and config control.
+**Alternative:** `npm install -g @viewgraph/core` for explicit version pinning, then run `viewgraph-init` from each project folder to configure URL patterns and capture routing.
 
 The extension sidebar opens with **Review** (annotate and comment) and **Inspect** (network errors, console issues) tabs. Export via **Send to Agent** (MCP), **Copy Markdown** (Jira/GitHub), or **Download Report** (ZIP).
 
