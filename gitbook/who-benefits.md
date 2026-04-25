@@ -74,8 +74,18 @@ Entering the world of agentic coding. Click what looks wrong, describe it in pla
 
 - File precise bug reports by clicking - not by writing technical descriptions
 - Verify design implementation matches the spec using captured computed styles
-- Toggle idea mode to generate feature specs grounded in real UI context
-- Mix bug reports and feature ideas in one session
+- Toggle idea mode (lightbulb icon) to capture feature ideas with full UI context
+- Run `@vg-ideate` to transform idea annotations into structured specs with requirements and tasks
+- Mix bug reports and feature ideas in one session - bugs get fixed, ideas become specs
+
+### Founders and product thinkers
+
+You look at your app and see what it could become. Idea mode captures that vision.
+
+- Walk through your app, click elements, toggle the lightbulb, describe what you want
+- Each idea carries the DOM context - the agent knows exactly where and what you're looking at
+- `@vg-ideate` generates a buildable spec from your annotations - no blank-document syndrome
+- Hand the spec to your team or your AI agent - both have enough context to build without asking "where does this go?"
 
 ### Designers
 
