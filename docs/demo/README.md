@@ -1,22 +1,22 @@
 # ViewGraph Demo - TaskFlow App
 
-A multi-page demo app with **25 planted UI bugs** across 4 pages. Annotate issues in the browser, send to your AI agent, and watch them get fixed.
+A multi-page demo app with **23 planted UI bugs** across 4 pages. Annotate issues in the browser, send to your AI agent, and watch them get fixed.
 
 ## Pages
 
 | Page | Bugs | What it demonstrates |
 |---|---|---|
 | [Login](./index.html) | 8 | Basic annotation + a11y audit |
-| [Dashboard](./dashboard.html) | 7 | Layout audit, consistency, stacking |
+| [Dashboard](./dashboard.html) | 6 | Layout audit, consistency, stacking |
 | [Settings](./settings.html) | 5 | Deep a11y, focus chain, keyboard access |
-| [Checkout](./checkout.html) | 5 | Multi-step flow, regression, journey |
+| [Checkout](./checkout.html) | 4 | Multi-step flow, regression, journey |
 
 ## Quick Start (5 minutes)
 
 ### Prerequisites
 
 - ViewGraph extension installed ([setup guide](../../README.md#getting-started))
-- MCP server running: `npm run dev:server` from the ViewGraph directory
+- MCP server configured in your agent (the server starts automatically when your agent launches)
 
 ### Demo 1: See Bug, Fix Bug (90 seconds)
 
@@ -136,7 +136,6 @@ A multi-page demo app with **25 planted UI bugs** across 4 pages. Annotate issue
 | 12 | Content area is `<div>` not `<main>` | A11y | `audit_accessibility` (landmarks) |
 | 13 | Button padding inconsistent with login page | Consistency | `check_consistency` |
 | 14 | "Last updated" text clipped by `overflow:hidden` | Layout | `audit_layout` (overflow) |
-| 15 | Third stat card has wrong background/border color | Visual | Manual annotation |
 
 ### Settings (settings.html) - 5 bugs
 
@@ -156,7 +155,6 @@ A multi-page demo app with **25 planted UI bugs** across 4 pages. Annotate issue
 | 21 | Card number input accepts letters | Functional | Manual annotation |
 | 22 | Order total missing on step 2 (regression) | Regression | `compare_captures` |
 | 23 | Submit button is red/danger color before terms checked | Functional | Manual annotation |
-| 24 | Plan summary box misaligned (40px left margin) | Visual | Manual annotation / `audit_layout` |
 
 ## Tools Exercised
 
