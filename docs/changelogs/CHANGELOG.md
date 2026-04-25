@@ -17,6 +17,9 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - BUG-026: Auto-capture toggle persists across page reloads via chrome.storage.local
 - BUG-027: Accepted capture requests now show in Resolved tab with smooth height collapse animation
 
+### Server
+- `get_unresolved` deduplicates annotations by UUID across captures (prevents duplicate processing on repeat sends)
+
 ### Improved
 - Settings panel shows server idle timeout (read-only) with "resets on activity" hint
 - Timeout banner shows specific recovery steps for Kiro IDE (Reconnect MCP) and CLI (restart with -r flag) with link to FAQ guide

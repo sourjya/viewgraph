@@ -167,6 +167,44 @@ describe('resolve_annotation + get_unresolved', () => {
     expect(data.annotations).toHaveLength(3);
   });
 
+  it('(+) deduplicates annotations by UUID across captures (repeat sends)', async () => {
+    const { client, indexer } = await setup();
+    // Same annotation (same UUID) sent twice in two captures
+    writeFileSync(path.join(capturesDir, 'send1.json'), makeCapture([
+      { id: 1, uuid: 'dup-uuid', comment: 'Fix heading', resolved: false },
+      { id: 2, uuid: 'unique-1', comment: 'Only in first', resolved: false },
+    ]));
+    writeFileSync(path.join(capturesDir, 'send2.json'), makeCapture([
+      { id: 1, uuid: 'dup-uuid', comment: 'Fix heading', resolved: false },
+      { id: 3, uuid: 'unique-2', comment: 'Only in second', resolved: false },
+    ]));
+    // Indexer lists newest first
+    indexer.add('send2.json', { url: 'http://test', timestamp: '2026-04-09T00:01:00Z' });
+    indexer.add('send1.json', { url: 'http://test', timestamp: '2026-04-09T00:00:00Z' });
+    const res = await client.callTool({ name: 'get_unresolved', arguments: {} });
+    const data = JSON.parse(res.content[0].text);
+    // Should see 3 unique annotations, not 4 (dup-uuid appears once)
+    const uuids = data.annotations.map((a) => a.uuid);
+    expect(uuids).toHaveLength(3);
+    expect(uuids.filter((u) => u === 'dup-uuid')).toHaveLength(1);
+  });
+
+  it('(-) dedup prefers the newest capture version of an annotation', async () => {
+    const { client, indexer } = await setup();
+    writeFileSync(path.join(capturesDir, 'old.json'), makeCapture([
+      { id: 1, uuid: 'shared', comment: 'Old comment', resolved: false },
+    ]));
+    writeFileSync(path.join(capturesDir, 'new.json'), makeCapture([
+      { id: 1, uuid: 'shared', comment: 'Updated comment', resolved: false },
+    ]));
+    indexer.add('new.json', { url: 'http://test', timestamp: '2026-04-09T00:01:00Z' });
+    indexer.add('old.json', { url: 'http://test', timestamp: '2026-04-09T00:00:00Z' });
+    const res = await client.callTool({ name: 'get_unresolved', arguments: {} });
+    const data = JSON.parse(res.content[0].text);
+    expect(data.annotations).toHaveLength(1);
+    expect(data.annotations[0].filename).toBe('new.json');
+  });
+
   // -- backward compat --
 
   it('normalizes old annotations without uuid/resolved fields', async () => {

@@ -37,6 +37,7 @@ export function register(server, indexer, capturesDir) {
     async ({ filename, limit = 50 }) => {
       const files = filename ? [filename] : indexer.list().map((c) => c.filename);
       const results = [];
+      const seen = new Set(); // BUG-028: dedup by UUID across captures to handle repeat sends
 
       for (const f of files) {
         let filePath;
@@ -47,6 +48,9 @@ export function register(server, indexer, capturesDir) {
           if (!parsed.ok) continue;
           const anns = (parsed.data.annotations || []).filter((a) => !a.resolved);
           for (const a of anns) {
+            // Skip annotations already seen from a newer capture (files are newest-first)
+            if (a.uuid && seen.has(a.uuid)) continue;
+            if (a.uuid) seen.add(a.uuid);
             results.push({ filename: f, ...a, comment: wrapComment(a.comment) });
             if (results.length >= limit) break;
           }
