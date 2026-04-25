@@ -1,6 +1,6 @@
 # ViewGraph MCP Server
 
-MCP server that reads ViewGraph capture files from disk and exposes 37 query/analysis/request tools to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
+MCP server that reads ViewGraph capture files from disk and exposes 38 query/analysis/request tools to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
 Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline, Aider.
 
@@ -22,7 +22,7 @@ The server runs automatically via `npx`, auto-creates `.viewgraph/captures/`, an
 
 **Alternative:** `npm install -g @viewgraph/core` for explicit version pinning, then run `viewgraph-init` from each project folder to configure URL patterns and capture routing.
 
-## Tools (37)
+## Tools (38)
 
 ### Core (4)
 
@@ -83,6 +83,12 @@ The server runs automatically via `npx`, auto-creates `.viewgraph/captures/`, an
 | `analyze_journey` | Analyze recorded user journey for issues across steps |
 | `visualize_flow` | Build Mermaid state machine diagram from session |
 | `get_capture_stats` | Aggregate statistics across all captures |
+
+### Archive (1)
+
+| Tool | Description |
+|---|---|
+| `list_archived` | List archived captures with URL, date range, and limit filters |
 
 ### Source and Quality (4)
 
@@ -189,14 +195,14 @@ These are used by the extension, not by end users directly.
 Run from the **ViewGraph root directory**:
 
 ```bash
-npm run test:server      # 496 tests
+npm run test:server      # 514 tests
 npm run test:server -- --watch   # watch mode
 ```
 
 Or from the `server/` directory:
 
 ```bash
-npm test                 # same 496 tests
+npm test                 # same 514 tests
 ```
 
 ## Architecture

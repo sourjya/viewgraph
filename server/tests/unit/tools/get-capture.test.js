@@ -55,4 +55,38 @@ describe('get_capture via MCP', () => {
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('not found');
   });
+
+  it('(+) falls back to archive/ when file not in captures/', async () => {
+    // Create a temp captures dir with an archive containing the file
+    const { mkdirSync, writeFileSync, rmSync } = await import('fs');
+    const { join } = await import('path');
+    const os = await import('os');
+    const tmpDir = join(os.tmpdir(), `vg-get-capture-${Date.now()}`);
+    const capturesDir = join(tmpDir, 'captures');
+    const archiveDir = join(tmpDir, 'archive', '2026-04');
+    mkdirSync(capturesDir, { recursive: true });
+    mkdirSync(archiveDir, { recursive: true });
+
+    // Put file in archive, not in captures
+    const capture = JSON.stringify({ metadata: { url: 'http://test', timestamp: '2026-04-08T12:00:00Z', viewport: { width: 1024, height: 768 }, stats: { totalNodes: 1 } }, nodes: [] });
+    writeFileSync(join(archiveDir, 'archived-file.json'), capture);
+    writeFileSync(join(tmpDir, 'archive', 'index.json'), JSON.stringify({
+      version: 1, lastUpdated: '2026-04-09T00:00:00Z',
+      captures: [{ filename: '2026-04/archived-file.json', originalPath: 'archived-file.json', url: 'http://test' }],
+    }));
+
+    const indexer = createIndexer({ maxCaptures: 50 });
+    const { client, cleanup: c } = await createTestClient(
+      (server) => register(server, indexer, capturesDir),
+    );
+    cleanup = c;
+
+    const result = await client.callTool({ name: 'get_capture', arguments: { filename: 'archived-file.json' } });
+
+    expect(result.isError).toBeFalsy();
+    expect(result.content[0].text).toContain('[archived]');
+    expect(result.content[0].text).toContain('"metadata"');
+
+    rmSync(tmpDir, { recursive: true, force: true });
+  });
 });

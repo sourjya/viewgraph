@@ -18,6 +18,9 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 ### Improved
 - Settings panel shows server idle timeout (read-only, resets on activity)
 - Timeout banner shows Kiro IDE/CLI recovery steps with link to FAQ guide
+- Rolling archive: resolved captures auto-move to `archive/YYYY-MM/` with index.json
+- New `list_archived` MCP tool for querying archived captures (38 tools total)
+- `get_capture` transparently falls back to archive for resolved captures
 
 ### Security
 - uuid upgraded to 14.0.0 (GHSA-w5hq-g745-h8pq buffer bounds check)
@@ -171,7 +174,7 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - **Component coverage** - `get_component_coverage` reports testid coverage per framework component
 - **Project config** - `config.json` with GET/PUT endpoints for server-side settings
 - **Keyboard shortcuts** - full shortcut system with help overlay (press `?`)
-- **37 MCP tools** total
+- **38 MCP tools** total
 
 ## v0.2.0 - April 10, 2026
 

@@ -1,4 +1,4 @@
-# 37 MCP Tools
+# 38 MCP Tools
 
 Your agent discovers these automatically. You don't call them - you describe what you want and the agent picks the right tool.
 

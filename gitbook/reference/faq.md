@@ -6,7 +6,7 @@
 A browser extension + MCP server that captures structured DOM snapshots and exposes them to AI coding agents. You click a broken element, describe what's wrong, and your agent fixes the code with full UI context.
 
 ### Which AI agents does it work with?
-Any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline, Aider, and others. The 37 MCP tools are the same regardless of agent.
+Any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline, Aider, and others. The 38 MCP tools are the same regardless of agent.
 
 ### Does it work with any web app?
 Yes. ViewGraph captures the rendered DOM from the browser. It doesn't matter what backend technology your app uses - Python, Ruby, Java, Go, PHP, Node.js, or static HTML.

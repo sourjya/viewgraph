@@ -49,3 +49,12 @@ ViewGraph wraps captured text in delimiters to help you distinguish data from in
 1. Call `get_unresolved` to see all open annotations across captures
 2. Prioritize by severity: critical > major > minor
 3. Fix and resolve each one
+
+## Archived captures
+
+Resolved captures are automatically archived to `.viewgraph/archive/YYYY-MM/` after 24 hours. Active captures stay in `.viewgraph/captures/`.
+
+- `list_captures` only shows active captures
+- `get_capture` transparently falls back to the archive if a file isn't in active captures
+- `list_archived` queries the archive index by URL and date range
+- `get_unresolved` only scans active captures (archived captures have no unresolved annotations)

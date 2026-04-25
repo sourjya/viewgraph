@@ -19,7 +19,7 @@ What's shipped, what's next, and where ViewGraph is heading.
 - Real-time resolution sync (annotations turn green as agent fixes them)
 - Settings moved to footer, cleaner header with VG icon
 
-### MCP Server (37 tools)
+### MCP Server (38 tools)
 - Core: list, get, summarize captures
 - Analysis: accessibility audit (axe-core), layout audit, missing testids, interactive elements
 - Annotations: resolve, track, diff, detect patterns, generate specs
@@ -91,7 +91,7 @@ Dedicated hooks, prompts, and steering docs for Claude Code, Cursor, Windsurf, a
 
 - **URL Trust Indicator (F17)** - shield icon with check/x showing trusted/configured/untrusted. Send gate blocks untrusted URLs.
 - **Prompt Injection Defense (F19)** - 5-layer defense complete: capture sanitization, transport wrapping, suspicious detection, prompt hardening, trust gate.
-- **MCP Agent Guidance (F18)** - server instructions + `get_session_status` tool (37 MCP tools total). Fuzzy filename matching with "did you mean" suggestions.
+- **MCP Agent Guidance (F18)** - server instructions + `get_session_status` tool (38 MCP tools total). Fuzzy filename matching with "did you mean" suggestions.
 - **Auto-Inspect Suggestions (F15)** - proactive issue detection with collapsed badge, tier tags, add-to-review flow.
 - **Native Messaging Foundation (F11)** - transport abstraction (17 methods), native host protocol, message handler, host registration. Extension migration in progress.
 - **STRIDE Threat Model** - 8 threats, 8 mitigations, published on [Threat Model](threat-model.md) page.

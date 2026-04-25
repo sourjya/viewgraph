@@ -24,6 +24,8 @@ import {
 import { resolveConfig } from '#src/config.js';
 import { ALLOWED_CONFIG_KEYS } from '#src/constants.js';
 import { createWatcher } from '#src/watcher.js';
+import { runArchive } from '#src/archive.js';
+import { register as registerListArchived } from '#src/tools/list-archived.js';
 import { createIndexer } from '#src/indexer.js';
 import { parseMetadata } from '#src/parsers/viewgraph-v2.js';
 import { register as registerListCaptures } from '#src/tools/list-captures.js';
@@ -91,6 +93,7 @@ const indexer = createIndexer({ maxCaptures: MAX_CAPTURES });
 
 // Register all MCP tools
 registerListCaptures(server, indexer);
+registerListArchived(server, CAPTURES_DIR);
 registerGetCapture(server, indexer, CAPTURES_DIR);
 registerGetLatest(server, indexer, CAPTURES_DIR);
 registerGetPageSummary(server, indexer, CAPTURES_DIR);
@@ -185,6 +188,9 @@ async function main() {
 
   // Start idle timeout (resets on any activity)
   resetIdleTimer();
+
+  // Rolling archive: move eligible resolved captures on startup (non-blocking)
+  runArchive(CAPTURES_DIR).catch(() => {});
 
   watcher = createWatcher(CAPTURES_DIR, {
     onAdd: indexFile,

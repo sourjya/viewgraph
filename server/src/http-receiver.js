@@ -22,6 +22,7 @@ import { createAuthMiddleware } from './auth/middleware.js';
 import { generateSessionKey } from './auth/session-key.js';
 import { validateCapturePath } from './utils/validate-path.js';
 import { runPostCaptureAudit } from '#src/analysis/post-capture-audit.js';
+import { runArchive } from '#src/archive.js';
 import { createWebSocketServer } from './ws-server.js';
 import { WS_MESSAGES } from './ws-message-types.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
@@ -363,6 +364,9 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
           }
         }
       } catch { /* config missing or audit failed - non-blocking */ }
+
+      // Rolling archive: move eligible resolved captures to archive/ (non-blocking)
+      try { runArchive(targetDir, { keepLatestPerUrl: 2 }).catch(() => {}); } catch { /* best effort */ }
 
       return json(res, 201, { filename, requestId: match?.id ?? null });
     }

@@ -14,7 +14,7 @@ ViewGraph occupies a unique position: the UI context layer for AI coding agents.
 | **Review & collab** | Annotate → Send to Agent / Copy MD / ZIP report | No | Artifact trail (screenshots, logs) |
 | **Non-technical users** | PMs, QA, designers can click and describe | Developers only | Developers only |
 | **Structured DOM capture** | Full snapshot: styles, bbox, selectors, 17 enrichment collectors | Screenshot + accessibility tree | Screenshot + page state |
-| **MCP tools** | 37 tools (query, audit, diff, annotate, generate) | Browser tool (screenshot, click, type) | Browser agent (navigate, screenshot) |
+| **MCP tools** | 38 tools (query, audit, diff, annotate, generate) | Browser tool (screenshot, click, type) | Browser agent (navigate, screenshot) |
 | **Transient state capture** | Toast detection, animation jank, flash content (30s buffer) | No | No |
 | **Works with any agent** | Any MCP agent (Kiro, Claude, Cursor, Windsurf, Cline) | Cursor only | Antigravity only |
 | **Export without AI** | Copy Markdown (Jira/GitHub) + ZIP report | No | No |

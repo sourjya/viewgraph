@@ -7,9 +7,11 @@
 
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
+import path from 'node:path';
 import { PROJECT_NAME, PROJECT_PREFIX } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { errorResponse, NOTICE_CAPTURE } from '#src/utils/tool-helpers.js';
+import { readArchiveIndex } from '#src/archive.js';
 
 /**
  * Register the get_capture MCP tool.
@@ -45,6 +47,20 @@ export function register(server, _indexer, capturesDir) {
         return { content: [{ type: 'text', text: notice + header + content }] };
       } catch (err) {
         if (err.code === 'ENOENT') {
+          // Fallback: check archive directory for resolved captures
+          try {
+            const archiveDir = path.join(path.dirname(capturesDir), 'archive');
+            const index = readArchiveIndex(archiveDir);
+            const entry = index.captures.find((c) => c.originalPath === filename);
+            if (entry) {
+              const archivePath = path.join(archiveDir, entry.filename);
+              const content = await readFile(archivePath, 'utf-8');
+              const size = Buffer.byteLength(content);
+              const notice = NOTICE_CAPTURE + '\n\n';
+              const header = `Capture: ${filename} (${(size / 1024).toFixed(1)} KB) [archived]\n\n`;
+              return { content: [{ type: 'text', text: notice + header + content }] };
+            }
+          } catch { /* archive not available */ }
           return errorResponse(`Error: Capture not found: ${filename}. Use list_captures to see available files.`);
         }
         return errorResponse(`Error reading capture: ${err.message}`);

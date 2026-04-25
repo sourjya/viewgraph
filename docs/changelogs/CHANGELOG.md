@@ -19,6 +19,9 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ### Server
 - `get_unresolved` deduplicates annotations by UUID across captures (prevents duplicate processing on repeat sends)
+- Rolling archive: resolved captures auto-move to `archive/YYYY-MM/` with `index.json` metadata index
+- `get_capture` falls back to archive when file not in active captures
+- New `list_archived` tool: query archived captures by URL, date range (38 MCP tools total)
 
 ### Improved
 - Settings panel shows server idle timeout (read-only) with "resets on activity" hint

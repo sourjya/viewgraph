@@ -7,7 +7,7 @@ description: "Show all ViewGraph tools with plain-English explanations"
 List all ViewGraph MCP tools grouped by category. REPORT ONLY - do not call any tools except list_captures for connectivity check.
 
 1. Call `list_captures` to verify the server is connected. If it fails, tell the user: "ViewGraph server not connected. Run `npx viewgraph-init` from your project folder."
-2. Present all 37 tools in this format:
+2. Present all 38 tools in this format:
 
 ### Core
 | Tool | What it does | When to use it |
