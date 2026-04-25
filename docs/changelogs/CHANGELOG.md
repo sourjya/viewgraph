@@ -21,6 +21,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ### Improved
 - Settings panel shows server idle timeout (read-only) with "resets on activity" hint
+- Timeout banner shows specific recovery steps for Kiro IDE (Reconnect MCP) and CLI (restart with -r flag) with link to FAQ guide
 
 ---
 

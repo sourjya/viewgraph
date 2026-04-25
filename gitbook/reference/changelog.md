@@ -19,6 +19,7 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ### Improved
 - Settings panel shows server idle timeout (read-only, resets on activity)
+- Timeout banner shows Kiro IDE/CLI recovery steps with link to FAQ guide
 
 ---
 

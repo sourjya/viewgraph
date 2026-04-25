@@ -158,20 +158,24 @@ export function create() {
           // No servers running at all
           if (!_footer) return;
           _footer.statusDot.style.background = COLOR.errorLight;
-          _footer.statusDot.setAttribute('data-tooltip', 'Server offline - may have stopped after 30 min idle. Restart your AI agent.');
+          _footer.statusDot.setAttribute('data-tooltip', 'Server timed out after idle. Reconnect your MCP or restart your agent.');
           _header.statusBanner.textContent = '';
-          const txt = document.createTextNode('No server running. Restart your AI agent or run ');
-          const code = document.createElement('code');
-          code.textContent = 'viewgraph-init';
-          Object.assign(code.style, { background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px', fontSize: '10px' });
-          const txt2 = document.createTextNode(' in your project folder. ');
+          const txt = document.createTextNode('Server timed out. ');
+          const bold = document.createElement('strong');
+          bold.textContent = 'Kiro IDE: ';
+          Object.assign(bold.style, { color: '#e0e0e0', fontSize: '11px' });
+          const txt2 = document.createTextNode('right-click ViewGraph MCP \u2192 Reconnect. ');
+          const bold2 = document.createElement('strong');
+          bold2.textContent = 'CLI: ';
+          Object.assign(bold2.style, { color: '#e0e0e0', fontSize: '11px' });
+          const txt3 = document.createTextNode('restart with -r flag. ');
           const link = document.createElement('a');
-          link.textContent = 'Help';
-          link.href = 'https://chaoslabz.gitbook.io/viewgraph/reference/faq#troubleshooting';
+          link.textContent = 'Recovery guide';
+          link.href = 'https://chaoslabz.gitbook.io/viewgraph/reference/faq#server-timed-out';
           link.target = '_blank';
           link.rel = 'noopener';
           Object.assign(link.style, { color: COLOR.primaryHover, textDecoration: 'underline', fontSize: '11px' });
-          _header.statusBanner.append(txt, code, txt2, link);
+          _header.statusBanner.append(txt, bold, txt2, bold2, txt3, link);
         }
         _header.statusBanner.style.display = 'block';
         _footer.setOfflineMode();
@@ -309,20 +313,24 @@ export function create() {
       } else {
         if (!_footer) return;
         _footer.statusDot.style.background = COLOR.errorLight;
-        _footer.statusDot.setAttribute('data-tooltip', 'Server offline - may have stopped after 30 min idle. Restart your AI agent.');
+        _footer.statusDot.setAttribute('data-tooltip', 'Server timed out after idle. Reconnect your MCP or restart your agent.');
         _header.statusBanner.textContent = '';
-        const txt = document.createTextNode('No server running. Restart your AI agent or run ');
-        const code = document.createElement('code');
-        code.textContent = 'viewgraph-init';
-        Object.assign(code.style, { background: 'rgba(255,255,255,0.1)', padding: '1px 4px', borderRadius: '3px', fontSize: '10px' });
-        const txt2 = document.createTextNode(' in your project folder. ');
+        const txt = document.createTextNode('Server timed out. ');
+        const bold = document.createElement('strong');
+        bold.textContent = 'Kiro IDE: ';
+        Object.assign(bold.style, { color: '#e0e0e0', fontSize: '11px' });
+        const txt2 = document.createTextNode('right-click ViewGraph MCP \u2192 Reconnect. ');
+        const bold2 = document.createElement('strong');
+        bold2.textContent = 'CLI: ';
+        Object.assign(bold2.style, { color: '#e0e0e0', fontSize: '11px' });
+        const txt3 = document.createTextNode('restart with -r flag. ');
         const link = document.createElement('a');
-        link.textContent = 'Help';
-        link.href = 'https://chaoslabz.gitbook.io/viewgraph/reference/faq#troubleshooting';
+        link.textContent = 'Recovery guide';
+        link.href = 'https://chaoslabz.gitbook.io/viewgraph/reference/faq#server-timed-out';
         link.target = '_blank';
         link.rel = 'noopener';
         Object.assign(link.style, { color: COLOR.primaryHover, textDecoration: 'underline', fontSize: '11px' });
-        _header.statusBanner.append(txt, code, txt2, link);
+        _header.statusBanner.append(txt, bold, txt2, bold2, txt3, link);
       }
       _header.statusBanner.style.display = 'block';
       _footer.setOfflineMode();

@@ -87,7 +87,25 @@ The `viewgraph-init` command requires a one-time global install: `npm install -g
 {% endhint %}
 
 ### The sidebar shows a red dot
-The server isn't running. Run `viewgraph-init` from your project folder. Or check your MCP config if using the zero-config setup.
+The server isn't running. This usually means it timed out after inactivity. See [Server timed out](#server-timed-out) below.
+
+### Server timed out
+
+The ViewGraph server auto-shuts down after 30 minutes of inactivity (configurable via `VIEWGRAPH_IDLE_TIMEOUT_MINUTES`). Any activity - captures, MCP tool calls, WebSocket messages - resets the timer. When it fires, the sidebar shows a red dot and "Server timed out" banner.
+
+**To restart:**
+
+| Environment | How to restart |
+|---|---|
+| **Kiro IDE** | Click the Kiro icon in the sidebar, right-click **viewgraph** MCP, click **Reconnect** |
+| **Kiro CLI** | Quit and restart with `kiro-cli chat -r` (the `-r` flag restarts all MCPs) |
+| **Other MCP agents** | Restart your agent - it will re-launch the MCP server automatically |
+| **Manual** | Run `viewgraph-init` from your project folder, or `npx @viewgraph/core` |
+
+**To prevent timeouts:**
+- Set `VIEWGRAPH_IDLE_TIMEOUT_MINUTES=0` in your environment to disable auto-shutdown
+- Enable **AUTO-CAPTURE** in the Inspect tab - each capture resets the timer
+- The server also stays alive during active annotation sessions (WebSocket keepalive)
 
 ### "Send to Agent" shows green checkmark but no capture appears
 Kill all servers and re-init: `pkill -f "node.*server/index.js"` then `viewgraph-init`.

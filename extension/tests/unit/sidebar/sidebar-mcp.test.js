@@ -35,10 +35,10 @@ describe('sidebar MCP disconnected state', () => {
       expect(banner?.style.display).toBe('block');
     });
     const banner = shadowQuery(`[${ATTR}="status-banner"]`);
-    expect(banner.textContent).toContain('No server running');
+    expect(banner.textContent).toContain('Server timed out');
   });
 
-  it('(+) offline banner shows restart hint with idle timeout mention', async () => {
+  it('(+) offline banner shows timeout recovery hint', async () => {
     start();
     create();
     await vi.waitFor(() => {
@@ -46,19 +46,19 @@ describe('sidebar MCP disconnected state', () => {
       expect(banner?.style.display).toBe('block');
     });
     const banner = shadowQuery(`[${ATTR}="status-banner"]`);
-    expect(banner.textContent).toContain('Restart your AI agent');
-    expect(banner.textContent).toContain('viewgraph-init');
+    expect(banner.textContent).toContain('timed out');
+    expect(banner.textContent).toContain('Reconnect');
   });
 
-  it('(+) offline dot tooltip mentions idle timeout', async () => {
+  it('(+) offline dot tooltip mentions timeout', async () => {
     start();
     create();
     await vi.waitFor(() => {
       const dot = shadowQuery(`[${ATTR}="status-dot"]`);
-      expect(dot?.getAttribute('data-tooltip')).toContain('offline');
+      expect(dot?.getAttribute('data-tooltip')).toContain('timed out');
     });
     const dot = shadowQuery(`[${ATTR}="status-dot"]`);
-    expect(dot.getAttribute('data-tooltip')).toContain('30 min');
+    expect(dot.getAttribute('data-tooltip')).toContain('Reconnect');
   });
 
   it('(+) shows no-match message when servers exist but page doesn\'t match', async () => {
