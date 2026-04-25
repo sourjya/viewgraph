@@ -136,3 +136,42 @@ This feature builds on BUG-028 (batch separation). The `sentAt` timestamp from B
 - The agent doesn't need to explicitly set status - the server infers it from tool usage patterns
 - `statusHistory` is optional metadata, not required for the feature to work
 - This does NOT require changes to the MCP protocol - it uses the existing WebSocket channel
+
+## Prerequisite: Trust-Once Tool Approval
+
+This entire feature depends on the agent being able to call ViewGraph tools **without per-call user approval**. If the user has to click "Allow" on every `get_annotations`, `find_source`, and `resolve_annotation` call, the workflow is broken:
+
+- Status inference requires uninterrupted tool call sequences
+- The user gets bombarded with approval dialogs instead of seeing smooth progress
+- The "fixing..." state never appears because the agent is blocked waiting for approval
+
+### What's needed
+
+ViewGraph's MCP tools are **read-heavy and safe by design** - they read capture files, query DOM structure, and write resolution metadata. They never modify source code directly (the agent does that through its own file editing, not through ViewGraph tools). This makes them ideal candidates for trust-once approval:
+
+| Tool category | Risk level | Should auto-approve? |
+|---|---|---|
+| Read tools (`get_capture`, `get_annotations`, `list_captures`, etc.) | None - reads local JSON files | Yes |
+| Query tools (`audit_accessibility`, `find_source`, `get_elements_by_role`, etc.) | None - analysis only | Yes |
+| Annotation tools (`resolve_annotation`, `get_unresolved`, etc.) | Low - writes metadata to capture JSON | Yes |
+| Request tools (`request_capture`) | Low - asks user via extension sidebar | Yes (user approves in browser, not IDE) |
+| Baseline tools (`set_baseline`, `compare_baseline`) | Low - copies a JSON file | Yes |
+
+No ViewGraph tool modifies source code, deletes files, or makes network requests to external services. Every tool operates on local `.viewgraph/` files only.
+
+### How agents should configure this
+
+Each MCP-compatible agent has its own trust mechanism:
+
+| Agent | How to trust-once |
+|---|---|
+| **Kiro IDE** | MCP tools from configured servers are auto-approved by default |
+| **Kiro CLI** | Tools run without approval prompts in CLI mode |
+| **Claude Code** | Use `--allowedTools` flag or `/allowed-tools` command to whitelist ViewGraph tools |
+| **Cursor** | MCP tools are auto-approved when the server is in the config |
+| **Windsurf** | MCP tools are auto-approved when the server is in the config |
+| **Cline** | Configure "Auto Approve" for the ViewGraph MCP server in settings |
+
+### Documentation action
+
+When this feature ships, the Quick Start guide and Kiro Power page should include a note: "For the best experience, ensure ViewGraph MCP tools are set to auto-approve in your agent. ViewGraph tools only read and annotate local capture files - they never modify your source code."
