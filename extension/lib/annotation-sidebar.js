@@ -513,12 +513,17 @@ export function create() {
 // Send Logic
 // ──────────────────────────────────────────────
 
-/** Execute the actual send-to-agent action. */
+/** Execute the actual send-to-agent action. Guarded against rapid double-clicks. */
+let _sending = false;
 function doSend(trustOverride = false) {
+  if (_sending) return;
+  _sending = true;
   const noteInput = hostEl?.shadowRoot?.querySelector(`[${ATTR}="session-note"]`);
   const sessionNote = noteInput?.value?.trim() || undefined;
   if (noteInput) noteInput.value = '';
-  chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true, includeSnapshot: true, sessionNote, trustOverride }, () => {});
+  chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true, includeSnapshot: true, sessionNote, trustOverride }, () => {
+    setTimeout(() => { _sending = false; }, 2000);
+  });
   for (const ann of getAnnotations()) {
     if (!ann.resolved) ann.pending = true;
   }
