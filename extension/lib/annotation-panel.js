@@ -261,6 +261,7 @@ export async function show(annotation, callbacks = {}) {
     background: COLOR.bgCard, border: `1px solid ${COLOR.border}`, borderRadius: '4px',
     color: '#e0e0e0', fontSize: '13px', fontFamily: FONT,
     resize: 'vertical', outline: 'none', boxSizing: 'border-box',
+    scrollbarWidth: 'thin', scrollbarColor: `${COLOR.borderLight} transparent`,
   });
   textarea.addEventListener('input', () => {
     updateComment(annotation.id, textarea.value);

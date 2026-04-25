@@ -12,6 +12,9 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - BUG-023: Resolved annotation reopens on same element click, blocking follow-up notes
 - BUG-024: Collapsed strip not repositionable - elements hidden underneath cannot be annotated
 
+### Bug Fixes
+- BUG-025: Annotation panel textarea scrollbar now uses dark theme
+
 ---
 
 ## v0.4.3 - April 21, 2026
