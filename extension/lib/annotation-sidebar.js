@@ -412,7 +412,15 @@ export function create() {
   _bus.on(EVENTS.DESTROY, () => { hideMarkers(); stopAnnotate(); destroy(); });
   _bus.on(EVENTS.ANNOTATION_RESOLVED, ({ uuid, resolution }) => {
     const ann = getAnnotations().find((a) => a.uuid === uuid && !a.resolved);
-    if (ann) { ann.resolved = true; ann.resolution = resolution; refresh(); }
+    if (ann) {
+      ann.resolved = true;
+      ann.resolution = resolution;
+      // Hide the on-page marker immediately (don't wait for tab switch)
+      const el = document.querySelector(`[${ATTR}="marker-${ann.id}"]`);
+      if (el) el.style.display = 'none';
+      save();
+      refresh();
+    }
   });
   _bus.on(EVENTS.AUDIT_RESULTS, ({ audit }) => {
     const badge = _shadowRoot?.querySelector(`[${ATTR}="audit-badge"]`);
@@ -463,7 +471,17 @@ export function create() {
 
   let _lastResolvedCount = getAnnotations().filter((a) => a.resolved).length;
   refresh();
-  syncResolved(() => _bus.emit(EVENTS.REFRESH));
+  // Immediate sync: resolve stale annotations and hide their markers before user notices
+  syncResolved(() => {
+    // Hide markers for newly-resolved annotations
+    for (const ann of getAnnotations()) {
+      if (ann.resolved) {
+        const el = document.querySelector(`[${ATTR}="marker-${ann.id}"]`);
+        if (el) el.style.display = 'none';
+      }
+    }
+    _bus.emit(EVENTS.REFRESH);
+  });
   startResolutionPolling(() => {
     const newResolved = getAnnotations().filter((a) => a.resolved).length;
     if (newResolved > _lastResolvedCount) {
