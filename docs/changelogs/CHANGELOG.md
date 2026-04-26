@@ -8,6 +8,20 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ---
 
+## [0.4.8] - 2026-04-26
+
+### Fixed
+- BUG-028: Batch separation on multi-send - sentAt timestamps, send-only-new filter, batch separators, dynamic "Send N new" button label
+- Send button guarded against rapid double-clicks (2s cooldown)
+
+### Features
+- Rolling archive: resolved captures auto-move to `archive/YYYY-MM/` with `index.json` metadata index
+- `get_capture` falls back to archive when file not in active captures
+- New `list_archived` MCP tool: query archived captures by URL, date range (38 MCP tools total)
+- `get_unresolved` deduplicates annotations by UUID across captures (prevents duplicate processing on repeat sends)
+
+---
+
 ## [0.4.7] - 2026-04-26
 
 ### Fixed
@@ -16,13 +30,9 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - BUG-025: Annotation panel textarea scrollbar now uses dark theme (was system default)
 - BUG-026: Auto-capture toggle persists across page reloads via chrome.storage.local
 - BUG-027: Accepted capture requests now show in Resolved tab with smooth height collapse animation
-- BUG-028: Batch separation on multi-send - sentAt timestamps, send-only-new filter, batch separators, dynamic button label
 
 ### Server
 - `get_unresolved` deduplicates annotations by UUID across captures (prevents duplicate processing on repeat sends)
-- Rolling archive: resolved captures auto-move to `archive/YYYY-MM/` with `index.json` metadata index
-- `get_capture` falls back to archive when file not in active captures
-- New `list_archived` tool: query archived captures by URL, date range (38 MCP tools total)
 
 ### Improved
 - Settings panel shows server idle timeout (read-only) with "resets on activity" hint

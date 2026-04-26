@@ -6,6 +6,20 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ---
 
+## v0.4.8 - April 26, 2026
+
+### Bug Fixes
+- BUG-028: Batch separation on multi-send with sentAt timestamps and "Send N new" button
+- Send button guarded against rapid double-clicks
+
+### Features
+- Rolling archive: resolved captures auto-move to `archive/YYYY-MM/` with index.json
+- New `list_archived` MCP tool (38 tools total)
+- `get_capture` transparently falls back to archive
+- `get_unresolved` deduplicates by UUID across captures
+
+---
+
 ## v0.4.7 - April 26, 2026
 
 ### Bug Fixes
@@ -14,14 +28,10 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - BUG-025: Annotation panel textarea scrollbar now uses dark theme
 - BUG-026: Auto-capture toggle now persists across page reloads
 - BUG-027: Accepted capture requests now show in Resolved tab with smooth collapse animation
-- BUG-028: Batch separation on multi-send with sentAt timestamps and "Send N new" button
 
 ### Improved
 - Settings panel shows server idle timeout (read-only, resets on activity)
 - Timeout banner shows Kiro IDE/CLI recovery steps with link to FAQ guide
-- Rolling archive: resolved captures auto-move to `archive/YYYY-MM/` with index.json
-- New `list_archived` MCP tool for querying archived captures (38 tools total)
-- `get_capture` transparently falls back to archive for resolved captures
 
 ### Security
 - uuid upgraded to 14.0.0 (GHSA-w5hq-g745-h8pq buffer bounds check)
