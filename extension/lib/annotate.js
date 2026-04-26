@@ -766,20 +766,34 @@ function onScrollReposition() {
       if (ann.resolved) continue;
       const marker = document.querySelector(`[${ATTR}="marker-${ann.id}"]`);
       if (!marker || marker.style.display === 'none') continue;
-      // Try to find the element by selector and reposition
       const selector = ann.element?.selector;
-      if (selector) {
-        try {
-          const el = document.querySelector(selector);
-          if (el) {
-            const rect = el.getBoundingClientRect();
-            marker.style.left = `${Math.round(rect.left + window.scrollX)}px`;
-            marker.style.top = `${Math.round(rect.top + window.scrollY)}px`;
-            marker.style.width = `${Math.round(rect.width)}px`;
-            marker.style.height = `${Math.round(rect.height)}px`;
+      if (!selector) continue;
+      try {
+        // BUG-030b: querySelector returns first match, but generic selectors
+        // (e.g., button.flex) match many elements. Find the one closest to
+        // the original annotation region to avoid jumping to wrong element.
+        const candidates = document.querySelectorAll(selector);
+        if (candidates.length === 0) continue;
+        let best = candidates[0];
+        if (candidates.length > 1) {
+          let bestDist = Infinity;
+          for (const el of candidates) {
+            const r = el.getBoundingClientRect();
+            const docX = Math.round(r.left + window.scrollX);
+            const docY = Math.round(r.top + window.scrollY);
+            const dist = Math.abs(docX - ann.region.x) + Math.abs(docY - ann.region.y);
+            if (dist < bestDist) { bestDist = dist; best = el; }
           }
-        } catch { /* invalid selector */ }
-      }
+        }
+        const rect = best.getBoundingClientRect();
+        marker.style.left = `${Math.round(rect.left + window.scrollX)}px`;
+        marker.style.top = `${Math.round(rect.top + window.scrollY)}px`;
+        marker.style.width = `${Math.round(rect.width)}px`;
+        marker.style.height = `${Math.round(rect.height)}px`;
+        // Update stored region so next scroll uses the latest position
+        ann.region.x = Math.round(rect.left + window.scrollX);
+        ann.region.y = Math.round(rect.top + window.scrollY);
+      } catch { /* invalid selector */ }
     }
   });
 }
