@@ -734,7 +734,16 @@ export function refresh() {
   });
 
   // Suggestions bar
-  if (!_suggestionsCache) _suggestionsCache = scanForSuggestions();
+  if (!_suggestionsCache) {
+    _suggestionsCache = scanForSuggestions();
+    // BUG-029: Filter out suggestions already added as annotations (survives reload)
+    const existingComments = new Set(anns.map((a) => a.comment || ''));
+    _suggestionsCache = _suggestionsCache.filter((sug) => {
+      const tierLabel = sug.tier === 'accessibility' ? 'A11Y' : sug.tier === 'quality' ? 'QUAL' : 'TEST';
+      const comment = `${tierLabel}: ${sug.title} - ${sug.detail || ''}`;
+      return !existingComments.has(comment);
+    });
+  }
   function addSuggestionToReview(sug) {
     const ann = addPageNote();
     if (ann) {
