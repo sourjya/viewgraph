@@ -747,6 +747,43 @@ export function hideMarkers() {
 // Public API
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// BUG-030: Reposition markers on scroll
+// ---------------------------------------------------------------------------
+
+let _scrollRaf = null;
+
+/**
+ * Reposition all visible markers to track their annotated elements.
+ * Uses requestAnimationFrame to avoid layout thrashing during scroll.
+ * Falls back to stored region coordinates if the element can't be found.
+ */
+function onScrollReposition() {
+  if (_scrollRaf) return;
+  _scrollRaf = requestAnimationFrame(() => {
+    _scrollRaf = null;
+    for (const ann of annotations) {
+      if (ann.resolved) continue;
+      const marker = document.querySelector(`[${ATTR}="marker-${ann.id}"]`);
+      if (!marker || marker.style.display === 'none') continue;
+      // Try to find the element by selector and reposition
+      const selector = ann.element?.selector;
+      if (selector) {
+        try {
+          const el = document.querySelector(selector);
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            marker.style.left = `${Math.round(rect.left + window.scrollX)}px`;
+            marker.style.top = `${Math.round(rect.top + window.scrollY)}px`;
+            marker.style.width = `${Math.round(rect.width)}px`;
+            marker.style.height = `${Math.round(rect.height)}px`;
+          }
+        } catch { /* invalid selector */ }
+      }
+    }
+  });
+}
+
 export function start(callbacks = {}) {
   if (active) return;
   active = true;
@@ -767,6 +804,9 @@ export function start(callbacks = {}) {
   document.addEventListener('click', onClick, true);
   document.addEventListener('wheel', onWheel, { capture: true, passive: false });
   document.addEventListener('keydown', onKeyDown, true);
+
+  // BUG-030: Reposition markers on scroll so they track their elements
+  window.addEventListener('scroll', onScrollReposition, { passive: true, capture: true });
 }
 
 /** Pause interaction (sidebar collapsed) - removes listeners but keeps annotations. */
@@ -779,6 +819,7 @@ export function pause() {
   document.removeEventListener('mouseup', onMouseUp, true);
   document.removeEventListener('click', onClick, true);
   document.removeEventListener('wheel', onWheel, { capture: true, passive: false });
+  window.removeEventListener('scroll', onScrollReposition, { capture: true });
 }
 
 export function stop() {
@@ -796,6 +837,7 @@ export function stop() {
   document.removeEventListener('click', onClick, true);
   document.removeEventListener('wheel', onWheel, { capture: true, passive: false });
   document.removeEventListener('keydown', onKeyDown, true);
+  window.removeEventListener('scroll', onScrollReposition, { capture: true });
 
   clearAnnotations();
   overlayEl = null;
