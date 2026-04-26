@@ -2,13 +2,34 @@
 
 - **ID**: BUG-022
 - **Severity**: Critical
-- **Status**: OPEN
+- **Status**: FIXED
 - **Reported**: 2026-04-21
-- **Fixed**: -
+- **Fixed**: 2026-04-26
 
 ## Description
 
 When an agent calls `request_capture`, the extension shows the request card. The user clicks Accept, the capture is sent, but the agent's `get_request_status` keeps returning "pending" until it expires. The capture file exists on disk but the request is never marked "completed."
+
+## Root Cause
+
+The background script (`background.js` line 328) constructed a new message when forwarding the capture request to the content script, **dropping the `requestId`**:
+
+```js
+// BUG: requestId not forwarded
+const captureMsg = { type: 'capture', includeSnapshot: ..., keepSidebar: ... };
+```
+
+Without `requestId` in the capture metadata, the server fell back to URL matching (`queue.findByUrl`) which failed on normalization differences (trailing slashes, query params). The `findById` path (added as a fix attempt) never worked because the ID was never in the capture.
+
+## Fix
+
+One-line fix in `background.js` - forward `requestId` from the sidebar message to the content script:
+
+```js
+const captureMsg = { type: 'capture', ..., requestId: message.requestId || null };
+```
+
+The content script already had the code to add `requestId` to capture metadata (line 84). The server already had `findById` matching (line 337). The only gap was the background script dropping the field.
 
 ## Observed Behavior
 

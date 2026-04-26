@@ -325,7 +325,7 @@ export default defineBackground(() => {
         }
 
         // Send capture message to content script, injecting it first if needed
-        const captureMsg = { type: 'capture', includeSnapshot: message.includeSnapshot !== false, keepSidebar: !!message.keepSidebar };
+        const captureMsg = { type: 'capture', includeSnapshot: message.includeSnapshot !== false, keepSidebar: !!message.keepSidebar, requestId: message.requestId || null };
         let result;
         try {
           result = await chrome.tabs.sendMessage(tab.id, captureMsg);
