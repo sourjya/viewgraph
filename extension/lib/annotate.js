@@ -322,7 +322,7 @@ function freeze() {
     color: cs.color,
     bg: cs.backgroundColor,
   };
-  const annotation = { id, uuid: crypto.randomUUID(), type: 'element', region, comment: '', severity: '', category: '', nids: [], ancestor, element, timestamp: new Date().toISOString() };
+  const annotation = { id, uuid: crypto.randomUUID(), type: 'element', region, comment: '', severity: '', category: '', nids: [], ancestor, element, sentAt: null, timestamp: new Date().toISOString() };
   annotations.push(annotation);
   createMarker(annotation, rect);
   flashElement(currentEl);
@@ -414,7 +414,7 @@ function onMouseUp(_e) {
   const nids = findIntersectingNodes(rect);
   const ancestor = findCommonAncestor(rect) || null;
   const id = nextId++;
-  const annotation = { id, uuid: crypto.randomUUID(), type: 'region', region, comment: '', severity: '', category: '', nids, ancestor, timestamp: new Date().toISOString() };
+  const annotation = { id, uuid: crypto.randomUUID(), type: 'region', region, comment: '', severity: '', category: '', nids, ancestor, sentAt: null, timestamp: new Date().toISOString() };
   annotations.push(annotation);
   createMarker(annotation, rect);
   flashElements(rect);
@@ -630,8 +630,8 @@ export function storageKey() {
 export async function save() {
   if (typeof chrome === 'undefined' || !chrome.storage) return;
   const key = storageKey();
-  const data = annotations.map(({ id, uuid, type, region, comment, severity, category, nids, ancestor, element, resolved, resolution, timestamp, diagnostic, pending }) =>
-    ({ id, uuid, type, region, comment, severity, category, nids, ancestor, element, timestamp, ...(resolved ? { resolved, resolution } : {}), ...(diagnostic ? { diagnostic } : {}), ...(pending ? { pending } : {}) }));
+  const data = annotations.map(({ id, uuid, type, region, comment, severity, category, nids, ancestor, element, resolved, resolution, timestamp, diagnostic, pending, sentAt }) =>
+    ({ id, uuid, type, region, comment, severity, category, nids, ancestor, element, timestamp, ...(resolved ? { resolved, resolution } : {}), ...(diagnostic ? { diagnostic } : {}), ...(pending ? { pending } : {}), ...(sentAt ? { sentAt } : {}) }));
   await chrome.storage.local.set({ [key]: { annotations: data, nextId, nextPageNoteId } });
 }
 
@@ -712,7 +712,7 @@ export function addPageNote() {
     id: `P${pn}`, uuid: crypto.randomUUID(), type: 'page-note',
     region: { x: 0, y: 0, width: 0, height: 0 },
     comment: '', severity: '', category: '', nids: [], ancestor: null,
-    timestamp: new Date().toISOString(),
+    sentAt: null, timestamp: new Date().toISOString(),
   };
   annotations.push(annotation);
   save();

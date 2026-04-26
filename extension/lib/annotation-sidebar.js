@@ -521,13 +521,27 @@ function doSend(trustOverride = false) {
   const noteInput = hostEl?.shadowRoot?.querySelector(`[${ATTR}="session-note"]`);
   const sessionNote = noteInput?.value?.trim() || undefined;
   if (noteInput) noteInput.value = '';
-  chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true, includeSnapshot: true, sessionNote, trustOverride }, () => {
+
+  // BUG-028: Only send new annotations if previous batch exists
+  const allAnns = getAnnotations();
+  const hasAlreadySent = allAnns.some((a) => a.sentAt && !a.resolved);
+  const now = new Date().toISOString();
+
+  chrome.runtime.sendMessage({
+    type: 'send-review', includeCapture: true, includeSnapshot: true,
+    sendNewOnly: hasAlreadySent, sessionNote, trustOverride,
+  }, () => {
     setTimeout(() => { _sending = false; }, 2000);
   });
-  for (const ann of getAnnotations()) {
-    if (!ann.resolved) ann.pending = true;
+
+  // Stamp sentAt only on unsent annotations
+  for (const ann of allAnns) {
+    if (!ann.resolved && !ann.sentAt) {
+      ann.sentAt = now;
+      ann.pending = true;
+    }
   }
-  save(); // Persist pending state so it survives page reload
+  save(); // Persist pending + sentAt so it survives page reload
   refresh();
   _footer.flashSend();
 }
@@ -739,6 +753,9 @@ export function refresh() {
 
   updateBadgeCount();
   _footer.updateDisabledState(anns.some((a) => !a.resolved));
+  // BUG-028: Update send button label based on sent/unsent counts
+  const openAnns = anns.filter((a) => !a.resolved);
+  _footer.updateSendLabel({ total: openAnns.length, unsent: openAnns.filter((a) => !a.sentAt).length });
 }
 
 // ──────────────────────────────────────────────

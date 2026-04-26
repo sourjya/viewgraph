@@ -183,6 +183,28 @@ export function createFooter({ onSend, onShowSettings }) {
     setTimeout(() => { sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent')); sendBtn.style.background = COLOR.primary; }, 2000);
   }
 
+  /**
+   * Update Send button label based on sent/unsent annotation counts.
+   * Shows "Send N new" when there are unsent annotations alongside already-sent ones.
+   * @param {{ total: number, unsent: number }} counts
+   */
+  function updateSendLabel(counts) {
+    if (!counts) return;
+    // Don't override disabled state when button is hidden (offline mode)
+    if (sendBtn.style.display === 'none') return;
+    const { total, unsent } = counts;
+    if (total > unsent && unsent > 0) {
+      sendBtn.replaceChildren(sendIcon(14), document.createTextNode(` Send ${unsent} new`));
+    } else if (unsent > 0 || total === 0) {
+      sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent'));
+    }
+    // Disable only when there are sent annotations but nothing new to send
+    if (total > 0 && unsent === 0) {
+      sendBtn.disabled = true;
+      sendBtn.style.opacity = '0.4';
+    }
+  }
+
   const TRUST_COLORS = { trusted: COLOR.success, configured: '#60a5fa', untrusted: COLOR.warning };
 
   /**
@@ -211,5 +233,5 @@ export function createFooter({ onSend, onShowSettings }) {
     }
   }
 
-  return { element: footer, sendBtn, copyBtn, dlBtn, statusDot, setOfflineMode, updateDisabledState, flashSend, setTrustLevel, setAuthMode };
+  return { element: footer, sendBtn, copyBtn, dlBtn, statusDot, setOfflineMode, updateDisabledState, updateSendLabel, flashSend, setTrustLevel, setAuthMode };
 }

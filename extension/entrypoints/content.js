@@ -156,7 +156,12 @@ export default defineContentScript({
           }
           const capture = serialize(scored, relations, enrichment);
           capture.metadata.captureMode = 'review';
-          capture.annotations = serializeAnnotations(getAnnotations());
+          // BUG-028: send only unsent annotations when previous batch exists
+          const allAnns = getAnnotations();
+          const filtered = message.sendNewOnly
+            ? allAnns.filter((a) => !a.resolved && !a.sentAt)
+            : allAnns;
+          capture.annotations = serializeAnnotations(filtered);
           const snapshot = message.includeSnapshot ? captureSnapshot() : null;
           sendResponse({ ok: true, capture, snapshot });
         })();

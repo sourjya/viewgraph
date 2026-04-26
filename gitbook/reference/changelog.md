@@ -14,6 +14,7 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - BUG-025: Annotation panel textarea scrollbar now uses dark theme
 - BUG-026: Auto-capture toggle now persists across page reloads
 - BUG-027: Accepted capture requests now show in Resolved tab with smooth collapse animation
+- BUG-028: Batch separation on multi-send with sentAt timestamps and "Send N new" button
 
 ### Improved
 - Settings panel shows server idle timeout (read-only, resets on activity)
@@ -25,9 +26,6 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 ### Security
 - uuid upgraded to 14.0.0 (GHSA-w5hq-g745-h8pq buffer bounds check)
 - CodeQL path injection fix (S3-3) in config auto-learn write
-
-### Known Issues (deferred)
-- BUG-028: No visual separation between sent and unsent annotations on multi-send
 
 ---
 

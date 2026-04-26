@@ -81,16 +81,33 @@ export function renderReviewList(list, tabContainer, sidebarEl, state, callbacks
   // Filter tabs: All | Open | Resolved
   renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, activeTypeFilters }, callbacks);
 
-  // Filtered items
+  // Filtered items - grouped by send batch (BUG-028)
   const statusFiltered = activeFilter === 'all' ? anns : activeFilter === 'open' ? open : resolved;
   const visible = statusFiltered.filter((a) => activeTypeFilters.has(resolveType(a)));
-  for (const ann of visible) {
-    try {
-      list.appendChild(createEntry(ann, callbacks));
-    } catch (e) {
-      console.error(`[ViewGraph] Failed to render annotation #${ann.id}:`, e);
+
+  const batches = groupByBatch(visible);
+  for (const batch of batches) {
+    // Render batch separator (skip if only one batch with no sentAt - first send)
+    if (batches.length > 1 || batch.sentAt) {
+      const sep = document.createElement('div');
+      sep.setAttribute(ATTR, 'batch-sep');
+      sep.textContent = batch.label;
+      Object.assign(sep.style, {
+        padding: '4px 12px', fontSize: '10px', color: COLOR.muted,
+        borderBottom: `1px solid ${COLOR.borderLight}`, fontFamily: FONT,
+        letterSpacing: '0.5px', textTransform: 'uppercase',
+      });
+      list.appendChild(sep);
+    }
+    for (const ann of batch.annotations) {
+      try {
+        list.appendChild(createEntry(ann, callbacks));
+      } catch (e) {
+        console.error(`[ViewGraph] Failed to render annotation #${ann.id}:`, e);
+      }
     }
   }
+
   if (visible.length === 0) {
     const empty = document.createElement('div');
     empty.textContent = activeFilter === 'resolved' ? 'No resolved items yet' : 'No open items';
@@ -99,6 +116,58 @@ export function renderReviewList(list, tabContainer, sidebarEl, state, callbacks
   }
 
   list.scrollTop = list.scrollHeight;
+}
+
+// ──────────────────────────────────────────────
+// Batch grouping (BUG-028)
+// ──────────────────────────────────────────────
+
+/**
+ * Group annotations by sentAt timestamp into batches for visual separation.
+ * Unsent annotations (sentAt is null/undefined) form the last batch.
+ * Sent batches are ordered most-recent first.
+ *
+ * @param {Array} annotations - Filtered annotations to group
+ * @returns {Array<{ sentAt: string|null, label: string, annotations: Array }>}
+ */
+function groupByBatch(annotations) {
+  const unsent = [];
+  const sentMap = new Map(); // sentAt timestamp -> annotations[]
+
+  for (const ann of annotations) {
+    if (!ann.sentAt) {
+      unsent.push(ann);
+    } else {
+      if (!sentMap.has(ann.sentAt)) sentMap.set(ann.sentAt, []);
+      sentMap.get(ann.sentAt).push(ann);
+    }
+  }
+
+  // Sort sent batches: most recent first
+  const sentBatches = [...sentMap.entries()]
+    .sort(([a], [b]) => new Date(b) - new Date(a))
+    .map(([sentAt, anns]) => ({ sentAt, label: formatBatchLabel(sentAt), annotations: anns }));
+
+  const batches = [...sentBatches];
+  if (unsent.length > 0) {
+    batches.push({ sentAt: null, label: 'Not yet sent', annotations: unsent });
+  }
+  return batches;
+}
+
+/**
+ * Format a batch label from a sentAt timestamp.
+ * @param {string} sentAt - ISO timestamp
+ * @returns {string} e.g. "Sent 5m ago", "Sent 2h ago"
+ */
+function formatBatchLabel(sentAt) {
+  const diffMs = Date.now() - new Date(sentAt).getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return 'Sent just now';
+  if (mins < 60) return `Sent ${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `Sent ${hours}h ago`;
+  return `Sent ${Math.floor(hours / 24)}d ago`;
 }
 
 // ──────────────────────────────────────────────

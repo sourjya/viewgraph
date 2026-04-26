@@ -16,6 +16,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - BUG-025: Annotation panel textarea scrollbar now uses dark theme (was system default)
 - BUG-026: Auto-capture toggle persists across page reloads via chrome.storage.local
 - BUG-027: Accepted capture requests now show in Resolved tab with smooth height collapse animation
+- BUG-028: Batch separation on multi-send - sentAt timestamps, send-only-new filter, batch separators, dynamic button label
 
 ### Server
 - `get_unresolved` deduplicates annotations by UUID across captures (prevents duplicate processing on repeat sends)
@@ -30,9 +31,6 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 ### Security
 - Upgraded uuid to 14.0.0 via npm override (fixes missing buffer bounds check in v3/v5/v6, GHSA-w5hq-g745-h8pq)
 - Fixed CodeQL js/path-injection (S3-3): re-validate config path via safeConfigPath before writeFileSync
-
-### Documented (deferred)
-- BUG-028: No visual separation between sent and unsent annotations on multi-send
 
 ---
 
