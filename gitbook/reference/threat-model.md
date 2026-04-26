@@ -2,7 +2,7 @@
 
 ViewGraph undergoes structured threat modeling using the [STRIDE methodology](https://en.wikipedia.org/wiki/STRIDE_%28security%29). This page summarizes the findings and how our roadmap addresses them.
 
-This threat model was produced using the [Threat Modeling MCP Server](https://github.com/awslabs/threat-modeling-mcp-server) by [Aidin Ferdowsi](https://github.com/aidinferdowsi) (AWS), which provided structured STRIDE analysis and [Threat Composer](https://github.com/awslabs/threat-composer) JSON export.
+This threat model was produced using the [AWS Labs Threat Modeling MCP Server](https://github.com/awslabs/threat-modeling-mcp-server) by [Aidin Ferdowsi](https://github.com/aidinferdowsi) (AWS), which provided structured STRIDE analysis and [Threat Composer](https://github.com/awslabs/threat-composer) JSON export.
 
 For the full engineering report, see [GitHub](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-stride.md).
 
