@@ -194,6 +194,50 @@ export default defineBackground(() => {
   fetchServerInfo();
 
   // ---------------------------------------------------------------------------
+  // Panic capture - instant mid-action snapshot via keyboard shortcut (Ctrl+Shift+V)
+  // Captures DOM + screenshot without opening sidebar or moving focus.
+  // @see docs/ideas/panic-capture.md
+  // ---------------------------------------------------------------------------
+  chrome.commands.onCommand.addListener(async (command) => {
+    if (command !== 'panic-capture') return;
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab?.id || !isInjectable(tab.url)) return;
+
+      // Inject content script if not already loaded
+      let result;
+      try {
+        result = await chrome.tabs.sendMessage(tab.id, { type: 'capture', includeSnapshot: true, keepSidebar: true });
+      } catch {
+        await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content-scripts/content.js'] });
+        result = await chrome.tabs.sendMessage(tab.id, { type: 'capture', includeSnapshot: true, keepSidebar: true });
+      }
+      if (!result?.ok) return;
+
+      const capture = result.capture;
+      capture.metadata.captureMode = 'panic';
+
+      // Screenshot
+      const screenshot = await captureScreenshot(tab.id);
+      if (screenshot) {
+        const hostname = new URL(capture.metadata.url).hostname;
+        const ts = capture.metadata.timestamp.replace(/[:.]/g, '').replace('T', '-').slice(0, 17);
+        capture.metadata.screenshot = `viewgraph-${hostname}-${ts}.png`;
+      }
+
+      // Push to server
+      const pushResult = await pushToServer(capture);
+      if (screenshot && pushResult?.filename) {
+        const snapshotStem = pushResult.filename.replace(/\.json$/, '');
+        await pushScreenshot(screenshot, snapshotStem);
+      }
+
+      // Visual feedback: brief flash via content script
+      chrome.tabs.sendMessage(tab.id, { type: 'panic-flash' }).catch(() => {});
+    } catch { /* best effort - don't crash on shortcut */ }
+  });
+
+  // ---------------------------------------------------------------------------
   // Extension icon click - open sidebar directly, or fallback popup for
   // non-injectable pages (chrome://, about:, etc.)
   // ---------------------------------------------------------------------------

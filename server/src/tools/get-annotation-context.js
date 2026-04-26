@@ -20,7 +20,7 @@ import { wrapComment, wrapCapturedText, detectSuspicious } from '#src/utils/sani
  * @param {string} capturesDir
  * @see #src/analysis/node-queries.js
  */
-export function register(server, _indexer, capturesDir) {
+export function register(server, _indexer, capturesDir, options = {}) {
   server.tool(
     'get_annotation_context',
     `Return a ${PROJECT_NAME} capture filtered to annotated nodes + their comments. ` +
@@ -66,6 +66,13 @@ export function register(server, _indexer, capturesDir) {
         _notice: NOTICE_MIXED,
         annotatedNodes: output,
       };
+
+      // Emit status: agent is actively working on these annotations
+      if (options.onStatusChange) {
+        for (const ann of annotations) {
+          if (ann.uuid) options.onStatusChange({ uuid: ann.uuid, status: 'fixing' });
+        }
+      }
 
       return jsonResponse(wrapped);
     },

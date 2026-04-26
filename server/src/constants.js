@@ -14,7 +14,7 @@ export const PROJECT_PREFIX = 'viewgraph';
 
 /** MCP server identity  -  reported to hosts during initialization. */
 export const SERVER_NAME = `${PROJECT_PREFIX}-mcp-server`;
-export const SERVER_VERSION = '0.4.9';
+export const SERVER_VERSION = '0.5.0';
 export const SERVER_DESCRIPTION = `Exposes ${PROJECT_NAME} DOM capture tools for AI-powered UI auditing, test generation, and visual regression`;
 
 /** Capture format identifier stored in metadata.format field. */

@@ -202,6 +202,20 @@ export default defineContentScript({
         return false;
       }
 
+      // Panic capture visual feedback - brief camera-shutter flash
+      if (message.type === 'panic-flash') {
+        const flash = document.createElement('div');
+        Object.assign(flash.style, {
+          position: 'fixed', inset: '0', background: 'rgba(255,255,255,0.15)',
+          zIndex: '2147483647', pointerEvents: 'none', transition: 'opacity 0.3s',
+        });
+        document.documentElement.appendChild(flash);
+        requestAnimationFrame(() => { flash.style.opacity = '0'; });
+        setTimeout(() => flash.remove(), 400);
+        sendResponse({ ok: true });
+        return false;
+      }
+
       return false;
     });
   },

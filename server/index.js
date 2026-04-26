@@ -104,7 +104,12 @@ registerAuditAccessibility(server, indexer, CAPTURES_DIR);
 registerAuditLayout(server, indexer, CAPTURES_DIR);
 registerCompareCaptures(server, indexer, CAPTURES_DIR);
 registerGetAnnotations(server, indexer, CAPTURES_DIR);
-registerGetAnnotatedCapture(server, indexer, CAPTURES_DIR);
+registerGetAnnotatedCapture(server, indexer, CAPTURES_DIR, {
+  onStatusChange: ({ uuid, status }) => {
+    const ws = httpReceiver?.getWsServer?.();
+    if (ws) ws.broadcast({ type: WS_MESSAGES.ANNOTATION_STATUS, uuid, status });
+  },
+});
 registerRequestCapture(server, requestQueue);
 registerGetRequestStatus(server, requestQueue);
 registerGetFidelityReport(server, indexer, CAPTURES_DIR);
@@ -114,7 +119,12 @@ registerResolveAnnotation(server, indexer, CAPTURES_DIR, {
     if (ws) ws.broadcast({ type: WS_MESSAGES.ANNOTATION_RESOLVED, uuid, resolution });
   },
 });
-registerGetUnresolved(server, indexer, CAPTURES_DIR);
+registerGetUnresolved(server, indexer, CAPTURES_DIR, {
+  onStatusChange: ({ uuid, status }) => {
+    const ws = httpReceiver?.getWsServer?.();
+    if (ws) ws.broadcast({ type: WS_MESSAGES.ANNOTATION_STATUS, uuid, status });
+  },
+});
 registerCompareBaseline(server, indexer, CAPTURES_DIR);
 registerSetBaseline(server, indexer, CAPTURES_DIR);
 registerListBaselines(server, indexer, CAPTURES_DIR);

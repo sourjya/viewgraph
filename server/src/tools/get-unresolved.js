@@ -23,7 +23,7 @@ import { wrapComment } from '#src/utils/sanitize.js';
  * @param {string} capturesDir - Absolute path to the captures directory
  * @see .kiro/specs/unified-review-panel/design.md - cross-capture queries
  */
-export function register(server, indexer, capturesDir) {
+export function register(server, indexer, capturesDir, options = {}) {
   server.tool(
     'get_unresolved',
     `Return unresolved annotations from ${PROJECT_NAME} captures. ` +
@@ -60,6 +60,14 @@ export function register(server, indexer, capturesDir) {
 
       const summary = `${results.length} unresolved annotation(s)` +
         (filename ? ` in ${filename}` : ` across ${files.length} capture(s)`);
+
+      // Emit status change: agent has acknowledged these annotations
+      if (options.onStatusChange && results.length > 0) {
+        for (const a of results) {
+          options.onStatusChange({ uuid: a.uuid, status: 'queued' });
+        }
+      }
+
       return jsonResponse({
         _notice: NOTICE_COMMENTS,
         summary, annotations: results,

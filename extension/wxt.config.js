@@ -27,6 +27,12 @@ export default defineConfig({
         128: 'icon-128.png',
       },
     },
+    commands: {
+      'panic-capture': {
+        suggested_key: { default: 'Ctrl+Shift+V', mac: 'Command+Shift+V' },
+        description: 'Instant snapshot - capture DOM + screenshot mid-action',
+      },
+    },
     web_accessible_resources: [
       { resources: ['icon-16.png', 'icon-48.png'], matches: ['<all_urls>'] },
     ],

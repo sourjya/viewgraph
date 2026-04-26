@@ -8,6 +8,14 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ---
 
+## [0.5.0] - 2026-04-26
+
+### Features
+- Panic capture (Ctrl+Shift+V / Cmd+Shift+V): instant mid-action DOM + screenshot snapshot with camera-shutter flash. Configurable via browser extension shortcuts.
+- Live annotation status: timeline shows real-time lifecycle (queued → fixing → resolved) as the agent works. Server emits WebSocket events on tool calls.
+
+---
+
 ## [0.4.8] - 2026-04-26
 
 ### Fixed

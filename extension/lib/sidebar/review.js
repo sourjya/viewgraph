@@ -551,12 +551,19 @@ function createEntry(ann, callbacks) {
       fontFamily: FONT,
     });
     label.appendChild(resLine);
-  } else if (ann.pending) {
+  } else if (ann.pending || ann.agentStatus) {
     const pendLine = document.createElement('div');
-    pendLine.textContent = '\u23F3 Sent to agent - waiting for fix...';
+    // Live status from WebSocket, falling back to generic pending
+    const STATUS_LABELS = {
+      queued: '\u23F3 Agent received - in queue',
+      fixing: '\ud83d\udd27 Agent is fixing...',
+    };
+    const statusText = STATUS_LABELS[ann.agentStatus] || '\u23F3 Sent to agent - waiting for fix...';
+    pendLine.textContent = statusText;
+    const isFix = ann.agentStatus === 'fixing';
     Object.assign(pendLine.style, {
-      color: COLOR.warning, fontSize: '10px', marginTop: '2px',
-      fontFamily: FONT,
+      color: isFix ? COLOR.primaryLight : COLOR.warning, fontSize: '10px', marginTop: '2px',
+      fontFamily: FONT, ...(isFix ? { animation: 'vg-pulse 2s infinite' } : {}),
     });
     label.appendChild(pendLine);
   }

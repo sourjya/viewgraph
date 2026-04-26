@@ -20,6 +20,7 @@ export const WS_MESSAGES = Object.freeze({
 
   // Server -> extension
   ANNOTATION_RESOLVED: 'annotation:resolved',
+  ANNOTATION_STATUS: 'annotation:status',
   REQUEST_CAPTURE: 'request:capture',
   AUDIT_RESULTS: 'audit:results',
 

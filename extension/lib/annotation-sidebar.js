@@ -479,6 +479,14 @@ export function create() {
   transport.onEvent('annotation:resolved', (msg) => {
     _bus.emit(EVENTS.ANNOTATION_RESOLVED, { uuid: msg.uuid, resolution: msg.resolution });
   });
+  transport.onEvent('annotation:status', (msg) => {
+    // Live status update from agent tool calls (queued, fixing)
+    const ann = getAnnotations().find((a) => a.uuid === msg.uuid);
+    if (ann && !ann.resolved) {
+      ann.agentStatus = msg.status;
+      refresh();
+    }
+  });
   transport.onEvent('audit:results', (msg) => {
     if (msg.audit) _bus.emit(EVENTS.AUDIT_RESULTS, { audit: msg.audit, filename: msg.filename });
   });
