@@ -584,10 +584,18 @@ export function dimResolvedMarker(id) { dimMarker(id); }
  */
 export function updateResolvedMarkerVisibility(filter) {
   for (const ann of annotations) {
-    if (!ann.resolved) continue;
     const el = document.querySelector(`[${ATTR}="marker-${ann.id}"]`);
     if (!el) continue;
-    el.style.display = (filter === 'resolved' || filter === 'all') ? '' : 'none';
+    if (filter === 'resolved') {
+      // Resolved tab: hide ALL markers - positions are stale after iterations
+      el.style.display = 'none';
+    } else if (filter === 'all') {
+      // All tab: show open markers, show resolved dimmed
+      el.style.display = '';
+    } else {
+      // Open tab: show open markers only
+      el.style.display = ann.resolved ? 'none' : '';
+    }
   }
 }
 
