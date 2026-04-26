@@ -79,4 +79,52 @@ describe('native message handler', () => {
     const res = await handler(null);
     expect(res.error).toBeDefined();
   });
+
+  // New message types for transport parity
+
+  it('(+) handles "captures" as alias for captures:list', async () => {
+    const handler = createMessageHandler(mockDeps());
+    const res = await handler({ type: 'captures' });
+    expect(res).toHaveProperty('captures');
+  });
+
+  it('(+) handles "config" as alias for config:get', async () => {
+    const handler = createMessageHandler(mockDeps());
+    const res = await handler({ type: 'config' });
+    expect(res).toBeDefined();
+  });
+
+  it('(+) handles "requests:pending" as alias for request:pending', async () => {
+    const handler = createMessageHandler(mockDeps());
+    const res = await handler({ type: 'requests:pending' });
+    expect(res).toHaveProperty('requests');
+  });
+
+  it('(+) handles dynamic requests:ID:ack route', async () => {
+    const deps = mockDeps();
+    deps.queue.acknowledge = vi.fn();
+    const handler = createMessageHandler(deps);
+    const res = await handler({ type: 'requests:abc123:ack' });
+    expect(res.status).toBe('ok');
+    expect(deps.queue.acknowledge).toHaveBeenCalledWith('abc123');
+  });
+
+  it('(+) handles dynamic requests:ID:decline route', async () => {
+    const deps = mockDeps();
+    deps.queue.decline = vi.fn();
+    const handler = createMessageHandler(deps);
+    const res = await handler({ type: 'requests:xyz:decline', payload: { reason: 'Not needed' } });
+    expect(res.status).toBe('ok');
+    expect(deps.queue.decline).toHaveBeenCalledWith('xyz', 'Not needed');
+  });
+
+  it('(+) capture with requestId matches by ID first', async () => {
+    const deps = mockDeps();
+    deps.queue.findById = vi.fn(() => ({ id: 'req1' }));
+    deps.queue.complete = vi.fn();
+    const handler = createMessageHandler(deps);
+    await handler({ type: 'capture', payload: { metadata: { url: 'http://test', requestId: 'req1' } } });
+    expect(deps.queue.findById).toHaveBeenCalledWith('req1');
+    expect(deps.queue.complete).toHaveBeenCalledWith('req1', 'test-capture.json');
+  });
 });

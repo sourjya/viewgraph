@@ -42,6 +42,7 @@ export function createMessageHandler(deps) {
         case 'info':
           return getInfo();
 
+        case 'captures':
         case 'captures:list': {
           const entries = indexer.list();
           const url = msg.url;
@@ -49,14 +50,19 @@ export function createMessageHandler(deps) {
           return { captures: filtered };
         }
 
-        case 'capture': {
-          if (!msg.payload?.metadata) return { error: 'Missing metadata in capture' };
-          const filename = await writeCapture(msg.payload);
-          const match = queue.findByUrl(msg.payload.metadata.url);
+        case 'capture':
+        case 'captures:send': {
+          const payload = msg.payload || msg;
+          if (!payload?.metadata) return { error: 'Missing metadata in capture' };
+          const filename = await writeCapture(payload);
+          // BUG-022: match by requestId first, fall back to URL
+          const matchById = payload.metadata.requestId ? queue.findById?.(payload.metadata.requestId) : null;
+          const match = matchById || queue.findByUrl(payload.metadata.url);
           if (match) queue.complete(match.id, filename);
           return { filename, status: 'ok' };
         }
 
+        case 'config':
         case 'config:get':
           return getConfig();
 
@@ -64,19 +70,51 @@ export function createMessageHandler(deps) {
           if (msg.payload) await updateConfig(msg.payload);
           return { status: 'ok' };
 
+        case 'annotations:resolved': {
+          // Return resolved annotations for a URL (mirrors GET /annotations/resolved)
+          const url = msg.url;
+          const entries = indexer.list();
+          const resolved = [];
+          for (const entry of entries) {
+            if (url && !entry.url?.includes(url)) continue;
+            // Read capture to get resolved annotations
+            try {
+              const { readFileSync } = await import('fs');
+              const raw = readFileSync(deps.capturesDir + '/' + entry.filename, 'utf-8');
+              const capture = JSON.parse(raw);
+              for (const ann of (capture.annotations || [])) {
+                if (ann.resolved) resolved.push({ filename: entry.filename, ...ann });
+              }
+            } catch { /* skip unreadable */ }
+          }
+          return { annotations: resolved };
+        }
+
+        case 'requests:pending':
         case 'request:pending':
-          return { requests: queue.list?.() || [] };
+          return { requests: queue.getPending?.() || [] };
 
-        case 'request:ack':
-          if (msg.id) queue.complete?.(msg.id, null);
-          return { status: 'ok' };
+        case 'baselines':
+        case 'baselines:list':
+          return { baselines: [] }; // TODO: wire to baselines module
 
-        case 'request:decline':
-          if (msg.id) queue.decline?.(msg.id, msg.reason || 'declined');
-          return { status: 'ok' };
+        case 'baselines:compare':
+          return { diff: null }; // TODO: wire to baselines module
 
-        default:
+        default: {
+          // Dynamic routes: requests:ID:ack, requests:ID:decline
+          const ackMatch = msg.type.match(/^requests:(.+):ack$/);
+          if (ackMatch) {
+            queue.acknowledge?.(ackMatch[1]);
+            return { status: 'ok' };
+          }
+          const declineMatch = msg.type.match(/^requests:(.+):decline$/);
+          if (declineMatch) {
+            queue.decline?.(declineMatch[1], msg.payload?.reason || 'declined');
+            return { status: 'ok' };
+          }
           return { error: `Unknown message type: ${msg.type}` };
+        }
       }
     } catch (err) {
       console.error(`${LOG_PREFIX} Native message handler error:`, err.message);
