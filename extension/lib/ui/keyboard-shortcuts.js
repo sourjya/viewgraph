@@ -39,9 +39,9 @@ export function startShortcuts(handlers) {
   active = true;
 
   handler = (e) => {
-    // Ignore if typing in an input/textarea inside our UI
+    // Ignore if typing in an input/textarea inside our UI (except Escape - always allow panel dismiss)
     const target = e.target;
-    if (target.closest(`[${ATTR}]`) && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
+    if (e.key !== 'Escape' && target.closest(`[${ATTR}]`) && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
     // Ignore if typing in page inputs (not our UI)
     if (!target.closest(`[${ATTR}]`) && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
 

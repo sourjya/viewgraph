@@ -24,7 +24,7 @@
  * @see lib/annotation-panel.js - comment editing
  */
 
-import { show as showPanel, hide as hidePanel } from './annotation-panel.js';
+import { show as showPanel, hide as hidePanel, currentAnnotationId } from './annotation-panel.js';
 import { getAnnotations, removeAnnotation, resolveAnnotation, hideMarkers, stop as stopAnnotate, setCaptureMode, getCaptureMode, CAPTURE_MODES, addPageNote, clearAnnotations, save, spotlightMarker, updateSeverity, updateComment, updateResolvedMarkerVisibility } from './annotate.js';
 import { createHelpCard } from './sidebar/help.js';
 import { createStrip } from './sidebar/strip.js';
@@ -497,6 +497,8 @@ export function create() {
   // ── Keyboard shortcuts ──
   startShortcuts({
     onEscape: () => {
+      // Layered Escape: panel → help → settings → suggestions → close sidebar
+      if (currentAnnotationId() !== null) { hidePanel(); return; }
       if (help.isVisible()) { help.hide(); return; }
       if (settingsVisible) { hideSettings(); return; }
       if (collapseSuggestions()) return;
