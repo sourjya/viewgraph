@@ -148,7 +148,7 @@ export async function runArchive(capturesDir, opts = {}) {
   const { now = new Date(), ageThresholdHours = DEFAULTS.ageThresholdHours, keepLatestPerUrl = DEFAULTS.keepLatestPerUrl } = opts;
 
   let files;
-  try { files = readdirSync(capturesDir).filter((f) => f.endsWith('.json')); } catch { return { archived: 0, skipped: 0 }; }
+  try { files = readdirSync(capturesDir).filter((f) => f.endsWith('.json') && f.startsWith('viewgraph-')); } catch { return { archived: 0, skipped: 0 }; }
 
   // Parse all captures and check eligibility
   const candidates = [];

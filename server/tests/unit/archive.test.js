@@ -137,40 +137,40 @@ describe('runArchive', () => {
     const now = new Date('2026-04-26T12:00:00Z');
 
     // Eligible: all resolved, old
-    writeFileSync(path.join(capturesDir, 'old-resolved.json'),
+    writeFileSync(path.join(capturesDir, 'viewgraph-old-resolved.json'),
       makeCapture('http://localhost:3000', '2026-04-24T00:00:00Z', [{ uuid: 'a1', resolved: true }]));
 
     // Not eligible: has unresolved
-    writeFileSync(path.join(capturesDir, 'has-open.json'),
+    writeFileSync(path.join(capturesDir, 'viewgraph-has-open.json'),
       makeCapture('http://localhost:3000', '2026-04-24T00:00:00Z', [{ uuid: 'a2', resolved: false }]));
 
     // Not eligible: too recent
-    writeFileSync(path.join(capturesDir, 'recent.json'),
+    writeFileSync(path.join(capturesDir, 'viewgraph-recent.json'),
       makeCapture('http://localhost:3000', '2026-04-26T11:00:00Z', [{ uuid: 'a3', resolved: true }]));
 
     const result = await runArchive(capturesDir, { now, ageThresholdHours: 24, keepLatestPerUrl: 0 });
 
     expect(result.archived).toBe(1);
     expect(result.skipped).toBe(2);
-    expect(existsSync(path.join(capturesDir, 'old-resolved.json'))).toBe(false);
-    expect(existsSync(path.join(capturesDir, 'has-open.json'))).toBe(true);
-    expect(existsSync(path.join(capturesDir, 'recent.json'))).toBe(true);
+    expect(existsSync(path.join(capturesDir, 'viewgraph-old-resolved.json'))).toBe(false);
+    expect(existsSync(path.join(capturesDir, 'viewgraph-has-open.json'))).toBe(true);
+    expect(existsSync(path.join(capturesDir, 'viewgraph-recent.json'))).toBe(true);
   });
 
   it('(+) keeps latest N captures per URL even if eligible', async () => {
     const capturesDir = path.join(tmpDir, 'captures');
     const now = new Date('2026-04-26T12:00:00Z');
 
-    writeFileSync(path.join(capturesDir, 'older.json'),
+    writeFileSync(path.join(capturesDir, 'viewgraph-older.json'),
       makeCapture('http://localhost:3000', '2026-04-20T00:00:00Z', [{ uuid: 'a1', resolved: true }]));
-    writeFileSync(path.join(capturesDir, 'newer.json'),
+    writeFileSync(path.join(capturesDir, 'viewgraph-newer.json'),
       makeCapture('http://localhost:3000', '2026-04-22T00:00:00Z', [{ uuid: 'a2', resolved: true }]));
 
     const result = await runArchive(capturesDir, { now, ageThresholdHours: 24, keepLatestPerUrl: 1 });
 
     // Should archive older but keep newer (it's the latest for this URL)
     expect(result.archived).toBe(1);
-    expect(existsSync(path.join(capturesDir, 'older.json'))).toBe(false);
-    expect(existsSync(path.join(capturesDir, 'newer.json'))).toBe(true);
+    expect(existsSync(path.join(capturesDir, 'viewgraph-older.json'))).toBe(false);
+    expect(existsSync(path.join(capturesDir, 'viewgraph-newer.json'))).toBe(true);
   });
 });
