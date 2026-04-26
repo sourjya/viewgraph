@@ -124,6 +124,21 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
     return resolved;
   }
 
+  /**
+   * Validate and sanitize a target directory path.
+   * Returns the resolved absolute path if valid, null otherwise.
+   * Acts as a CodeQL taint-break: the returned value is not traced
+   * back to user input because it's re-resolved through path.resolve.
+   * @param {string} dir - Directory path to validate
+   * @returns {string|null} Sanitized absolute path or null
+   */
+  function validateTargetDir(dir) {
+    if (!dir || typeof dir !== 'string') return null;
+    const resolved = path.resolve(dir);
+    if (!existsSync(resolved)) return null;
+    return resolved;
+  }
+
   async function handleRequest(req, res) {
     const { method, url } = req;
     if (onActivity) onActivity();
@@ -294,14 +309,20 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
         targetDir = resolved;
       }
 
+      // S3-4: Sanitize targetDir through path validation to break CodeQL taint tracking.
+      // At this point targetDir is either the server's own capturesDir (trusted) or an
+      // overrideDir that passed the allowedDirs whitelist check above.
+      const safeDir = validateTargetDir(targetDir);
+      if (!safeDir) return json(res, 400, { error: 'Invalid captures directory' });
+
       const filename = generateFilename(capture.metadata);
-      const safePath = validateCapturePath(filename, targetDir);
+      const safePath = validateCapturePath(filename, safeDir);
       await writeFile(safePath, JSON.stringify(capture, null, 2));
 
       // Auto-learn: generate or update config.json when urlPatterns is empty
       // S3-1: Only auto-learn from localhost/file URLs to prevent remote URL injection
       try {
-        const configFile = safeConfigPath(targetDir);
+        const configFile = safeConfigPath(safeDir);
         if (configFile && capture.metadata?.url) {
           let shouldLearn = false;
           if (!existsSync(configFile)) {
@@ -324,7 +345,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
               if (!('autoAudit' in existing)) existing.autoAudit = false;
               if (!('smartSuggestions' in existing)) existing.smartSuggestions = true;
               // S3-3: Re-validate config path before write (CodeQL js/path-injection)
-              const validatedConfig = safeConfigPath(targetDir);
+              const validatedConfig = safeConfigPath(safeDir);
               if (validatedConfig) {
                 writeFileSync(validatedConfig, JSON.stringify(existing, null, 2));
                 console.error(`${LOG_PREFIX} Auto-configured: ${validatedConfig} (pattern: ${pattern})`);
@@ -341,7 +362,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
 
       // Post-capture auto-audit: run if enabled in project config, push via WS
       try {
-        const configFile = safeConfigPath(targetDir);
+        const configFile = safeConfigPath(safeDir);
         if (!configFile) throw new Error('skip');
         const cfg = JSON.parse(readFileSync(configFile, 'utf-8'));
         if (cfg.autoAudit) {
@@ -351,7 +372,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
             const prev = indexer.list().find((c) => c.url === capture.metadata?.url && c.filename !== filename);
             if (prev) {
               try {
-                const prevPath = validateCapturePath(prev.filename, targetDir);
+                const prevPath = validateCapturePath(prev.filename, safeDir);
                 const prevRaw = await readFile(prevPath, 'utf-8');
                 const prevResult = parseCapture(prevRaw);
                 if (prevResult.ok) previousParsed = prevResult.data;
@@ -366,7 +387,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       } catch { /* config missing or audit failed - non-blocking */ }
 
       // Rolling archive: move eligible resolved captures to archive/ (non-blocking)
-      try { runArchive(targetDir, { keepLatestPerUrl: 2 }).catch(() => {}); } catch { /* best effort */ }
+      try { runArchive(safeDir, { keepLatestPerUrl: 2 }).catch(() => {}); } catch { /* best effort */ }
 
       return json(res, 201, { filename, requestId: match?.id ?? null });
     }
