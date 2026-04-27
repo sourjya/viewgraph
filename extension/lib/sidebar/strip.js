@@ -184,5 +184,25 @@ export function createStrip(opts) {
         btn.style.color = isActive ? COLOR.white : COLOR.secondary;
       }
     },
+    /** Show alert dot on strip when auto-audit finds issues. */
+    showAlert(count) {
+      let dot = el.querySelector('[data-vg-alert-dot]');
+      if (count <= 0) {
+        if (dot) dot.style.display = 'none';
+        return;
+      }
+      if (!dot) {
+        dot = document.createElement('div');
+        dot.setAttribute('data-vg-alert-dot', '');
+        Object.assign(dot.style, {
+          width: '8px', height: '8px', borderRadius: '50%',
+          background: COLOR.warning, alignSelf: 'center', marginTop: '4px',
+          animation: 'vg-pulse 2s ease-in-out infinite',
+        });
+        el.appendChild(dot);
+      }
+      dot.style.display = 'block';
+      dot.setAttribute('data-tooltip', `${count} issue${count > 1 ? 's' : ''} detected`);
+    },
   };
 }

@@ -353,6 +353,8 @@ export function create() {
       badge.style.display = 'block';
       badge.style.color = audit.regressions ? COLOR.errorLight : audit.total > 0 ? COLOR.warning : COLOR.success;
     }
+    // F10: Show alert dot on collapsed strip when issues detected
+    if (_strip && audit?.total > 0) _strip.showAlert(audit.total);
   });
 
   const scrollStyle = document.createElement('style');

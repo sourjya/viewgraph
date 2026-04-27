@@ -37,7 +37,9 @@ const SERVER_ENTRY = path.resolve(__dirname, '..', 'server', 'index.js');
 const VIEWGRAPH_ROOT = path.resolve(__dirname, '..');
 const CWD = process.cwd();
 
-// Agent detection: config dir → config file path
+// Agent detection: config dir -> config file path
+// To add a new agent: add an entry here. If it needs post-setup (like Kiro's
+// steering/hooks/prompts), add a setup() function to AGENT_SETUP below.
 const AGENTS = [
   { name: 'Kiro', dir: '.kiro/settings', file: '.kiro/settings/mcp.json' },
   { name: 'Claude Code', dir: '.claude', file: '.claude/mcp.json' },
@@ -45,6 +47,67 @@ const AGENTS = [
   { name: 'Windsurf', dir: '.windsurf', file: '.windsurf/mcp.json' },
   { name: 'Cline', dir: '.cline', file: '.cline/mcp.json' },
 ];
+
+// ──────────────────────────────────────────────
+// Agent-Specific Post-Setup
+// ──────────────────────────────────────────────
+
+/**
+ * Agent-specific setup functions. Keyed by agent name.
+ * Each receives { cwd, viewgraphRoot } and installs agent-specific assets.
+ * Agents without an entry here get only the MCP config (which is sufficient).
+ */
+const AGENT_SETUP = {
+  /** Kiro: install steering docs, hooks, and prompt shortcuts from power/ directory. */
+  Kiro({ cwd, viewgraphRoot }) {
+    const steeringDir = path.join(cwd, '.kiro', 'steering');
+    const hooksDir = path.join(cwd, '.kiro', 'hooks');
+    const promptsDir = path.join(cwd, '.kiro', 'prompts');
+    const srcSteering = path.join(viewgraphRoot, 'power', 'steering');
+    const srcHooks = path.join(viewgraphRoot, 'power', 'hooks');
+    const srcPrompts = path.join(viewgraphRoot, 'power', 'prompts');
+
+    // Steering docs
+    if (existsSync(srcSteering)) {
+      ensureDir(steeringDir);
+      for (const file of ['viewgraph-workflow.md', 'viewgraph-resolution.md', 'viewgraph-hostile-dom.md']) {
+        const src = path.join(srcSteering, file);
+        const dest = path.join(steeringDir, file);
+        if (existsSync(src) && shouldCopy(src, dest)) {
+          writeFileSync(dest, readFileSync(src, 'utf-8'));
+          console.log(`  Installed steering: ${file}`);
+        }
+      }
+    }
+
+    // Hooks
+    if (existsSync(srcHooks)) {
+      ensureDir(hooksDir);
+      for (const file of readdirSync(srcHooks)) {
+        const src = path.join(srcHooks, file);
+        const dest = path.join(hooksDir, file);
+        if (existsSync(src) && shouldCopy(src, dest)) {
+          writeFileSync(dest, readFileSync(src, 'utf-8'));
+          if (file.endsWith('.sh')) chmodSync(dest, 0o755);
+          console.log(`  Installed hook: ${file}`);
+        }
+      }
+    }
+
+    // Prompt shortcuts
+    if (existsSync(srcPrompts)) {
+      ensureDir(promptsDir);
+      for (const file of readdirSync(srcPrompts).filter((f) => f.startsWith('vg-'))) {
+        const src = path.join(srcPrompts, file);
+        const dest = path.join(promptsDir, file);
+        if (shouldCopy(src, dest)) {
+          writeFileSync(dest, readFileSync(src, 'utf-8'));
+          console.log(`  Installed prompt: ${file}`);
+        }
+      }
+    }
+  },
+};
 
 /** MCP config block for ViewGraph. */
 function mcpConfig() {
@@ -229,54 +292,9 @@ if (!allowed.includes(absCapturesDir)) {
   console.log(`  Already in server allowedDirs`);
 }
 
-// 6. For Kiro: install steering docs and hooks
-if (agent?.name === 'Kiro') {
-  const steeringDir = path.join(CWD, '.kiro', 'steering');
-  const hooksDir = path.join(CWD, '.kiro', 'hooks');
-  const srcSteering = path.join(VIEWGRAPH_ROOT, 'power', 'steering');
-  const srcHooks = path.join(VIEWGRAPH_ROOT, 'power', 'hooks');
-
-  // Copy steering docs if source exists
-  if (existsSync(srcSteering)) {
-    ensureDir(steeringDir);
-    for (const file of ['viewgraph-workflow.md', 'viewgraph-resolution.md', 'viewgraph-hostile-dom.md']) {
-      const src = path.join(srcSteering, file);
-      const dest = path.join(steeringDir, file);
-      if (existsSync(src) && shouldCopy(src, dest)) {
-        writeFileSync(dest, readFileSync(src, 'utf-8'));
-        console.log(`  Installed steering: ${file}`);
-      }
-    }
-  }
-
-  // Copy hooks if source exists (both .kiro.hook JSON and legacy .sh scripts)
-  if (existsSync(srcHooks)) {
-    ensureDir(hooksDir);
-    for (const file of readdirSync(srcHooks)) {
-      const src = path.join(srcHooks, file);
-      const dest = path.join(hooksDir, file);
-      if (existsSync(src) && shouldCopy(src, dest)) {
-        writeFileSync(dest, readFileSync(src, 'utf-8'));
-        if (file.endsWith('.sh')) chmodSync(dest, 0o755);
-        console.log(`  Installed hook: ${file}`);
-      }
-    }
-  }
-
-  // Copy prompts from power/ directory (distributable assets)
-  const srcPrompts = path.join(VIEWGRAPH_ROOT, 'power', 'prompts');
-  const promptsDir = path.join(CWD, '.kiro', 'prompts');
-  if (existsSync(srcPrompts)) {
-    ensureDir(promptsDir);
-    for (const file of readdirSync(srcPrompts).filter((f) => f.startsWith('vg-'))) {
-      const src = path.join(srcPrompts, file);
-      const dest = path.join(promptsDir, file);
-      if (shouldCopy(src, dest)) {
-        writeFileSync(dest, readFileSync(src, 'utf-8'));
-        console.log(`  Installed prompt: ${file}`);
-      }
-    }
-  }
+// 6. Run agent-specific post-setup (steering, hooks, prompts)
+if (agent && AGENT_SETUP[agent.name]) {
+  AGENT_SETUP[agent.name]({ cwd: CWD, viewgraphRoot: VIEWGRAPH_ROOT });
 }
 
 console.log('\nStarting ViewGraph server...\n');
