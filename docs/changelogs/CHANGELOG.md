@@ -17,6 +17,14 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 ### Architecture
 - Service worker communication migration specced (M19): moves all extension-to-server communication from content script to service worker. Enables background sync, persistent auth, badge notifications, single connection. [ADR-017](../decisions/ADR-017-sw-communication-migration.md), [research](../architecture/service-worker-migration-research.md), [spec](../../.kiro/specs/sw-communication/).
 
+### Security
+- SRR-006 Tier 3 audit: archive fallback path traversal guard in get-capture.js, native message handler path validation, .gitignore credential file patterns (*.pem, *.key, *.p12)
+
+### Fixed
+- Multi-project routing: pushSnapshot/pushScreenshot now use discovered server URL instead of hardcoded port 9876
+- Dead code: removed 31-line lookupCapturesDir function, 2 unused constants, orphaned JSDoc, unused extVer variable
+- Merged double import in get-unresolved.js
+
 ---
 
 ## [0.4.8] - 2026-04-26

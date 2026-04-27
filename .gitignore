@@ -40,3 +40,8 @@ docs/artifacts/
 server/coverage/
 extension/coverage/
 .threatmodel/
+
+# Credential files
+*.pem
+*.key
+*.p12

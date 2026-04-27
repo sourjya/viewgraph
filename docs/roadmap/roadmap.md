@@ -42,6 +42,7 @@
 | v0.4.7 Bug Fixes | Complete | BUG-023 dedup, BUG-024 strip drag, BUG-025 scrollbar, BUG-026 auto-capture persist, BUG-027 request history |
 | Rolling Archive | Complete | Auto-archive resolved captures, index.json, list_archived tool, get_capture fallback |
 | UUID Dedup | Complete | get_unresolved deduplicates across captures on repeat sends |
+| SRR-006 + MRR-004 | Complete | Tier 3 security review + maintainability review. 8 findings fixed: path traversal guards, multi-project snapshot routing, dead code removal, .gitignore hardening |
 ### Completed Features
 
 | Feature | Status | Description |

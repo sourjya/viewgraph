@@ -16,9 +16,7 @@
 import { SERVER_BASE_URL as SERVER_URL, discoverServer, getAllServers } from '../lib/constants.js';
 import { isInjectable, getBlockedReason } from '../lib/url-checks.js';
 
-const PROJECT_MAPPINGS_KEY = 'vg-project-mappings';
 const AUTO_MAPPING_KEY = 'vg-auto-mapping';
-const OVERRIDE_KEY = 'vg-override-enabled';
 
 /**
  * Fetch /info from ALL running servers and store the mappings.
@@ -44,61 +42,6 @@ async function fetchServerInfo() {
 }
 
 /**
- * Look up the capturesDir for a given page URL.
- * Matches the page URL against all known server projectRoots.
- * Priority: manual overrides > file:// path match > first available.
- *
- * @see docs/bugs/BUG-009-multi-project-routing.md
- */
-// eslint-disable-next-line no-unused-vars
-async function lookupCapturesDir(pageUrl) {
-  // Check if manual overrides are enabled
-  const { [OVERRIDE_KEY]: overrideEnabled } = await chrome.storage.local.get(OVERRIDE_KEY);
-  if (overrideEnabled) {
-    const result = await chrome.storage.sync.get(PROJECT_MAPPINGS_KEY);
-    const mappings = result[PROJECT_MAPPINGS_KEY] || [];
-    for (const { pattern, dir } of mappings) {
-      if (pattern === '*' || pageUrl.includes(pattern)) return dir;
-    }
-  }
-  // Match against all auto-detected server mappings
-  const { [AUTO_MAPPING_KEY]: autoMappings } = await chrome.storage.local.get(AUTO_MAPPING_KEY);
-  const mappings = Array.isArray(autoMappings) ? autoMappings : (autoMappings ? [autoMappings] : []);
-
-  // For file:// URLs, match by projectRoot prefix (longest wins)
-  if (pageUrl?.startsWith('file://')) {
-    const filePath = decodeURIComponent(pageUrl.replace('file://', ''));
-    let bestMatch = null;
-    let bestLen = 0;
-    for (const m of mappings) {
-      if (m.projectRoot && filePath.startsWith(m.projectRoot) && m.projectRoot.length > bestLen) {
-        bestMatch = m.capturesDir;
-        bestLen = m.projectRoot.length;
-      }
-    }
-    if (bestMatch) return bestMatch;
-  }
-
-  // For localhost/remote URLs, match by urlPatterns
-  if (pageUrl) {
-    for (const m of mappings) {
-      for (const pattern of m.urlPatterns || []) {
-        if (pageUrl.includes(pattern)) return m.capturesDir;
-      }
-    }
-  }
-
-  // Fallback: return first available
-  return mappings[0]?.capturesDir || null;
-}
-
-/**
- * Read the shared secret from chrome.storage. Returns null if not set.
- * The user configures this in the extension options page after starting
- * the MCP server (which logs the token to stderr).
- */
-
-/**
  * Push a capture to the MCP server. Routes to the correct server
  * based on the capture's URL and capturesDir.
  * @param {object} capture - ViewGraph JSON capture
@@ -118,7 +61,7 @@ async function pushToServer(capture, capturesDir = null) {
       body: JSON.stringify(capture),
     });
     console.log('[viewgraph] pushToServer: response', res.status);
-    if (res.ok) return await res.json();
+    if (res.ok) return { ...(await res.json()), _serverUrl: serverUrl };
     const err = await res.text();
     console.error('[viewgraph] pushToServer: error', res.status, err);
   } catch (e) {
@@ -128,16 +71,13 @@ async function pushToServer(capture, capturesDir = null) {
 }
 
 /**
- * Capture a screenshot of the visible tab area.
- * @param {number} tabId
-/**
  * Push an HTML snapshot to the MCP server. Fails silently if server is not running.
  * @param {string} html - HTML snapshot content
  * @param {string} filenameStem - Filename without extension (matches JSON capture)
  */
-async function pushSnapshot(html, filenameStem) {
+async function pushSnapshot(html, filenameStem, serverUrl = SERVER_URL) {
   try {
-    await fetch(`${SERVER_URL}/snapshots`, {
+    await fetch(`${serverUrl}/snapshots`, {
       method: 'POST',
       headers: { 'content-type': 'text/html', 'x-capture-filename': filenameStem },
       body: html,
@@ -153,13 +93,13 @@ async function pushSnapshot(html, filenameStem) {
  * @param {string} filename - Screenshot filename (e.g., viewgraph-host-ts.png)
  * @param {string} serverUrl - Server base URL
  */
-async function pushScreenshot(dataUrl, filename) {
+async function pushScreenshot(dataUrl, filename, serverUrl = SERVER_URL) {
   try {
     const base64 = dataUrl.split(',')[1];
     const binary = atob(base64);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    await fetch(`${SERVER_URL}/screenshots`, {
+    await fetch(`${serverUrl}/screenshots`, {
       method: 'POST',
       headers: { 'content-type': 'image/png', 'x-capture-filename': filename },
       body: bytes,
@@ -229,7 +169,7 @@ export default defineBackground(() => {
       const pushResult = await pushToServer(capture);
       if (screenshot && pushResult?.filename) {
         const snapshotStem = pushResult.filename.replace(/\.json$/, '');
-        await pushScreenshot(screenshot, snapshotStem);
+        await pushScreenshot(screenshot, snapshotStem, pushResult._serverUrl);
       }
 
       // Visual feedback: brief flash via content script
@@ -333,7 +273,7 @@ export default defineBackground(() => {
         // Push HTML snapshot if available
         if (result.snapshot && pushResult?.filename) {
           const snapshotStem = pushResult.filename.replace(/\.json$/, '');
-          await pushSnapshot(result.snapshot, snapshotStem);
+          await pushSnapshot(result.snapshot, snapshotStem, pushResult._serverUrl);
         }
 
         sendResponse({ ok: true, pushed: !!pushResult, filename: pushResult?.filename });
@@ -403,12 +343,12 @@ export default defineBackground(() => {
         // Push HTML snapshot if available
         if (result.snapshot && pushResult?.filename) {
           const snapshotStem = pushResult.filename.replace(/\.json$/, '');
-          await pushSnapshot(result.snapshot, snapshotStem);
+          await pushSnapshot(result.snapshot, snapshotStem, pushResult._serverUrl);
         }
 
         // Push screenshot PNG if captured
         if (screenshot && capture.metadata.screenshot) {
-          await pushScreenshot(screenshot, capture.metadata.screenshot);
+          await pushScreenshot(screenshot, capture.metadata.screenshot, pushResult?._serverUrl);
         }
         sendResponse({
           ok: true,

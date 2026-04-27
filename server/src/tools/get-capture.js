@@ -53,7 +53,10 @@ export function register(server, _indexer, capturesDir) {
             const index = readArchiveIndex(archiveDir);
             const entry = index.captures.find((c) => c.originalPath === filename);
             if (entry) {
-              const archivePath = path.join(archiveDir, entry.filename);
+              const archivePath = path.resolve(archiveDir, entry.filename);
+              if (!archivePath.startsWith(path.resolve(archiveDir) + path.sep)) {
+                return errorResponse(`Error: Invalid archive path for: ${filename}`);
+              }
               const content = await readFile(archivePath, 'utf-8');
               const size = Buffer.byteLength(content);
               const notice = NOTICE_CAPTURE + '\n\n';

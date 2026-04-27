@@ -9,6 +9,7 @@
  * @see ADR-013 native messaging transport
  */
 
+import path from 'path';
 import { LOG_PREFIX } from './constants.js';
 
 /**
@@ -80,7 +81,10 @@ export function createMessageHandler(deps) {
             // Read capture to get resolved annotations
             try {
               const { readFileSync } = await import('fs');
-              const raw = readFileSync(deps.capturesDir + '/' + entry.filename, 'utf-8');
+              const filePath = path.join(deps.capturesDir, path.basename(entry.filename));
+              const resolved = path.resolve(filePath);
+              if (!resolved.startsWith(path.resolve(deps.capturesDir) + path.sep)) continue;
+              const raw = readFileSync(resolved, 'utf-8');
               const capture = JSON.parse(raw);
               for (const ann of (capture.annotations || [])) {
                 if (ann.resolved) resolved.push({ filename: entry.filename, ...ann });

@@ -10,8 +10,7 @@
 import { z } from 'zod';
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { jsonResponse } from '#src/utils/tool-helpers.js';
-import { NOTICE_COMMENTS } from '#src/utils/tool-helpers.js';
+import { jsonResponse, NOTICE_COMMENTS } from '#src/utils/tool-helpers.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { wrapComment } from '#src/utils/sanitize.js';

@@ -253,9 +253,7 @@ export function create() {
   }
   function hideSettings() { settings.hide(); }
 
-  // Version info for help card
-  const extVer = chrome.runtime.getManifest?.()?.version || 'unknown';
-  // Version info now shown in Settings panel, not help card
+  // ── Server discovery for help card version info ──
   discoverServer(window.location.href).then(async (url) => {
     if (!_footer) return;
     if (url) {
