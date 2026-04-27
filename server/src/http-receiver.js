@@ -413,13 +413,15 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
     }
 
     // GET /annotations/resolved?url=... - resolved annotations for a URL
-    // Extension polls this on sidebar open to sync resolution state from Kiro
+    // Extension polls this on sidebar open to sync resolution state from Kiro.
+    // Returns resolved annotations with comment/type/severity for display,
+    // deduplicated by UUID (keeps the most recent resolution per annotation).
     if (method === 'GET' && url.startsWith('/annotations/resolved')) {
       const params = new URL(url, 'http://localhost').searchParams;
       const pageUrl = params.get('url');
       if (!pageUrl) return json(res, 400, { error: 'Missing url parameter' });
 
-      const resolved = [];
+      const seen = new Map(); // uuid -> enriched annotation (dedup, latest wins)
       for (const entry of indexer.list()) {
         try {
           const filePath = validateCapturePath(entry.filename, capturesDir);
@@ -427,13 +429,20 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
           const capture = JSON.parse(raw);
           if (!capture.metadata?.url?.includes(pageUrl)) continue;
           for (const ann of (capture.annotations || [])) {
-            if (ann.resolved && ann.uuid) {
-              resolved.push({ uuid: ann.uuid, resolution: ann.resolution });
+            if (ann.resolved && ann.uuid && !seen.has(ann.uuid)) {
+              seen.set(ann.uuid, {
+                uuid: ann.uuid,
+                comment: ann.comment || '',
+                type: ann.type || 'element',
+                severity: ann.severity || '',
+                ancestor: ann.ancestor || '',
+                resolution: ann.resolution,
+              });
             }
           }
         } catch { continue; }
       }
-      return json(res, 200, { resolved });
+      return json(res, 200, { resolved: [...seen.values()] });
     }
 
     // GET /captures/compare?a=file1&b=file2 - diff two captures

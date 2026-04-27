@@ -35,7 +35,7 @@ import { clearAuth } from './auth.js';
 import { renderReviewList } from './sidebar/review.js';
 import { scanForSuggestions } from './sidebar/suggestions.js';
 import { renderSuggestionBar, collapseSuggestions, resetSuggestions, showReloadHint } from './sidebar/suggestions-ui.js';
-import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from './sidebar/sync.js';
+import { syncResolved, loadResolvedHistory, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from './sidebar/sync.js';
 import { EVENTS, createEventBus } from './sidebar/events.js';
 import { createHeader } from './sidebar/header.js';
 import { createFooter } from './sidebar/footer.js';
@@ -73,6 +73,7 @@ let _footer = null;
 let _modeBar = null;
 let _popstateHandler = null;
 let _tooltip = null;
+let _serverResolvedHistory = [];
 
 /** Create and mount the sidebar. */
 export function create() {
@@ -480,6 +481,12 @@ export function create() {
     }
     _bus.emit(EVENTS.REFRESH);
   });
+  // Load server-side resolution history for the Resolved tab (survives extension reload)
+  loadResolvedHistory().then((history) => {
+    if (!_footer) return; // sidebar destroyed while loading
+    _serverResolvedHistory = history;
+    _bus.emit(EVENTS.REFRESH);
+  });
   startResolutionPolling(() => {
     const newResolved = getAnnotations().filter((a) => a.resolved).length;
     if (newResolved > _lastResolvedCount) {
@@ -655,6 +662,7 @@ export function refresh() {
     activeFilter,
     activeTypeFilters,
     agentName: getAgentName(),
+    serverResolvedHistory: _serverResolvedHistory,
   }, {
     onRefresh: () => refresh(),
     onShowPanel: (ann) => {
@@ -825,4 +833,5 @@ export function destroy() {
   activeFilter = 'open';
   _suggestionsCache = null;
   _trustLevel = null;
+  _serverResolvedHistory = [];
 }

@@ -46,7 +46,7 @@ import { FONT, COLOR, FONT_MONO } from './styles.js';
 export function renderReviewList(list, tabContainer, sidebarEl, state, callbacks) {
   list.replaceChildren();
 
-  const { annotations: anns, pendingRequests, activeFilter, activeTypeFilters, agentName } = state;
+  const { annotations: anns, pendingRequests, activeFilter, activeTypeFilters, agentName, serverResolvedHistory } = state;
 
   if (anns.length === 0) {
     const hint = document.createElement('div');
@@ -79,7 +79,7 @@ export function renderReviewList(list, tabContainer, sidebarEl, state, callbacks
   }
 
   // Filter tabs: All | Open | Resolved
-  renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, activeTypeFilters }, callbacks);
+  renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, activeTypeFilters, serverResolvedHistory }, callbacks);
 
   // Filtered items - grouped by send batch (BUG-028)
   const statusFiltered = activeFilter === 'all' ? anns : activeFilter === 'open' ? open : resolved;
@@ -109,10 +109,15 @@ export function renderReviewList(list, tabContainer, sidebarEl, state, callbacks
   }
 
   if (visible.length === 0) {
-    const empty = document.createElement('div');
-    empty.textContent = activeFilter === 'resolved' ? 'No resolved items yet' : 'No open items';
-    Object.assign(empty.style, { padding: '16px 12px', color: COLOR.muted, fontSize: '12px', textAlign: 'center', fontStyle: 'italic' });
-    list.appendChild(empty);
+    // Resolved tab: show server-side history when no local annotations match
+    if (activeFilter === 'resolved' && serverResolvedHistory?.length > 0) {
+      renderServerHistory(list, serverResolvedHistory);
+    } else {
+      const empty = document.createElement('div');
+      empty.textContent = activeFilter === 'resolved' ? 'No resolved items yet' : 'No open items';
+      Object.assign(empty.style, { padding: '16px 12px', color: COLOR.muted, fontSize: '12px', textAlign: 'center', fontStyle: 'italic' });
+      list.appendChild(empty);
+    }
   }
 
   list.scrollTop = list.scrollHeight;
@@ -178,12 +183,15 @@ function formatBatchLabel(sentAt) {
  * Render filter tabs (Open/Resolved/All), type toggles, and trash button.
  * Replaces tabContainer contents entirely.
  */
-function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, activeTypeFilters }, callbacks) {
+function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, activeTypeFilters, serverResolvedHistory }, callbacks) {
+  // Use server history count when no local resolved annotations exist
+  const resolvedCount = resolved.length > 0 ? resolved.length : (serverResolvedHistory?.length || 0);
+
   // Reuse existing tab bar if present, only update counts
   const existingBar = tabContainer.querySelector('div');
   if (existingBar && existingBar.children.length >= 3) {
     const tabs = existingBar.querySelectorAll('button');
-    const counts = [`Open (${open.length})`, `Resolved (${resolved.length})`, `All (${anns.length})`];
+    const counts = [`Open (${open.length})`, `Resolved (${resolvedCount})`, `All (${anns.length || resolvedCount})`];
     const keys = ['open', 'resolved', 'all'];
     tabs.forEach((tab, i) => {
       if (i < 3) {
@@ -212,8 +220,8 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
   const tabStyle = { flex: '1', padding: '6px 0', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '11px', fontWeight: '600', fontFamily: FONT, textAlign: 'center' };
   for (const { key, label } of [
     { key: 'open', label: `Open (${open.length})` },
-    { key: 'resolved', label: `Resolved (${resolved.length})` },
-    { key: 'all', label: `All (${anns.length})` },
+    { key: 'resolved', label: `Resolved (${resolvedCount})` },
+    { key: 'all', label: `All (${anns.length || resolvedCount})` },
   ]) {
     const tab = document.createElement('button');
     tab.textContent = label;
@@ -400,6 +408,96 @@ function createRequestEntry(req, callbacks) {
   }
 
   return entry;
+}
+
+// ──────────────────────────────────────────────
+// Server-side resolution history
+// ──────────────────────────────────────────────
+
+/**
+ * Render resolved annotations from server history (no local annotations needed).
+ * Shown in the Resolved tab after extension reload when in-memory annotations are gone.
+ * Entries are read-only - no edit/delete/spotlight actions.
+ *
+ * @param {HTMLElement} list - The scrollable list container
+ * @param {Array<{ uuid, comment, type, severity, ancestor, resolution }>} history
+ */
+function renderServerHistory(list, history) {
+  const header = document.createElement('div');
+  header.textContent = `${history.length} resolved from previous sessions`;
+  Object.assign(header.style, {
+    padding: '6px 12px', color: COLOR.muted, fontSize: '10px',
+    borderBottom: `1px solid ${COLOR.borderLight}`, fontFamily: FONT,
+    letterSpacing: '0.5px', textTransform: 'uppercase',
+  });
+  list.appendChild(header);
+
+  for (const ann of history) {
+    const entry = document.createElement('div');
+    Object.assign(entry.style, {
+      padding: '8px 12px', borderBottom: `1px solid ${COLOR.borderLight}`,
+      display: 'flex', alignItems: 'center', gap: '4px',
+    });
+
+    const label = document.createElement('span');
+    Object.assign(label.style, {
+      color: COLOR.muted, overflow: 'hidden', flex: '1',
+      display: 'flex', flexDirection: 'column', gap: '2px',
+    });
+
+    // Line 1: type badge + ancestor + comment (struck through)
+    const line1 = document.createElement('div');
+    Object.assign(line1.style, {
+      display: 'flex', alignItems: 'center', overflow: 'hidden',
+      whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxHeight: '20px',
+    });
+
+    const markerColor = getBadgeColor(ann);
+    const iconSvg = getBadgeIcon(ann);
+    if (iconSvg) {
+      const iconEl = document.createElement('span');
+      iconEl.innerHTML = iconSvg;
+      Object.assign(iconEl.style, { display: 'inline-flex', color: markerColor, flexShrink: '0', marginRight: '2px' });
+      line1.appendChild(iconEl);
+    }
+
+    if (ann.ancestor) {
+      const elBadge = document.createElement('span');
+      elBadge.textContent = ann.ancestor;
+      Object.assign(elBadge.style, {
+        background: COLOR.bgHover, color: '#93c5fd', fontSize: '10px', fontWeight: '500',
+        padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
+        fontFamily: FONT_MONO, flexShrink: '0',
+      });
+      line1.appendChild(elBadge);
+    }
+
+    const commentText = document.createElement('span');
+    commentText.textContent = ann.comment || '(no comment)';
+    Object.assign(commentText.style, {
+      overflow: 'hidden', textOverflow: 'ellipsis', textDecoration: 'line-through',
+    });
+    line1.appendChild(commentText);
+    label.appendChild(line1);
+
+    // Line 2: resolution summary
+    if (ann.resolution) {
+      const resLine = document.createElement('div');
+      const action = ann.resolution.action || 'fixed';
+      const by = ann.resolution.by || 'agent';
+      const summary = ann.resolution.summary || '';
+      resLine.textContent = `\u2713 ${action} by ${by}${summary ? ': ' + summary.slice(0, 80) : ''}`;
+      Object.assign(resLine.style, { color: COLOR.success, fontSize: '10px', marginTop: '2px', fontFamily: FONT });
+      label.appendChild(resLine);
+    }
+
+    const check = document.createElement('span');
+    check.appendChild(checkIcon(12, COLOR.success));
+    Object.assign(check.style, { padding: '2px', flexShrink: '0' });
+
+    entry.append(label, check);
+    list.appendChild(entry);
+  }
 }
 
 // ──────────────────────────────────────────────

@@ -60,6 +60,21 @@ export async function pollRequests(onRequests) {
   } catch { /* server offline */ }
 }
 
+/**
+ * Load resolved annotation history from the server for the current page.
+ * Returns enriched entries (comment, type, severity, ancestor, resolution)
+ * that can be rendered directly without needing local in-memory annotations.
+ * Used by the Resolved tab to show past resolutions after extension reload.
+ *
+ * @returns {Promise<Array<{ uuid, comment, type, severity, ancestor, resolution }>>}
+ */
+export async function loadResolvedHistory() {
+  try {
+    const { resolved } = await transport.getResolved(location.href);
+    return resolved || [];
+  } catch { return []; }
+}
+
 /** Start periodic polling for resolved annotations. */
 export function startResolutionPolling(onChanged) {
   stopResolutionPolling();
