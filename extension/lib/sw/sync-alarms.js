@@ -26,6 +26,9 @@ const PENDING_KEY = 'vg-pending-requests';
 /** Storage key for URLs with active annotations (set by sidebar on send). */
 const ACTIVE_URLS_KEY = 'vg-active-urls';
 
+/** Badge background color for pending requests (amber). */
+const BADGE_COLOR = '#f59e0b';
+
 /**
  * Start the sync alarm. Fires every 30s (unpacked) / 60s (published).
  */
@@ -80,7 +83,7 @@ async function _pollRequests() {
     const text = pending.length > 0 ? String(pending.length) : '';
     chrome.action.setBadgeText({ text });
     if (pending.length > 0) {
-      chrome.action.setBadgeBackgroundColor({ color: '#f59e0b' }); // amber
+      chrome.action.setBadgeBackgroundColor({ color: BADGE_COLOR });
     }
   } catch {
     // Server offline - clear badge

@@ -427,7 +427,17 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
           const filePath = validateCapturePath(entry.filename, capturesDir);
           const raw = await readFile(filePath, 'utf-8');
           const capture = JSON.parse(raw);
-          if (!capture.metadata?.url?.includes(pageUrl) && !pageUrl.includes(capture.metadata?.url)) continue;
+          // Match captures whose URL shares the same origin and path prefix.
+          const captureUrl = capture.metadata?.url;
+          if (!captureUrl) continue;
+          try {
+            const cu = new URL(captureUrl);
+            const pu = new URL(pageUrl.includes('://') ? pageUrl : `http://${pageUrl}`);
+            if (cu.hostname !== pu.hostname) continue;
+            if (pu.port && cu.port !== pu.port) continue;
+            // Path prefix match: either is a prefix of the other
+            if (pu.pathname !== '/' && !cu.pathname.startsWith(pu.pathname) && !pu.pathname.startsWith(cu.pathname)) continue;
+          } catch { continue; }
           for (const ann of (capture.annotations || [])) {
             if (ann.resolved && ann.uuid && !seen.has(ann.uuid)) {
               seen.set(ann.uuid, {

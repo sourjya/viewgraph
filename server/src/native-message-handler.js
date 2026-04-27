@@ -82,9 +82,9 @@ export function createMessageHandler(deps) {
             try {
               const { readFileSync } = await import('fs');
               const filePath = path.join(deps.capturesDir, path.basename(entry.filename));
-              const resolved = path.resolve(filePath);
-              if (!resolved.startsWith(path.resolve(deps.capturesDir) + path.sep)) continue;
-              const raw = readFileSync(resolved, 'utf-8');
+              const resolvedPath = path.resolve(filePath);
+              if (!resolvedPath.startsWith(path.resolve(deps.capturesDir) + path.sep)) continue;
+              const raw = readFileSync(resolvedPath, 'utf-8');
               const capture = JSON.parse(raw);
               for (const ann of (capture.annotations || [])) {
                 if (ann.resolved) resolved.push({ filename: entry.filename, ...ann });

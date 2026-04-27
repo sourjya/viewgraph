@@ -46,7 +46,7 @@ import { createTooltip } from './tooltip.js';
 import { COLOR } from './sidebar/styles.js';
 import { KEYS, set as storageSet } from './storage.js';
 import { discoverServer, getAgentName, classifyTrust } from './constants.js';
-import * as transport from './transport-client.js';
+import * as transport from '#lib/transport-client.js';
 import { stopJourney } from './session/journey-recorder.js';
 import { startShortcuts, stopShortcuts } from './ui/keyboard-shortcuts.js';
 import { ATTR } from './selector.js';

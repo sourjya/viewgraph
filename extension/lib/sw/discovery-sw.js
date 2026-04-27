@@ -17,15 +17,7 @@
  */
 
 import { normalizeUrl, extractFilePath, extractPort } from '#lib/url-utils.js';
-
-/** Default HTTP receiver port for MCP server communication. */
-const DEFAULT_HTTP_PORT = 9876;
-
-/** Max ports to scan when discovering servers. */
-const PORT_SCAN_RANGE = 4;
-
-/** Localhost bind address for all server connections. */
-const SERVER_HOST = '127.0.0.1';
+import { DEFAULT_HTTP_PORT, PORT_SCAN_RANGE, SERVER_HOST } from '#lib/constants.js';
 
 /** chrome.storage.local key for the persisted registry. */
 const REGISTRY_KEY = 'vg-server-registry';

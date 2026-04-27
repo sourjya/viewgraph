@@ -6,6 +6,7 @@ Tracks all maintainability reviews, findings, and their resolution status.
 
 | # | Date | Scope | Findings | Report |
 |---|---|---|---|---|
+| MRR-005 | 2026-04-27 | M19 service worker migration - sw/, transport-client, discovery, sidebar, background, mock, prompts | 12 new findings (1 HIGH, 6 MEDIUM, 5 LOW), 13 carried | [MRR-005](MRR-005-2026-04-27.md) |
 | MRR-004 | 2026-04-27 | Full codebase - server/src/, extension/lib/, extension/entrypoints/ | 14 new findings (4 HIGH, 6 MEDIUM, 4 LOW), 13 carried | [MRR-004](MRR-004-2026-04-27.md) |
 | MRR-003 | 2026-04-24 | Auth modules, annotate.js markers, sync.js, transport.js, settings.js, help.js | 4 new findings, 3 Phase 1 items resolved | [MRR-003](MRR-003-2026-04-24.md) |
 | MRR-001 | 2026-04-21 | sidebar/*.js, collectors/*.js, tools/*.js, server/src/*.js | 18 findings across 10 categories | [MRR-001](MRR-001-2026-04-21.md) |
@@ -13,23 +14,39 @@ Tracks all maintainability reviews, findings, and their resolution status.
 
 ## Open Findings
 
-### MRR-004 (New)
+### MRR-005 (New)
 
 | ID | Severity | Summary | Status |
 |---|---|---|---|
-| 11.1 | HIGH | Duplicate discoverServer().then() block in annotation-sidebar.js (~100 lines copy-pasted) | Open |
-| 11.8 | HIGH | 17 server tools bypass readAndParse (was 16, regressed) | Open |
-| 11.9 | HIGH | 84 hardcoded hex colors (was 76, regressed) | Open |
-| 11.12 | HIGH | 16 server tools have no dedicated test file (was 13, regressed) | Open |
-| 11.3 | MEDIUM | pushSnapshot/pushScreenshot use hardcoded SERVER_URL (multi-project bug) | Open |
-| 11.6 | MEDIUM | Duplicate height-collapse animation pattern in annotation-sidebar.js | Open |
-| 11.7 | MEDIUM | options.js hardcodes port 9876 with TODO comment | Open |
+| 12.1 | HIGH | Triple-maintained transport OPS map (handler + client + mock) | Open |
+| 12.2 | MEDIUM | Duplicated chrome.storage key strings across 5 files | Open |
+| 12.3 | MEDIUM | Redeclared network constants in discovery-sw.js | Open |
+| 12.4 | HIGH | Duplicate discoverServer block persists (supersedes 11.1) | Open |
+| 12.5 | MEDIUM | mockChrome missing storage.session in defaults | Open |
+| 12.6 | MEDIUM | mockChrome double-merge pattern is fragile | Open |
+| 12.7 | MEDIUM | server/src/prompts.js has no test file | Open |
+| 12.8 | LOW | Hardcoded badge color in sync-alarms.js | Open |
+| 12.9 | LOW | discovery.js getAllServers() is a degraded stub | Open |
+| 12.10 | LOW | 15 empty catch blocks in sw/ modules (3 uncommented) | Open |
+| 12.11 | LOW | vg-debug-fullstack.md missing [CAPTURED_TEXT] delimiter docs | Open |
+| 12.12 | LOW | annotation-sidebar.js uses relative import instead of #lib/ | Open |
+
+### MRR-004 (Carried)
+
+| ID | Severity | Summary | Status |
+|---|---|---|---|
+| 11.1 | HIGH | Duplicate discoverServer block | **Superseded by 12.4** |
+| 11.8 | HIGH | 17 server tools bypass readAndParse | Open |
+| 11.9 | HIGH | 84 hardcoded hex colors | Open |
+| 11.12 | HIGH | 17 server tools have no dedicated test file (was 16, +prompts.js) | Open |
+| 11.3 | MEDIUM | pushSnapshot/pushScreenshot hardcoded SERVER_URL | **Improved** by M19 |
+| 11.6 | MEDIUM | Duplicate height-collapse animation pattern | Open |
+| 11.7 | MEDIUM | options.js hardcodes port 9876 | Open |
 | 11.10 | MEDIUM | 7 register() signature variations across 38 tools | Open |
-| 11.11 | MEDIUM | 76 lines of import+register boilerplate in server/index.js | Open |
-| 11.13 | MEDIUM | sidebar/toggles.js has no test file (181 lines) | Open |
-| 11.2 | LOW | Dead lookupCapturesDir function in background.js (31 lines) | Open |
-| 11.4 | LOW | Unused extVer variable in annotation-sidebar.js | Open |
-| 11.5 | LOW | Double import from same module in get-unresolved.js | Open |
+| 11.11 | MEDIUM | 76 lines import+register boilerplate in server/index.js | Open |
+| 11.13 | MEDIUM | sidebar/toggles.js has no test file | Open |
+| 11.2 | LOW | Dead lookupCapturesDir function in background.js | Open |
+| 11.5 | LOW | Double import in get-unresolved.js | Open |
 | 11.14 | LOW | 14 innerHTML assignments in sidebar modules | Open |
 
 ### MRR-003 (Carried)
@@ -45,7 +62,7 @@ Tracks all maintainability reviews, findings, and their resolution status.
 | ID | Severity | Summary | Status |
 |---|---|---|---|
 | 5.2 | HIGH | F19 wrapping missing on tools (improved to 13/37) | Open - improved |
-| 2.2 | MEDIUM | annotation-sidebar.js still 830 lines/25 imports | Open |
+| 2.2 | MEDIUM | annotation-sidebar.js still 838 lines/25 imports | Open |
 | 6.3 | MEDIUM | sidebar-misc/mcp test files are catch-all monoliths | Open |
 | 7.1 | MEDIUM | Missing JSDoc on largest sidebar functions | Open |
 | 1.3 | MEDIUM | Hover listener pairs use raw mouseenter/mouseleave | Open |
@@ -62,6 +79,19 @@ Tracks all maintainability reviews, findings, and their resolution status.
 | P1.6 | addHover helper extraction | **Done** |
 
 ## Resolved Findings
+
+### MRR-004 → MRR-005
+
+| ID | Severity | Summary | Resolved | How |
+|---|---|---|---|---|
+| 11.3 | MEDIUM | pushSnapshot/pushScreenshot hardcoded SERVER_URL | 2026-04-27 | M19: pushResult._serverUrl passed through capture handler |
+| 11.4 | LOW | Unused extVer variable in annotation-sidebar.js | 2026-04-27 | M19: variable renamed to extVersion, used in version check |
+
+### Superseded by MRR-005
+
+| ID | Severity | Summary | Superseded by |
+|---|---|---|---|
+| 11.1 | HIGH | Duplicate discoverServer block | 12.4 (still open, M19 did not fix) |
 
 ### MRR-001 → MRR-003
 
