@@ -14,6 +14,9 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - Panic capture (Ctrl+Shift+V / Cmd+Shift+V): instant mid-action DOM + screenshot snapshot with camera-shutter flash. Configurable via browser extension shortcuts.
 - Live annotation status: timeline shows real-time lifecycle (queued → fixing → resolved) as the agent works. Server emits WebSocket events on tool calls.
 
+### Architecture
+- Service worker communication migration specced (M19): moves all extension-to-server communication from content script to service worker. Enables background sync, persistent auth, badge notifications, single connection. [ADR-017](../decisions/ADR-017-sw-communication-migration.md), [research](../architecture/service-worker-migration-research.md), [spec](../../.kiro/specs/sw-communication/).
+
 ---
 
 ## [0.4.8] - 2026-04-26

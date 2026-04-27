@@ -67,6 +67,9 @@ Visual timeline in the Inspect tab showing all captures for the current URL with
 ### Native Messaging Transport
 Replace localhost HTTP with Chrome/Firefox native messaging for extension-to-server communication. Eliminates the localhost HTTP attack surface.
 
+### Service Worker Communication Hub
+Move all extension-to-server communication (HTTP, WebSocket, auth, polling) from the content script to the service worker. Enables background annotation sync even when the sidebar is closed, persistent HMAC auth sessions, badge notifications when the agent requests a capture, and a single server connection shared across all tabs instead of one per sidebar. Net security improvement - all network I/O moves out of the content script. [ADR-017](https://github.com/sourjya/viewgraph/blob/main/docs/decisions/ADR-017-sw-communication-migration.md).
+
 ### Extension Store Listings
 Firefox Add-ons listing is live. Chrome Web Store is pending review.
 

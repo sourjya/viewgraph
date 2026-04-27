@@ -22,6 +22,7 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | - | Plugin System | [`plugin-system/`](./plugin-system/) | Specced |
 | - | npx viewgraph-init | [`npx-init/`](./npx-init/) | Specced |
 | - | Format Migration | [`format-migration/`](./format-migration/) | Specced |
+| M19 | SW Communication Migration | [`sw-communication/`](./sw-communication/) | Specced |
 
 ## Architecture Decisions
 
@@ -43,6 +44,7 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | ADR-014 | [`transient-ui-state-capture`](../../docs/decisions/ADR-014-transient-ui-state-capture.md) | Transient DOM mutation capture (toasts, flash, reflow) |
 | ADR-015 | [`hmac-signed-localhost`](../../docs/decisions/ADR-015-hmac-signed-localhost.md) | HMAC-signed HTTP for localhost auth |
 | ADR-016 | [`native-messaging-default`](../../docs/decisions/ADR-016-native-messaging-default.md) | Native messaging as default transport |
+| ADR-017 | [`sw-communication-migration`](../../docs/decisions/ADR-017-sw-communication-migration.md) | Service worker owns all server communication |
 
 ## Architecture Docs
 
@@ -54,6 +56,7 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | [Security Assessment](../../docs/architecture/security-assessment.md) | Threat model and mitigations |
 | [UX Design](../../docs/architecture/ux-analysis.md) | Two-tab sidebar model, design decisions, user journeys |
 | [Ideation Pipeline](../../docs/architecture/ideation-pipeline.md) | Idea mode data flow, annotation-to-spec pipeline |
+| [SW Migration Research](../../docs/architecture/service-worker-migration-research.md) | Service worker communication migration analysis |
 
 ## Ideas (not yet specced)
 

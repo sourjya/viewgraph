@@ -758,6 +758,34 @@ to specific ViewGraph features, tools, workflows, and remaining gaps.
 **Depends on:** Chrome Web Store and Firefox Add-ons approval (need stable extension IDs).
 **Reference:** [ADR-010](../decisions/ADR-010-remove-http-auth-beta.md)
 
+---
+
+## Milestone 19: Service Worker Communication Migration
+
+**Goal:** Move all extension-to-server communication (HTTP, WebSocket, auth, polling) from the content script to the service worker. Enables background sync, persistent auth, single connection, and badge notifications.
+
+**Spec:** [`.kiro/specs/sw-communication/`](../../.kiro/specs/sw-communication/)
+**Research:** [`docs/architecture/service-worker-migration-research.md`](../architecture/service-worker-migration-research.md)
+**ADR:** [`ADR-017`](../decisions/ADR-017-sw-communication-migration.md)
+**Status:** Specced
+
+| # | Task | Details |
+|---|---|---|
+| 19.0 | Transport client proxy | `transport-client.js` - same API as `transport.js`, routes via `chrome.runtime.sendMessage`. Zero behavior change. |
+| 19.1 | Discovery + auth in SW | Move port scanning and HMAC handshake to service worker. Auth persists in `chrome.storage.session`. |
+| 19.2 | HTTP transport in SW | All HTTP requests go through service worker. Content script has zero direct `fetch()` to server. |
+| 19.3 | WebSocket in SW | Single WebSocket connection in service worker. Events written to `chrome.storage.local`. Content script reads via `onChanged`. |
+| 19.4 | Alarm-based sync | `chrome.alarms` polls for resolved annotations and pending requests when sidebar is closed. Badge on pending requests. |
+| 19.5 | Cleanup + docs | Remove dead code from content script. Update security assessment. Verify bundle size decrease. |
+
+**Security impact:** Net positive. All network I/O moves out of content script (hostile page context) into isolated service worker. Auth credentials no longer in content script memory. Single auth session instead of per-tab. See [research doc](../architecture/service-worker-migration-research.md#4-security-impact-analysis) for full analysis.
+
+**Depends on:** F21 (HMAC auth), F22 (native messaging default)
+**Effort:** 3-5 days (6 phases, each independently deployable)
+
+---
+
+## Milestone 18: Go-To-Market Preparation (Future)
 
 **Goal:** Positioning, content, and documentation site for public launch.
 
