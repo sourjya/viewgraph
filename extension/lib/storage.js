@@ -22,12 +22,24 @@ export const KEYS = {
   settings: 'vg-settings',
   blockedReason: 'vg-blocked-reason',
   pendingRequests: 'vg-pending-requests',
+  // M19: Service worker communication keys
+  serverRegistry: 'vg-server-registry',
+  serverUrl: 'vg-server-url',
+  authState: 'vg-auth-state',
+  wsEvents: 'vg-ws-events',
+  activeUrls: 'vg-active-urls',
   // Per-page annotation keys use a dynamic prefix - see annotationKey()
+  // Per-page resolved keys use a dynamic prefix - see resolvedKey()
 };
 
 /** Annotation storage key for a given URL. */
 export function annotationKey(url) {
   return `vg-annotations-${url}`;
+}
+
+/** Resolved annotations storage key for a given URL. */
+export function resolvedKey(url) {
+  return `vg-resolved-${url}`;
 }
 
 // ---------------------------------------------------------------------------

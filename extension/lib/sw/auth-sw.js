@@ -13,8 +13,10 @@
  * @see .kiro/specs/sw-communication/design.md - auth state in storage.session
  */
 
+import { KEYS } from '#lib/storage.js';
+
 /** chrome.storage.session key for auth state. */
-const AUTH_KEY = 'vg-auth-state';
+const AUTH_KEY = KEYS.authState;
 
 /** In-memory auth state (restored from storage on cold start). */
 let _sessionId = null;
@@ -59,7 +61,8 @@ export async function authenticate(serverUrl) {
     _authenticated = true;
     await _persistState();
     return true;
-  } catch {
+  } catch (err) {
+    console.warn('[ViewGraph] Auth handshake failed:', err?.message);
     _clearState();
     return false;
   }

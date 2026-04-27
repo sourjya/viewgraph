@@ -67,6 +67,12 @@ export function mockChrome(overrides = {}) {
         ...overrides.storage?.sync,
       },
       onChanged: { addListener: vi.fn(), removeListener: vi.fn(), ...overrides.storage?.onChanged },
+      session: {
+        get: vi.fn((key) => Promise.resolve({})),
+        set: vi.fn(() => Promise.resolve()),
+        remove: vi.fn(() => Promise.resolve()),
+        ...overrides.storage?.session,
+      },
       ...overrides.storage,
     },
     tabs: {

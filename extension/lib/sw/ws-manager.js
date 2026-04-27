@@ -13,8 +13,10 @@
  * @see .kiro/specs/sw-communication/design.md - WS manager design
  */
 
+import { KEYS } from '#lib/storage.js';
+
 /** Storage key for the circular event buffer. */
-const WS_EVENTS_KEY = 'vg-ws-events';
+const WS_EVENTS_KEY = KEYS.wsEvents;
 
 /** Keepalive interval (ms). Prevents SW termination. */
 const KEEPALIVE_MS = 20000;
@@ -94,7 +96,8 @@ export function createWsManager(wsUrl) {
         if (!_intentionalClose && _sidebarCount > 0) _scheduleReconnect();
       };
       _ws.onerror = () => { /* onclose will fire after onerror */ };
-    } catch {
+    } catch (err) {
+      console.warn('[ViewGraph] WS connect failed:', err?.message);
       _ws = null; // WS constructor failed - don't crash SW
     }
   }
@@ -147,7 +150,7 @@ export function createWsManager(wsUrl) {
       const event = JSON.parse(e.data);
       // Write to storage as a single-element array (triggers onChanged)
       chrome.storage.local.set({ [WS_EVENTS_KEY]: [event] });
-    } catch { /* malformed message */ }
+    } catch (err) { console.warn('[ViewGraph] Malformed WS message:', err?.message); }
   }
 
   return { sidebarOpened, sidebarClosed, destroy };

@@ -18,12 +18,13 @@
 
 import { normalizeUrl, extractFilePath, extractPort } from '#lib/url-utils.js';
 import { DEFAULT_HTTP_PORT, PORT_SCAN_RANGE, SERVER_HOST } from '#lib/constants.js';
+import { KEYS } from '#lib/storage.js';
 
 /** chrome.storage.local key for the persisted registry. */
-const REGISTRY_KEY = 'vg-server-registry';
+const REGISTRY_KEY = KEYS.serverRegistry;
 
 /** chrome.storage.local key for the current server URL (read by transport-client). */
-const SERVER_URL_KEY = 'vg-server-url';
+const SERVER_URL_KEY = KEYS.serverUrl;
 
 /** Cache duration for the server registry (ms). */
 const REGISTRY_TTL = 15000;

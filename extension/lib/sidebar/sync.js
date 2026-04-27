@@ -11,6 +11,7 @@
 
 import * as transport from '#lib/transport-client.js';
 import { getAnnotations } from '#lib/annotate.js';
+import { KEYS, resolvedKey } from '#lib/storage.js';
 
 /**
  * Sync resolved state from the server. Polls for resolved annotations
@@ -73,12 +74,6 @@ export async function loadResolvedHistory() {
 // M19: Storage-based sync (replaces polling when SW is active)
 // ──────────────────────────────────────────────
 
-/** Storage key prefix for resolved annotations (keyed by page URL). */
-const RESOLVED_KEY_PREFIX = 'vg-resolved-';
-
-/** Storage key for pending capture requests. */
-const PENDING_KEY = 'vg-pending-requests';
-
 /** @type {Function|null} Registered storage change listener. */
 let _storageListener = null;
 
@@ -94,17 +89,17 @@ let _storageListener = null;
  */
 export async function syncFromStorage(onChanged, onRequests) {
   // Read current resolved state
-  const resolvedKey = RESOLVED_KEY_PREFIX + location.href;
+  const rKey = resolvedKey(location.href);
   try {
-    const data = await chrome.storage.local.get(resolvedKey);
-    const resolved = data[resolvedKey] || [];
+    const data = await chrome.storage.local.get(rKey);
+    const resolved = data[rKey] || [];
     if (resolved.length > 0 && onChanged) onChanged(resolved);
   } catch { /* no stored data */ }
 
   // Read current pending requests
   try {
-    const data = await chrome.storage.local.get(PENDING_KEY);
-    const requests = data[PENDING_KEY] || [];
+    const data = await chrome.storage.local.get(KEYS.pendingRequests);
+    const requests = data[KEYS.pendingRequests] || [];
     if (onRequests) onRequests(requests);
   } catch {
     if (onRequests) onRequests([]);
@@ -114,16 +109,16 @@ export async function syncFromStorage(onChanged, onRequests) {
   _storageListener = (changes, area) => {
     if (area !== 'local') return;
     // WS events (annotation:resolved, annotation:status, etc.)
-    if (changes['vg-ws-events']?.newValue && onChanged) {
-      onChanged(changes['vg-ws-events'].newValue);
+    if (changes[KEYS.wsEvents]?.newValue && onChanged) {
+      onChanged(changes[KEYS.wsEvents].newValue);
     }
     // Resolved annotations updated by alarm sync
-    if (changes[resolvedKey]?.newValue && onChanged) {
-      onChanged(changes[resolvedKey].newValue);
+    if (changes[rKey]?.newValue && onChanged) {
+      onChanged(changes[rKey].newValue);
     }
     // Pending requests updated by alarm sync
-    if (changes[PENDING_KEY]?.newValue && onRequests) {
-      onRequests(changes[PENDING_KEY].newValue);
+    if (changes[KEYS.pendingRequests]?.newValue && onRequests) {
+      onRequests(changes[KEYS.pendingRequests].newValue);
     }
   };
   chrome.storage.onChanged.addListener(_storageListener);

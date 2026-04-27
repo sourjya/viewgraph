@@ -8,6 +8,7 @@
  */
 
 import { ATTR } from '#lib/selector.js';
+import { KEYS } from '#lib/storage.js';
 import { chevronLeftIcon } from './icons.js';
 import * as transport from '#lib/transport-client.js';
 import { COLOR, FONT } from './styles.js';
@@ -197,13 +198,13 @@ export function createSettings() {
   captureOpts.append(jsonToggle.row, htmlToggle.row, ssToggle.row);
 
   // Load saved settings
-  chrome.storage.local.get('vg-settings', (result) => {
-    const s = result['vg-settings'] || {};
+  chrome.storage.local.get(KEYS.settings, (result) => {
+    const s = result[KEYS.settings] || {};
     htmlToggle.input.checked = !!s.html;
     ssToggle.input.checked = !!s.screenshot;
   });
   function saveSettings() {
-    chrome.storage.local.set({ 'vg-settings': { html: htmlToggle.input.checked, screenshot: ssToggle.input.checked } });
+    chrome.storage.local.set({ [KEYS.settings]: { html: htmlToggle.input.checked, screenshot: ssToggle.input.checked } });
   }
   htmlToggle.input.addEventListener('change', saveSettings);
   ssToggle.input.addEventListener('change', saveSettings);

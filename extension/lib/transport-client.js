@@ -18,11 +18,13 @@
  * @see .kiro/specs/sw-communication/design.md - message protocol spec
  */
 
+import { KEYS } from '#lib/storage.js';
+
 /** Storage key for WebSocket events written by the SW ws-manager. */
-const WS_EVENTS_KEY = 'vg-ws-events';
+const WS_EVENTS_KEY = KEYS.wsEvents;
 
 /** Storage key for the current server URL written by SW discovery. */
-const SERVER_URL_KEY = 'vg-server-url';
+const SERVER_URL_KEY = KEYS.serverUrl;
 
 /** @type {Map<string, Set<function>>} Event listeners keyed by event type. */
 const _listeners = new Map();

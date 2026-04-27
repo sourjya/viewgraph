@@ -13,18 +13,16 @@
  */
 
 import * as transport from '#lib/transport.js';
+import { KEYS, resolvedKey } from '#lib/storage.js';
 
 /** Alarm name. */
 const ALARM_NAME = 'vg-sync';
 
-/** Storage key prefix for resolved annotations (keyed by page URL). */
-const RESOLVED_KEY_PREFIX = 'vg-resolved-';
-
 /** Storage key for pending capture requests. */
-const PENDING_KEY = 'vg-pending-requests';
+const PENDING_KEY = KEYS.pendingRequests;
 
 /** Storage key for URLs with active annotations (set by sidebar on send). */
-const ACTIVE_URLS_KEY = 'vg-active-urls';
+const ACTIVE_URLS_KEY = KEYS.activeUrls;
 
 /** Badge background color for pending requests (amber). */
 const BADGE_COLOR = '#f59e0b';
@@ -64,7 +62,7 @@ async function _pollResolved() {
       try {
         const { resolved } = await transport.getResolved(url);
         if (resolved?.length) {
-          await chrome.storage.local.set({ [RESOLVED_KEY_PREFIX + url]: resolved });
+          await chrome.storage.local.set({ [resolvedKey(url)]: resolved });
         }
       } catch { /* server offline for this URL */ }
     }
@@ -85,8 +83,9 @@ async function _pollRequests() {
     if (pending.length > 0) {
       chrome.action.setBadgeBackgroundColor({ color: BADGE_COLOR });
     }
-  } catch {
+  } catch (err) {
     // Server offline - clear badge
+    console.warn('[ViewGraph] Sync poll failed:', err?.message);
     try { chrome.action.setBadgeText({ text: '' }); } catch { /* tests */ }
   }
 }
