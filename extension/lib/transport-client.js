@@ -44,6 +44,8 @@ const _listeners = new Map();
 function _send(op, args = {}) {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage({ type: 'vg-transport', op, args }, (response) => {
+      // Guard: chrome may be torn down in tests before this callback fires
+      if (typeof chrome === 'undefined') return reject(new Error('Extension context invalidated'));
       if (chrome.runtime.lastError) {
         return reject(new Error(chrome.runtime.lastError.message));
       }
