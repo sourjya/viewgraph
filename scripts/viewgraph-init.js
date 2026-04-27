@@ -46,7 +46,7 @@ const AGENTS = [
   { name: 'Cline', dir: '.cline', file: '.cline/mcp.json' },
 ];
 
-/** MCP config block for ViewGraph. */
+/** MCP config block for ViewGraph + Chrome DevTools MCP. */
 function mcpConfig() {
   return {
     mcpServers: {
@@ -61,6 +61,21 @@ function mcpConfig() {
           'get_annotations', 'get_annotation_context', 'resolve_annotation',
           'get_unresolved', 'request_capture', 'get_request_status',
           'get_fidelity_report', 'find_source', 'get_capture_stats', 'get_session_status',
+        ],
+      },
+      'chrome-devtools': {
+        command: 'npx',
+        args: ['-y', 'chrome-devtools-mcp@latest', '--headless', '--isolated'],
+        autoApprove: [
+          'list_pages', 'select_page', 'new_page', 'close_page',
+          'navigate_page', 'wait_for', 'take_snapshot', 'take_screenshot',
+          'click', 'fill', 'fill_form', 'hover', 'type_text', 'press_key',
+          'evaluate_script', 'emulate', 'resize_page',
+          'list_console_messages', 'get_console_message',
+          'list_network_requests', 'get_network_request',
+          'lighthouse_audit',
+          'performance_start_trace', 'performance_stop_trace',
+          'performance_analyze_insight', 'take_memory_snapshot',
         ],
       },
     },
