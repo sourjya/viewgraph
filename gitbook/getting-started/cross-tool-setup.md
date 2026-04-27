@@ -24,11 +24,35 @@ If you haven't already, follow the [Quick Start](../getting-started/quick-start.
   "mcpServers": {
     "viewgraph": {
       "command": "npx",
-      "args": ["-y", "@viewgraph/core"]
+      "args": ["-y", "@viewgraph/core"],
+      "autoApprove": [
+        "list_captures",
+        "get_capture",
+        "get_latest_capture",
+        "get_page_summary",
+        "get_elements_by_role",
+        "get_interactive_elements",
+        "find_missing_testids",
+        "audit_accessibility",
+        "audit_layout",
+        "compare_captures",
+        "get_annotations",
+        "get_annotation_context",
+        "resolve_annotation",
+        "get_unresolved",
+        "request_capture",
+        "get_request_status",
+        "get_fidelity_report",
+        "find_source",
+        "get_capture_stats",
+        "get_session_status"
+      ]
     }
   }
 }
 ```
+
+The `autoApprove` list lets the agent call these tools without asking you each time. All tools listed above are read-only or low-risk. Tools like `resolve_annotation` modify capture files but only to mark annotations as resolved - they don't change your source code.
 
 3. Run `viewgraph-init` from your project folder to configure URL patterns.
 
@@ -43,21 +67,47 @@ Add it to your MCP config (same file as ViewGraph):
 ```json
 {
   "mcpServers": {
-    "viewgraph": {
-      "command": "npx",
-      "args": ["-y", "@viewgraph/core"]
-    },
+    "viewgraph": { "..." : "..." },
     "chrome-devtools": {
       "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp@latest"]
+      "args": ["-y", "chrome-devtools-mcp@latest"],
+      "autoApprove": [
+        "list_pages", "select_page", "new_page", "close_page",
+        "navigate_page", "wait_for", "take_snapshot", "take_screenshot",
+        "click", "fill", "fill_form", "hover", "type_text", "press_key",
+        "evaluate_script", "emulate", "resize_page",
+        "list_console_messages", "get_console_message",
+        "list_network_requests", "get_network_request",
+        "lighthouse_audit",
+        "performance_start_trace", "performance_stop_trace",
+        "performance_analyze_insight"
+      ]
     }
   }
 }
 ```
 
-That's it. Chrome DevTools MCP starts automatically when the agent uses a browser tool. It launches its own Chrome instance.
+### Headless mode (WSL, Linux, CI)
 
-**Important:** Chrome DevTools MCP controls a separate Chrome window. Your ViewGraph extension runs in your regular Chrome. These are two different browser instances - they don't interfere with each other.
+If you don't have a display (WSL, remote server, CI), run Chrome headless with an isolated profile:
+
+```json
+{
+  "chrome-devtools": {
+    "command": "npx",
+    "args": [
+      "-y", "chrome-devtools-mcp@latest",
+      "--headless",
+      "--isolated"
+    ],
+    "autoApprove": ["...same as above..."]
+  }
+}
+```
+
+If Chrome isn't on the default path, add `--executable-path=/path/to/chrome`. For snap-installed Chromium on Ubuntu: `--executable-path=/snap/bin/chromium`.
+
+**Important:** Chrome DevTools MCP controls a separate Chrome window (or headless instance). Your ViewGraph extension runs in your regular Chrome. These are two different browser instances - they don't interfere with each other.
 
 ## Step 3: Install TracePulse (Optional)
 

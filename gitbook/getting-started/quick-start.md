@@ -28,11 +28,21 @@ Add ViewGraph to your agent's MCP config. The server runs automatically via [`np
   "mcpServers": {
     "viewgraph": {
       "command": "npx",
-      "args": ["-y", "@viewgraph/core"]
+      "args": ["-y", "@viewgraph/core"],
+      "autoApprove": [
+        "list_captures", "get_capture", "get_latest_capture", "get_page_summary",
+        "get_elements_by_role", "get_interactive_elements", "find_missing_testids",
+        "audit_accessibility", "audit_layout", "compare_captures",
+        "get_annotations", "get_annotation_context", "resolve_annotation",
+        "get_unresolved", "request_capture", "get_request_status",
+        "get_fidelity_report", "find_source", "get_capture_stats", "get_session_status"
+      ]
     }
   }
 }
 ```
+
+The `autoApprove` list lets the agent call these tools without asking permission each time. All listed tools are read-only or low-risk (they don't modify your source code).
 
 **For Claude Code** (`~/.claude/mcp.json`), **Cursor**, **Windsurf**, **Cline** - same JSON, different config file location. See [Installation](installation.md) for each agent's config path.
 
