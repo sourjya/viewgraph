@@ -17,7 +17,7 @@ import { join, basename } from 'path';
 import { fileURLToPath } from 'url';
 
 /** Directory containing prompt markdown files (relative to package root). */
-const PROMPTS_DIR = join(fileURLToPath(import.meta.url), '..', '..', 'power', 'prompts');
+const PROMPTS_DIR = join(fileURLToPath(import.meta.url), '..', '..', '..', 'power', 'prompts');
 
 /**
  * Parse YAML frontmatter from a markdown file.
