@@ -170,7 +170,42 @@ Backend verification: devwatch (server logs, build errors, edit-verify loop)
 
 The `@vg-debug-fullstack` skill teaches the agent to use all three in sequence. That's the product story - not three competing tools, but three layers of a complete debugging stack.
 
-## 8. Implementation Plan
+## 8. Skill Delivery Strategy
+
+### Multi-Channel Delivery (Do Both)
+
+| Channel | Audience | Mechanism | Friction |
+|---|---|---|---|
+| **MCP SERVER_INSTRUCTIONS** | All MCP clients | Embedded in server startup, every client reads it | Zero - automatic |
+| **MCP prompts/list** | All MCP clients that support prompt discovery | Server exposes prompt templates via MCP spec | Zero - automatic |
+| **Kiro Power package** | Kiro users | `viewgraph-init` copies prompts/steering/hooks | One-time setup |
+| **Claude plugin** | Claude Code users | `.claude-plugin/` in repo, `/plugin install` | One-time setup |
+| **Gemini extension** | Gemini CLI users | `gemini-extension.json`, `gemini extensions install` | One-time setup |
+
+SERVER_INSTRUCTIONS is the baseline that works everywhere. Power is for Kiro-specific features (hooks, steering). Agent-specific plugins are for agents that support them. Don't pick one - layer all three.
+
+### Graceful Degradation in Cross-Tool Skills
+
+Skills must detect available tools and adapt, not assume all tools are present:
+
+```markdown
+@vg-debug-fullstack:
+
+1. Check available tools:
+   - ViewGraph tools present? -> use for DOM/a11y/layout
+   - Chrome DevTools MCP tools present? -> use for console/network/performance
+   - devwatch tools present? -> use for server logs/build errors
+
+2. Use what's available:
+   - All three: full-stack sequence (backend -> browser -> visual)
+   - ViewGraph only: DOM-focused debug (annotations -> audit -> fix -> verify)
+   - ViewGraph + Chrome DevTools: frontend debug (console -> DOM -> fix)
+   - ViewGraph + devwatch: backend-aware UI debug (server errors -> UI correlation)
+```
+
+The agent already knows which MCP tools are connected. Skills say "if you have X, use it for Y" rather than "call X." This means `@vg-debug-ui` (ViewGraph-only) is the primary skill that always works, and `@vg-debug-fullstack` enhances progressively as more tools are available.
+
+## 9. Implementation Plan
 
 ### Phase 1: Skills (1-2 days)
 
