@@ -35,7 +35,7 @@ import { startTransientObserver, stopTransientObserver } from './collectors/tran
 import { renderReviewList } from './sidebar/review.js';
 import { scanForSuggestions } from './sidebar/suggestions.js';
 import { renderSuggestionBar, collapseSuggestions, resetSuggestions, showReloadHint } from './sidebar/suggestions-ui.js';
-import { syncResolved, loadResolvedHistory, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from './sidebar/sync.js';
+import { syncResolved, loadResolvedHistory, syncFromStorage, stopSync } from './sidebar/sync.js';
 import { EVENTS, createEventBus } from './sidebar/events.js';
 import { createHeader } from './sidebar/header.js';
 import { createFooter } from './sidebar/footer.js';
@@ -480,17 +480,21 @@ export function create() {
     _serverResolvedHistory = history;
     _bus.emit(EVENTS.REFRESH);
   });
-  startResolutionPolling(() => {
-    const newResolved = getAnnotations().filter((a) => a.resolved).length;
-    if (newResolved > _lastResolvedCount) {
-      const diff = newResolved - _lastResolvedCount;
-      _lastResolvedCount = newResolved;
-      const list = sidebarEl?.querySelector(`[${ATTR}="list"]`);
-      if (list) showReloadHint(list, diff);
-    }
-    _bus.emit(EVENTS.REFRESH);
-  });
-  startRequestPolling((reqs) => { pendingRequests = reqs || []; });
+  // M19: Storage-based sync replaces polling. SW writes events to storage,
+  // sidebar reads via onChanged listener.
+  syncFromStorage(
+    () => {
+      const newResolved = getAnnotations().filter((a) => a.resolved).length;
+      if (newResolved > _lastResolvedCount) {
+        const diff = newResolved - _lastResolvedCount;
+        _lastResolvedCount = newResolved;
+        const list = sidebarEl?.querySelector(`[${ATTR}="list"]`);
+        if (list) showReloadHint(list, diff);
+      }
+      _bus.emit(EVENTS.REFRESH);
+    },
+    (reqs) => { pendingRequests = reqs || []; },
+  );
 
   transport.onEvent('annotation:resolved', (msg) => {
     _bus.emit(EVENTS.ANNOTATION_RESOLVED, { uuid: msg.uuid, resolution: msg.resolution });
@@ -811,8 +815,8 @@ export function destroy() {
   // M19: auth and transport lifecycle are SW-internal
   // M19: Notify SW that this sidebar closed (may disconnect WebSocket)
   try { chrome.runtime.sendMessage({ type: 'vg-sidebar-closed' }, () => {}); } catch { /* tests */ }
-  stopRequestPolling();
-  stopResolutionPolling();
+  // M19: Stop storage-based sync listener
+  stopSync();
   if (hostEl) { hostEl.remove(); hostEl = null; }
   if (sidebarEl) { sidebarEl = null; }
   _shadowRoot = null;

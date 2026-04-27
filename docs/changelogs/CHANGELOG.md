@@ -8,6 +8,33 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ---
 
+## [Unreleased]
+
+### Architecture - M19: Service Worker Communication Migration
+- All extension-to-server HTTP communication moved from content script to service worker
+- New `transport-client.js` - content script proxy that routes all calls through `chrome.runtime.sendMessage`
+- New `sw/transport-handler.js` - service worker message router with 14-operation whitelist
+- New `sw/discovery-sw.js` - server discovery with port scanning, URL matching, chrome.storage.local persistence
+- New `sw/auth-sw.js` - HMAC handshake with chrome.storage.session persistence (survives SW termination)
+- New `sw/ws-manager.js` - reference-counted WebSocket with 20s keepalive and exponential backoff reconnect
+- New `sw/sync-alarms.js` - 30s alarm-based background polling with badge for pending capture requests
+- Content script has zero direct HTTP/WebSocket connections to the server (NFR-4)
+- `discovery.js` thinned to message-based client (delegates to SW)
+- Polling-based sync replaced by chrome.storage.onChanged listener
+- `auth.js` no longer imported by content script (auth is SW-internal)
+- 83 new tests across 6 new test files
+- [ADR-017](../decisions/ADR-017-sw-communication-migration.md), [spec](../../.kiro/specs/sw-communication/)
+
+### Fixed
+- Resolved tab shows server-side resolution history after extension reload (no local annotations needed)
+- `mockChrome` test helper: `...overrides` at top level was clobbering nested objects (caused test pollution)
+
+### Changed
+- Default server idle timeout increased from 30min to 60min
+- `/annotations/resolved` endpoint now returns comment, type, severity, ancestor per annotation (deduplicated by UUID)
+
+---
+
 ## [0.5.0] - 2026-04-26
 
 ### Features
