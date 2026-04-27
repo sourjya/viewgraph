@@ -8,7 +8,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ---
 
-## [Unreleased]
+## [0.6.0] - 2026-04-27
 
 ### Architecture - M19: Service Worker Communication Migration
 - All extension-to-server HTTP communication moved from content script to service worker
