@@ -19,6 +19,7 @@ import { handleTransportMessage } from '../lib/sw/transport-handler.js';
 import * as discoverySw from '../lib/sw/discovery-sw.js';
 import { authenticate as swAuthenticate, restoreSession } from '../lib/sw/auth-sw.js';
 import { createWsManager } from '../lib/sw/ws-manager.js';
+import * as syncAlarms from '../lib/sw/sync-alarms.js';
 import * as transport from '../lib/transport.js';
 
 /** @type {ReturnType<typeof createWsManager>|null} */
@@ -123,6 +124,10 @@ export default defineBackground(() => {
   // This enables instant server lookups before the first port scan completes.
   discoverySw.restoreRegistry();
   restoreSession();
+
+  // M19: Start alarm-based background sync (polls resolved + pending even when sidebar closed)
+  syncAlarms.startSync();
+  if (chrome.alarms?.onAlarm) chrome.alarms.onAlarm.addListener(syncAlarms.onAlarm);
 
   // ---------------------------------------------------------------------------
   // Panic capture - instant mid-action snapshot via keyboard shortcut (Ctrl+Shift+V)
