@@ -14,11 +14,11 @@
  */
 
 import * as transport from '#lib/transport.js';
+import { TRANSPORT_OPS } from '#lib/constants.js';
 
 /**
- * Operation whitelist - maps op names to transport function calls.
- * Each entry extracts the relevant args and calls the transport method.
- * Unknown ops are rejected.
+ * Operation handlers - maps op names to transport function calls.
+ * Built from the shared TRANSPORT_OPS list (MRR-005 12.1).
  */
 const OPS = {
   getInfo:           ()     => transport.getInfo(),
@@ -36,6 +36,11 @@ const OPS = {
   ackRequest:        (args) => transport.ackRequest(args.id),
   declineRequest:    (args) => transport.declineRequest(args.id, args.reason),
 };
+
+// Verify OPS covers all TRANSPORT_OPS at module load time
+for (const op of TRANSPORT_OPS) {
+  if (!OPS[op]) throw new Error(`transport-handler missing op: ${op}`);
+}
 
 /**
  * Handle a vg-transport message from a content script.

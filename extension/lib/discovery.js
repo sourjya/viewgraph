@@ -2,18 +2,16 @@
  * Server Discovery - Content Script Client
  *
  * Thin client that delegates server discovery to the service worker via
- * chrome.runtime.sendMessage. The SW owns port scanning, registry, and
- * auth. This module maintains the same API surface for backward
- * compatibility with existing consumers.
+ * chrome.runtime.sendMessage. The SW owns port scanning, registry, auth,
+ * and transport initialization. This module maintains the same API surface
+ * for backward compatibility with existing consumers.
  *
  * M19: Replaced direct port scanning with message-based delegation.
+ * S1-4: Decoupled from transport.js - SW owns transport lifecycle.
  *
  * @see lib/sw/discovery-sw.js - SW discovery (owns the registry)
- * @see lib/transport.js - initialized by discoverServer() when a server is found
  * @see lib/constants.js - re-exports discoverServer, getAllServers, etc.
  */
-
-import * as transport from '#lib/transport.js';
 
 /** Last discovered server URL (cached from SW response). */
 let _serverUrl = null;
@@ -25,7 +23,6 @@ let _agentName = null;
 export function resetServerCache() {
   _serverUrl = null;
   _agentName = null;
-  transport.reset();
 }
 
 /** Get the detected agent name. Defaults to "Agent". */
@@ -40,8 +37,6 @@ export function getAgentName() {
 export async function getAllServers() {
   try {
     const response = await _sendToSw('vg-get-server', { pageUrl: null });
-    // vg-get-server returns a single match; for getAllServers we need the full list.
-    // Fall back to the fetch-info proxy for now (background.js handles it).
     if (response?.url) return [{ url: response.url, agent: response.agentName }];
     return [];
   } catch { return []; }
@@ -49,7 +44,7 @@ export async function getAllServers() {
 
 /**
  * Find the best server for a page URL via the service worker.
- * Initializes transport.js with the discovered URL.
+ * The SW handles transport initialization and auth.
  *
  * @param {string|null} pageUrl - The URL of the page being captured
  * @param {string|null} _targetDir - Unused (kept for API compat)
@@ -61,12 +56,10 @@ export async function discoverServer(pageUrl = null, _targetDir = null) {
     if (response?.url) {
       _serverUrl = response.url;
       _agentName = response.agentName || null;
-      transport.init(response.url);
       return response.url;
     }
-  } catch { /* SW not ready - fall through */ }
+  } catch { /* SW not ready */ }
   _serverUrl = null;
-  transport.reset();
   return null;
 }
 

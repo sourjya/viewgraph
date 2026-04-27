@@ -106,3 +106,19 @@ export function classifyTrust(pageUrl, trustedPatterns = []) {
   } catch { /* invalid URL */ }
   return { level: 'untrusted', reason: 'Remote URL' };
 }
+
+// ──────────────────────────────────────────────
+// M19: Transport Operation Names
+// ──────────────────────────────────────────────
+
+/**
+ * Transport operation names - the 14 operations that transport-client.js,
+ * transport-handler.js, and the test mock all need to agree on.
+ * Single source of truth to prevent triple-maintenance (MRR-005 12.1).
+ */
+export const TRANSPORT_OPS = [
+  'getInfo', 'getHealth', 'getCaptures', 'getResolved',
+  'getPendingRequests', 'getConfig', 'getBaselines', 'compareBaseline',
+  'sendCapture', 'sendScreenshot', 'updateConfig', 'setBaseline',
+  'ackRequest', 'declineRequest',
+];

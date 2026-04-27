@@ -45,6 +45,7 @@ export function mockChrome(overrides = {}) {
         }
         // M19: discovery.js delegates to SW via vg-get-server
         if (msg?.type === 'vg-get-server') {
+          _transport.init('http://127.0.0.1:9876');
           if (cb) cb({ url: 'http://127.0.0.1:9876', agentName: 'Kiro' });
           return false;
         }
