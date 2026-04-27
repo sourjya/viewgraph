@@ -70,7 +70,14 @@ PERFORMANCE:
 - Use get_page_summary before get_capture (saves ~90% tokens on large pages)
 - Use get_elements_by_role or get_interactive_elements for targeted queries instead of full capture
 - Capture responses over 100KB are automatically summarized
-- Use validate_capture to check capture quality before deep analysis`;
+- Use validate_capture to check capture quality before deep analysis
+
+CROSS-TOOL ORCHESTRATION:
+When other MCP tools are available, ViewGraph complements them:
+- Chrome DevTools MCP (console, network, performance): Use ViewGraph for DOM state and a11y, Chrome DevTools for live console errors and network failures
+- TracePulse (server logs, build errors): Check backend errors first (fastest feedback), then use ViewGraph for UI verification
+- Debug sequence: backend errors (TracePulse) -> browser errors (Chrome DevTools) -> visual/structural issues (ViewGraph)
+- ViewGraph's snapshot -> nid -> find_source pattern parallels Chrome DevTools' snapshot -> uid -> click pattern`;
 
 /** Whitelist of config keys accepted by PUT /config and native messaging updateConfig. */
 export const ALLOWED_CONFIG_KEYS = new Set(['urlPatterns', 'trustedPatterns', 'autoAudit', 'smartSuggestions', 'captureQuality', 'includeScreenshot', 'includeSnapshot', 'baselineAutoCompare']);

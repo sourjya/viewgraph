@@ -65,6 +65,7 @@ import { register as registerValidateCapture } from '#src/tools/validate-capture
 import { register as registerCompareStyles } from '#src/tools/compare-styles.js';
 import { register as registerGetComponentCoverage } from '#src/tools/get-component-coverage.js';
 import { register as registerGetSessionStatus } from '#src/tools/get-session-status.js';
+import { registerPrompts } from '#src/prompts.js';
 import { createRequestQueue } from '#src/request-queue.js';
 import { createHttpReceiver } from '#src/http-receiver.js';
 import { decodeMessage, encodeMessage } from '#src/native-host.js';
@@ -145,6 +146,9 @@ registerValidateCapture(server, indexer, CAPTURES_DIR);
 registerCompareStyles(server, indexer, CAPTURES_DIR);
 registerGetComponentCoverage(server, indexer, CAPTURES_DIR);
 registerGetSessionStatus(server, indexer);
+
+// Register MCP prompts (discoverable by any MCP client via prompts/list)
+registerPrompts(server);
 
 // ---------------------------------------------------------------------------
 // File indexing  -  parse metadata from a capture file and add to index
