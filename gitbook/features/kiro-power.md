@@ -42,6 +42,8 @@ In Kiro CLI, type `@vg` then Tab to see all shortcuts. The `@` prefix triggers p
 | Request capture | Type `vg-capture` in chat | `@vg-capture` |
 | Add missing testids | Type `vg-testids` in chat | `@vg-testids` |
 | List all tools | Type `vg-help` in chat | `@vg-help` |
+| Debug UI issues | Type `vg-debug-ui` in chat | `@vg-debug-ui` |
+| Full-stack debug | Type `vg-debug-fullstack` in chat | `@vg-debug-fullstack` |
 
 ---
 
@@ -53,7 +55,7 @@ In Kiro CLI, type `@vg` then Tab to see all shortcuts. The `@` prefix triggers p
 | **Fix ViewGraph Annotations** | IDE sidebar or `@vg-review` (CLI) | Pulls unresolved annotations, maps them to source files, implements fixes in sequence, marks each resolved. |
 | **Check TestID Coverage** | Auto on UI file edit | When you edit `.html`, `.jsx`, `.tsx`, `.vue`, `.svelte`, or `.css` files, checks if interactive elements in recent captures are missing `data-testid`. |
 
-## Prompt Shortcuts (9)
+## Prompt Shortcuts (11)
 
 | Shortcut | Workflow |
 |---|---|
@@ -66,6 +68,8 @@ In Kiro CLI, type `@vg` then Tab to see all shortcuts. The `@` prefix triggers p
 | `@vg-tests` | Generate Playwright E2E tests from capture |
 | `@vg-ideate` | Generate feature specs from idea-mode annotations |
 | `@vg-help` | List all ViewGraph tools with explanations |
+| `@vg-debug-ui` | 5-step UI debugging recipe (assess, annotate, audit, fix, verify) |
+| `@vg-debug-fullstack` | Full-stack debug with Chrome DevTools MCP + TracePulse |
 
 ## Steering Docs (3)
 

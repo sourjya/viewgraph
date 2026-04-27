@@ -1,6 +1,6 @@
 # Prompt Shortcuts Reference
 
-9 prompt shortcuts for common ViewGraph workflows.
+11 prompt shortcuts for common ViewGraph workflows.
 
 {% hint style="info" %}
 **Kiro CLI:** Type `@vg-review`, `@vg-audit`, etc. The `@` prefix triggers prompt expansion.
@@ -57,3 +57,15 @@ List all 38 ViewGraph MCP tools grouped by category with plain-English explanati
 ## @vg-ideate
 
 Generate feature specs from idea annotations. Reads annotations with "Idea" category from the latest capture and creates a Kiro spec with feature requirements, user stories, and implementation tasks - all grounded in the actual UI context from the capture.
+
+## @vg-debug-ui
+
+5-step UI debugging recipe for systematic issue resolution.
+
+Follows a structured pipeline: (1) **Assess** - calls `get_page_summary` and checks console errors and failed network requests, (2) **Annotations** - reads user feedback via `get_annotations` and `get_annotation_context`, (3) **Audit** - runs `audit_accessibility` and `audit_layout` to find issues the user may not have annotated, (4) **Fix** - locates source files via `find_source` and implements fixes, resolving each annotation, (5) **Verify** - requests a fresh capture and diffs before/after to confirm fixes and check for regressions.
+
+## @vg-debug-fullstack
+
+Cross-tool orchestration for full-stack debugging with graceful degradation.
+
+Coordinates ViewGraph with Chrome DevTools MCP (network waterfall, JS profiling, runtime evaluation) and TracePulse (backend trace correlation). Starts with ViewGraph DOM context, then enriches with DevTools network/performance data and backend traces when available. If Chrome DevTools MCP or TracePulse are not connected, the prompt degrades gracefully - it uses only the tools that are available and notes what additional context could be gathered with the missing tools.

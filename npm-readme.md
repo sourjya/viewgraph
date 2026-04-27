@@ -29,7 +29,7 @@ viewgraph-init --url localhost:3000   # match your app's URL for auto-detection
 
 - **MCP Server** with 38 tools for querying captures, auditing accessibility, detecting regressions, and more
 - **Init script** that auto-detects Kiro, Claude Code, Cursor, and other MCP agents
-- **Kiro Power assets** - 3 hooks, 8 prompt shortcuts, 3 steering docs (installed automatically for Kiro projects)
+- **Kiro Power assets** - 3 hooks, 11 prompt shortcuts, 3 steering docs (installed automatically for Kiro projects)
 
 ## Browser Extension
 

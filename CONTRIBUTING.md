@@ -48,7 +48,7 @@ All tests must pass before submitting a PR. Both positive and negative test case
 
 ```
 server/          MCP server (Node.js, ES modules)
-  src/tools/     36 MCP tool handlers
+  src/tools/     38 MCP tool handlers
   src/analysis/  Analysis modules (a11y, layout, diff, etc.)
   tests/         Server tests (Vitest)
 extension/       Browser extension (WXT, Manifest V3)

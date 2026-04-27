@@ -33,6 +33,9 @@ These run automatically during capture:
 - **Zero-Config Connection** - discovers local server automatically, no configuration needed
 - **Server Discovery** - auto-discovers MCP server on ports 9876-9879
 - **Capture Validation** - quality checks before export (empty pages, missing data)
+- **Service Worker Architecture (M19)** - all HTTP communication (capture push, snapshot push, request polling) runs in the service worker, not the content script. Eliminates cross-origin issues and works on pages with strict CSP.
+- **Alarm-Based Background Sync** - Chrome alarms API polls for pending agent requests and syncs resolved annotation history on a periodic schedule, even when no tab is active
+- **Resolved History Sync** - resolved annotations are fetched from the server and displayed in the sidebar so reviewers see real-time fix status
 
 ## UI Surfaces
 

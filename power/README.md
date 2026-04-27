@@ -21,7 +21,7 @@ These appear in the **Agent Hooks** section of the Kiro IDE sidebar, or can be t
 
 The annotation hook is the most powerful workflow: annotate issues in the browser, click the hook in the sidebar, and Kiro fixes them all in sequence.
 
-### CLI Prompt Shortcuts (9)
+### CLI Prompt Shortcuts (11)
 
 In Kiro CLI, type `@vg` then Tab to see all shortcuts:
 
@@ -36,6 +36,8 @@ In Kiro CLI, type `@vg` then Tab to see all shortcuts:
 | `@vg-tests` | Generate Playwright E2E tests from capture |
 | `@vg-ideate` | Generate feature specs from idea-mode annotations |
 | `@vg-help` | ViewGraph usage guide and tool reference |
+| `@vg-debug-ui` | Debug UI issues using ViewGraph captures |
+| `@vg-debug-fullstack` | Debug fullstack issues across UI and server |
 
 {% hint style="info" %}
 **Kiro IDE users:** Use the Hooks panel in the sidebar instead of `@` shortcuts. Typing `@vg-review` in IDE chat triggers a "new spec" prompt. See [Kiro Power](https://chaoslabz.gitbook.io/viewgraph/features/kiro-power#kiro-ide-vs-kiro-cli) for details.
@@ -75,6 +77,8 @@ These fire automatically during agent workflows:
 | `vg-tests` | `@vg-tests` | Generate Playwright E2E tests from capture |
 | `vg-ideate` | `@vg-ideate` | Generate feature specs from idea annotations |
 | `vg-help` | `@vg-help` | ViewGraph usage guide and tool reference |
+| `vg-debug-ui` | `@vg-debug-ui` | Debug UI issues using ViewGraph captures |
+| `vg-debug-fullstack` | `@vg-debug-fullstack` | Debug fullstack issues across UI and server |
 
 ## Install / Update
 

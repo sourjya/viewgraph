@@ -154,3 +154,37 @@ Your agent discovers these automatically. You don't call them - you describe wha
 {% endtab %}
 
 {% endtabs %}
+
+---
+
+## MCP Prompts Discovery
+
+The server exposes all 11 prompt shortcuts via the MCP `prompts/list` capability. Any MCP-compatible agent can discover available prompts automatically - no manual configuration or documentation lookup needed. When your agent connects, it sees `vg-review`, `vg-audit`, `vg-debug-ui`, and all other shortcuts as first-class prompt templates with parameter schemas.
+
+---
+
+## New Tool Parameters
+
+Recent additions to existing tools:
+
+| Tool | Parameter | What it does |
+|---|---|---|
+| `get_capture` | `filePath` | Write capture JSON to a file path instead of returning inline - saves context window tokens on large captures |
+| `compare_screenshots` | `filePath` | Write the diff image to a file path and return the path |
+| `resolve_annotation` | `includeCapture` | When `true`, triggers a fresh capture request after resolution and returns the request ID for verification |
+
+---
+
+## Slim Mode
+
+For lightweight setups that only need basic browser context, start the server with `--slim`:
+
+```json
+{
+  "mcpServers": {
+    "viewgraph": { "command": "npx", "args": ["-y", "@viewgraph/core", "--slim"] }
+  }
+}
+```
+
+Slim mode exposes 9 core tools: `list_captures`, `get_capture`, `get_latest_capture`, `get_page_summary`, `get_session_status`, `audit_accessibility`, `audit_layout`, `find_missing_testids`, and `get_interactive_elements`. All other tools are hidden. This reduces tool discovery noise for agents that only need basic page inspection.

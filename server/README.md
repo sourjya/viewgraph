@@ -205,6 +205,28 @@ Or from the `server/` directory:
 npm test                 # same 514 tests
 ```
 
+## Slim Mode
+
+For agents that only need basic browser context, start with `--slim`:
+
+```json
+{
+  "mcpServers": {
+    "viewgraph": { "command": "npx", "args": ["-y", "@viewgraph/core", "--slim"] }
+  }
+}
+```
+
+Exposes 9 core tools (`list_captures`, `get_capture`, `get_latest_capture`, `get_page_summary`, `get_session_status`, `audit_accessibility`, `audit_layout`, `find_missing_testids`, `get_interactive_elements`). All other tools are hidden.
+
+## MCP Prompts
+
+The server exposes all 11 prompt shortcuts via the MCP `prompts/list` capability. Agents discover `vg-review`, `vg-audit`, `vg-debug-ui`, and all other shortcuts automatically as first-class prompt templates.
+
+## Extension Compatibility
+
+The server is compatible with the M19 extension release, which moved all HTTP communication to the service worker. No server-side changes are needed - the same HTTP and WebSocket endpoints work regardless of whether requests originate from the content script or service worker.
+
 ## Architecture
 
 ```

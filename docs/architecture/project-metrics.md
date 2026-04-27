@@ -14,7 +14,7 @@ Updated manually at milestones. First entry: v0.1.0 beta launch.
 | MCP tools | 36 |
 | Extension modules | 54 (12 root + 42 in 7 subdirectories) |
 | Enrichment collectors | 14 |
-| Prompt shortcuts | 9 |
+| Prompt shortcuts | 11 |
 | Kiro hooks | 3 |
 | Steering docs | 4 |
 | Demo pages (planted bugs) | 4 (25 bugs) |
