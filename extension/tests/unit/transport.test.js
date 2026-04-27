@@ -23,11 +23,11 @@ describe('transport init/reset', () => {
     expect(true).toBe(true);
   });
 
-  it('(+) reset clears state', () => {
+  it('(+) reset clears state', async () => {
     transport.init('http://127.0.0.1:9876');
     transport.reset();
     // After reset, queries should fail (no server URL)
-    expect(transport.isNative()).resolves.toBe(false);
+    await expect(transport.isNative()).resolves.toBe(false);
   });
 });
 

@@ -69,6 +69,8 @@ export function createFooter({ onSend, onShowSettings }) {
     const md = formatMarkdown(getAnnotations(), meta, { enrichment });
     navigator.clipboard.writeText(md).then(() => {
       flashButton(copyBtn, 'Copied!', docIcon, 'Copy MD');
+    }).catch(() => {
+      flashButton(copyBtn, 'Failed', docIcon, 'Copy MD');
     });
   });
 

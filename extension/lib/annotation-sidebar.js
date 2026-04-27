@@ -112,7 +112,7 @@ export function create() {
         _header.statusBanner.style.display = 'none';
         // Load resolved history now that server is discovered
         loadResolvedHistory().then((history) => {
-          if (!_footer) return;
+          if (!_footer || !_bus) return; // sidebar destroyed during fetch
           _serverResolvedHistory = history;
           _bus.emit(EVENTS.REFRESH);
         });
@@ -388,6 +388,7 @@ export function create() {
   refresh();
   // Immediate sync: resolve stale annotations and hide their markers before user notices
   syncResolved(() => {
+    if (!_bus) return; // sidebar destroyed during async sync
     // Hide markers for newly-resolved annotations
     for (const ann of getAnnotations()) {
       if (ann.resolved) {
@@ -401,6 +402,7 @@ export function create() {
   // sidebar reads via onChanged listener.
   syncFromStorage(
     () => {
+      if (!_bus) return; // sidebar destroyed during storage sync
       const newResolved = getAnnotations().filter((a) => a.resolved).length;
       if (newResolved > _lastResolvedCount) {
         const diff = newResolved - _lastResolvedCount;
@@ -413,20 +415,28 @@ export function create() {
     (reqs) => { pendingRequests = reqs || []; },
   );
 
-  transport.onEvent('annotation:resolved', (msg) => {
+  // Store handlers for cleanup in destroy()
+  const _onResolved = (msg) => {
+    if (!_bus) return; // sidebar destroyed - event listener still active
     _bus.emit(EVENTS.ANNOTATION_RESOLVED, { uuid: msg.uuid, resolution: msg.resolution });
-  });
-  transport.onEvent('annotation:status', (msg) => {
+  };
+  const _onStatus = (msg) => {
+    if (!sidebarEl) return; // sidebar destroyed
     // Live status update from agent tool calls (queued, fixing)
     const ann = getAnnotations().find((a) => a.uuid === msg.uuid);
     if (ann && !ann.resolved) {
       ann.agentStatus = msg.status;
       refresh();
     }
-  });
-  transport.onEvent('audit:results', (msg) => {
+  };
+  const _onAudit = (msg) => {
+    if (!_bus) return; // sidebar destroyed
     if (msg.audit) _bus.emit(EVENTS.AUDIT_RESULTS, { audit: msg.audit, filename: msg.filename });
-  });
+  };
+  transport.onEvent('annotation:resolved', _onResolved);
+  transport.onEvent('annotation:status', _onStatus);
+  transport.onEvent('audit:results', _onAudit);
+  _transportHandlers = { _onResolved, _onStatus, _onAudit };
 
   // ── Transient UI observer (ADR-014) ──
   startTransientObserver();
@@ -465,6 +475,8 @@ export function create() {
 
 /** Execute the actual send-to-agent action. Guarded against rapid double-clicks. */
 let _sending = false;
+/** Transport event handlers - stored for cleanup in destroy(). */
+let _transportHandlers = null;
 function doSend(trustOverride = false) {
   if (_sending) return;
   _sending = true;
@@ -729,6 +741,14 @@ export function destroy() {
   stopShortcuts();
   stopJourney();
   stopTransientObserver();
+  // Unregister transport event listeners to prevent post-destroy callbacks
+  if (_transportHandlers) {
+    transport.offEvent('annotation:resolved', _transportHandlers._onResolved);
+    transport.offEvent('annotation:status', _transportHandlers._onStatus);
+    transport.offEvent('audit:results', _transportHandlers._onAudit);
+    _transportHandlers = null;
+  }
+  _sending = false;
   // M19: auth and transport lifecycle are SW-internal
   // M19: Notify SW that this sidebar closed (may disconnect WebSocket)
   try { chrome.runtime.sendMessage({ type: 'vg-sidebar-closed' }, () => {}); } catch { /* tests */ }
