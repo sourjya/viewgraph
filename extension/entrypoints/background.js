@@ -13,34 +13,15 @@
  */
 /* global defineBackground */
 
-import { SERVER_BASE_URL as SERVER_URL, discoverServer, getAllServers } from '../lib/constants.js';
+import { SERVER_BASE_URL as SERVER_URL } from '../lib/constants.js';
 import { isInjectable, getBlockedReason } from '../lib/url-checks.js';
 import { handleTransportMessage } from '../lib/sw/transport-handler.js';
+import * as discoverySw from '../lib/sw/discovery-sw.js';
+import { authenticate as swAuthenticate, restoreSession } from '../lib/sw/auth-sw.js';
+import * as transport from '../lib/transport.js';
 
-const AUTO_MAPPING_KEY = 'vg-auto-mapping';
-
-/**
- * Fetch /info from ALL running servers and store the mappings.
- * Called on startup and periodically. Replaces the old single-server
- * fetchServerInfo() that only cached one mapping.
- *
- * @see docs/bugs/BUG-009-multi-project-routing.md
- */
-async function fetchServerInfo() {
-  try {
-    const servers = await getAllServers();
-    if (servers.length === 0) return;
-    // Store all server mappings for lookupCapturesDir
-    const mappings = servers.map((s) => ({
-      capturesDir: s.capturesDir,
-      projectRoot: s.projectRoot,
-      urlPatterns: s.urlPatterns || [],
-      serverUrl: s.url,
-      detectedAt: Date.now(),
-    }));
-    await chrome.storage.local.set({ [AUTO_MAPPING_KEY]: mappings });
-  } catch { /* servers not responding */ }
-}
+// M19: fetchServerInfo() removed - replaced by discoverySw.restoreRegistry()
+// and discoverySw.discover() in the vg-get-server handler.
 
 /**
  * Push a capture to the MCP server. Routes to the correct server
@@ -52,7 +33,10 @@ async function fetchServerInfo() {
 async function pushToServer(capture, capturesDir = null) {
   try {
     const pageUrl = capture.metadata?.url || null;
-    const serverUrl = await discoverServer(pageUrl, capturesDir) || SERVER_URL;
+    // M19: Use SW discovery instead of content script's discoverServer.
+    // Falls back to SERVER_URL if no server matched.
+    const serverUrl = await discoverySw.discover(pageUrl) || SERVER_URL;
+    if (serverUrl) transport.init(serverUrl);
     console.log('[viewgraph] pushToServer: url', serverUrl);
     const headers = { 'content-type': 'application/json' };
     if (capturesDir) headers['x-captures-dir'] = capturesDir;
@@ -131,8 +115,10 @@ export default defineBackground(() => {
   // ---------------------------------------------------------------------------
   chrome.action.setPopup({ popup: '' });
 
-  // Auto-detect project mapping from server on startup
-  fetchServerInfo();
+  // M19: Restore cached server registry and auth session from storage on SW startup.
+  // This enables instant server lookups before the first port scan completes.
+  discoverySw.restoreRegistry();
+  restoreSession();
 
   // ---------------------------------------------------------------------------
   // Panic capture - instant mid-action snapshot via keyboard shortcut (Ctrl+Shift+V)
@@ -219,6 +205,28 @@ export default defineBackground(() => {
     // of making direct HTTP/WS calls. The handler delegates to transport.js.
     if (message.type === 'vg-transport') {
       handleTransportMessage(message, sendResponse);
+      return true; // async sendResponse
+    }
+
+    // M19: Content script requests server info for a page URL.
+    // SW discovery owns the registry; content script is a thin client.
+    if (message.type === 'vg-get-server') {
+      (async () => {
+        const url = await discoverySw.discover(message.pageUrl);
+        if (url) {
+          // Initialize transport with discovered URL so transport-handler can use it
+          transport.init(url);
+          // Attempt HMAC auth if not already authenticated
+          const isNative = await transport.isNative();
+          if (!isNative) {
+            try { await swAuthenticate(url); } catch { /* unsigned mode */ }
+          }
+        }
+        sendResponse({
+          url,
+          agentName: discoverySw.getAgentName(),
+        });
+      })();
       return true; // async sendResponse
     }
 
