@@ -96,3 +96,73 @@ export function startRequestPolling(onRequests) {
 export function stopRequestPolling() {
   if (requestPollTimer) { clearInterval(requestPollTimer); requestPollTimer = null; }
 }
+
+// ──────────────────────────────────────────────
+// M19: Storage-based sync (replaces polling when SW is active)
+// ──────────────────────────────────────────────
+
+/** Storage key prefix for resolved annotations (keyed by page URL). */
+const RESOLVED_KEY_PREFIX = 'vg-resolved-';
+
+/** Storage key for pending capture requests. */
+const PENDING_KEY = 'vg-pending-requests';
+
+/** @type {Function|null} Registered storage change listener. */
+let _storageListener = null;
+
+/**
+ * Initialize storage-based sync. Reads current state from chrome.storage.local
+ * and registers a listener for real-time updates via chrome.storage.onChanged.
+ *
+ * Replaces startResolutionPolling/startRequestPolling when the SW manages
+ * the WebSocket connection and writes events to storage.
+ *
+ * @param {function} onChanged - Called when resolved annotations update
+ * @param {function} [onRequests] - Called with pending request array
+ */
+export async function syncFromStorage(onChanged, onRequests) {
+  // Read current resolved state
+  const resolvedKey = RESOLVED_KEY_PREFIX + location.href;
+  try {
+    const data = await chrome.storage.local.get(resolvedKey);
+    const resolved = data[resolvedKey] || [];
+    if (resolved.length > 0 && onChanged) onChanged(resolved);
+  } catch { /* no stored data */ }
+
+  // Read current pending requests
+  try {
+    const data = await chrome.storage.local.get(PENDING_KEY);
+    const requests = data[PENDING_KEY] || [];
+    if (onRequests) onRequests(requests);
+  } catch {
+    if (onRequests) onRequests([]);
+  }
+
+  // Listen for real-time updates from the SW's WS manager
+  _storageListener = (changes, area) => {
+    if (area !== 'local') return;
+    // WS events (annotation:resolved, annotation:status, etc.)
+    if (changes['vg-ws-events']?.newValue && onChanged) {
+      onChanged(changes['vg-ws-events'].newValue);
+    }
+    // Resolved annotations updated by alarm sync
+    if (changes[resolvedKey]?.newValue && onChanged) {
+      onChanged(changes[resolvedKey].newValue);
+    }
+    // Pending requests updated by alarm sync
+    if (changes[PENDING_KEY]?.newValue && onRequests) {
+      onRequests(changes[PENDING_KEY].newValue);
+    }
+  };
+  chrome.storage.onChanged.addListener(_storageListener);
+}
+
+/**
+ * Stop storage-based sync. Removes the onChanged listener.
+ */
+export function stopSync() {
+  if (_storageListener) {
+    chrome.storage.onChanged.removeListener(_storageListener);
+    _storageListener = null;
+  }
+}
