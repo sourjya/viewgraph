@@ -16,7 +16,7 @@
 let _authModule = null;
 async function getAuth() {
   if (!_authModule) {
-    try { _authModule = await import('./auth.js'); } catch { _authModule = { signRequest: async () => ({}), isAuthenticated: () => false }; }
+    try { _authModule = await import('./auth.js'); } catch (e) { console.warn('[ViewGraph] auth module load failed:', e.message); _authModule = { signRequest: async () => ({}), isAuthenticated: () => false }; }
   }
   return _authModule;
 }
@@ -233,9 +233,9 @@ function _ensureEventConnection() {
         const msg = JSON.parse(e.data);
         const handlers = _listeners.get(msg.type);
         if (handlers) for (const fn of handlers) fn(msg);
-      } catch { /* malformed message */ }
+      } catch (err) { console.debug('[ViewGraph] WS malformed message:', err.message); }
     };
     _ws.onclose = () => { _ws = null; };
     _ws.onerror = () => { _ws = null; };
-  } catch { /* WS not available */ }
+  } catch (err) { console.debug('[ViewGraph] WS not available:', err.message); }
 }

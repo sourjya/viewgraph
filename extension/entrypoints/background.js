@@ -106,7 +106,8 @@ async function captureScreenshot(tabId) {
   try {
     const tab = await chrome.tabs.get(tabId);
     return await chrome.tabs.captureVisibleTab(tab.windowId, { format: 'png' });
-  } catch {
+  } catch (e) {
+    console.debug('[ViewGraph] Screenshot failed:', e.message);
     return null;
   }
 }
@@ -170,7 +171,7 @@ export default defineBackground(() => {
 
       // Visual feedback: brief flash via content script
       chrome.tabs.sendMessage(tab.id, { type: 'panic-flash' }).catch(() => {});
-    } catch { /* best effort - don't crash on shortcut */ }
+    } catch (e) { console.warn('[ViewGraph] Panic capture failed:', e.message); }
   });
 
   // ---------------------------------------------------------------------------

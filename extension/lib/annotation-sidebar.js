@@ -617,7 +617,7 @@ export function refresh() {
     onRequestCapture: (req, entry, capBtn) => {
       capBtn.textContent = '\u23f3';
       (async () => {
-        try { await transport.ackRequest(req.id); } catch { /* best effort */ }
+        try { await transport.ackRequest(req.id); } catch (e) { console.warn('[ViewGraph] Ack request failed:', e.message); }
         chrome.runtime.sendMessage({ type: 'capture', includeSnapshot: true, keepSidebar: true, requestId: req.id }, () => {
           // Phase 1: checkmark + green flash
           entry.style.background = 'rgba(74, 222, 128, 0.15)';
@@ -663,7 +663,7 @@ export function refresh() {
     },
     onRequestDecline: (req, entry) => {
       (async () => {
-        try { await transport.declineRequest(req.id, 'User declined from extension'); } catch { /* best effort */ }
+        try { await transport.declineRequest(req.id, 'User declined from extension'); } catch (e) { console.warn('[ViewGraph] Decline request failed:', e.message); }
         entry.style.background = 'rgba(248, 113, 113, 0.15)';
         setTimeout(() => {
           const h = entry.offsetHeight;
