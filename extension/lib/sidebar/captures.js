@@ -8,7 +8,7 @@
  */
 
 import { ATTR } from '#lib/selector.js';
-import * as transport from '#lib/transport.js';
+import * as transport from '#lib/transport-client.js';
 import { COLOR, FONT, LABEL_STYLE } from './styles.js';
 
 /**

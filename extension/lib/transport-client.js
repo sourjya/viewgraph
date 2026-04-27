@@ -135,6 +135,7 @@ let _storageListenerInstalled = false;
  */
 function _ensureStorageListener() {
   if (_storageListenerInstalled) return;
+  if (!chrome?.storage?.onChanged?.addListener) return; // Not available (test env)
   _storageListenerInstalled = true;
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== 'local') return;

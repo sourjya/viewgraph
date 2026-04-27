@@ -7,7 +7,7 @@
  * @see docs/architecture/modularity-audit.md - F14 sidebar decomposition
  */
 
-import * as transport from '#lib/transport.js';
+import * as transport from '#lib/transport-client.js';
 import { getAnnotations } from '#lib/annotate.js';
 
 /** Polling interval for resolution sync (5 seconds). */

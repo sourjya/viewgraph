@@ -27,6 +27,7 @@ describe('sidebar MCP disconnected state', () => {
     // M19: discovery.js delegates to SW - mock sendMessage to return no server
     globalThis.chrome.runtime.sendMessage = vi.fn((msg, cb) => {
       if (msg?.type === 'vg-get-server') { if (cb) cb({ url: null, agentName: null }); return; }
+      if (msg?.type === 'vg-transport') { if (cb) cb({ ok: false, error: 'offline' }); return; }
       if (cb) cb({ ok: true });
     });
   });

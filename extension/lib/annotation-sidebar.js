@@ -31,7 +31,7 @@ import { createStrip } from './sidebar/strip.js';
 import { createSettings } from './sidebar/settings.js';
 import { createInspectTab } from './sidebar/inspect.js';
 import { startTransientObserver, stopTransientObserver } from './collectors/transient-collector.js';
-import { clearAuth } from './auth.js';
+// M19: auth.js no longer imported - auth is SW-internal (auth-sw.js)
 import { renderReviewList } from './sidebar/review.js';
 import { scanForSuggestions } from './sidebar/suggestions.js';
 import { renderSuggestionBar, collapseSuggestions, resetSuggestions, showReloadHint } from './sidebar/suggestions-ui.js';
@@ -46,7 +46,7 @@ import { createTooltip } from './tooltip.js';
 import { COLOR } from './sidebar/styles.js';
 import { KEYS, set as storageSet } from './storage.js';
 import { discoverServer, getAgentName, classifyTrust } from './constants.js';
-import * as transport from './transport.js';
+import * as transport from './transport-client.js';
 import { stopJourney } from './session/journey-recorder.js';
 import { startShortcuts, stopShortcuts } from './ui/keyboard-shortcuts.js';
 import { ATTR } from './selector.js';
@@ -107,10 +107,8 @@ export function create() {
       if (!_footer) return;
       if (url) {
         _footer.statusDot.style.background = COLOR.success;
-        const { isAuthenticated: isAuthed } = await import('./auth.js');
-        const authMode = isAuthed() ? '🔒 signed' : '🔓 unsigned';
         _footer.statusDot.setAttribute('data-tooltip', `MCP server: ${url}`);
-        if (_footer.setAuthMode) _footer.setAuthMode(isAuthed());
+        if (_footer.setAuthMode) _footer.setAuthMode(false);
         _header.statusBanner.style.display = 'none';
         try {
           const info = await transport.getInfo();
@@ -280,13 +278,8 @@ export function create() {
         const trust = classifyTrust(window.location.href, info.trustedPatterns || []);
         _trustLevel = trust;
         _footer.setTrustLevel(trust);
-        const nativeActive = await transport.isNative();
-        if (nativeActive) {
-          if (_footer.setAuthMode) _footer.setAuthMode(true, 'native');
-        } else {
-          const { isAuthenticated: isAuthed } = await import('./auth.js');
-          if (_footer.setAuthMode) _footer.setAuthMode(isAuthed());
-        }
+        // M19: Auth mode detection is SW-internal (auth-sw.js handles native + HMAC)
+        if (_footer.setAuthMode) _footer.setAuthMode(false);
       } catch (e) { console.error('[ViewGraph] info/trust error:', e); }
     } else {
       if (!_footer) return;
@@ -812,10 +805,9 @@ export function destroy() {
   stopShortcuts();
   stopJourney();
   stopTransientObserver();
-  clearAuth();
+  // M19: auth and transport lifecycle are SW-internal
   stopRequestPolling();
   stopResolutionPolling();
-  transport.reset();
   if (hostEl) { hostEl.remove(); hostEl = null; }
   if (sidebarEl) { sidebarEl = null; }
   _shadowRoot = null;

@@ -17,7 +17,7 @@
  * @see lib/url-utils.js - normalizeUrl, extractFilePath, extractPort, isLocalUrl
  */
 
-import * as transport from './transport.js';
+import * as transport from './transport-client.js';
 import { isLocalUrl } from './url-utils.js';
 
 // Re-export discovery functions for backward compatibility.
