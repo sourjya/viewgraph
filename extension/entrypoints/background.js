@@ -15,6 +15,7 @@
 
 import { SERVER_BASE_URL as SERVER_URL, discoverServer, getAllServers } from '../lib/constants.js';
 import { isInjectable, getBlockedReason } from '../lib/url-checks.js';
+import { handleTransportMessage } from '../lib/sw/transport-handler.js';
 
 const AUTO_MAPPING_KEY = 'vg-auto-mapping';
 
@@ -213,6 +214,14 @@ export default defineBackground(() => {
   });
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // M19: Route transport messages from content scripts to the transport handler.
+    // Content scripts use transport-client.js which sends these messages instead
+    // of making direct HTTP/WS calls. The handler delegates to transport.js.
+    if (message.type === 'vg-transport') {
+      handleTransportMessage(message, sendResponse);
+      return true; // async sendResponse
+    }
+
     // Open extension options page from sidebar settings
     if (message.type === 'open-options') {
       chrome.tabs.create({ url: chrome.runtime.getURL('options.html') });
