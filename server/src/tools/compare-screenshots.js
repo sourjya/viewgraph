@@ -35,8 +35,9 @@ export function register(server, _indexer, capturesDir) {
       file_a: z.string().describe('First PNG filename (before)'),
       file_b: z.string().describe('Second PNG filename (after)'),
       threshold: z.number().min(0).max(1).optional().describe('Sensitivity (0-1, default 0.1). Lower = more sensitive'),
+      filePath: z.string().optional().describe('If provided, write diff image to this path and return the path'),
     },
-    async ({ file_a, file_b, threshold }) => {
+    async ({ file_a, file_b, threshold, filePath: outputPath }) => {
       try {
         const dir = path.resolve(capturesDir, '..');
         const pathA = path.join(dir, path.basename(file_a));
@@ -45,7 +46,14 @@ export function register(server, _indexer, capturesDir) {
         const [bufA, bufB] = await Promise.all([readFile(pathA), readFile(pathB)]);
         const result = diffScreenshots(bufA, bufB, { threshold });
 
-        return jsonResponse({
+        // Write diff image to file if path provided
+        if (outputPath && result.diffBuffer) {
+          const { writeFileSync, mkdirSync } = await import('fs');
+          mkdirSync(path.dirname(outputPath), { recursive: true });
+          writeFileSync(outputPath, result.diffBuffer);
+        }
+
+        const response = {
           diffPercent: result.diffPercent,
           changedPixels: result.changedPixels,
           totalPixels: result.totalPixels,
@@ -55,7 +63,9 @@ export function register(server, _indexer, capturesDir) {
             : result.diffPercent < 1 ? 'minor differences (< 1%)'
               : result.diffPercent < 5 ? 'noticeable changes (1-5%)'
                 : 'significant changes (> 5%)',
-        });
+        };
+        if (outputPath) response.diffImagePath = outputPath;
+        return jsonResponse(response);
       } catch (err) {
         return errorResponse(`Error: ${err.message}`);
       }

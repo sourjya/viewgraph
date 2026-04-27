@@ -36,9 +36,8 @@ export function getAgentName() {
  */
 export async function getAllServers() {
   try {
-    const response = await _sendToSw('vg-get-server', { pageUrl: null });
-    if (response?.url) return [{ url: response.url, agent: response.agentName }];
-    return [];
+    const response = await _sendToSw('vg-get-all-servers', {});
+    return response?.servers || [];
   } catch { return []; }
 }
 

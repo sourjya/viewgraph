@@ -239,6 +239,15 @@ export default defineBackground(() => {
       return true; // async sendResponse
     }
 
+    // M19: Return full server list for multi-project detection (12.9)
+    if (message.type === 'vg-get-all-servers') {
+      (async () => {
+        const servers = await discoverySw.getAllServers();
+        sendResponse({ servers });
+      })();
+      return true;
+    }
+
     // M19: Sidebar lifecycle - connect/disconnect WebSocket via ws-manager
     if (message.type === 'vg-sidebar-opened') {
       if (!_wsManager) {

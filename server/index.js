@@ -89,32 +89,21 @@ const server = new McpServer({
 });
 
 const requestQueue = createRequestQueue();
-
 const indexer = createIndexer({ maxCaptures: MAX_CAPTURES });
 
-// Register all MCP tools
+/** --slim mode: expose only core tools for basic browser tasks. */
+const SLIM_MODE = process.argv.includes('--slim');
+
+// Register core tools (always available)
 registerListCaptures(server, indexer);
-registerListArchived(server, CAPTURES_DIR);
 registerGetCapture(server, indexer, CAPTURES_DIR);
 registerGetLatest(server, indexer, CAPTURES_DIR);
 registerGetPageSummary(server, indexer, CAPTURES_DIR);
-registerGetElementsByRole(server, indexer, CAPTURES_DIR);
-registerGetInteractive(server, indexer, CAPTURES_DIR);
-registerFindMissingTestids(server, indexer, CAPTURES_DIR);
-registerAuditAccessibility(server, indexer, CAPTURES_DIR);
-registerAuditLayout(server, indexer, CAPTURES_DIR);
-registerCompareCaptures(server, indexer, CAPTURES_DIR);
 registerGetAnnotations(server, indexer, CAPTURES_DIR);
-registerGetAnnotatedCapture(server, indexer, CAPTURES_DIR, {
-  onStatusChange: ({ uuid, status }) => {
-    const ws = httpReceiver?.getWsServer?.();
-    if (ws) ws.broadcast({ type: WS_MESSAGES.ANNOTATION_STATUS, uuid, status });
-  },
-});
 registerRequestCapture(server, requestQueue);
 registerGetRequestStatus(server, requestQueue);
-registerGetFidelityReport(server, indexer, CAPTURES_DIR);
 registerResolveAnnotation(server, indexer, CAPTURES_DIR, {
+  requestQueue,
   onResolve: ({ uuid, resolution }) => {
     const ws = httpReceiver?.getWsServer?.();
     if (ws) ws.broadcast({ type: WS_MESSAGES.ANNOTATION_RESOLVED, uuid, resolution });
@@ -126,6 +115,23 @@ registerGetUnresolved(server, indexer, CAPTURES_DIR, {
     if (ws) ws.broadcast({ type: WS_MESSAGES.ANNOTATION_STATUS, uuid, status });
   },
 });
+
+if (!SLIM_MODE) {
+// Register full tool set (analysis, comparison, sessions, etc.)
+registerListArchived(server, CAPTURES_DIR);
+registerGetElementsByRole(server, indexer, CAPTURES_DIR);
+registerGetInteractive(server, indexer, CAPTURES_DIR);
+registerFindMissingTestids(server, indexer, CAPTURES_DIR);
+registerAuditAccessibility(server, indexer, CAPTURES_DIR);
+registerAuditLayout(server, indexer, CAPTURES_DIR);
+registerCompareCaptures(server, indexer, CAPTURES_DIR);
+registerGetAnnotatedCapture(server, indexer, CAPTURES_DIR, {
+  onStatusChange: ({ uuid, status }) => {
+    const ws = httpReceiver?.getWsServer?.();
+    if (ws) ws.broadcast({ type: WS_MESSAGES.ANNOTATION_STATUS, uuid, status });
+  },
+});
+registerGetFidelityReport(server, indexer, CAPTURES_DIR);
 registerCompareBaseline(server, indexer, CAPTURES_DIR);
 registerSetBaseline(server, indexer, CAPTURES_DIR);
 registerListBaselines(server, indexer, CAPTURES_DIR);
@@ -146,9 +152,14 @@ registerValidateCapture(server, indexer, CAPTURES_DIR);
 registerCompareStyles(server, indexer, CAPTURES_DIR);
 registerGetComponentCoverage(server, indexer, CAPTURES_DIR);
 registerGetSessionStatus(server, indexer);
+} // end !SLIM_MODE
 
 // Register MCP prompts (discoverable by any MCP client via prompts/list)
 registerPrompts(server);
+
+if (SLIM_MODE) {
+  process.stderr.write(`${LOG_PREFIX} Slim mode: 9 core tools registered\n`);
+}
 
 // ---------------------------------------------------------------------------
 // File indexing  -  parse metadata from a capture file and add to index

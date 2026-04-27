@@ -30,8 +30,10 @@ export function register(server, _indexer, capturesDir) {
     {
       filename: z.string()
         .describe(`Capture filename (e.g., "${PROJECT_PREFIX}-localhost-2026-04-08T060815.json")`),
+      filePath: z.string().optional()
+        .describe('If provided, write capture to this file path and return the path instead of inline content'),
     },
-    async ({ filename }) => {
+    async ({ filename, filePath: outputPath }) => {
       let filePath;
       try {
         filePath = validateCapturePath(filename, capturesDir);
@@ -41,6 +43,13 @@ export function register(server, _indexer, capturesDir) {
 
       try {
         const content = await readFile(filePath, 'utf-8');
+        // Write to file if filePath provided (for large captures)
+        if (outputPath) {
+          const { writeFileSync, mkdirSync } = await import('fs');
+          mkdirSync(path.dirname(outputPath), { recursive: true });
+          writeFileSync(outputPath, content);
+          return { content: [{ type: 'text', text: `Capture written to: ${outputPath} (${(Buffer.byteLength(content) / 1024).toFixed(1)} KB)` }] };
+        }
         const size = Buffer.byteLength(content);
         const notice = NOTICE_CAPTURE + '\n\n';
         const header = `Capture: ${filename} (${(size / 1024).toFixed(1)} KB)\n\n`;

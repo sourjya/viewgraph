@@ -71,9 +71,11 @@ describe('sidebar MCP disconnected state', () => {
     // M19: Mock SW to return no match for page URL, but server exists for getAllServers
     globalThis.chrome.runtime.sendMessage = vi.fn((msg, cb) => {
       if (msg?.type === 'vg-get-server') {
-        // pageUrl=null means getAllServers - return a server; otherwise no match
-        if (!msg.pageUrl) { if (cb) cb({ url: 'http://127.0.0.1:9876', agentName: 'Kiro' }); }
-        else { if (cb) cb({ url: null, agentName: null }); }
+        if (cb) cb({ url: null, agentName: null });
+        return;
+      }
+      if (msg?.type === 'vg-get-all-servers') {
+        if (cb) cb({ servers: [{ url: 'http://127.0.0.1:9876', agent: 'Kiro' }] });
         return;
       }
       if (cb) cb({ ok: true });
@@ -96,8 +98,11 @@ describe('sidebar MCP disconnected state', () => {
     // M19: Mock SW - server exists but doesn't match page URL
     globalThis.chrome.runtime.sendMessage = vi.fn((msg, cb) => {
       if (msg?.type === 'vg-get-server') {
-        if (!msg.pageUrl) { if (cb) cb({ url: 'http://127.0.0.1:9876', agentName: 'Kiro' }); }
-        else { if (cb) cb({ url: null, agentName: null }); }
+        if (cb) cb({ url: null, agentName: null });
+        return;
+      }
+      if (msg?.type === 'vg-get-all-servers') {
+        if (cb) cb({ servers: [{ url: 'http://127.0.0.1:9876', agent: 'Kiro' }] });
         return;
       }
       if (cb) cb({ ok: true });

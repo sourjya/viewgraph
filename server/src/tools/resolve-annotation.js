@@ -40,8 +40,10 @@ export function register(server, _indexer, capturesDir, options = {}) {
       summary: z.string().max(500).describe('Brief description of what was done'),
       files_changed: z.array(z.string().max(200)).max(10).optional()
         .describe('File paths that were modified to fix this issue'),
+      includeCapture: z.boolean().optional()
+        .describe('If true, triggers a fresh capture request after resolution and returns the request ID'),
     },
-    async ({ filename, annotation_uuid, action, summary, files_changed }) => {
+    async ({ filename, annotation_uuid, action, summary, files_changed, includeCapture }) => {
       let filePath;
       try { filePath = validateCapturePath(filename, capturesDir); } catch {
         return errorResponse(`Error: Invalid filename - ${filename}`);
@@ -72,7 +74,20 @@ export function register(server, _indexer, capturesDir, options = {}) {
         // Notify WebSocket clients of resolution
         if (options.onResolve) options.onResolve({ uuid: annotation_uuid, resolution: ann.resolution });
 
-        return jsonResponse(ann);
+        const response = { ...ann };
+
+        // Trigger a fresh capture request if includeCapture is set
+        if (includeCapture && options.requestQueue) {
+          const url = capture.metadata?.url || '';
+          const reqId = options.requestQueue.add({
+            url,
+            purpose: 'verify',
+            guidance: `Verify fix: ${summary}`,
+          });
+          response.captureRequestId = reqId;
+        }
+
+        return jsonResponse(response);
       } catch (err) {
         if (err.code === 'ENOENT') return errorResponse(`Error: Capture not found: ${filename}`);
         return errorResponse(`Error: ${err.message}`);
