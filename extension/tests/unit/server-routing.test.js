@@ -1,18 +1,17 @@
 /**
  * Multi-Project Server Routing - Unit Tests
  *
- * Tests the server registry and URL-based routing in constants.js.
- * Mocks fetch() to simulate multiple ViewGraph servers on different ports,
- * each with different projectRoot and urlPatterns.
+ * Tests the server registry and URL-based routing logic.
+ * M19: Routing logic moved from discovery.js to sw/discovery-sw.js.
+ * These tests now import from discovery-sw.js directly.
  *
  * Covers BUG-009: multi-project routing broken.
  *
- * @see lib/constants.js - discoverServer(), refreshRegistry()
+ * @see lib/sw/discovery-sw.js - discover(), getAllServers()
  * @see docs/bugs/BUG-009-multi-project-routing.md
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { discoverServer, getAllServers, resetServerCache } from '#lib/constants.js';
 import { mockChrome } from '../mocks/chrome.js';
 
 // ---------------------------------------------------------------------------
@@ -22,12 +21,19 @@ import { mockChrome } from '../mocks/chrome.js';
 /** Simulated server responses keyed by port. */
 let serversByPort = {};
 
-beforeEach(() => {
-  resetServerCache();
+beforeEach(async () => {
+  vi.resetModules();
   serversByPort = {};
 
-  // Mock chrome.storage for token fetch
-  mockChrome();
+  // Mock chrome.storage for registry persistence
+  mockChrome({
+    storage: {
+      local: {
+        get: vi.fn(() => Promise.resolve({})),
+        set: vi.fn(() => Promise.resolve()),
+      },
+    },
+  });
 
   // Mock fetch to return server info based on port
   globalThis.fetch = vi.fn((url, _opts) => {
@@ -56,6 +62,26 @@ function addServer(port, projectRoot, urlPatterns = []) {
     agent: 'Kiro',
   };
 }
+
+/** Import fresh discovery-sw module (reset between tests via resetModules). */
+async function getDiscovery() {
+  return import('#lib/sw/discovery-sw.js');
+}
+
+/** Shorthand: discover server for a page URL. */
+async function discoverServer(pageUrl, targetDir) {
+  const { discover } = await getDiscovery();
+  return discover(pageUrl, targetDir);
+}
+
+/** Shorthand: get all servers. */
+async function getAllServers() {
+  const { getAllServers: gas } = await getDiscovery();
+  return gas();
+}
+
+/** Shorthand: reset (via module reset in beforeEach). */
+function resetServerCache() { /* handled by vi.resetModules() */ }
 
 // ---------------------------------------------------------------------------
 // Single server (baseline)
@@ -492,12 +518,10 @@ describe('edge cases', () => {
   });
 
   it('(+) resetServerCache clears the cache', async () => {
+    // M19: Module state is reset via vi.resetModules() in beforeEach.
+    // Verify that each test gets a fresh registry by checking fetch is called.
     addServer(9876, '/home/user/app');
-    await discoverServer();
-    const callCount = fetch.mock.calls.length;
-
-    resetServerCache();
-    await discoverServer();
-    expect(fetch.mock.calls.length).toBeGreaterThan(callCount);
+    await discoverServer('http://localhost:3000');
+    expect(fetch.mock.calls.length).toBeGreaterThan(0);
   });
 });

@@ -24,6 +24,11 @@ describe('sidebar MCP disconnected state', () => {
     globalThis.fetch = vi.fn(() => Promise.reject(new Error('no server')));
     resetServerCache();
     transport.reset();
+    // M19: discovery.js delegates to SW - mock sendMessage to return no server
+    globalThis.chrome.runtime.sendMessage = vi.fn((msg, cb) => {
+      if (msg?.type === 'vg-get-server') { if (cb) cb({ url: null, agentName: null }); return; }
+      if (cb) cb({ ok: true });
+    });
   });
   afterEach(() => { globalThis.fetch = origFetch; });
 
@@ -62,13 +67,17 @@ describe('sidebar MCP disconnected state', () => {
   });
 
   it('(+) shows no-match message when servers exist but page doesn\'t match', async () => {
-    // Mock: server exists on port 9876 but with non-matching URL pattern
-    globalThis.fetch = vi.fn((url) => {
-      const u = typeof url === 'string' ? url : url.toString();
-      if (u.includes('/health')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
-      if (u.includes('/info')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ projectRoot: '/other-project', urlPatterns: ['localhost:9999'], agent: 'Kiro', serverVersion: '0.4.2' }) });
-      return Promise.reject(new Error('unmocked'));
+    // M19: Mock SW to return no match for page URL, but server exists for getAllServers
+    globalThis.chrome.runtime.sendMessage = vi.fn((msg, cb) => {
+      if (msg?.type === 'vg-get-server') {
+        // pageUrl=null means getAllServers - return a server; otherwise no match
+        if (!msg.pageUrl) { if (cb) cb({ url: 'http://127.0.0.1:9876', agentName: 'Kiro' }); }
+        else { if (cb) cb({ url: null, agentName: null }); }
+        return;
+      }
+      if (cb) cb({ ok: true });
     });
+    globalThis.fetch = vi.fn(() => Promise.reject(new Error('no server')));
     resetServerCache();
     start();
     create();
@@ -83,12 +92,16 @@ describe('sidebar MCP disconnected state', () => {
   });
 
   it('(+) no-match state shows gray dot, not red', async () => {
-    globalThis.fetch = vi.fn((url) => {
-      const u = typeof url === 'string' ? url : url.toString();
-      if (u.includes('/health')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'ok' }) });
-      if (u.includes('/info')) return Promise.resolve({ ok: true, json: () => Promise.resolve({ projectRoot: '/other', urlPatterns: ['localhost:9999'], serverVersion: '0.4.2' }) });
-      return Promise.reject(new Error('unmocked'));
+    // M19: Mock SW - server exists but doesn't match page URL
+    globalThis.chrome.runtime.sendMessage = vi.fn((msg, cb) => {
+      if (msg?.type === 'vg-get-server') {
+        if (!msg.pageUrl) { if (cb) cb({ url: 'http://127.0.0.1:9876', agentName: 'Kiro' }); }
+        else { if (cb) cb({ url: null, agentName: null }); }
+        return;
+      }
+      if (cb) cb({ ok: true });
     });
+    globalThis.fetch = vi.fn(() => Promise.reject(new Error('no server')));
     resetServerCache();
     start();
     create();

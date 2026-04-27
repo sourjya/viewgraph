@@ -77,7 +77,14 @@ function setupBeforeEach() {
       },
     },
     runtime: {
-      sendMessage: vi.fn((msg, cb) => { if (cb) cb({ ok: true }); }),
+      sendMessage: vi.fn((msg, cb) => {
+        // M19: discovery.js sends vg-get-server to the SW for server lookup
+        if (msg?.type === 'vg-get-server') {
+          if (cb) cb({ url: 'http://127.0.0.1:9876', agentName: 'Kiro' });
+          return;
+        }
+        if (cb) cb({ ok: true });
+      }),
       getURL: vi.fn((path) => `chrome-extension://test-id/${path}`),
     },
   });

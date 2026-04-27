@@ -16,6 +16,8 @@
  * @see .kiro/specs/sw-communication/design.md - discovery design
  */
 
+import { normalizeUrl, extractFilePath, extractPort } from '#lib/url-utils.js';
+
 /** Default HTTP receiver port for MCP server communication. */
 const DEFAULT_HTTP_PORT = 9876;
 
@@ -105,14 +107,14 @@ async function refreshRegistry() {
  * @param {string|null} pageUrl - The URL of the page being captured
  * @returns {Promise<string|null>} Server base URL or null
  */
-export async function discover(pageUrl = null) {
+export async function discover(pageUrl = null, targetDir = null) {
   const reg = await refreshRegistry();
   if (reg.length === 0) {
     _serverUrl = null;
     return null;
   }
 
-  const url = _matchUrl(pageUrl, reg);
+  const url = _matchUrl(pageUrl, reg, targetDir);
   _serverUrl = url;
   if (url) {
     const entry = reg.find((e) => e.url === url);
@@ -128,12 +130,21 @@ export async function discover(pageUrl = null) {
  * @param {Array} reg - Registry entries
  * @returns {string|null} Matched server URL
  */
-function _matchUrl(pageUrl, reg) {
-  if (!pageUrl) return reg.length === 1 ? reg[0].url : null;
+function _matchUrl(pageUrl, reg, targetDir = null) {
+  // Explicit capturesDir match
+  if (targetDir) {
+    for (const entry of reg) {
+      if (entry.capturesDir === targetDir) return entry.url;
+    }
+  }
+
+  if (!pageUrl) return null;
+
+  const normalized = normalizeUrl(pageUrl);
 
   // file:// URLs - match against projectRoot (longest prefix wins)
-  if (pageUrl.startsWith('file://')) {
-    const filePath = pageUrl.replace(/^file:\/\//, '').replace(/^\/+/, '/');
+  if (normalized?.startsWith('file://')) {
+    const filePath = extractFilePath(normalized);
     let best = null;
     let bestLen = 0;
     for (const entry of reg) {
@@ -144,14 +155,17 @@ function _matchUrl(pageUrl, reg) {
       }
     }
     if (best) return best;
-    // Single server + file URL: auto-match
     if (reg.length === 1) return reg[0].url;
   }
 
-  // http(s):// URLs - match against urlPatterns
-  for (const entry of reg) {
-    for (const pattern of entry.urlPatterns || []) {
-      if (pageUrl.includes(pattern)) return entry.url;
+  // http(s):// URLs - match against urlPatterns + port-only fallback
+  if (normalized) {
+    const urlPort = extractPort(normalized);
+    for (const entry of reg) {
+      for (const pattern of entry.urlPatterns || []) {
+        if (normalized.includes(pattern)) return entry.url;
+        if (urlPort && pattern.includes(':') && pattern.endsWith(':' + urlPort)) return entry.url;
+      }
     }
   }
 
