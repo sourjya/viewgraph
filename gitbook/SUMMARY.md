@@ -10,12 +10,14 @@
 * [Installation](getting-started/installation.md)
 * [Install from GitHub (Latest)](getting-started/manual-install.md)
 * [Multi-Project Setup](getting-started/multi-project.md)
+* [Cross-Tool Setup](getting-started/cross-tool-setup.md)
 
 ## Tutorials
 
 * [Annotate and Fix Bugs](tutorials/annotate-and-fix.md)
 * [Run an Accessibility Audit](tutorials/accessibility-audit.md)
 * [Generate Playwright Tests](tutorials/generate-tests.md)
+* [Debug with Recipe Skills](tutorials/debug-skills.md)
 * [File a QA Bug Report](tutorials/qa-bug-report.md)
 * [Detect Regressions](tutorials/detect-regressions.md)
 * [Record a User Journey](tutorials/record-journey.md)
@@ -26,6 +28,7 @@
 
 * [Browser Extension](features/extension.md)
 * [MCP Tools (38)](features/mcp-tools.md)
+* [How the Extension Communicates](features/architecture.md)
 * [Playwright Integration](features/playwright.md)
 * [Kiro Power (Hooks & Prompts)](features/kiro-power.md)
 
@@ -41,6 +44,7 @@
 * [Prompt Shortcuts](reference/prompt-shortcuts.md)
 * [Security](reference/security.md)
 * [Threat Model](reference/threat-model.md)
+* [Security Review History](reference/security-reviews.md)
 * [Changelog](reference/changelog.md)
 * [Roadmap](reference/roadmap.md)
 * [FAQ](reference/faq.md)
