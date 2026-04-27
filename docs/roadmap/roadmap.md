@@ -43,6 +43,9 @@
 | Rolling Archive | Complete | Auto-archive resolved captures, index.json, list_archived tool, get_capture fallback |
 | UUID Dedup | Complete | get_unresolved deduplicates across captures on repeat sends |
 | SRR-006 + MRR-004 | Complete | Tier 3 security review + maintainability review. 8 findings fixed: path traversal guards, multi-project snapshot routing, dead code removal, .gitignore hardening |
+| M19: SW Communication | Complete | All extension-to-server HTTP moved to service worker. 5 new SW modules, 83 new tests. [spec](../../.kiro/specs/sw-communication/) |
+| Debug Recipe Skills | Complete | @vg-debug-ui, @vg-debug-fullstack prompts. MCP prompts/list for zero-friction delivery. Cross-tool orchestration guidance. |
+| SRR-007 + MRR-005 | Complete | Tier 3 security + maintainability review. 5 fixes: variable shadowing, URL matching, constants import, badge color, import alias. [SRR-007](../security/SRR-007-2026-04-27-T3.md), [MRR-005](../reviews/MRR-005-2026-04-27.md) |
 ### Completed Features
 
 | Feature | Status | Description |
@@ -79,7 +82,7 @@
 **Rationale:** F19 and F17 are security-first (threat model driven). F18 is low-effort, high-impact UX. F6/F9/F10 are feature work. F11 is the big architectural change that eliminates most localhost threats.
 | M17: Telemetry | Deferred (post-traction) | Anonymous usage analytics - not needed until product has adoption |
 
-**Current totals:** 1646 tests (1132 extension + 514 server), 38 MCP tools, 17 enrichment collectors
+**Current totals:** 1783 tests (1244 extension + 539 server), 38 MCP tools, 11 prompt templates, 17 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and

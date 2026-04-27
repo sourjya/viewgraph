@@ -26,7 +26,7 @@
 
 Browser extension + MCP server for AI-powered UI capture, auditing, and annotation.
 
-ViewGraph captures structured DOM snapshots from any web page and exposes them to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/). Agents can query page structure, audit accessibility, find missing test IDs, compare captures, track regressions, and act on human annotations - all through 38 MCP tools.
+ViewGraph captures structured DOM snapshots from any web page and exposes them to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/). Agents can query page structure, audit accessibility, find missing test IDs, compare captures, track regressions, and act on human annotations - all through 38 MCP tools and 11 prompt templates.
 
 Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Windsurf**, **Cline**, **Aider**, and more. No agent-specific code - pure MCP protocol. Tools that don't support MCP can read `.viewgraph.json` capture files directly from disk.
 
@@ -145,7 +145,7 @@ Full methodology, per-site breakdowns, and run history: [`scripts/experiments/bu
 - [Multi-Project Setup](https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project) - URL patterns, routing
 - [@viewgraph/playwright](https://www.npmjs.com/package/@viewgraph/playwright) - Playwright fixture on npm
 - [Roadmap](./docs/roadmap/roadmap.md) - milestone plan and completion status
-- [Security Assessment](./docs/architecture/security-assessment.md) - threat model, HMAC auth, 4 security reviews
+- [Security Assessment](./docs/architecture/security-assessment.md) - threat model, HMAC auth, 7 security reviews
 - [Spec Index](./.kiro/specs/README.md) - Kiro specs, ADRs, architecture docs
 - [ViewGraph v2 Format Spec](./docs/architecture/viewgraph-v2-format.md) - capture format (v2.1.0)
 - [Format Research](./docs/architecture/viewgraph-format-research.md) - format analysis and design rationale
@@ -156,7 +156,7 @@ Full methodology, per-site breakdowns, and run history: [`scripts/experiments/bu
 
 ViewGraph's capture format was inspired by [Element to LLM](https://addons.mozilla.org/en-US/firefox/addon/element-to-llm/) (E2LLM) by [insitu.im](https://insitu.im/) - the first browser extension to frame DOM capture as a structured perception layer for AI agents. The core insight - that agents need a purpose-built intermediate representation, not raw HTML - came from E2LLM. ViewGraph extended these foundations through [deep format research](./docs/architecture/viewgraph-format-research.md) that produced 20 improvement proposals across token efficiency, accessibility, enrichment, and bidirectional MCP integration. [Full comparison](https://chaoslabz.gitbook.io/viewgraph/how-it-compares/capture-format#acknowledgments).
 
-ViewGraph's [security assessment](https://chaoslabz.gitbook.io/viewgraph/reference/threat-model) was conducted using the [AWS Labs Threat Modeling MCP Server](https://github.com/awslabs/threat-modeling-mcp-server) by [Aidin Ferdowsi](https://github.com/aidinferdowsi) (AWS). The tool's structured STRIDE analysis and Threat Composer integration produced the 9-threat, 9-mitigation model that drove ViewGraph's HMAC auth implementation, prompt injection defenses, and four rounds of security reviews. [Full threat model](./docs/architecture/security-assessment.md).
+ViewGraph's [security assessment](https://chaoslabz.gitbook.io/viewgraph/reference/threat-model) was conducted using the [AWS Labs Threat Modeling MCP Server](https://github.com/awslabs/threat-modeling-mcp-server) by [Aidin Ferdowsi](https://github.com/aidinferdowsi) (AWS). The tool's structured STRIDE analysis and Threat Composer integration produced the 9-threat, 9-mitigation model that drove ViewGraph's HMAC auth implementation, prompt injection defenses, and seven rounds of security reviews. [Full threat model](./docs/architecture/security-assessment.md).
 
 ## License
 
