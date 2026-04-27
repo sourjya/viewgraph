@@ -18,7 +18,11 @@ import { isInjectable, getBlockedReason } from '../lib/url-checks.js';
 import { handleTransportMessage } from '../lib/sw/transport-handler.js';
 import * as discoverySw from '../lib/sw/discovery-sw.js';
 import { authenticate as swAuthenticate, restoreSession } from '../lib/sw/auth-sw.js';
+import { createWsManager } from '../lib/sw/ws-manager.js';
 import * as transport from '../lib/transport.js';
+
+/** @type {ReturnType<typeof createWsManager>|null} */
+let _wsManager = null;
 
 // M19: fetchServerInfo() removed - replaced by discoverySw.restoreRegistry()
 // and discoverySw.discover() in the vg-get-server handler.
@@ -228,6 +232,22 @@ export default defineBackground(() => {
         });
       })();
       return true; // async sendResponse
+    }
+
+    // M19: Sidebar lifecycle - connect/disconnect WebSocket via ws-manager
+    if (message.type === 'vg-sidebar-opened') {
+      if (!_wsManager) {
+        const url = discoverySw.getServerUrl();
+        if (url) _wsManager = createWsManager(url.replace('http', 'ws'));
+      }
+      _wsManager?.sidebarOpened();
+      if (sendResponse) sendResponse({ ok: true });
+      return false;
+    }
+    if (message.type === 'vg-sidebar-closed') {
+      _wsManager?.sidebarClosed();
+      if (sendResponse) sendResponse({ ok: true });
+      return false;
     }
 
     // Open extension options page from sidebar settings

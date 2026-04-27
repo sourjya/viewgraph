@@ -510,6 +510,9 @@ export function create() {
   // ── Transient UI observer (ADR-014) ──
   startTransientObserver();
 
+  // M19: Notify SW that a sidebar is open (connects WebSocket)
+  try { chrome.runtime.sendMessage({ type: 'vg-sidebar-opened' }, () => {}); } catch { /* tests */ }
+
   // ── Keyboard shortcuts ──
   startShortcuts({
     onEscape: () => {
@@ -806,6 +809,8 @@ export function destroy() {
   stopJourney();
   stopTransientObserver();
   // M19: auth and transport lifecycle are SW-internal
+  // M19: Notify SW that this sidebar closed (may disconnect WebSocket)
+  try { chrome.runtime.sendMessage({ type: 'vg-sidebar-closed' }, () => {}); } catch { /* tests */ }
   stopRequestPolling();
   stopResolutionPolling();
   if (hostEl) { hostEl.remove(); hostEl = null; }
