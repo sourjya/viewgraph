@@ -110,6 +110,12 @@ export function create() {
         _footer.statusDot.setAttribute('data-tooltip', `MCP server: ${url}`);
         if (_footer.setAuthMode) _footer.setAuthMode(false);
         _header.statusBanner.style.display = 'none';
+        // Load resolved history now that server is discovered
+        loadResolvedHistory().then((history) => {
+          if (!_footer) return;
+          _serverResolvedHistory = history;
+          _bus.emit(EVENTS.REFRESH);
+        });
         try {
           const info = await transport.getInfo();
           const extVersion = chrome.runtime.getManifest?.()?.version;
@@ -472,12 +478,6 @@ export function create() {
         if (el) el.style.display = 'none';
       }
     }
-    _bus.emit(EVENTS.REFRESH);
-  });
-  // Load server-side resolution history for the Resolved tab (survives extension reload)
-  loadResolvedHistory().then((history) => {
-    if (!_footer) return; // sidebar destroyed while loading
-    _serverResolvedHistory = history;
     _bus.emit(EVENTS.REFRESH);
   });
   // M19: Storage-based sync replaces polling. SW writes events to storage,
