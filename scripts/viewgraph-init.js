@@ -57,9 +57,10 @@ function mcpConfig() {
         autoApprove: [
           'list_captures', 'get_capture', 'get_latest_capture', 'get_page_summary',
           'get_elements_by_role', 'get_interactive_elements', 'find_missing_testids',
-          'audit_accessibility', 'compare_captures', 'get_annotations',
-          'get_annotation_context', 'request_capture', 'get_request_status', 'get_fidelity_report',
-          'audit_layout',
+          'audit_accessibility', 'audit_layout', 'compare_captures',
+          'get_annotations', 'get_annotation_context', 'resolve_annotation',
+          'get_unresolved', 'request_capture', 'get_request_status',
+          'get_fidelity_report', 'find_source', 'get_capture_stats', 'get_session_status',
         ],
       },
     },
