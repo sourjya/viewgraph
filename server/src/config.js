@@ -130,11 +130,11 @@ export function resolveConfig(cwd = process.cwd()) {
   // The default capturesDir is always allowed
   if (!allowedDirs.includes(capturesDir)) allowedDirs.push(capturesDir);
 
-  // Idle timeout: minutes of inactivity before auto-shutdown. 0 = disabled. Default 30.
+  // Idle timeout: minutes of inactivity before auto-shutdown. 0 = disabled. Default 60.
   const idleTimeoutMinutes = parseFloat(
     process.env[ENV_IDLE_TIMEOUT]
     ?? fileConfig.idleTimeoutMinutes
-    ?? '30',
+    ?? '60',
   );
 
   return { capturesDir, maxCaptures, httpPort, allowedDirs, idleTimeoutMinutes };

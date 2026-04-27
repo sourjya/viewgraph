@@ -95,7 +95,7 @@ function json(res, status, data) {
  *   requests must include an `Authorization: Bearer <secret>` header. GET
  *   endpoints (/health, /requests/pending) remain open so monitoring works.
  */
-export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port = DEFAULT_HTTP_PORT, indexer = null, onActivity = null, idleTimeoutMinutes = 30 }) {
+export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port = DEFAULT_HTTP_PORT, indexer = null, onActivity = null, idleTimeoutMinutes = 60 }) {
   let server;
   let wsServer;
 
