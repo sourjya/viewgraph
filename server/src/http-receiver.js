@@ -427,7 +427,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
           const filePath = validateCapturePath(entry.filename, capturesDir);
           const raw = await readFile(filePath, 'utf-8');
           const capture = JSON.parse(raw);
-          if (!capture.metadata?.url?.includes(pageUrl)) continue;
+          if (!capture.metadata?.url?.includes(pageUrl) && !pageUrl.includes(capture.metadata?.url)) continue;
           for (const ann of (capture.annotations || [])) {
             if (ann.resolved && ann.uuid && !seen.has(ann.uuid)) {
               seen.set(ann.uuid, {
