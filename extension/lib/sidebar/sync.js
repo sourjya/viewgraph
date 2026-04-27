@@ -1,22 +1,16 @@
 /**
  * Sidebar Sync Module
  *
- * Handles periodic polling for resolved annotations and pending capture
- * requests. Uses transport abstraction for server communication.
+ * Handles resolved annotation sync and storage-based real-time updates.
+ * M19: Polling replaced by chrome.storage.onChanged listener. The SW
+ * writes events to storage via ws-manager and sync-alarms.
  *
- * @see docs/architecture/modularity-audit.md - F14 sidebar decomposition
+ * @see lib/sw/ws-manager.js - writes WS events to storage
+ * @see lib/sw/sync-alarms.js - polls server on alarm, writes to storage
  */
 
-import * as transport from '#lib/transport.js';
+import * as transport from '#lib/transport-client.js';
 import { getAnnotations } from '#lib/annotate.js';
-
-/** Polling interval for resolution sync (5 seconds). */
-const RESOLUTION_POLL_MS = 5000;
-/** Polling interval for capture requests (3 seconds). */
-const REQUEST_POLL_MS = 3000;
-
-let resolutionPollTimer = null;
-let requestPollTimer = null;
 
 /**
  * Sync resolved state from the server. Polls for resolved annotations
@@ -60,24 +54,87 @@ export async function pollRequests(onRequests) {
   } catch { /* server offline */ }
 }
 
-/** Start periodic polling for resolved annotations. */
-export function startResolutionPolling(onChanged) {
-  stopResolutionPolling();
-  resolutionPollTimer = setInterval(() => syncResolved(onChanged), RESOLUTION_POLL_MS);
+/**
+ * Load resolved annotation history from the server for the current page.
+ * Returns enriched entries (comment, type, severity, ancestor, resolution)
+ * that can be rendered directly without needing local in-memory annotations.
+ * Used by the Resolved tab to show past resolutions after extension reload.
+ *
+ * @returns {Promise<Array<{ uuid, comment, type, severity, ancestor, resolution }>>}
+ */
+export async function loadResolvedHistory() {
+  try {
+    const { resolved } = await transport.getResolved(location.href);
+    return resolved || [];
+  } catch { return []; }
 }
 
-/** Stop periodic resolution polling. */
-export function stopResolutionPolling() {
-  if (resolutionPollTimer) { clearInterval(resolutionPollTimer); resolutionPollTimer = null; }
+// ──────────────────────────────────────────────
+// M19: Storage-based sync (replaces polling when SW is active)
+// ──────────────────────────────────────────────
+
+/** Storage key prefix for resolved annotations (keyed by page URL). */
+const RESOLVED_KEY_PREFIX = 'vg-resolved-';
+
+/** Storage key for pending capture requests. */
+const PENDING_KEY = 'vg-pending-requests';
+
+/** @type {Function|null} Registered storage change listener. */
+let _storageListener = null;
+
+/**
+ * Initialize storage-based sync. Reads current state from chrome.storage.local
+ * and registers a listener for real-time updates via chrome.storage.onChanged.
+ *
+ * Replaces startResolutionPolling/startRequestPolling when the SW manages
+ * the WebSocket connection and writes events to storage.
+ *
+ * @param {function} onChanged - Called when resolved annotations update
+ * @param {function} [onRequests] - Called with pending request array
+ */
+export async function syncFromStorage(onChanged, onRequests) {
+  // Read current resolved state
+  const resolvedKey = RESOLVED_KEY_PREFIX + location.href;
+  try {
+    const data = await chrome.storage.local.get(resolvedKey);
+    const resolved = data[resolvedKey] || [];
+    if (resolved.length > 0 && onChanged) onChanged(resolved);
+  } catch { /* no stored data */ }
+
+  // Read current pending requests
+  try {
+    const data = await chrome.storage.local.get(PENDING_KEY);
+    const requests = data[PENDING_KEY] || [];
+    if (onRequests) onRequests(requests);
+  } catch {
+    if (onRequests) onRequests([]);
+  }
+
+  // Listen for real-time updates from the SW's WS manager
+  _storageListener = (changes, area) => {
+    if (area !== 'local') return;
+    // WS events (annotation:resolved, annotation:status, etc.)
+    if (changes['vg-ws-events']?.newValue && onChanged) {
+      onChanged(changes['vg-ws-events'].newValue);
+    }
+    // Resolved annotations updated by alarm sync
+    if (changes[resolvedKey]?.newValue && onChanged) {
+      onChanged(changes[resolvedKey].newValue);
+    }
+    // Pending requests updated by alarm sync
+    if (changes[PENDING_KEY]?.newValue && onRequests) {
+      onRequests(changes[PENDING_KEY].newValue);
+    }
+  };
+  chrome.storage.onChanged.addListener(_storageListener);
 }
 
-/** Start periodic polling for capture requests. */
-export function startRequestPolling(onRequests) {
-  stopRequestPolling();
-  requestPollTimer = setInterval(() => pollRequests(onRequests), REQUEST_POLL_MS);
-}
-
-/** Stop request polling. */
-export function stopRequestPolling() {
-  if (requestPollTimer) { clearInterval(requestPollTimer); requestPollTimer = null; }
+/**
+ * Stop storage-based sync. Removes the onChanged listener.
+ */
+export function stopSync() {
+  if (_storageListener) {
+    chrome.storage.onChanged.removeListener(_storageListener);
+    _storageListener = null;
+  }
 }

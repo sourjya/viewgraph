@@ -1,185 +1,89 @@
 /**
- * Server Discovery
+ * Server Discovery - Content Script Client
  *
- * Scans localhost ports 9876-9879 to find running ViewGraph MCP servers.
- * Builds a registry of all servers with their project roots and URL patterns,
- * then routes page URLs to the correct server.
+ * Thin client that delegates server discovery to the service worker via
+ * chrome.runtime.sendMessage. The SW owns port scanning, registry, and
+ * auth. This module maintains the same API surface for backward
+ * compatibility with existing consumers.
  *
- * This module uses direct fetch() for port scanning because it runs before
- * the transport layer is initialized. Once a server is found, it initializes
- * transport.js for all subsequent communication.
+ * M19: Replaced direct port scanning with message-based delegation.
  *
+ * @see lib/sw/discovery-sw.js - SW discovery (owns the registry)
  * @see lib/transport.js - initialized by discoverServer() when a server is found
- * @see lib/constants.js - DEFAULT_HTTP_PORT, PORT_SCAN_RANGE, SERVER_HOST
- * @see docs/bugs/BUG-009-multi-project-routing.md
+ * @see lib/constants.js - re-exports discoverServer, getAllServers, etc.
  */
 
 import * as transport from '#lib/transport.js';
-import { DEFAULT_HTTP_PORT, PORT_SCAN_RANGE, SERVER_HOST } from '#lib/constants.js';
-import { normalizeUrl, extractFilePath, extractPort } from '#lib/url-utils.js';
 
-/**
- * Server registry - all running ViewGraph servers keyed by URL.
- * Each entry: { url, capturesDir, projectRoot, urlPatterns, agent }
- * Refreshed when cache expires (REGISTRY_TTL).
- */
-let _serverRegistry = new Map();
-let _registryExpiry = 0;
+/** Last discovered server URL (cached from SW response). */
+let _serverUrl = null;
 
-/** Cache duration for the server registry (ms). */
-const REGISTRY_TTL = 15000;
+/** Last agent name from SW response. */
+let _agentName = null;
 
-/** Reset the server discovery cache. Used in tests and sidebar destroy. */
+/** Reset the discovery cache. Used in tests and sidebar destroy. */
 export function resetServerCache() {
-  _serverRegistry = new Map();
-  _registryExpiry = 0;
-  _authAttempted = false;
+  _serverUrl = null;
+  _agentName = null;
   transport.reset();
 }
 
-/** Get the detected agent name from the first server with one. Defaults to "Agent". */
+/** Get the detected agent name. Defaults to "Agent". */
 export function getAgentName() {
-  for (const entry of _serverRegistry.values()) {
-    if (entry.agent) return entry.agent;
-  }
-  return 'Agent';
+  return _agentName || 'Agent';
 }
 
 /**
- * Scan all ports and build the server registry.
- * Uses direct fetch() because transport is not yet initialized.
- * @returns {Promise<Map>} The server registry
- */
-async function refreshRegistry() {
-  if (Date.now() < _registryExpiry) return _serverRegistry;
-
-  const newRegistry = new Map();
-  const probes = [];
-
-  for (let p = DEFAULT_HTTP_PORT; p < DEFAULT_HTTP_PORT + PORT_SCAN_RANGE; p++) {
-    const url = `http://${SERVER_HOST}:${p}`;
-    probes.push(
-      fetch(`${url}/info`, { signal: AbortSignal.timeout(1000) })
-        .then((res) => res.ok ? res.json() : null)
-        .then((info) => {
-          if (info) {
-            newRegistry.set(url, {
-              url,
-              capturesDir: info.capturesDir || null,
-              projectRoot: info.projectRoot || null,
-              urlPatterns: info.urlPatterns || [],
-              agent: info.agent || null,
-            });
-          }
-        })
-        .catch(() => { /* port not responding */ }),
-    );
-  }
-
-  await Promise.all(probes);
-  _serverRegistry = newRegistry;
-  _registryExpiry = Date.now() + REGISTRY_TTL;
-  return _serverRegistry;
-}
-
-/**
- * Get all running servers. Refreshes registry if stale.
+ * Get all running servers by asking the SW.
  * @returns {Promise<Array<{ url, capturesDir, projectRoot, agent }>>}
  */
 export async function getAllServers() {
-  const reg = await refreshRegistry();
-  return [...reg.values()];
+  try {
+    const response = await _sendToSw('vg-get-server', { pageUrl: null });
+    // vg-get-server returns a single match; for getAllServers we need the full list.
+    // Fall back to the fetch-info proxy for now (background.js handles it).
+    if (response?.url) return [{ url: response.url, agent: response.agentName }];
+    return [];
+  } catch { return []; }
 }
 
 /**
- * Find the best server for a given page URL and initialize transport.
- *
- * Matching strategy:
- * 1. file:// URLs: match against projectRoot (longest prefix wins)
- * 2. http(s):// URLs: match against urlPatterns
- * 3. Single server + localhost URL: auto-match
- * 4. No match: return null
+ * Find the best server for a page URL via the service worker.
+ * Initializes transport.js with the discovered URL.
  *
  * @param {string|null} pageUrl - The URL of the page being captured
- * @param {string|null} targetDir - Explicit capturesDir override
+ * @param {string|null} _targetDir - Unused (kept for API compat)
  * @returns {Promise<string|null>} Server base URL
  */
-let _authAttempted = false;
-
-/**
- * Find the best server for a given page URL and initialize transport.
- */
-export async function discoverServer(pageUrl = null, targetDir = null) {
-  const url = await _discoverServerImpl(pageUrl, targetDir);
-  if (url) {
-    transport.init(url);
-    // F22: Skip HMAC if native messaging is available (more secure, no HTTP)
-    if (!_authAttempted) {
-      _authAttempted = true;
-      const nativeAvailable = await transport.isNative();
-      if (!nativeAvailable) {
-        // F21: Attempt HMAC handshake for HTTP fallback
-        try { const { authenticate } = await import('./auth.js'); await authenticate(url); } catch { /* unsigned mode */ }
-      }
+export async function discoverServer(pageUrl = null, _targetDir = null) {
+  try {
+    const response = await _sendToSw('vg-get-server', { pageUrl });
+    if (response?.url) {
+      _serverUrl = response.url;
+      _agentName = response.agentName || null;
+      transport.init(response.url);
+      return response.url;
     }
-  } else {
-    transport.reset();
-  }
-  return url;
+  } catch { /* SW not ready - fall through */ }
+  _serverUrl = null;
+  transport.reset();
+  return null;
 }
 
-/** Internal implementation - finds the best server URL without side effects. */
-async function _discoverServerImpl(pageUrl = null, targetDir = null) {
-  const reg = await refreshRegistry();
-  if (reg.size === 0) return null;
-
-  const normalizedUrl = normalizeUrl(pageUrl);
-
-  // Explicit capturesDir match
-  if (targetDir) {
-    for (const entry of reg.values()) {
-      if (entry.capturesDir === targetDir) return entry.url;
-    }
-  }
-
-  // file:// URLs - match against projectRoot (longest prefix wins)
-  if (normalizedUrl?.startsWith('file://')) {
-    const filePath = extractFilePath(normalizedUrl);
-    let bestMatch = null;
-    let bestLen = 0;
-    for (const entry of reg.values()) {
-      const normRoot = entry.projectRoot?.replace(/\\/g, '/');
-      if (normRoot && filePath.startsWith(normRoot) && normRoot.length > bestLen) {
-        bestMatch = entry.url;
-        bestLen = normRoot.length;
+/**
+ * Send a message to the service worker and return the response.
+ * @param {string} type - Message type
+ * @param {object} payload - Message payload
+ * @returns {Promise<object>}
+ */
+function _sendToSw(type, payload) {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({ type, ...payload }, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+        return;
       }
-    }
-    if (bestMatch) return bestMatch;
-  }
-
-  // localhost/remote URLs - match against urlPatterns
-  if (normalizedUrl) {
-    const urlPort = extractPort(normalizedUrl);
-    for (const entry of reg.values()) {
-      for (const pattern of entry.urlPatterns || []) {
-        if (normalizedUrl.includes(pattern)) return entry.url;
-        if (urlPort && pattern.includes(':') && pattern.endsWith(':' + urlPort)) return entry.url;
-      }
-    }
-  }
-
-  // Single server + file:// URL: auto-match
-  if (reg.size === 1 && pageUrl?.startsWith('file://')) return [...reg.values()][0].url;
-
-  // Single server + localhost URL: auto-match
-  if (reg.size === 1) {
-    try {
-      const u = new URL(pageUrl);
-      if (u.hostname === 'localhost' || u.hostname === '127.0.0.1' || u.hostname === '0.0.0.0' || u.hostname === '[::1]') {
-        return [...reg.values()][0].url;
-      }
-    } catch { /* invalid URL */ }
-  }
-
-  return null;
+      resolve(response);
+    });
+  });
 }

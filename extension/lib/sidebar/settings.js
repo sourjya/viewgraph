@@ -9,7 +9,7 @@
 
 import { ATTR } from '#lib/selector.js';
 import { chevronLeftIcon } from './icons.js';
-import * as transport from '#lib/transport.js';
+import * as transport from '#lib/transport-client.js';
 import { COLOR, FONT } from './styles.js';
 import { svgFromString } from './icons.js';
 
@@ -324,7 +324,8 @@ export function createSettings() {
         cardBody.replaceChildren();
         return;
       }
-      renderProjectInfo({ ...info, _port: transport.getServerUrl?.()?.match(/:(\d+)/)?.[1] || '?' });
+      const serverUrl = await transport.getServerUrl?.() || '';
+      renderProjectInfo({ ...info, _port: serverUrl.match(/:(\d+)/)?.[1] || '?' });
       statusDotEl.style.background = COLOR.success;
       statusText.textContent = 'Server Connected';
       statusText.style.color = COLOR.success;

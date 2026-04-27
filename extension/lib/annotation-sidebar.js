@@ -31,11 +31,11 @@ import { createStrip } from './sidebar/strip.js';
 import { createSettings } from './sidebar/settings.js';
 import { createInspectTab } from './sidebar/inspect.js';
 import { startTransientObserver, stopTransientObserver } from './collectors/transient-collector.js';
-import { clearAuth } from './auth.js';
+// M19: auth.js no longer imported - auth is SW-internal (auth-sw.js)
 import { renderReviewList } from './sidebar/review.js';
 import { scanForSuggestions } from './sidebar/suggestions.js';
 import { renderSuggestionBar, collapseSuggestions, resetSuggestions, showReloadHint } from './sidebar/suggestions-ui.js';
-import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from './sidebar/sync.js';
+import { syncResolved, loadResolvedHistory, syncFromStorage, stopSync } from './sidebar/sync.js';
 import { EVENTS, createEventBus } from './sidebar/events.js';
 import { createHeader } from './sidebar/header.js';
 import { createFooter } from './sidebar/footer.js';
@@ -46,7 +46,7 @@ import { createTooltip } from './tooltip.js';
 import { COLOR } from './sidebar/styles.js';
 import { KEYS, set as storageSet } from './storage.js';
 import { discoverServer, getAgentName, classifyTrust } from './constants.js';
-import * as transport from './transport.js';
+import * as transport from './transport-client.js';
 import { stopJourney } from './session/journey-recorder.js';
 import { startShortcuts, stopShortcuts } from './ui/keyboard-shortcuts.js';
 import { ATTR } from './selector.js';
@@ -73,6 +73,7 @@ let _footer = null;
 let _modeBar = null;
 let _popstateHandler = null;
 let _tooltip = null;
+let _serverResolvedHistory = [];
 
 /** Create and mount the sidebar. */
 export function create() {
@@ -106,10 +107,8 @@ export function create() {
       if (!_footer) return;
       if (url) {
         _footer.statusDot.style.background = COLOR.success;
-        const { isAuthenticated: isAuthed } = await import('./auth.js');
-        const authMode = isAuthed() ? '🔒 signed' : '🔓 unsigned';
         _footer.statusDot.setAttribute('data-tooltip', `MCP server: ${url}`);
-        if (_footer.setAuthMode) _footer.setAuthMode(isAuthed());
+        if (_footer.setAuthMode) _footer.setAuthMode(false);
         _header.statusBanner.style.display = 'none';
         try {
           const info = await transport.getInfo();
@@ -279,13 +278,8 @@ export function create() {
         const trust = classifyTrust(window.location.href, info.trustedPatterns || []);
         _trustLevel = trust;
         _footer.setTrustLevel(trust);
-        const nativeActive = await transport.isNative();
-        if (nativeActive) {
-          if (_footer.setAuthMode) _footer.setAuthMode(true, 'native');
-        } else {
-          const { isAuthenticated: isAuthed } = await import('./auth.js');
-          if (_footer.setAuthMode) _footer.setAuthMode(isAuthed());
-        }
+        // M19: Auth mode detection is SW-internal (auth-sw.js handles native + HMAC)
+        if (_footer.setAuthMode) _footer.setAuthMode(false);
       } catch (e) { console.error('[ViewGraph] info/trust error:', e); }
     } else {
       if (!_footer) return;
@@ -480,17 +474,27 @@ export function create() {
     }
     _bus.emit(EVENTS.REFRESH);
   });
-  startResolutionPolling(() => {
-    const newResolved = getAnnotations().filter((a) => a.resolved).length;
-    if (newResolved > _lastResolvedCount) {
-      const diff = newResolved - _lastResolvedCount;
-      _lastResolvedCount = newResolved;
-      const list = sidebarEl?.querySelector(`[${ATTR}="list"]`);
-      if (list) showReloadHint(list, diff);
-    }
+  // Load server-side resolution history for the Resolved tab (survives extension reload)
+  loadResolvedHistory().then((history) => {
+    if (!_footer) return; // sidebar destroyed while loading
+    _serverResolvedHistory = history;
     _bus.emit(EVENTS.REFRESH);
   });
-  startRequestPolling((reqs) => { pendingRequests = reqs || []; });
+  // M19: Storage-based sync replaces polling. SW writes events to storage,
+  // sidebar reads via onChanged listener.
+  syncFromStorage(
+    () => {
+      const newResolved = getAnnotations().filter((a) => a.resolved).length;
+      if (newResolved > _lastResolvedCount) {
+        const diff = newResolved - _lastResolvedCount;
+        _lastResolvedCount = newResolved;
+        const list = sidebarEl?.querySelector(`[${ATTR}="list"]`);
+        if (list) showReloadHint(list, diff);
+      }
+      _bus.emit(EVENTS.REFRESH);
+    },
+    (reqs) => { pendingRequests = reqs || []; },
+  );
 
   transport.onEvent('annotation:resolved', (msg) => {
     _bus.emit(EVENTS.ANNOTATION_RESOLVED, { uuid: msg.uuid, resolution: msg.resolution });
@@ -509,6 +513,9 @@ export function create() {
 
   // ── Transient UI observer (ADR-014) ──
   startTransientObserver();
+
+  // M19: Notify SW that a sidebar is open (connects WebSocket)
+  try { chrome.runtime.sendMessage({ type: 'vg-sidebar-opened' }, () => {}); } catch { /* tests */ }
 
   // ── Keyboard shortcuts ──
   startShortcuts({
@@ -655,6 +662,7 @@ export function refresh() {
     activeFilter,
     activeTypeFilters,
     agentName: getAgentName(),
+    serverResolvedHistory: _serverResolvedHistory,
   }, {
     onRefresh: () => refresh(),
     onShowPanel: (ann) => {
@@ -804,10 +812,11 @@ export function destroy() {
   stopShortcuts();
   stopJourney();
   stopTransientObserver();
-  clearAuth();
-  stopRequestPolling();
-  stopResolutionPolling();
-  transport.reset();
+  // M19: auth and transport lifecycle are SW-internal
+  // M19: Notify SW that this sidebar closed (may disconnect WebSocket)
+  try { chrome.runtime.sendMessage({ type: 'vg-sidebar-closed' }, () => {}); } catch { /* tests */ }
+  // M19: Stop storage-based sync listener
+  stopSync();
   if (hostEl) { hostEl.remove(); hostEl = null; }
   if (sidebarEl) { sidebarEl = null; }
   _shadowRoot = null;
@@ -825,4 +834,5 @@ export function destroy() {
   activeFilter = 'open';
   _suggestionsCache = null;
   _trustLevel = null;
+  _serverResolvedHistory = [];
 }

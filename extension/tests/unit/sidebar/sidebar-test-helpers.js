@@ -77,7 +77,7 @@ function setupBeforeEach() {
       },
     },
     runtime: {
-      sendMessage: vi.fn((msg, cb) => { if (cb) cb({ ok: true }); }),
+      // Base mockChrome handles vg-transport and vg-get-server
       getURL: vi.fn((path) => `chrome-extension://test-id/${path}`),
     },
   });

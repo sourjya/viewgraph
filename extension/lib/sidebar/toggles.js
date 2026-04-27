@@ -13,7 +13,7 @@ import { ATTR } from '#lib/selector.js';
 import { startWatcher, stopWatcher, isWatcherEnabled } from '#lib/session/continuous-capture.js';
 import { isRecording, startSession, stopSession, getState } from '#lib/session/session-manager.js';
 import { startJourney, stopJourney } from '#lib/session/journey-recorder.js';
-import * as transport from '#lib/transport.js';
+import * as transport from '#lib/transport-client.js';
 import { COLOR, FONT, TOGGLE_STYLE, TOGGLE_ON, TOGGLE_OFF, LABEL_STYLE, DESC_STYLE, DIVIDER_STYLE, DIVIDER_SUBTLE_STYLE } from './styles.js';
 
 /**

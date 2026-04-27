@@ -1,25 +1,23 @@
 /**
  * Sidebar Sync - Unit Tests
  *
+ * Tests syncResolved (immediate sync) and pollRequests (direct poll).
+ * M19: Polling functions removed - replaced by storage-based sync
+ * tested in sync-storage.test.js.
+ *
  * @see lib/sidebar/sync.js
+ * @see tests/unit/sidebar/sync-storage.test.js - storage-based sync tests
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { syncResolved, startResolutionPolling, stopResolutionPolling, startRequestPolling, stopRequestPolling } from '#lib/sidebar/sync.js';
-import { mockChrome } from '../../mocks/chrome.js';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { syncResolved } from '#lib/sidebar/sync.js';
 
 beforeEach(() => {
   globalThis.fetch = vi.fn(() => Promise.reject(new Error('offline')));
 });
 
-afterEach(() => {
-  stopResolutionPolling();
-  stopRequestPolling();
-});
-
 describe('syncResolved', () => {
   it('(+) calls onChanged when annotations are resolved', async () => {
-    // No server available - should not throw
     const onChanged = vi.fn();
     await syncResolved(onChanged);
     expect(onChanged).not.toHaveBeenCalled(); // offline, no changes
@@ -30,35 +28,11 @@ describe('syncResolved', () => {
   });
 });
 
-describe('polling', () => {
-  it('(+) startResolutionPolling starts interval', () => {
-    const spy = vi.fn();
-    startResolutionPolling(spy);
-    // Should not throw
-    stopResolutionPolling();
-  });
-
-  it('(+) stopResolutionPolling is safe to call twice', () => {
-    startResolutionPolling(() => {});
-    stopResolutionPolling();
-    expect(() => stopResolutionPolling()).not.toThrow();
-  });
-
-  it('(+) startRequestPolling starts interval', () => {
-    startRequestPolling(() => {});
-    stopRequestPolling();
-  });
-
-  it('(+) stopRequestPolling is safe to call twice', () => {
-    stopRequestPolling();
-    expect(() => stopRequestPolling()).not.toThrow();
-  });
-});
-
 describe('pollRequests', () => {
   it('(+) calls onRequests with pending requests from server', async () => {
     const { resetServerCache } = await import('#lib/constants.js');
     const transport = await import('#lib/transport.js');
+    const { mockChrome } = await import('../../mocks/chrome.js');
     resetServerCache();
     transport.init('http://127.0.0.1:9876');
     mockChrome({ runtime: { sendNativeMessage: undefined } });

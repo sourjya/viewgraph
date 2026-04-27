@@ -15,7 +15,7 @@
 
 import { ATTR } from '#lib/selector.js';
 import { shieldIcon } from '#lib/sidebar/icons.js';
-import * as transport from '#lib/transport.js';
+import * as transport from '#lib/transport-client.js';
 import { COLOR, FONT } from './styles.js';
 
 /**
