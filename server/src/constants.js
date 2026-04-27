@@ -77,7 +77,14 @@ When other MCP tools are available, ViewGraph complements them:
 - Chrome DevTools MCP (console, network, performance): Use ViewGraph for DOM state and a11y, Chrome DevTools for live console errors and network failures
 - TracePulse (server logs, build errors): Check backend errors first (fastest feedback), then use ViewGraph for UI verification
 - Debug sequence: backend errors (TracePulse) -> browser errors (Chrome DevTools) -> visual/structural issues (ViewGraph)
-- ViewGraph's snapshot -> nid -> find_source pattern parallels Chrome DevTools' snapshot -> uid -> click pattern`;
+- ViewGraph's snapshot -> nid -> find_source pattern parallels Chrome DevTools' snapshot -> uid -> click pattern
+
+ERROR RECOVERY:
+- If a ViewGraph tool returns "not found", retry with different parameters before switching to another tool
+- Annotation IDs can be numeric (e.g., "1") or UUIDs (e.g., "abc-123") - both work with get_annotation_context
+- If a capture file is not found, call list_captures to get current filenames (files may have been archived)
+- Do NOT switch to Chrome DevTools MCP as a fallback for ViewGraph errors - they serve different purposes
+- ViewGraph errors are usually parameter mismatches, not capability gaps`;
 
 /** Whitelist of config keys accepted by PUT /config and native messaging updateConfig. */
 export const ALLOWED_CONFIG_KEYS = new Set(['urlPatterns', 'trustedPatterns', 'autoAudit', 'smartSuggestions', 'captureQuality', 'includeScreenshot', 'includeSnapshot', 'baselineAutoCompare']);

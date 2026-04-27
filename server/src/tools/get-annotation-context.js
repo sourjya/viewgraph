@@ -28,7 +28,7 @@ export function register(server, _indexer, capturesDir, options = {}) {
     'Use annotation_id to focus on a single annotation.',
     {
       filename: z.string().describe('Capture filename'),
-      annotation_id: z.string().optional().describe('Filter to a single annotation by ID'),
+      annotation_id: z.string().optional().describe('Filter to a single annotation by numeric id or uuid'),
     },
     async ({ filename, annotation_id }) => {
       const { ok, parsed, error } = await readAndParse(filename, capturesDir);
@@ -36,9 +36,9 @@ export function register(server, _indexer, capturesDir, options = {}) {
 
       let annotations = parsed.annotations || [];
       if (annotation_id) {
-        annotations = annotations.filter((a) => a.id === annotation_id);
+        annotations = annotations.filter((a) => a.id === annotation_id || a.uuid === annotation_id);
         if (annotations.length === 0) {
-          return errorResponse(`Error: Annotation "${annotation_id}" not found`);
+          return errorResponse(`Error: Annotation "${annotation_id}" not found. Use numeric id or uuid.`);
         }
       }
       if (annotations.length === 0) {
