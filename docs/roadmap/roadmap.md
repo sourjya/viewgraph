@@ -46,6 +46,11 @@
 | M19: SW Communication | Complete | All extension-to-server HTTP moved to service worker. 5 new SW modules, 83 new tests. [spec](../../.kiro/specs/sw-communication/) |
 | Debug Recipe Skills | Complete | @vg-debug-ui, @vg-debug-fullstack prompts. MCP prompts/list for zero-friction delivery. Cross-tool orchestration guidance. |
 | SRR-007 + MRR-005 | Complete | Tier 3 security + maintainability review. 5 fixes: variable shadowing, URL matching, constants import, badge color, import alias. [SRR-007](../security/SRR-007-2026-04-27-T3.md), [MRR-005](../reviews/MRR-005-2026-04-27.md) |
+| M8.1: Extensible Init | Complete | AGENT_SETUP registry pattern. New agents add entry to AGENTS array + optional setup function. |
+| M9.1: Capture History | Complete | get_capture_history MCP tool (#39). Groups captures by URL with timeline and node count deltas. |
+| F10: Smart Alerts | Complete | Auto-audit results wired to collapsed strip. Pulsing amber dot on issues detected. |
+| F16 P2: Transport Auto-Detection | Complete | 3-way detection: native host, stdio pipe, TTY. Zero-config for all MCP clients. |
+| Async Lifecycle Guards | Complete | Null guards on 6 _bus.emit() calls, transport.offEvent() in destroy(), _sending reset, clipboard .catch() |
 ### Completed Features
 
 | Feature | Status | Description |
@@ -61,7 +66,7 @@
 | F13: Type Filtering | Complete | Annotation type registry, filter toggles, badge standardization |
 | F14: Sidebar Decomposition | Complete | 2306->747 lines, 10 modules, icons.js + styles.js |
 | F15: Auto-Inspect Suggestions | Complete | Proactive issue detection, ranked pick-list, 3 tiers |
-| F16: Zero-Config Install | Phase 1 Complete | Server self-configures, default urlPatterns, auto-learn config |
+| F16: Zero-Config Install | Complete | Server self-configures, default urlPatterns, auto-learn config, transport auto-detection |
 
 ### Implementation Roadmap (priority order)
 
@@ -82,7 +87,7 @@
 **Rationale:** F19 and F17 are security-first (threat model driven). F18 is low-effort, high-impact UX. F6/F9/F10 are feature work. F11 is the big architectural change that eliminates most localhost threats.
 | M17: Telemetry | Deferred (post-traction) | Anonymous usage analytics - not needed until product has adoption |
 
-**Current totals:** 1788 tests (1244 extension + 544 server), 38 MCP tools, 11 prompt templates, 17 enrichment collectors
+**Current totals:** 1808 tests (1244 extension + 564 server), 39 MCP tools, 11 prompt templates, 17 enrichment collectors
 
 Each milestone below will be converted into a full Kiro spec under
 `.kiro/specs/{milestone-name}/` with `requirements.md`, `design.md`, and
