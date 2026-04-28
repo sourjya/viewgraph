@@ -1,6 +1,6 @@
 # ViewGraph v2 Format Specification
 
-**Version:** 2.2.0
+**Version:** 2.3.0
 
 **Date:** 2026-04-10
 
@@ -91,8 +91,9 @@ producers MUST emit in this order for LLM attention optimization.
 | 2 | `summary` | Yes | Page overview, styles, clusters, key elements |
 | 3 | `nodes` | Yes | Element tree grouped by salience tier |
 | 4 | `relations` | Yes | Semantic and structural relationships |
-| 5 | `details` | Yes | Full selectors, attributes, computed styles |
-| 6 | `annotations` | No | Human annotations from review mode |
+| 5 | `styleTable` | No | Deduplicated style definitions (v2.3+). Details reference via `styleRef`. |
+| 6 | `details` | Yes | Full selectors, attributes, computed styles (or `styleRef`) |
+| 7 | `annotations` | No | Human annotations from review mode |
 | 7 | `accessibility` | No | Computed accessibility tree snapshot |
 | 8 | `coverage` | No | Omission manifest - what was dropped and why |
 | 9 | `network` | No | Network request state at capture time |

@@ -68,18 +68,19 @@ describe('serialize', () => {
     expect(detail.locators[0]).toMatchObject({ strategy: 'testId', value: 'submit', rank: 1 });
   });
 
-  it('high-salience details include full styles', () => {
+  it('high-salience details include full styles via styleRef', () => {
     const capture = serialize([el()], []);
     const detail = capture.details.high.button[1];
-    expect(detail.styles).toBeDefined();
-    expect(detail.styles.visual).toBeDefined();
+    expect(detail.styleRef).toBeDefined();
+    expect(capture.styleTable[detail.styleRef]).toBeDefined();
+    expect(capture.styleTable[detail.styleRef].visual).toBeDefined();
   });
 
   it('low-salience details omit styles', () => {
     const lowEl = el({ nid: 1, tag: 'span', salience: 'low', score: 5 });
     const capture = serialize([lowEl], []);
     const detail = capture.details.low.span[1];
-    expect(detail.styles).toBeUndefined();
+    expect(detail.styleRef).toBeUndefined();
   });
 
   it('relations section includes semantic relations', () => {

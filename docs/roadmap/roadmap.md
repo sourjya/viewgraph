@@ -2,21 +2,85 @@
 
 ## Current Version
 
-v0.1.0 (pre-release)
+v0.7.0
 
-## Milestones
+## Status Summary
 
-| Milestone | Target Date | Specs | ADRs | Status |
-|-----------|-------------|-------|------|--------|
-| M1: Project Setup | YYYY-MM-DD | - | [ADR-001](../decisions/ADR-001-tech-stack.md) | Not Started |
-| M2: Core Feature | YYYY-MM-DD | `feat/feature-name` | - | Not Started |
+**Shipped:** 40 MCP tools, 12 prompt templates, 17 enrichment collectors, 1769 tests (1244 extension + 525 server)
+
+**All major features complete.** Current focus: experiment-validated optimizations and cross-tool integration.
+
+## Active Ideas (Experiment-First)
+
+These require experiments to validate before implementation. Each has a detailed idea doc with design options, token impact analysis, and experiment designs.
+
+| Idea | Category | Gate Experiment | Result | Idea Doc |
+|------|----------|-----------------|--------|----------|
+| Provenance Metadata | Capture Format | >15% non-measured fields | **PASS (28.3%)** | [provenance-metadata.md](../ideas/provenance-metadata.md) |
+| CDP Accessibility Tree | Capture Accuracy | >20% false positive rate | **PASS (35%)** | [cdp-accessibility-tree.md](../ideas/cdp-accessibility-tree.md) |
+| JSON Patch Diffs | Token Efficiency | Agent comprehension >90% | Pending | [json-patch-incremental-diffs.md](../ideas/json-patch-incremental-diffs.md) |
+| Style Dedup Table | Token Efficiency | >30% dedup rate | **PASS (50%) → SHIPPED v0.7.0** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
+| Default Value Omission | Token Efficiency | >25% default rate | **PASS (41.8%) → SHIPPED v0.7.0** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
+| Enrichment Opt-In | Token Efficiency | ≥3 sections >70% empty | **FAIL (2/10)** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
+| Selector Stability | Capture Quality | >90% stability | **PASS (97.2%)** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
+
+## Recently Shipped (v0.7.0)
+
+| Feature | Description |
+|---------|-------------|
+| Style dedup table | Shared style table in captures. 50% dedup rate → ~45% style data reduction |
+| Default value omission | Filter browser defaults (visibility:visible, opacity:1, etc.). 41.8% waste eliminated |
+| Heuristic name computation | W3C accessible name algorithm. Reduces a11y audit false positives from 35% to <10% |
+| verify_fix tool (#40) | Composite smoke test: a11y + layout + console + network + regressions in one call |
+| get_capture_history (#39) | Groups captures by URL into timelines with node count deltas |
+| TracePulse bridge | Push frontend errors to TP's log collector for cross-stack correlation |
+| @vg-verify prompt | Composite verify: verify_fix() + get_errors() for frontend+backend health |
+| Async lifecycle guards | 3 critical null-guard fixes in annotation-sidebar.js |
+| ESLint zero warnings | 40 warnings eliminated across entire codebase |
+| M8.1 extensible init | AGENT_SETUP registry pattern in viewgraph-init.js |
+| F10 smart alerts | Auto-audit results wired to collapsed strip badge |
+
+## Remaining Polish
+
+| Item | Effort | Description |
+|------|--------|-------------|
+| Extension onboarding | Low | Welcome page on install with feature walkthrough |
+| Performance optimization | Medium | Lazy-load heavy modules, optimize DOM traversal for large pages |
+| Extensible init (M8.1) | Done | AGENT_SETUP registry pattern in viewgraph-init.js |
+| Capture history (M9.1) | Done | get_capture_history MCP tool (#39) |
+| Smart alerts (F10) | Done | Auto-audit results wired to collapsed strip badge |
+| Transport auto-detection (F16 P2) | Done | 3-way: native host, stdio pipe, TTY |
+
+## Other Ideas (Backlog)
+
+| Idea | Status | Doc |
+|------|--------|-----|
+| TracePulse Integration | Phase 1-3 shipped | [tracepulse-integration.md](../ideas/tracepulse-integration.md) |
+| Panic Capture | Evaluate | [panic-capture.md](../ideas/panic-capture.md) |
+| Rolling Archive | Done | [rolling-archive.md](../ideas/rolling-archive.md) |
+| Live Annotation Status | Evaluate | [live-annotation-status.md](../ideas/live-annotation-status.md) |
+| Extended Enrichment | Evaluate | [extended-capture-enrichment.md](../ideas/extended-capture-enrichment.md) |
+| Themed Tooltip | Evaluate | [themed-tooltip-component.md](../ideas/themed-tooltip-component.md) |
+| Chrome DevTools MCP Testing | Active | [chrome-devtools-mcp-testing.md](../ideas/chrome-devtools-mcp-testing.md) |
+
+## Launch Prep (M18)
+
+| Task | Description |
+|------|-------------|
+| Documentation site | GitBook IA, MCP tool reference, workflow guides |
+| Demo video | 3-5 min walkthrough: install, annotate, fix |
+| README polish | Current feature set, getting started, badges |
+| Launch narrative | Product Hunt / HN story arc |
 
 ## Security Reviews
 
-| SRR | Date | Scope | Findings | Report |
-|-----|------|-------|----------|--------|
-| SRR-001 | YYYY-MM-DD | Initial review | - | [Report](../security/SRR-001-YYYY-MM-DD.md) |
+| SRR | Date | Scope | Report |
+|-----|------|-------|--------|
+| SRR-007 | 2026-04-27 | Tier 3 sprint-end | [Report](../security/SRR-007-2026-04-27-T3.md) |
+| SRR-006 | 2026-04-24 | Tier 3 sprint-end | [Report](../security/SRR-006-2026-04-24-T3.md) |
 
-## Completed
+## Maintainability Reviews
 
-_None yet._
+| MRR | Date | Report |
+|-----|------|--------|
+| MRR-005 | 2026-04-27 | [Report](../reviews/MRR-005-2026-04-27.md) |

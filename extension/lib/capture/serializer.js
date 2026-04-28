@@ -113,10 +113,115 @@ function buildNodes(elements) {
 }
 
 /**
+ * CSS defaults that carry zero information. Omitting these saves ~40% of style tokens.
+ * Values validated by experiment: scripts/experiments/token-efficiency/
+ * @see docs/ideas/token-efficiency-experiments.md - Experiment 2
+ */
+const CSS_DEFAULTS = {
+  position: 'static',
+  visibility: 'visible',
+  overflow: 'visible',
+  opacity: '1',
+  'flex-direction': 'row',
+  'text-align': 'start',
+  'font-weight': '400',
+  'font-style': 'normal',
+  'text-decoration': 'none',
+  'text-transform': 'none',
+  'white-space': 'normal',
+  'box-sizing': 'content-box',
+  float: 'none',
+  clear: 'none',
+  'z-index': 'auto',
+  'vertical-align': 'baseline',
+  cursor: 'auto',
+  'pointer-events': 'auto',
+};
+
+/** Values that are effectively "no value" for specific properties. */
+const ZERO_PATTERNS = {
+  margin: /^0px( 0px)*$/,
+  padding: /^0px( 0px)*$/,
+  'border-radius': /^0px$/,
+  gap: /^normal$/,
+};
+
+/**
+ * Check if a border value is effectively "no border".
+ * @param {string} val - CSS border shorthand value
+ * @returns {boolean}
+ */
+function isDefaultBorder(val) {
+  return /^0px\s+none\b/.test(val);
+}
+
+/**
+ * Filter out browser default values from a style group.
+ * Returns a new object with only non-default properties, or null if all defaults.
+ * @param {object} group - Style group (e.g., { display: 'block', position: 'static' })
+ * @returns {object|null}
+ */
+function filterDefaults(group) {
+  if (!group || typeof group !== 'object') return group;
+  const filtered = {};
+  let hasNonDefault = false;
+  for (const [prop, val] of Object.entries(group)) {
+    // Skip known defaults
+    if (CSS_DEFAULTS[prop] === val) continue;
+    // Skip zero-value patterns
+    if (ZERO_PATTERNS[prop]?.test(val)) continue;
+    // Skip default borders
+    if (prop === 'border' && isDefaultBorder(val)) continue;
+    // Skip transparent backgrounds
+    if (prop === 'background-color' && (val === 'rgba(0, 0, 0, 0)' || val === 'transparent')) continue;
+    // Skip none values for optional properties
+    if ((prop === 'box-shadow' || prop === 'transform' || prop === 'text-decoration') && val === 'none') continue;
+    if (prop === 'text-decoration' && val.startsWith('none ')) continue;
+
+    filtered[prop] = val;
+    hasNonDefault = true;
+  }
+  return hasNonDefault ? filtered : null;
+}
+
+/**
+ * Filter defaults from all style groups. Returns cleaned styles or null if empty.
+ * @param {object} styles - Style object with groups (layout, visual, typography, spacing, flexbox)
+ * @returns {object|null}
+ */
+function filterStyleDefaults(styles) {
+  if (!styles) return null;
+  const cleaned = {};
+  let hasContent = false;
+  for (const [group, props] of Object.entries(styles)) {
+    const filtered = filterDefaults(props);
+    if (filtered) { cleaned[group] = filtered; hasContent = true; }
+  }
+  return hasContent ? cleaned : null;
+}
+
+/**
+ * Simple hash for style deduplication. Uses JSON.stringify for deterministic output.
+ * @param {object} styles - Filtered style object
+ * @returns {string} Hash string
+ */
+function hashStyles(styles) {
+  const str = JSON.stringify(styles);
+  // Simple djb2 hash - fast, good distribution, no crypto dependency
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) hash = ((hash << 5) + hash + str.charCodeAt(i)) & 0x7fffffff;
+  return 's' + hash.toString(36);
+}
+
+/**
  * Build the details section - full element details by tier.
+ * Applies default omission and style deduplication.
+ * @returns {{ details: object, styleTable: object }}
  */
 function buildDetails(elements) {
   const details = { high: {}, med: {}, low: {} };
+  const styleMap = new Map(); // hash -> styles object
+  const styleRefMap = new Map(); // hash -> ref id
 
   for (const el of elements) {
     const tier = details[el.salience];
@@ -129,22 +234,40 @@ function buildDetails(elements) {
       layout: { bboxDocument: el.bbox },
     };
 
-    // Progressive style disclosure: full for high, reduced for med, none for low
+    // Progressive style disclosure with default omission + dedup
+    let styles = null;
     if (el.salience === 'high') {
-      entry.styles = el.styles;
+      styles = filterStyleDefaults(el.styles);
     } else if (el.salience === 'med') {
       const { layout, visual, typography, spacing } = el.styles;
-      entry.styles = {};
-      if (layout) entry.styles.layout = layout;
-      if (visual) entry.styles.visual = visual;
-      if (typography) entry.styles.typography = typography;
-      if (spacing) entry.styles.spacing = spacing;
+      const raw = {};
+      if (layout) raw.layout = layout;
+      if (visual) raw.visual = visual;
+      if (typography) raw.typography = typography;
+      if (spacing) raw.spacing = spacing;
+      styles = filterStyleDefaults(raw);
     }
     // low: no styles
 
+    if (styles) {
+      const hash = hashStyles(styles);
+      if (!styleMap.has(hash)) {
+        styleMap.set(hash, styles);
+        styleRefMap.set(hash, hash);
+      }
+      entry.styleRef = hash;
+    }
+
     tier[el.tag][el.nid] = entry;
   }
-  return details;
+
+  // Build style table from unique styles
+  const styleTable = {};
+  for (const [hash, styles] of styleMap) {
+    styleTable[hash] = styles;
+  }
+
+  return { details, styleTable };
 }
 
 /**
@@ -179,12 +302,14 @@ function buildRelations(relations) {
  */
 export function serialize(elements, relations, enrichment = {}) {
   const metadata = buildMetadata(elements);
+  const { details, styleTable } = buildDetails(elements);
   const capture = {
     metadata,
     summary: buildSummary(elements, metadata),
     nodes: buildNodes(elements),
     relations: buildRelations(relations),
-    details: buildDetails(elements),
+    styleTable,
+    details,
   };
 
   // Enrichment sections - each key maps directly to a top-level capture field

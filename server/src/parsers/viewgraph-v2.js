@@ -91,6 +91,25 @@ export function parseCapture(jsonString) {
     'animations', 'intersection', 'mediaQueries',
   ];
 
+  // Resolve styleRef -> inline styles for backward compatibility with analysis tools.
+  // The styleTable is a dedup optimization in the capture format; tools see inline styles.
+  const details = raw.details ?? null;
+  const styleTable = raw.styleTable ?? null;
+  if (details && styleTable) {
+    for (const tier of Object.values(details)) {
+      if (!tier || typeof tier !== 'object') continue;
+      for (const items of Object.values(tier)) {
+        if (!items || typeof items !== 'object') continue;
+        for (const entry of Object.values(items)) {
+          if (entry.styleRef && styleTable[entry.styleRef]) {
+            entry.styles = styleTable[entry.styleRef];
+            delete entry.styleRef;
+          }
+        }
+      }
+    }
+  }
+
   return {
     ok: true,
     data: {
@@ -98,7 +117,8 @@ export function parseCapture(jsonString) {
       nodes: raw.nodes ?? null,
       summary: raw.summary ?? null,
       relations: raw.relations ?? null,
-      details: raw.details ?? null,
+      details,
+      styleTable,
       annotations: normalizeAnnotations(raw.annotations),
       ...Object.fromEntries(ENRICHMENT_KEYS.map((k) => [k, raw[k] ?? null])),
     },

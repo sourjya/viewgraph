@@ -1,6 +1,6 @@
 # ViewGraph MCP Server
 
-MCP server that reads ViewGraph capture files from disk and exposes 38 query/analysis/request tools to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
+MCP server that reads ViewGraph capture files from disk and exposes 40 query/analysis/request tools to AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
 Works with any MCP-compatible agent: Kiro, Claude Code, Cursor, Windsurf, Cline, Aider.
 
@@ -221,7 +221,7 @@ Exposes 9 core tools (`list_captures`, `get_capture`, `get_latest_capture`, `get
 
 ## MCP Prompts
 
-The server exposes all 11 prompt shortcuts via the MCP `prompts/list` capability. Agents discover `vg-review`, `vg-audit`, `vg-debug-ui`, and all other shortcuts automatically as first-class prompt templates.
+The server exposes all 12 prompt shortcuts via the MCP `prompts/list` capability. Agents discover `vg-review`, `vg-audit`, `vg-verify`, `vg-debug-ui`, and all other shortcuts automatically as first-class prompt templates.
 
 ## Extension Compatibility
 

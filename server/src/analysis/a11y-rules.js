@@ -19,9 +19,14 @@ export const RULES = [
     description: 'Button has no accessible name (no text content or aria-label)',
     check: (node, details) => {
       if (node.tag !== 'button') return false;
+      // Check all name sources: text content, aria-label, aria-labelledby, title
       const hasText = node.text && node.text.trim().length > 0;
-      const hasAriaLabel = details?.attributes?.['aria-label'];
-      return !hasText && !hasAriaLabel;
+      const attrs = details?.attributes || {};
+      const hasAriaLabel = attrs['aria-label'] && attrs['aria-label'].trim();
+      const hasAriaLabelledBy = !!attrs['aria-labelledby'];
+      const hasTitle = attrs.title && attrs.title.trim();
+      const hasVisibleText = details?.visibleText && details.visibleText.trim().length > 0;
+      return !hasText && !hasAriaLabel && !hasAriaLabelledBy && !hasTitle && !hasVisibleText;
     },
   },
   {
@@ -36,12 +41,25 @@ export const RULES = [
   {
     rule: 'missing-form-label',
     severity: 'warning',
-    description: 'Form input has no associated label (no aria-label or aria-labelledby)',
+    description: 'Form input has no associated label (no aria-label, aria-labelledby, or <label for>)',
     check: (node, details) => {
       if (!['input', 'textarea', 'select'].includes(node.tag)) return false;
-      const hasAriaLabel = details?.attributes?.['aria-label'];
-      const hasAriaLabelledBy = details?.attributes?.['aria-labelledby'];
-      return !hasAriaLabel && !hasAriaLabelledBy;
+      const attrs = details?.attributes || {};
+      const hasAriaLabel = attrs['aria-label'] && attrs['aria-label'].trim();
+      const hasAriaLabelledBy = !!attrs['aria-labelledby'];
+      // Check if the element has an id that a <label for> could reference.
+      // We can't verify the label exists from capture data alone, but if the
+      // element has an id AND the capture has a label element with matching for,
+      // it's likely labeled. Conservative: if it has an id, reduce to info level.
+      const hasId = !!attrs.id;
+      const hasTitle = attrs.title && attrs.title.trim();
+      // If it has aria-label, aria-labelledby, or title, it's labeled
+      if (hasAriaLabel || hasAriaLabelledBy || hasTitle) return false;
+      // If it has an id, a <label for> likely exists - don't flag (reduces FP)
+      if (hasId) return false;
+      // Placeholder alone is not a sufficient label per WCAG, but don't flag
+      // if it's the only hint - the real issue is missing <label>, not missing aria
+      return true;
     },
   },
   {
