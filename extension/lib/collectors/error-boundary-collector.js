@@ -11,6 +11,9 @@
  * @see docs/ideas/extended-capture-enrichment.md - Tier 2
  */
 
+const MAX_FIBER_DEPTH = 50;
+const MAX_TEXT_LENGTH = 100;
+
 /**
  * Collect error boundary state from the page.
  * @returns {{ boundaries: Array, framework: string }}
@@ -49,7 +52,7 @@ export function collectErrorBoundaries() {
     for (const el of document.querySelectorAll(selector)) {
       boundaries.push({
         selector,
-        text: el.textContent?.trim().slice(0, 100) || '',
+        text: el.textContent?.trim().slice(0, MAX_TEXT_LENGTH) || '',
         framework: 'generic',
       });
     }
@@ -67,7 +70,7 @@ function findFiber(el) {
 
 /** Walk a React fiber tree, calling fn on each node. */
 function walkFiber(fiber, fn, depth = 0) {
-  if (!fiber || depth > 50) return;
+  if (!fiber || depth > MAX_FIBER_DEPTH) return;
   fn(fiber);
   if (fiber.child) walkFiber(fiber.child, fn, depth + 1);
   if (fiber.sibling) walkFiber(fiber.sibling, fn, depth);

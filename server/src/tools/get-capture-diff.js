@@ -73,6 +73,19 @@ export function register(server, indexer, capturesDir) {
         });
       }
 
+      // S5-1: Guard against O(n²) diff on very large captures
+      const prevSize = JSON.stringify(prev.parsed).length;
+      const targetSize = JSON.stringify(target.parsed).length;
+      if (prevSize + targetSize > 2_000_000) {
+        return jsonResponse({
+          mode: 'full',
+          reason: `Captures too large for diff (${Math.round((prevSize + targetSize) / 1024)}KB combined)`,
+          capture: targetFile,
+          previousCapture: prevFile,
+          url: targetUrl,
+        });
+      }
+
       // Compute JSON Patch (RFC 6902)
       const patch = compare(prev.parsed, target.parsed);
 

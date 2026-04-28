@@ -36,7 +36,7 @@ function buildMetadata(elements) {
 
   return {
     format: 'viewgraph-v2',
-    version: '2.2.0',
+    version: '2.3.0',
     profile: 'readable',
     timestamp: new Date().toISOString(),
     url: window.location.href,
@@ -57,7 +57,7 @@ function buildMetadata(elements) {
       captureSizeBytes: 0, // updated after serialization
       sizeLimitBytes: 409600,
     },
-    extension: { name: 'ViewGraph Capture', version: '0.1.0' },
+    extension: { name: 'ViewGraph Capture', version: (typeof chrome !== 'undefined' && chrome.runtime?.getManifest?.()?.version) || 'unknown' },
   };
 }
 

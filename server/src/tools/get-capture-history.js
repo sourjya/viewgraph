@@ -16,8 +16,11 @@ export function register(server, indexer) {
   server.tool(
     'get_capture_history',
     'Group captures by URL into timelines. Shows capture count, date range, and element count changes per page.',
-    { url_filter: z.string().optional().describe('Filter to URLs containing this substring') },
-    async ({ url_filter }) => {
+    {
+      url_filter: z.string().optional().describe('Filter to URLs containing this substring'),
+      limit: z.number().optional().default(20).describe('Maximum URL groups to return'),
+    },
+    async ({ url_filter, limit }) => {
       const all = indexer.list({ limit: 200, urlFilter: url_filter });
       if (!all.length) {
         return { content: [{ type: 'text', text: 'No captures found.' }] };
@@ -59,8 +62,10 @@ export function register(server, indexer) {
 
       // Sort groups by most recent capture
       history.sort((a, b) => new Date(b.lastCapture) - new Date(a.lastCapture));
+      // S5-3: Apply pagination limit
+      const limited = history.slice(0, limit);
 
-      return { content: [{ type: 'text', text: JSON.stringify(history, null, 2) }] };
+      return { content: [{ type: 'text', text: JSON.stringify(limited, null, 2) }] };
     },
   );
 }

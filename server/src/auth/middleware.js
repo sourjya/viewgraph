@@ -46,7 +46,10 @@ export function createAuthMiddleware({ secret, requireAuth = false }) {
       const oldest = [...pendingChallenges.entries()].sort((a, b) => a[1] - b[1])[0];
       if (oldest) pendingChallenges.delete(oldest[0]);
     }
-    return { challenge, key: secret };
+    // S4-1: Do NOT return the secret. The extension receives it via native
+    // messaging or reads it from .viewgraph/.session-key. Returning it here
+    // would let any localhost process steal the HMAC signing key.
+    return { challenge };
   }
 
   /**

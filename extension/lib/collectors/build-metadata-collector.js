@@ -8,6 +8,10 @@
  * @see docs/ideas/extended-capture-enrichment.md - Tier 2
  */
 
+const MAX_SCRIPTS = 20;
+const MAX_OUTPUT_SCRIPTS = 10;
+const MAX_PATH_LENGTH = 100;
+
 /**
  * Collect build and bundle metadata from the page.
  * @returns {{ mode: string, bundler: string|null, sourcemaps: boolean, scripts: Array }}
@@ -31,20 +35,20 @@ export function collectBuildMetadata() {
   else if (document.querySelector('link[href*="/_astro/"]')) bundler = 'astro';
 
   // Check for sourcemaps
-  const scripts = [...document.querySelectorAll('script[src]')].slice(0, 20);
+  const scripts = [...document.querySelectorAll('script[src]')].slice(0, MAX_SCRIPTS);
   // Collect script sources (truncated)
   const scriptSources = scripts.map((s) => {
     const url = s.src;
     try {
       const u = new URL(url);
-      return { path: u.pathname.slice(0, 100), type: s.type || 'text/javascript', module: s.type === 'module' };
-    } catch { return { path: url.slice(0, 100), type: s.type || 'text/javascript', module: false }; }
+      return { path: u.pathname.slice(0, MAX_PATH_LENGTH), type: s.type || 'text/javascript', module: s.type === 'module' };
+    } catch { return { path: url.slice(0, MAX_PATH_LENGTH), type: s.type || 'text/javascript', module: false }; }
   });
 
   return {
     mode: isDev ? 'development' : 'production',
     bundler,
     scriptCount: scripts.length,
-    scripts: scriptSources.slice(0, 10),
+    scripts: scriptSources.slice(0, MAX_OUTPUT_SCRIPTS),
   };
 }

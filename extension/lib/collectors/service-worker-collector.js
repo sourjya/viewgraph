@@ -8,6 +8,8 @@
  * @see docs/ideas/extended-capture-enrichment.md - Tier 2
  */
 
+const MAX_CACHES = 20;
+
 /**
  * Collect service worker state.
  * @returns {Promise<{ controller: object|null, caches: string[] }>}
@@ -28,7 +30,7 @@ export async function collectServiceWorkerState() {
   try {
     if (typeof caches !== 'undefined') {
       const names = await caches.keys();
-      result.caches = names.slice(0, 20); // Cap at 20
+      result.caches = names.slice(0, MAX_CACHES);
     }
   } catch { /* caches API not available */ }
 

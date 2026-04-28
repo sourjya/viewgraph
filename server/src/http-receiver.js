@@ -216,9 +216,13 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       }
       // S1-1: Whitelist allowed config keys to prevent config poisoning from malicious websites
       // S1-3: Use shared whitelist from constants.js
+      // S1-1: Type validation to prevent type confusion
       const sanitized = {};
       for (const [k, v] of Object.entries(updates)) {
-        if (ALLOWED_CONFIG_KEYS.has(k)) sanitized[k] = v;
+        if (!ALLOWED_CONFIG_KEYS.has(k)) continue;
+        if (k === 'urlPatterns' && !Array.isArray(v)) continue;
+        if (['autoAudit', 'baselineAutoCompare', 'smartSuggestions'].includes(k) && typeof v !== 'boolean') continue;
+        sanitized[k] = v;
       }
       if (Object.keys(sanitized).length === 0) return json(res, 400, { error: 'No valid config keys provided' });
       let existing = {};
@@ -373,7 +377,8 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       // Enables get_correlated_errors to pair frontend failures with backend stack traces.
       try {
         const tpUrl = process.env.TRACEPULSE_COLLECTOR_URL;
-        if (tpUrl) {
+        // S3-1: Only allow localhost URLs to prevent SSRF via env var injection
+        if (tpUrl && /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?/.test(tpUrl)) {
           const errors = [];
           const consoleErrs = capture.console?.errors || [];
           for (const err of consoleErrs.slice(0, 10)) {
@@ -445,7 +450,17 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       if (!pageUrl) return json(res, 400, { error: 'Missing url parameter' });
 
       const seen = new Map(); // uuid -> enriched annotation (dedup, latest wins)
-      for (const entry of indexer.list()) {
+      // S3-2: Limit file reads to prevent DoS from unbounded disk I/O
+      const captures = indexer.list({ limit: 50 });
+      const filteredCaptures = captures.filter((entry) => {
+        if (!entry.url) return false;
+        try {
+          const cu = new URL(entry.url);
+          const pu = new URL(pageUrl.includes('://') ? pageUrl : `http://${pageUrl}`);
+          return cu.hostname === pu.hostname && (!pu.port || cu.port === pu.port);
+        } catch { return false; }
+      });
+      for (const entry of filteredCaptures) {
         try {
           const filePath = validateCapturePath(entry.filename, capturesDir);
           const raw = await readFile(filePath, 'utf-8');
