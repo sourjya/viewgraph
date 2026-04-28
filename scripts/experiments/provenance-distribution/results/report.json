@@ -1,0 +1,57 @@
+{
+  "experiment": "Provenance Distribution Audit",
+  "date": "2026-04-28T06:41:44.409Z",
+  "dataset": {
+    "totalCaptures": 175,
+    "errors": 1,
+    "projects": [
+      {
+        "name": "bulk-capture",
+        "captures": 80,
+        "pctNonMeasured": 31.5
+      },
+      {
+        "name": "home-management",
+        "captures": 5,
+        "pctNonMeasured": 15
+      },
+      {
+        "name": "planiq",
+        "captures": 79,
+        "pctNonMeasured": 24.2
+      },
+      {
+        "name": "shared-libs",
+        "captures": 1,
+        "pctNonMeasured": 18.4
+      },
+      {
+        "name": "viewgraph",
+        "captures": 10,
+        "pctNonMeasured": 16.1
+      }
+    ]
+  },
+  "aggregate": {
+    "totalFields": 1741679,
+    "measured": 1249074,
+    "derived": 374930,
+    "inferred": 117675,
+    "pctMeasured": 71.7,
+    "pctDerived": 21.5,
+    "pctInferred": 6.8,
+    "pctNonMeasured": 28.3
+  },
+  "distribution": {
+    "median": 24,
+    "p25": 22.1,
+    "p75": 29.5,
+    "min": 0,
+    "max": 42.5
+  },
+  "gate": {
+    "threshold": 15,
+    "result": "PASS",
+    "message": "28% of fields are non-measured. Provenance metadata is justified."
+  }
+}

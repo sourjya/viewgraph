@@ -1,0 +1,108 @@
+{
+  "experiment": "A11y Audit False Positive Rate",
+  "date": "2026-04-28T06:41:54.551Z",
+  "dataset": {
+    "totalCaptures": 95,
+    "withAxeData": 82,
+    "skippedNoAxe": 13,
+    "errors": 1
+  },
+  "aggregate": {
+    "totalVgFindings": 40,
+    "truePositives": 26,
+    "falsePositives": 14,
+    "uncertain": 0,
+    "fpRate": 35
+  },
+  "perRuleFP": [
+    {
+      "rule": "missing-form-label",
+      "fpCount": 13
+    },
+    {
+      "rule": "empty-aria-label",
+      "fpCount": 1
+    }
+  ],
+  "topFpPatterns": [
+    {
+      "rule": "missing-form-label",
+      "tag": "input",
+      "count": 8,
+      "examples": [
+        {
+          "text": "",
+          "attrs": {},
+          "file": "viewgraph-localhost-2026-04-24-170900.json"
+        },
+        {
+          "text": "",
+          "attrs": {},
+          "file": "viewgraph-localhost-2026-04-24-171028.json"
+        },
+        {
+          "text": "",
+          "attrs": {
+            "data-testid": "login-email"
+          },
+          "file": "viewgraph-localhost-2026-04-25-143911.json"
+        }
+      ]
+    },
+    {
+      "rule": "missing-form-label",
+      "tag": "textarea",
+      "count": 5,
+      "examples": [
+        {
+          "text": "",
+          "attrs": {
+            "data-testid": "comment-input"
+          },
+          "file": "viewgraph-localhost-2026-04-25-124754.json"
+        },
+        {
+          "text": "",
+          "attrs": {
+            "data-testid": "comment-input"
+          },
+          "file": "viewgraph-localhost-2026-04-25-152659.json"
+        },
+        {
+          "text": "",
+          "attrs": {
+            "data-testid": "comment-input"
+          },
+          "file": "viewgraph-localhost-2026-04-25-161531.json"
+        }
+      ]
+    },
+    {
+      "rule": "empty-aria-label",
+      "tag": "button",
+      "count": 1,
+      "examples": [
+        {
+          "text": "",
+          "attrs": {
+            "aria-label": ""
+          },
+          "file": "viewgraph-wsl.localhost-2026-04-18-153128.json"
+        }
+      ]
+    }
+  ],
+  "axeOnlyRules": [
+    "aria-hidden-focus",
+    "color-contrast",
+    "landmark-one-main",
+    "nested-interactive",
+    "page-has-heading-one",
+    "region"
+  ],
+  "gate": {
+    "threshold": 20,
+    "result": "PASS",
+    "message": "35% false positive rate. Computed name resolution is justified."
+  }
+}
