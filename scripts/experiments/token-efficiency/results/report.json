@@ -1,0 +1,266 @@
+{
+  "date": "2026-04-28T07:56:44.236Z",
+  "dataset": {
+    "captures": 175
+  },
+  "experiments": {
+    "styleDedup": {
+      "name": "Style Deduplication Rate",
+      "captures": 175,
+      "median": 50,
+      "mean": 45.5,
+      "p25": 30.3,
+      "p75": 64.3,
+      "min": 0,
+      "max": 92.8,
+      "totalStyleBytes": 22903585,
+      "estimatedSavingsBytes": 10413933,
+      "gate": {
+        "threshold": 30,
+        "result": "PASS"
+      }
+    },
+    "defaultWaste": {
+      "name": "Default Value Waste",
+      "totalValues": 705225,
+      "defaultValues": 294483,
+      "wasteRate": 41.8,
+      "estimatedSavingsBytes": 5889660,
+      "topWasteProperties": [
+        {
+          "prop": "visibility",
+          "total": 44759,
+          "defaults": 44759,
+          "rate": 100
+        },
+        {
+          "prop": "opacity",
+          "total": 44759,
+          "defaults": 42168,
+          "rate": 94.2
+        },
+        {
+          "prop": "overflow",
+          "total": 44536,
+          "defaults": 38985,
+          "rate": 87.5
+        },
+        {
+          "prop": "background-color",
+          "total": 44759,
+          "defaults": 38412,
+          "rate": 85.8
+        },
+        {
+          "prop": "font-weight",
+          "total": 44759,
+          "defaults": 36648,
+          "rate": 81.9
+        },
+        {
+          "prop": "position",
+          "total": 44759,
+          "defaults": 33890,
+          "rate": 75.7
+        },
+        {
+          "prop": "text-align",
+          "total": 44759,
+          "defaults": 31150,
+          "rate": 69.6
+        },
+        {
+          "prop": "border",
+          "total": 42454,
+          "defaults": 17030,
+          "rate": 40.1
+        },
+        {
+          "prop": "flex-direction",
+          "total": 11571,
+          "defaults": 11441,
+          "rate": 98.9
+        },
+        {
+          "prop": "display",
+          "total": 44759,
+          "defaults": 0,
+          "rate": 0
+        },
+        {
+          "prop": "width",
+          "total": 39758,
+          "defaults": 0,
+          "rate": 0
+        },
+        {
+          "prop": "height",
+          "total": 39681,
+          "defaults": 0,
+          "rate": 0
+        },
+        {
+          "prop": "padding",
+          "total": 13157,
+          "defaults": 0,
+          "rate": 0
+        },
+        {
+          "prop": "border-radius",
+          "total": 9040,
+          "defaults": 0,
+          "rate": 0
+        },
+        {
+          "prop": "color",
+          "total": 44759,
+          "defaults": 0,
+          "rate": 0
+        }
+      ],
+      "gate": {
+        "threshold": 25,
+        "result": "PASS"
+      }
+    },
+    "enrichmentEmptiness": {
+      "name": "Enrichment Section Emptiness",
+      "totalCaptures": 175,
+      "sections": [
+        {
+          "section": "scroll",
+          "present": 82,
+          "empty": 46,
+          "populated": 36,
+          "emptyRate": 56.1,
+          "notPresentRate": 53.1,
+          "avgBytesWhenPresent": 103
+        },
+        {
+          "section": "stacking",
+          "present": 82,
+          "empty": 5,
+          "populated": 77,
+          "emptyRate": 6.1,
+          "notPresentRate": 53.1,
+          "avgBytesWhenPresent": 6357
+        },
+        {
+          "section": "focus",
+          "present": 82,
+          "empty": 1,
+          "populated": 81,
+          "emptyRate": 1.2,
+          "notPresentRate": 53.1,
+          "avgBytesWhenPresent": 15018
+        },
+        {
+          "section": "network",
+          "present": 84,
+          "empty": 0,
+          "populated": 84,
+          "emptyRate": 0,
+          "notPresentRate": 52,
+          "avgBytesWhenPresent": 17442
+        },
+        {
+          "section": "console",
+          "present": 84,
+          "empty": 0,
+          "populated": 84,
+          "emptyRate": 0,
+          "notPresentRate": 52,
+          "avgBytesWhenPresent": 73
+        },
+        {
+          "section": "breakpoints",
+          "present": 84,
+          "empty": 0,
+          "populated": 84,
+          "emptyRate": 0,
+          "notPresentRate": 52,
+          "avgBytesWhenPresent": 400
+        },
+        {
+          "section": "landmarks",
+          "present": 82,
+          "empty": 0,
+          "populated": 82,
+          "emptyRate": 0,
+          "notPresentRate": 53.1,
+          "avgBytesWhenPresent": 1266
+        },
+        {
+          "section": "components",
+          "present": 82,
+          "empty": 0,
+          "populated": 82,
+          "emptyRate": 0,
+          "notPresentRate": 53.1,
+          "avgBytesWhenPresent": 36
+        },
+        {
+          "section": "axe",
+          "present": 82,
+          "empty": 0,
+          "populated": 82,
+          "emptyRate": 0,
+          "notPresentRate": 53.1,
+          "avgBytesWhenPresent": 4526
+        },
+        {
+          "section": "accessibility",
+          "present": 0,
+          "empty": 0,
+          "populated": 0,
+          "emptyRate": 0,
+          "notPresentRate": 100,
+          "avgBytesWhenPresent": 0
+        }
+      ],
+      "optInCandidates": [
+        "scroll",
+        "accessibility"
+      ],
+      "gate": {
+        "threshold": 3,
+        "result": "FAIL"
+      }
+    },
+    "selectorStability": {
+      "name": "Selector Stability",
+      "pairs": 83,
+      "urls": 6,
+      "totalElements": 26317,
+      "totalSelectors": 19550,
+      "stable": 18995,
+      "drifted": 555,
+      "missing": 9458,
+      "stabilityRate": 97.2,
+      "byStrategy": {
+        "testId": {
+          "stable": 2288,
+          "drifted": 0,
+          "total": 2288,
+          "rate": 100
+        },
+        "id": {
+          "stable": 126,
+          "drifted": 0,
+          "total": 126,
+          "rate": 100
+        },
+        "css": {
+          "stable": 16581,
+          "drifted": 555,
+          "total": 17136,
+          "rate": 96.8
+        }
+      },
+      "gate": {
+        "threshold": 90,
+        "result": "PASS"
+      }
+    }
+  }
+}
