@@ -2,13 +2,15 @@
 
 ## Remove from a Project
 
-The `viewgraph-uninstall` command is the reverse of `viewgraph-init`. It removes everything that init installed in a single project. Run it from the project folder:
+`viewgraph-uninstall` is the reverse of `viewgraph-init`. It removes everything that init installed in a single project.
+
+Run from the project folder:
 
 ```bash
 npx @viewgraph/core uninstall
 ```
 
-This only affects the current project. Your other projects are not touched.
+This is the same as running `viewgraph-uninstall` directly if you have the package installed globally. Either way, it only affects the current project. Your other projects are not touched.
 
 ### What the script does
 
