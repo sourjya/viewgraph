@@ -379,7 +379,7 @@ export function serialize(elements, relations, enrichment = {}) {
     'landmarks', 'components', 'axe', 'eventListeners', 'performance',
     'animations', 'intersection', 'mediaQueries',
     'storage', 'cssCustomProperties', 'transient',
-    'errorBoundaries', 'serviceWorker', 'buildMetadata',
+    'errorBoundaries', 'serviceWorker', 'buildMetadata', 'accessibleNames',
   ];
   for (const key of ENRICHMENT_KEYS) {
     if (enrichment[key]) capture[key] = enrichment[key];

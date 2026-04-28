@@ -90,7 +90,7 @@ export function parseCapture(jsonString) {
     'landmarks', 'components', 'axe', 'eventListeners', 'performance',
     'animations', 'intersection', 'mediaQueries',
     'storage', 'cssCustomProperties', 'transient',
-    'errorBoundaries', 'serviceWorker', 'buildMetadata',
+    'errorBoundaries', 'serviceWorker', 'buildMetadata', 'accessibleNames',
   ];
 
   // Resolve styleRef -> inline styles for backward compatibility with analysis tools.

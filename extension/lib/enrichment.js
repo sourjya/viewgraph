@@ -32,6 +32,7 @@ import { collectTransient } from './collectors/transient-collector.js';
 import { collectErrorBoundaries } from './collectors/error-boundary-collector.js';
 import { collectBuildMetadata } from './collectors/build-metadata-collector.js';
 import { collectServiceWorkerState } from './collectors/service-worker-collector.js';
+import { computeAllNames } from './collectors/name-computation.js';
 
 /**
  * Collect all enrichment data for a capture.
@@ -58,6 +59,15 @@ export async function collectAllEnrichment() {
     transient: safeCollect('transient', collectTransient),
     errorBoundaries: safeCollect('errorBoundaries', collectErrorBoundaries),
     buildMetadata: safeCollect('buildMetadata', collectBuildMetadata),
+    accessibleNames: safeCollect('accessibleNames', () => {
+      const map = computeAllNames();
+      const results = [];
+      for (const [el, data] of map) {
+        const id = el.getAttribute('data-testid') || el.id || el.tagName.toLowerCase();
+        results.push({ element: id, name: data.name, source: data.source, role: data.role });
+      }
+      return { elements: results.slice(0, 100) };
+    }),
   };
   e.axe = await safeCollectAsync('axe', collectAxeResults);
   e.serviceWorker = await safeCollectAsync('serviceWorker', collectServiceWorkerState);
@@ -89,5 +99,14 @@ export function collectEnrichmentSync() {
     transient: safeCollect('transient', collectTransient),
     errorBoundaries: safeCollect('errorBoundaries', collectErrorBoundaries),
     buildMetadata: safeCollect('buildMetadata', collectBuildMetadata),
+    accessibleNames: safeCollect('accessibleNames', () => {
+      const map = computeAllNames();
+      const results = [];
+      for (const [el, data] of map) {
+        const id = el.getAttribute('data-testid') || el.id || el.tagName.toLowerCase();
+        results.push({ element: id, name: data.name, source: data.source, role: data.role });
+      }
+      return { elements: results.slice(0, 100) };
+    }),
   };
 }
