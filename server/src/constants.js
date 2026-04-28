@@ -14,7 +14,14 @@ export const PROJECT_PREFIX = 'viewgraph';
 
 /** MCP server identity  -  reported to hosts during initialization. */
 export const SERVER_NAME = `${PROJECT_PREFIX}-mcp-server`;
-export const SERVER_VERSION = '0.6.0';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+/** Read version from package.json - single source of truth. */
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const _pkg = JSON.parse(readFileSync(path.resolve(__dirname, '..', 'package.json'), 'utf-8'));
+export const SERVER_VERSION = _pkg.version;
 export const SERVER_DESCRIPTION = `Exposes ${PROJECT_NAME} DOM capture tools for AI-powered UI auditing, test generation, and visual regression`;
 
 /** Capture format identifier stored in metadata.format field. */
