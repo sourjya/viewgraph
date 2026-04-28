@@ -14,9 +14,9 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
-  start, stop, create, destroy, ATTR,
-  resetServerCache, transport,
-  shadowQuery, shadowQueryAll,
+  start, create, ATTR,
+  transport,
+  shadowQuery,
   setupBeforeEach, setupAfterEach,
 } from '../unit/sidebar/sidebar-test-helpers.js';
 

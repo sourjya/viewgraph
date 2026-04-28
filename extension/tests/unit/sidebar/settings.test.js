@@ -6,7 +6,6 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createSettings } from '#lib/sidebar/settings.js';
-import { VERSION } from '#tests/helpers.js';
 import { mockChrome } from '../../mocks/chrome.js';
 import { mockServer } from '../../mocks/server.js';
 

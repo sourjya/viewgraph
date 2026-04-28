@@ -73,7 +73,7 @@ describe('addHover', () => {
   });
 
   it('(+) uses defaults when no args provided', () => {
-    const { addHover, COLOR } = require('#lib/sidebar/styles.js');
+    const { addHover, COLOR: _COLOR } = require('#lib/sidebar/styles.js');
     const el = document.createElement('button');
     addHover(el);
     el.dispatchEvent(new Event('mouseenter'));

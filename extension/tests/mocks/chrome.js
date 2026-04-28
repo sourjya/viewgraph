@@ -69,7 +69,7 @@ export function mockChrome(overrides = {}) {
       },
       onChanged: { addListener: vi.fn(), removeListener: vi.fn(), ...overrides.storage?.onChanged },
       session: {
-        get: vi.fn((key) => Promise.resolve({})),
+        get: vi.fn((_key) => Promise.resolve({})),
         set: vi.fn(() => Promise.resolve()),
         remove: vi.fn(() => Promise.resolve()),
         ...overrides.storage?.session,

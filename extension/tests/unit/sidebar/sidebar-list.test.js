@@ -7,9 +7,9 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import {
-  start, stop, create, destroy, refresh, expand, collapse, isCollapsed,
+  start, create, refresh, expand, collapse, isCollapsed,
   addPageNote, getAnnotations, removeAnnotation,
-  updateComment, resolveAnnotation, updateSeverity, updateCategory, ATTR,
+  updateComment, resolveAnnotation, updateSeverity, updateCategory,
   getList, getTabContainer, getEntries,
   setupBeforeEach, setupAfterEach,
 } from './sidebar-test-helpers.js';

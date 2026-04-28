@@ -11,7 +11,7 @@
  * @see docs/ideas/panic-capture.md
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 describe('panic capture flash', () => {
   beforeEach(() => { document.body.innerHTML = ''; });

@@ -37,7 +37,7 @@ describe('handleVerify', () => {
 
   it('(-) expired challenge returns null', async () => {
     const { handleHandshake, handleVerify } = createAuthMiddleware({ secret: SECRET });
-    const { challenge } = handleHandshake();
+    const { challenge: _challenge } = handleHandshake();
     // Manually expire by waiting (challenge TTL is 60s, we can't wait that long)
     // Instead test with empty body
     const result = handleVerify({});

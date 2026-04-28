@@ -112,8 +112,8 @@ describe('BUG-028: batch separator rendering', () => {
 describe('BUG-028: updateSendLabel', () => {
   it('(+) shows "Send N new" when mixed sent/unsent', () => {
     // Test the label logic directly via footer mock
-    const btn = document.createElement('button');
-    const sendIcon = () => document.createElement('span');
+    const _btn = document.createElement('button');
+    const _sendIcon = () => document.createElement('span');
 
     // Simulate: 3 open, 1 unsent
     const total = 3;
@@ -135,7 +135,7 @@ describe('BUG-028: updateSendLabel', () => {
   });
 
   it('(+) disables when all are already sent', () => {
-    const total = 3;
+    const _total = 3;
     const unsent = 0;
     const canSend = unsent > 0;
     expect(canSend).toBe(false);

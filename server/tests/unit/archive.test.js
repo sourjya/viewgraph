@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { writeFileSync, mkdirSync, rmSync, existsSync, readFileSync } from 'fs';
+import { writeFileSync, mkdirSync, rmSync, existsSync } from 'fs';
 import path from 'path';
 import os from 'os';
 import { isEligible, archiveCapture, runArchive, readArchiveIndex } from '#src/archive.js';

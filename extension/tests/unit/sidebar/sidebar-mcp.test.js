@@ -166,7 +166,7 @@ describe('sidebar MCP disconnected state', () => {
       expect(banner?.style.display).toBe('block');
     });
     const primaryTabs = shadowQuery(`[${ATTR}="primary-tabs"]`);
-    const banner = shadowQuery(`[${ATTR}="status-banner"]`);
+    const _banner = shadowQuery(`[${ATTR}="status-banner"]`);
     expect(primaryTabs.nextElementSibling?.getAttribute(ATTR)).not.toBe('status-banner');
   });
 });

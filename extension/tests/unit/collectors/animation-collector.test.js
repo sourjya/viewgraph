@@ -3,7 +3,7 @@
  * @see extension/lib/collectors/animation-collector.js
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { collectAnimations } from '#lib/collectors/animation-collector.js';
 
 describe('animation-collector', () => {

@@ -8,7 +8,7 @@
  * @see power/prompts/ - prompt source files
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { registerPrompts } from '#src/prompts.js';
 
 describe('registerPrompts', () => {

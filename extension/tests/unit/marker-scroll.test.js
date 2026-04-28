@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { start, stop, getAnnotations, clearAnnotations, ATTR } from '#lib/annotate.js';
+import { start, stop, clearAnnotations } from '#lib/annotate.js';
 import { mockChrome } from '../mocks/chrome.js';
 
 beforeEach(() => {
