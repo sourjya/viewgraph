@@ -8,7 +8,8 @@
     "viewgraph": "server/index.js",
     "viewgraph-init": "scripts/viewgraph-init.js",
     "viewgraph-status": "scripts/viewgraph-status.js",
-    "viewgraph-doctor": "scripts/viewgraph-doctor.js"
+    "viewgraph-doctor": "scripts/viewgraph-doctor.js",
+    "viewgraph-uninstall": "scripts/viewgraph-uninstall.js"
   },
   "files": [
     "server/index.js",
@@ -18,6 +19,7 @@
     "scripts/viewgraph-native-host.sh",
     "scripts/viewgraph-status.js",
     "scripts/viewgraph-doctor.js",
+    "scripts/viewgraph-uninstall.js",
     "power/",
     "COPYING",
     "npm-readme.md",
