@@ -93,7 +93,7 @@ See [Who Benefits?](who-benefits.md) for the full breakdown.
 | Export to Jira/GitHub markdown | ✅ | ❌ | ❌ |
 | 92.1% capture accuracy (measured) | ✅ | N/A | N/A |
 
-[Full comparison](comparison/overview.md) | [Capture accuracy details](comparison/accuracy.md) | [38 MCP tools](features/mcp-tools.md)
+[Full comparison](comparison/overview.md) | [Capture accuracy details](comparison/accuracy.md) | [41 MCP tools](features/mcp-tools.md)
 
 ---
 
@@ -104,7 +104,7 @@ AGPL-3.0 licensed. Full source on [GitHub](https://github.com/sourjya/viewgraph)
 | Component | Description |
 |---|---|
 | [server/](https://github.com/sourjya/viewgraph/tree/main/server) | MCP server - 41 tools, WebSocket collab, baselines |
-| [extension/](https://github.com/sourjya/viewgraph/tree/main/extension) | Chrome/Firefox extension - capture, annotate, 20 enrichment collectors |
+| [extension/](https://github.com/sourjya/viewgraph/tree/main/extension) | Chrome/Firefox extension - capture, annotate, 21 enrichment collectors |
 | [packages/playwright/](https://github.com/sourjya/viewgraph/tree/main/packages/playwright) | Playwright fixture for E2E test captures |
 | [power/](https://github.com/sourjya/viewgraph/tree/main/power) | Kiro Power assets - hooks, prompts, steering docs |
 

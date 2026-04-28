@@ -38,7 +38,7 @@ viewgraph-init --url localhost:3000   # match your app's URL for auto-detection
 - **get_capture_diff** - RFC 6902 JSON Patch diffs (50-1500x compression for hot-reload)
 - **Style dedup + default omission** - 30-45% capture size reduction
 - **Provenance metadata** - field-level source tagging (measured/derived/inferred)
-- **20 enrichment collectors** - error boundaries, service worker state, build metadata
+- **21 enrichment collectors** - error boundaries, service worker state, build metadata
 - **TracePulse integration** - frontend errors bridged to backend monitoring
 - **Welcome page** on first extension install
 

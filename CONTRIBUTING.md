@@ -28,10 +28,10 @@ cd server && npm install && cd ..
 ## Running Tests
 
 ```bash
-# Extension (1244 tests)
+# Extension (1259 tests)
 cd extension && npx vitest run
 
-# Server unit tests (525 tests)
+# Server unit tests (536 tests)
 cd server && npx vitest run tests/unit
 
 # MCP smoke test (verifies all 41 tools register)

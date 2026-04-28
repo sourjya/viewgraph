@@ -167,7 +167,7 @@ Your agent discovers these automatically. You don't call them - you describe wha
 
 ## MCP Prompts Discovery
 
-The server exposes all 11 prompt shortcuts via the MCP `prompts/list` capability. Any MCP-compatible agent can discover available prompts automatically - no manual configuration or documentation lookup needed. When your agent connects, it sees `vg-review`, `vg-audit`, `vg-debug-ui`, and all other shortcuts as first-class prompt templates with parameter schemas.
+The server exposes all 12 prompt shortcuts via the MCP `prompts/list` capability. Any MCP-compatible agent can discover available prompts automatically - no manual configuration or documentation lookup needed. When your agent connects, it sees `vg-review`, `vg-audit`, `vg-debug-ui`, and all other shortcuts as first-class prompt templates with parameter schemas.
 
 ---
 

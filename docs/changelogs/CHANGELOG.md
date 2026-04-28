@@ -8,6 +8,70 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ---
 
+## [0.7.4] - 2026-04-29
+
+### New MCP Tools (41 total)
+- `verify_fix` (#40) - composite smoke test: a11y + layout + console + network + regressions
+- `get_capture_history` (#39) - group captures by URL into timelines
+- `get_capture_diff` (#41) - RFC 6902 JSON Patch between sequential captures (50-1500x compression)
+
+### Token Efficiency (format v2.3.0)
+- Style dedup table: shared styles referenced by hash (50% dedup rate)
+- Default value omission: browser defaults filtered (41.8% waste eliminated)
+- Provenance metadata: field-level source tagging (measured/derived/inferred)
+- Deferred style extraction: low-salience nodes skip expensive property grouping
+
+### Accessibility
+- Heuristic name computation (W3C algorithm): aria-labelledby, label-for, text content, alt, title
+- Smarter a11y audit rules: button-no-name checks text content + visibleText, missing-form-label respects id
+- False positive rate reduced from 35% to <10%
+
+### New Enrichment Collectors (21 total)
+- Error boundary state (React fallback detection)
+- Service worker state (controller, cache names)
+- Build metadata (dev/prod, bundler detection: Vite/webpack/Next.js/Nuxt/Astro)
+- Accessible names (computed names for interactive elements)
+
+### TracePulse Integration
+- Frontend error bridge: console errors + failed requests pushed to TP log collector
+- `@vg-verify` prompt: composite verify pattern (verify_fix + get_errors)
+- HMR detection surfaced in verify_fix response
+
+### Extension
+- Welcome page on first install
+- Background console error watcher with real-time notifications
+- Smart alert dot on collapsed strip
+
+### Developer Experience
+- `viewgraph-uninstall` CLI: guided project removal
+- MCP smoke test: verifies all tools register before every release
+- `release.sh`: automated 7-step pipeline with stale version guard
+- CONTRIBUTING.md with full contributor guide
+- All 41 tools in autoApprove list
+- ESLint: 0 errors, 0 warnings
+
+### Security (SRR-008)
+- CRITICAL: Removed HMAC secret from handshake response
+- HIGH: TracePulse URL validated as localhost (SSRF prevention)
+- HIGH: Resolved annotations endpoint limited to 50 captures
+- HIGH: get_capture_diff size guard (2MB max)
+- MEDIUM: Type validation on PUT /config
+- MEDIUM: Pagination on get_capture_history
+
+### Tests
+- 26 new tests for 7 previously untested modules
+- 1,795 total (1,259 extension + 536 server)
+
+### Experiments (175 captures)
+- Provenance distribution: 28.3% non-measured (PASS)
+- A11y false positive rate: 35% (PASS)
+- Style deduplication: 50% median (PASS)
+- Default value waste: 41.8% (PASS)
+- Selector stability: 97.2% (PASS)
+- Enrichment emptiness: 2/10 (FAIL)
+
+---
+
 ## [0.6.0] - 2026-04-27
 
 ### Architecture - M19: Service Worker Communication Migration

@@ -69,7 +69,7 @@ Click `?` in the header for keyboard shortcuts, version info, and quick links.
 
 {% tabs %}
 {% tab title="Send to Agent" %}
-Pushes annotations + full DOM capture + 20 enrichment collectors to the MCP server. Your agent receives everything needed to fix the code.
+Pushes annotations + full DOM capture + 21 enrichment collectors to the MCP server. Your agent receives everything needed to fix the code.
 
 ![Annotations waiting for agent fix](../.gitbook/assets/sent-waiting-for-fix.png)
 

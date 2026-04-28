@@ -6,7 +6,7 @@ v0.7.0
 
 ## Status Summary
 
-**Shipped:** 41 MCP tools, 12 prompt templates, 20 enrichment collectors, 1771 tests (1244 extension + 527 server)
+**Shipped:** 41 MCP tools, 12 prompt templates, 21 enrichment collectors, 1795 tests (1259 extension + 536 server)
 
 **All major features complete.** Current focus: experiment-validated optimizations and cross-tool integration.
 

@@ -8,11 +8,11 @@ Current stats as of v0.7.3 (April 2026).
 |---|---|
 | MCP tools | 41 |
 | Prompt templates | 12 |
-| Enrichment collectors | 20 |
-| Extension tests | 1,244 |
-| Server unit tests | 525 |
+| Enrichment collectors | 21 |
+| Extension tests | 1,259 |
+| Server unit tests | 536 |
 | MCP smoke tests | 2 |
-| Total tests | 1,771 |
+| Total tests | 1,795 |
 | ESLint warnings | 0 |
 
 ## Capture Format
