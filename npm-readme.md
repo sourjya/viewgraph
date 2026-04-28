@@ -27,9 +27,20 @@ viewgraph-init --url localhost:3000   # match your app's URL for auto-detection
 
 ## What's Included
 
-- **MCP Server** with 38 tools for querying captures, auditing accessibility, detecting regressions, and more
-- **Init script** that auto-detects Kiro, Claude Code, Cursor, and other MCP agents
+- **MCP Server** with 41 tools for querying captures, auditing accessibility, detecting regressions, verifying fixes, and more
+- **Init script** that auto-detects Kiro, Claude Code, Cursor, Windsurf, and Cline
+- **Uninstall script** for clean project removal (`npx @viewgraph/core uninstall`)
 - **Kiro Power assets** - 3 hooks, 12 prompt shortcuts, 3 steering docs (installed automatically for Kiro projects)
+
+## What's New in v0.7
+
+- **verify_fix** - one-call smoke test replaces 3-4 separate tool calls
+- **get_capture_diff** - RFC 6902 JSON Patch diffs (50-1500x compression for hot-reload)
+- **Style dedup + default omission** - 30-45% capture size reduction
+- **Provenance metadata** - field-level source tagging (measured/derived/inferred)
+- **20 enrichment collectors** - error boundaries, service worker state, build metadata
+- **TracePulse integration** - frontend errors bridged to backend monitoring
+- **Welcome page** on first extension install
 
 ## Browser Extension
 

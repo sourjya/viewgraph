@@ -1,80 +1,58 @@
-# ViewGraph Project Metrics
+# Project Metrics
 
-Rolling stats tracking development velocity and project scope.
-Updated manually at milestones. First entry: v0.1.0 beta launch.
+Current stats as of v0.7.3 (April 2026).
 
----
-
-## v0.3.3 (2026-04-16)
-
-### Product
+## Code
 
 | Metric | Count |
 |---|---|
-| MCP tools | 36 |
-| Extension modules | 54 (12 root + 42 in 7 subdirectories) |
-| Enrichment collectors | 14 |
-| Prompt shortcuts | 11 |
-| Kiro hooks | 3 |
-| Steering docs | 4 |
-| Demo pages (planted bugs) | 4 (25 bugs) |
-| Capture accuracy (composite) | 92.1% |
+| MCP tools | 41 |
+| Prompt templates | 12 |
+| Enrichment collectors | 20 |
+| Extension tests | 1,244 |
+| Server unit tests | 525 |
+| MCP smoke tests | 2 |
+| Total tests | 1,771 |
+| ESLint warnings | 0 |
 
-### Testing
-
-| Metric | Count |
-|---|---|
-| Total tests | 1538 |
-| Server tests | 470 |
-| Extension tests | 1068 |
-| Test files | 129 (71 extension + 58 server) |
-| Accuracy experiment sites | 145 |
-
-### Architecture
-
-| Metric | Count |
-|---|---|
-| Architecture Decision Records | 10 |
-| Bug reports filed | 8 |
-| Specs written | 22 |
-| npm packages published | 2 |
-| Extension store submissions | 2 (Chrome, Firefox) |
-| GitBook documentation pages | 18 |
-
-### Distribution
-
-| Channel | Status |
-|---|---|
-| GitHub | Public (github.com/sourjya/viewgraph) |
-| npm (@viewgraph/core) | Published v0.3.0 |
-| npm (@viewgraph/playwright) | Published v0.3.0 |
-| Chrome Web Store | Live: chromewebstore.google.com |
-| Firefox Add-ons | Live, v0.3.3 submitted |
-| GitBook docs | Live (chaoslabz.gitbook.io/viewgraph) |
-| YouTube channel | Live (Evolving with AI) |
-
-### Development Velocity
+## Capture Format
 
 | Metric | Value |
 |---|---|
-| Days from zero to published beta | 6 |
-| Average commits per day | ~99 |
-| Average tests written per day | ~164 |
-| Average lines of docs per day | ~3,700 |
-| Features shipped per day | ~5.7 MCP tools/day |
-| Bugs found and fixed | 11 (including 3 critical) |
+| Format version | v2.3.0 |
+| Median capture size | 665 KB (before optimization) |
+| Style dedup rate | 50% (measured across 175 captures) |
+| Default value waste | 41.8% of style values are browser defaults |
+| Selector stability | 97.2% (testId: 100%, CSS: 96.8%) |
+| A11y audit FP rate | 35% before name computation, <10% after |
+| Provenance non-measured | 28.3% of fields are derived or inferred |
 
-### Key Milestones by Day
+## Experiments
 
-| Day | Date | What shipped |
+| Experiment | Dataset | Result |
 |---|---|---|
-| 1 | Apr 8 | Project scaffolding, MCP server core, first 8 tools, capture format v2 |
-| 2 | Apr 9 | Extension core, DOM traverser, serializer, salience scorer |
-| 3 | Apr 10 | Annotation workflow, sidebar, enrichment collectors, 20+ tools |
-| 4 | Apr 11 | Multi-export, session recording, continuous capture, security audit, code quality audit |
-| 5 | Apr 12 | Accuracy experiment (92.1%), Playwright bridge, React fiber linking, 8 prompts, demo app, docs reorg |
-| 6 | Apr 13-14 | Auth removal (ADR-010), multi-project routing fix, npm publish, GitBook site, extension submissions, 18 doc pages |
+| Provenance distribution | 175 captures, 1.7M fields | 28.3% non-measured - PASS |
+| A11y false positive rate | 82 captures with axe-core | 35% FP rate - PASS |
+| Style deduplication | 175 captures | 50% median dedup - PASS |
+| Default value waste | 175 captures, 705K values | 41.8% defaults - PASS |
+| Enrichment emptiness | 175 captures, 10 sections | 2/10 opt-in candidates - FAIL |
+| Selector stability | 83 same-URL pairs | 97.2% stable - PASS |
 
----
+## Extension
 
-*To update: run the metrics gathering command in the repo and update the numbers above.*
+| Metric | Value |
+|---|---|
+| Content script bundle | 856 KB |
+| Background script | 20 KB |
+| Total extension size | 968 KB |
+| Supported browsers | Chrome 116+, Firefox 115+ |
+| Capture accuracy (composite) | 92.1% median across 48 sites |
+
+## Security
+
+| Metric | Count |
+|---|---|
+| Security reviews (SRR) | 7 |
+| Maintainability reviews (MRR) | 5 |
+| Threats modeled (STRIDE) | 9 |
+| Mitigations implemented | 9 |

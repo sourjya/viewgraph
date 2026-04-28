@@ -1,13 +1,19 @@
 # Contributing to ViewGraph
 
-Thanks for your interest in contributing to ViewGraph! This guide covers how to set up the development environment, run tests, and submit changes.
+Thanks for your interest in contributing! ViewGraph is open source under AGPL-3.0.
 
-## Prerequisites
+## Project Structure
 
-- Node.js 22+ (LTS)
-- npm 9+
-- Chrome 116+ (for extension development)
-- Git
+```
+viewgraph/
+  extension/          # Chrome/Firefox extension (WXT + vanilla JS)
+  server/             # MCP server (Node.js, 41 tools)
+  packages/playwright/ # Playwright fixture
+  power/              # Kiro Power assets (prompts, steering, hooks)
+  scripts/            # CLI tools (init, uninstall, release, experiments)
+  docs/               # Architecture docs, ideas, roadmap
+  gitbook/            # User-facing documentation
+```
 
 ## Setup
 
@@ -15,95 +21,98 @@ Thanks for your interest in contributing to ViewGraph! This guide covers how to 
 git clone https://github.com/sourjya/viewgraph.git
 cd viewgraph
 npm install
+cd extension && npm install && cd ..
+cd server && npm install && cd ..
 ```
 
-This installs dependencies for both the server and extension via npm workspaces.
-
-## Development
+## Running Tests
 
 ```bash
-npm run dev:server     # MCP server with file watcher
-npm run dev:ext        # Extension dev server (Chrome HMR)
-npm run dev:ext:ff     # Extension dev server (Firefox HMR)
+# Extension (1244 tests)
+cd extension && npx vitest run
+
+# Server unit tests (525 tests)
+cd server && npx vitest run tests/unit
+
+# MCP smoke test (verifies all 41 tools register)
+cd server && npx vitest run tests/integration/mcp-smoke.test.js
+
+# All tests
+cd extension && npx vitest run && cd ../server && npx vitest run tests/unit
 ```
 
-Load the extension in Chrome:
-1. Open `chrome://extensions/`
-2. Enable Developer mode
-3. Click Load unpacked
-4. Select `extension/.output/chrome-mv3`
-
-## Testing
+## Building the Extension
 
 ```bash
-npm test               # All tests
-npm run test:server    # Server only (331 tests)
-npm run test:ext       # Extension only
-npm run lint           # ESLint
+# Chrome
+cd extension && npx wxt build
+
+# Firefox
+cd extension && npx wxt build --browser firefox
+
+# Both + ZIP
+bash scripts/build-extension.sh
 ```
 
-All tests must pass before submitting a PR. Both positive and negative test cases are required for new features.
+## Linting
 
-## Project Structure
-
-```
-server/          MCP server (Node.js, ES modules)
-  src/tools/     38 MCP tool handlers
-  src/analysis/  Analysis modules (a11y, layout, diff, etc.)
-  tests/         Server tests (Vitest)
-extension/       Browser extension (WXT, Manifest V3)
-  lib/           Core modules
-  entrypoints/   background, content, popup, options
-  tests/         Extension tests (Vitest + jsdom)
-packages/
-  playwright/    Playwright fixture
-power/           Kiro Power assets (hooks, prompts, steering)
-docs/            Documentation
-scripts/         Build and utility scripts
+```bash
+npx eslint .
+# Must be 0 errors, 0 warnings before committing
 ```
 
-## Branch Naming
+## Development Workflow
 
-| Type | Pattern | Example |
-|---|---|---|
-| Feature | `feat/description` | `feat/playwright-bridge` |
-| Bug fix | `fix/bug-NNN-description` | `fix/bug-009-multi-project-routing` |
-| Tests | `test/description` | `test/routing-edge-cases` |
-| Docs | `docs/description` | `docs/multi-project-guide` |
+1. Create a branch: `git checkout -b feat/your-feature`
+2. Make changes, write tests
+3. Run tests + lint
+4. Commit with conventional commits: `feat:`, `fix:`, `docs:`, `test:`, `chore:`
+5. Merge to main when done
 
-## Commit Messages
+## Adding a New MCP Tool
 
-Conventional Commits format:
+1. Create `server/src/tools/your-tool.js` with a `register(server, indexer, capturesDir)` export
+2. Use Zod schemas for parameters (not plain objects - the MCP SDK requires Zod)
+3. Register in `server/index.js` (import + call in the registration block)
+4. Update `EXPECTED_TOOL_COUNT` in `server/tests/integration/mcp-smoke.test.js`
+5. Add to `autoApprove` in `scripts/viewgraph-init.js`
+6. Update tool count in: README.md, server/README.md, gitbook/SUMMARY.md, gitbook/features/mcp-tools.md, power/prompts/vg-help.md, .kiro/prompts/vg-help.md
 
+## Adding a New Enrichment Collector
+
+1. Create `extension/lib/collectors/your-collector.js`
+2. Wrap in `safeCollect()` in `extension/lib/enrichment.js` (both sync and async functions)
+3. Add the key to `ENRICHMENT_KEYS` in both `extension/lib/capture/serializer.js` and `server/src/parsers/viewgraph-v2.js`
+4. Update collector count in: README.md, gitbook/features/extension.md
+
+## Adding a New Prompt
+
+1. Create `power/prompts/vg-yourprompt.md` with frontmatter
+2. Copy to `.kiro/prompts/vg-yourprompt.md`
+3. Update prompt count in: README.md, server/README.md, npm-readme.md, power/prompts/vg-help.md
+4. Update `EXPECTED_PROMPT_COUNT` in `server/tests/unit/prompts.test.js`
+
+## Release Process
+
+```bash
+bash scripts/release.sh "X.Y.Z" "Description"
+npm publish
+cd packages/playwright && npm publish
 ```
-feat(server): add list_captures MCP tool
-fix(extension): handle empty captures directory
-test: 28 tests for multi-project routing
-docs: update README with accuracy section
-```
 
-## Submitting Changes
+The release script runs tests, bumps versions, builds extension ZIPs, commits, tags, pushes, and creates a GitHub release with ZIPs attached.
 
-1. Create a branch from `main`
-2. Make your changes
-3. Ensure all tests pass (`npm test`)
-4. Ensure lint passes (`npm run lint`)
-5. Commit with a descriptive message
-6. Push and open a PR
+## Experiment-First Features
+
+New format changes or optimizations require experiments before implementation. See `docs/ideas/` for the pattern:
+1. Write an idea doc with design options and token impact analysis
+2. Define gate experiments with success criteria
+3. Run experiments on the 175-capture corpus (`scripts/experiments/`)
+4. Only implement if the gate passes
 
 ## Code Style
 
-- ES modules (`import`/`export`) throughout - no CommonJS
-- JSDoc comments on all public functions
-- Comments explain "why", not "what"
-- MCP server: all logging to `stderr`, never `stdout`
-
-## License
-
-By contributing, you agree that your contributions will be licensed under the AGPL-3.0 license.
-
-## Resources
-
-- [Documentation](https://chaoslabz.gitbook.io/viewgraph)
-- [Issue Tracker](https://github.com/sourjya/viewgraph/issues)
-- [Quick Start](https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start)
+- ESLint with zero tolerance (0 errors, 0 warnings)
+- JSDoc on all exports
+- Conventional commits
+- No em dashes in user-facing docs (use hyphens)
