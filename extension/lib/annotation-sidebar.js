@@ -41,7 +41,7 @@ import { createHeader } from './sidebar/header.js';
 import { createFooter } from './sidebar/footer.js';
 import { createModeBar, MODE_ICONS, MODE_HINTS } from './sidebar/mode-bar.js';
 import { showTrustGate } from './sidebar/trust-gate.js';
-import { sendIcon, checkIcon } from './sidebar/icons.js';
+// Icons used by footer.js (not directly by sidebar orchestrator)
 import { createTooltip } from './tooltip.js';
 import { COLOR } from './sidebar/styles.js';
 import { KEYS, set as storageSet } from './storage.js';

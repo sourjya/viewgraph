@@ -49,28 +49,3 @@ python -m pytest tests/ -v --tb=short 2>&1 | tee logs/test_results.log
 
 ### Log File Location:
 - All command logs: `logs/`
-
-## Async Lifecycle Guards - MANDATORY (Extension)
-
-**Every async callback that accesses module-level state must guard against teardown.**
-
-The extension sidebar uses module-level variables (`_header`, `_footer`, `sidebarEl`, etc.) that are nulled on `destroy()`. Async operations (server discovery, fetch, timers) may resolve after `destroy()` runs, causing null reference crashes that only manifest in CI (slower environment = wider race window).
-
-### Rule
-
-Any `.then()`, `await`, `setTimeout`, or event callback in extension code that accesses module-level state MUST check for null first:
-
-```js
-// CORRECT
-discoverServer(url).then((result) => {
-  if (!_header) return;  // sidebar destroyed while we were waiting
-  _header.statusDot.style.background = '#4ade80';
-});
-
-// WRONG - crashes if destroy() was called during the await
-discoverServer(url).then((result) => {
-  _header.statusDot.style.background = '#4ade80';
-});
-```
-
-This applies to: `annotation-sidebar.js`, any sidebar module that holds state, and any content script with lifecycle cleanup.

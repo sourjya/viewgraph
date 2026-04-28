@@ -13,7 +13,7 @@
  */
 
 import { promises as fs } from 'node:fs';
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 
 /** Default archive configuration. */

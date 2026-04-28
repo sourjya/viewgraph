@@ -13,7 +13,7 @@
  * @see docs/roadmap/roadmap.md - M13.1 z-index stacking context resolution
  */
 
-import { buildSelector, ATTR } from '../selector.js';
+import { buildSelector } from '../selector.js';
 import { walkDOM, isZeroSize } from './collector-utils.js';
 
 

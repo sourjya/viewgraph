@@ -8,8 +8,10 @@ Every piece of code must be commented so that a follow-on developer - or a codin
 
 ## Enforcement
 
-1. **Automated hook** - `.kiro/hooks/comment-standards-check.kiro.hook` intercepts git commits and verifies staged source files meet this standard.
-2. **Linting rules** - Enable docstring rules in your linter config.
+1. **During code writing - NON-NEGOTIABLE** - every file you create or modify MUST have comments meeting this standard BEFORE you move to the next task. Do not write code first and "add comments later" - comments are part of the implementation, not an afterthought.
+2. **Automated hook** - `.kiro/hooks/comment-standards-check.kiro.hook` intercepts git commits and verifies staged source files meet this standard.
+3. **Maintainability review** - the maintainability review prompt explicitly checks for commenting compliance and flags undocumented code as HIGH severity.
+4. **Linting rules** - Enable docstring rules in your linter config.
 
 ## Guiding Principle
 

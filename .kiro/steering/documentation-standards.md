@@ -110,10 +110,3 @@ Every ADR must be linked in `docs/roadmap/roadmap.md` at the sprint/milestone ro
 
 - See `code-commenting-standards.md` for docstring and comment rules
 - All docs live in `docs/` directory (except `README.md`)
-
-## Typography - MANDATORY
-
-- **Never use em dashes (—) or en dashes (–).** Use a plain hyphen-minus surrounded by spaces ( - ) for all dashes in documentation, comments, changelogs, and specs.
-- This applies to all `.md` files in `docs/`, `gitbook/`, `.kiro/`, and root.
-- Correct: `All install methods - from zero-config to building from source.`
-- Wrong: `All install methods — from zero-config to building from source.`

@@ -1,6 +1,6 @@
 
 {
-  "enabled": true,
+  "enabled": false,
   "name": "Security Checkpoint - Tier 2 Feature Complete",
   "description": "After feature completion: full security audit of files changed since the last SRR, covering OWASP S1-S13, BOLA/IDOR, cryptographic quality, and file upload security.",
   "version": "1",

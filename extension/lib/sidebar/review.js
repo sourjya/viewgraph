@@ -12,8 +12,7 @@
 
 import { ATTR } from '#lib/selector.js';
 import { resolveType, getBadgeColor, getBadgeIcon, getFilterIcon } from '#lib/annotation-types.js';
-import { discoverServer } from '#lib/constants.js';
-import { KEYS, set as storageSet } from '#lib/storage.js';
+// discoverServer and storage moved to annotation-sidebar.js orchestrator
 import { trashIcon, cameraIcon, closeIcon, checkIcon, circleIcon } from './icons.js';
 import { FONT, COLOR, FONT_MONO } from './styles.js';
 
@@ -340,8 +339,6 @@ function showClearConfirmation(count, callbacks) {
   card.append(icon, msg, sub, btnRow);
   overlay.appendChild(card);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
-  // Append to closest positioned ancestor (the sidebar element)
-  const parent = overlay.getRootNode()?.host?.querySelector?.(`[${ATTR}="sidebar"]`) || document.body;
   callbacks.getSidebarEl().appendChild(overlay);
 }
 

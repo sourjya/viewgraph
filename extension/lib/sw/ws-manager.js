@@ -24,8 +24,7 @@ const KEEPALIVE_MS = 20000;
 /** Max reconnect delay (ms). */
 const MAX_RECONNECT_MS = 30000;
 
-/** Max events in the circular buffer. */
-const MAX_EVENTS = 50;
+// Event buffer limit removed - events written directly to chrome.storage
 
 /**
  * Create a WebSocket manager for a server URL.
@@ -89,7 +88,7 @@ export function createWsManager(wsUrl) {
         _startKeepalive();
       };
       _ws.onmessage = (e) => _handleEvent(e);
-      _ws.onclose = (e) => {
+      _ws.onclose = () => {
         _ws = null;
         _stopKeepalive();
         // Reconnect on abnormal close if sidebars are still open

@@ -13,7 +13,7 @@
 
 import { ATTR } from '#lib/selector.js';
 import { getAnnotations, addPageNote, updateComment } from '#lib/annotate.js';
-import { copyIcon, checkIcon, noteIcon } from './icons.js';
+import { copyIcon, checkIcon } from './icons.js';
 import { renderDiagnostics } from './diagnostics.js';
 import { renderToggles } from './toggles.js';
 import { renderCaptures } from './captures.js';

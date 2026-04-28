@@ -1,4 +1,3 @@
-
 Act as a principal-level software engineer, software architect, and prompt-driven code review specialist.
 
 Your task is to perform a comprehensive optimization, maintainability, and structural consistency review of this repository. Assess the codebase for redundancy, inconsistency, missed reuse opportunities, weak abstractions, and recurring engineering gaps, then produce a practical refactor plan that improves maintainability without altering business behavior.
@@ -41,6 +40,7 @@ Focus on identifying:
 30. Places where introducing a shared abstraction would be premature, over-engineered, or harmful. Explicitly call these out so the refactor plan stays pragmatic.
 31. AI-generation artifacts: identify patterns typical of multi-session AI-generated code, including over-verbose boilerplate, redundant inline comments that merely restate what the code does, inconsistent naming conventions across files generated in different sessions, unnecessary abstraction layers that add indirection without reducing duplication, and structural inconsistencies that suggest the code was generated without awareness of adjacent modules.
 32. Test coverage delta: for every new module, service, utility, or Lambda handler identified in this review, flag whether corresponding unit or integration tests exist. Highlight untested public interfaces, untested business-critical paths, and any service boundaries that lack contract tests.
+33. Code commenting and documentation compliance: verify that all modules have file-level docstrings explaining purpose and architectural role, all classes have docstrings explaining responsibility and collaborators, all public methods have docstrings with purpose, args, returns, and raises, and all non-obvious private methods have justification comments. Flag files with zero or minimal documentation as HIGH severity - undocumented code is unmaintainable code. Reference `.kiro/steering/code-commenting-standards.md` for the full standard.
 
 ## Explicit Gap-Finding Instructions
 
@@ -203,6 +203,7 @@ At the end, include a checklist of high-value areas you explicitly reviewed, eve
 * Rate limiting coverage across all authentication and expensive endpoints
 * Security-relevant event logging coverage across all services
 * Unbounded pagination parameters without enforced maximum caps
+* Code commenting standards compliance (module, class, method, property docstrings per `.kiro/steering/code-commenting-standards.md`)
 
 ## Quality Bar
 

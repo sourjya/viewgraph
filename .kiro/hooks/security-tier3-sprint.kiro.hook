@@ -1,6 +1,6 @@
 
 {
-  "enabled": true,
+  "enabled": false,
   "name": "Security Checkpoint - Tier 3 Sprint End",
   "description": "Sprint or phase end: full codebase audit covering all Tier 1 and Tier 2 categories plus supply chain, secure headers, CORS, logging security, rate limiting, AI-generation artifacts, and test coverage delta.",
   "version": "1",

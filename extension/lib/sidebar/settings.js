@@ -216,7 +216,6 @@ export function createSettings() {
   // Populate server info async
   function renderProjectInfo(data) {
     cardBody.replaceChildren();
-    let hasContent = false;
     const rowStyle = { display: 'flex', gap: '6px', marginBottom: '2px', alignItems: 'baseline' };
     const lblStyle = { color: COLOR.muted, fontSize: '11px', flexShrink: '0' };
     const valStyle = { fontSize: '11px' };
@@ -266,7 +265,6 @@ export function createSettings() {
       Object.assign(val.style, { color: COLOR.success, fontSize: '11px' });
       row.append(lbl, val);
       cardBody.appendChild(row);
-      hasContent = true;
     }
     if (data.urlPatterns?.length) {
       const row = document.createElement('div');
@@ -279,7 +277,6 @@ export function createSettings() {
       Object.assign(val.style, { color: COLOR.primary, fontFamily: 'monospace', fontSize: '11px' });
       row.append(lbl, val);
       cardBody.appendChild(row);
-      hasContent = true;
     }
     if (data.projectRoot) {
       const row = document.createElement('div');
@@ -292,7 +289,6 @@ export function createSettings() {
       Object.assign(val.style, { color: COLOR.dim, fontFamily: 'monospace', fontSize: '11px' });
       row.append(lbl, val);
       cardBody.appendChild(row);
-      hasContent = true;
     }
     cardBody.style.display = 'block';
   }

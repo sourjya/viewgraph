@@ -15,7 +15,7 @@
 
 import { z } from 'zod';
 import path from 'path';
-import { PROJECT_NAME } from '#src/constants.js';
+// PROJECT_NAME removed - not needed for source file search
 import { findSource } from '#src/analysis/source-linker.js';
 import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
 

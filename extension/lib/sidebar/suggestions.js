@@ -16,7 +16,7 @@ import { getConsoleState } from '#lib/collectors/console-collector.js';
 import { collectLandmarks } from '#lib/collectors/landmark-collector.js';
 import { collectFocusChain } from '#lib/collectors/focus-collector.js';
 import { collectStackingContexts } from '#lib/collectors/stacking-collector.js';
-import { diagnoseElement } from '#lib/ui/element-diagnostics.js';
+// diagnoseElement used by annotation-panel.js, not needed here
 import { buildSelector, ATTR } from '#lib/selector.js';
 import { getAnnotations } from '#lib/annotate.js';
 

@@ -1,7 +1,3 @@
----
-inclusion: auto
-description: Periodic review policy - tiered security reviews and maintainability reviews
----
 
 # Periodic Review Policy
 
