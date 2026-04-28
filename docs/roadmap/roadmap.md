@@ -14,11 +14,15 @@ v0.6.0
 
 These require experiments to validate before implementation. Each has a detailed idea doc with design options, token impact analysis, and experiment designs.
 
-| Idea | Category | Gate Experiment | Idea Doc |
-|------|----------|-----------------|----------|
-| Provenance Metadata | Capture Format | >15% non-measured fields in corpus | [provenance-metadata.md](../ideas/provenance-metadata.md) |
-| CDP Accessibility Tree | Capture Accuracy | >20% false positive rate in current audits | [cdp-accessibility-tree.md](../ideas/cdp-accessibility-tree.md) |
-| JSON Patch Diffs | Token Efficiency | Agent comprehension >90% with summary+patch | [json-patch-incremental-diffs.md](../ideas/json-patch-incremental-diffs.md) |
+| Idea | Category | Gate Experiment | Result | Idea Doc |
+|------|----------|-----------------|--------|----------|
+| Provenance Metadata | Capture Format | >15% non-measured fields | **PASS (28.3%)** | [provenance-metadata.md](../ideas/provenance-metadata.md) |
+| CDP Accessibility Tree | Capture Accuracy | >20% false positive rate | **PASS (35%)** | [cdp-accessibility-tree.md](../ideas/cdp-accessibility-tree.md) |
+| JSON Patch Diffs | Token Efficiency | Agent comprehension >90% | Pending | [json-patch-incremental-diffs.md](../ideas/json-patch-incremental-diffs.md) |
+| Style Dedup Table | Token Efficiency | >30% dedup rate | **PASS (50%)** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
+| Default Value Omission | Token Efficiency | >25% default rate | **PASS (41.8%)** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
+| Enrichment Opt-In | Token Efficiency | ≥3 sections >70% empty | **FAIL (2/10)** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
+| Selector Stability | Capture Quality | >90% stability | **PASS (97.2%)** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
 
 ## Remaining Polish
 
