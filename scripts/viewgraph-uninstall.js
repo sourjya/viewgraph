@@ -63,7 +63,7 @@ function dirSize(dir) {
 
 const W = 42;
 const line1 = ` </>  ViewGraph v${VERSION}`;
-const line2 = ' ! Uninstall from this project';
+const line2 = ' \u26a0  Uninstall from this project';
 console.log(`
   \u250c${'\u2500'.repeat(W)}\u2510
   \u2502\x1b[1m\x1b[38;5;141m${line1}\x1b[0m${' '.repeat(W - line1.length)}\u2502
@@ -183,7 +183,7 @@ if (vgDirInfo) {
       console.log(`  \x1b[32m✓\x1b[0m Deleted .viewgraph/ (${formatSize(vgDirInfo.totalSize)})`);
     } catch (e) { console.log(`  \x1b[33m⚠\x1b[0m Could not remove .viewgraph/: ${e.message}`); }
   } else {
-    console.log('  \x1b[36mℹ\x1b[0m Kept .viewgraph/ — your captures and config are preserved');
+    console.log('  \x1b[36m ℹ \x1b[0m Kept .viewgraph/ — your captures and config are preserved');
   }
   console.log('');
 }
