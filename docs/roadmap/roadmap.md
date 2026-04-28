@@ -6,7 +6,7 @@ v0.7.0
 
 ## Status Summary
 
-**Shipped:** 41 MCP tools, 12 prompt templates, 17 enrichment collectors, 1771 tests (1244 extension + 527 server)
+**Shipped:** 41 MCP tools, 12 prompt templates, 20 enrichment collectors, 1771 tests (1244 extension + 527 server)
 
 **All major features complete.** Current focus: experiment-validated optimizations and cross-tool integration.
 
@@ -49,23 +49,19 @@ These require experiments to validate before implementation. Each has a detailed
 
 | Item | Effort | Description |
 |------|--------|-------------|
-| Extension onboarding | Low | Welcome page on install with feature walkthrough |
 | Performance optimization | Medium | Lazy-load heavy modules, optimize DOM traversal for large pages |
-| Extensible init (M8.1) | Done | AGENT_SETUP registry pattern in viewgraph-init.js |
-| Capture history (M9.1) | Done | get_capture_history MCP tool (#39) |
-| Smart alerts (F10) | Done | Auto-audit results wired to collapsed strip badge |
-| Transport auto-detection (F16 P2) | Done | 3-way: native host, stdio pipe, TTY |
+| Extended Enrichment (Tier 2) | Medium | Error boundary state, service worker state, build metadata |
 
 ## Other Ideas (Backlog)
 
 | Idea | Status | Doc |
 |------|--------|-----|
 | TracePulse Integration | Phase 1-3 shipped | [tracepulse-integration.md](../ideas/tracepulse-integration.md) |
-| Panic Capture | Evaluate | [panic-capture.md](../ideas/panic-capture.md) |
+| Panic Capture | Done | [panic-capture.md](../ideas/panic-capture.md) |
 | Rolling Archive | Done | [rolling-archive.md](../ideas/rolling-archive.md) |
-| Live Annotation Status | Evaluate | [live-annotation-status.md](../ideas/live-annotation-status.md) |
-| Extended Enrichment | Evaluate | [extended-capture-enrichment.md](../ideas/extended-capture-enrichment.md) |
-| Themed Tooltip | Evaluate | [themed-tooltip-component.md](../ideas/themed-tooltip-component.md) |
+| Live Annotation Status | Done | [live-annotation-status.md](../ideas/live-annotation-status.md) |
+| Extended Enrichment (Tier 1) | Done | [extended-capture-enrichment.md](../ideas/extended-capture-enrichment.md) |
+| Themed Tooltip | Done | [themed-tooltip-component.md](../ideas/themed-tooltip-component.md) |
 | Chrome DevTools MCP Testing | Active | [chrome-devtools-mcp-testing.md](../ideas/chrome-devtools-mcp-testing.md) |
 
 ## Launch Prep (M18)

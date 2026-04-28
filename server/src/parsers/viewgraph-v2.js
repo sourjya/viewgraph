@@ -89,6 +89,8 @@ export function parseCapture(jsonString) {
     'network', 'console', 'breakpoints', 'stacking', 'focus', 'scroll',
     'landmarks', 'components', 'axe', 'eventListeners', 'performance',
     'animations', 'intersection', 'mediaQueries',
+    'storage', 'cssCustomProperties', 'transient',
+    'errorBoundaries', 'serviceWorker', 'buildMetadata',
   ];
 
   // Resolve styleRef -> inline styles for backward compatibility with analysis tools.

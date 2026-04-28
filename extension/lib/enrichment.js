@@ -29,6 +29,9 @@ import { collectIntersectionState } from './collectors/intersection-collector.js
 import { collectStorage } from './collectors/storage-collector.js';
 import { collectCSSCustomProperties } from './collectors/css-custom-properties-collector.js';
 import { collectTransient } from './collectors/transient-collector.js';
+import { collectErrorBoundaries } from './collectors/error-boundary-collector.js';
+import { collectBuildMetadata } from './collectors/build-metadata-collector.js';
+import { collectServiceWorkerState } from './collectors/service-worker-collector.js';
 
 /**
  * Collect all enrichment data for a capture.
@@ -53,8 +56,11 @@ export async function collectAllEnrichment() {
     storage: safeCollect('storage', collectStorage),
     cssCustomProperties: safeCollect('cssCustomProperties', collectCSSCustomProperties),
     transient: safeCollect('transient', collectTransient),
+    errorBoundaries: safeCollect('errorBoundaries', collectErrorBoundaries),
+    buildMetadata: safeCollect('buildMetadata', collectBuildMetadata),
   };
   e.axe = await safeCollectAsync('axe', collectAxeResults);
+  e.serviceWorker = await safeCollectAsync('serviceWorker', collectServiceWorkerState);
   return e;
 }
 
@@ -81,5 +87,7 @@ export function collectEnrichmentSync() {
     storage: safeCollect('storage', collectStorage),
     cssCustomProperties: safeCollect('cssCustomProperties', collectCSSCustomProperties),
     transient: safeCollect('transient', collectTransient),
+    errorBoundaries: safeCollect('errorBoundaries', collectErrorBoundaries),
+    buildMetadata: safeCollect('buildMetadata', collectBuildMetadata),
   };
 }
