@@ -1,6 +1,6 @@
 # Prompt Shortcuts Reference
 
-11 prompt shortcuts for common ViewGraph workflows.
+12 prompt shortcuts for common ViewGraph workflows.
 
 {% hint style="info" %}
 **Kiro CLI:** Type `@vg-review`, `@vg-audit`, etc. The `@` prefix triggers prompt expansion.
@@ -19,6 +19,12 @@ Captures the latest page, runs `audit_accessibility`, `audit_layout`, and `find_
 Fix all annotations from the latest capture.
 
 Pulls unresolved annotations via `get_unresolved`. For each: reads the comment, calls `get_annotation_context` for DOM context, calls `find_source` to locate the file, implements the fix, calls `resolve_annotation`. Offers verification capture at the end.
+
+## @vg-verify
+
+Post-fix verification: frontend + backend health check.
+
+Calls `verify_fix` for a one-call smoke test (a11y, layout, console errors, network failures, regressions). If TracePulse is available, also calls `get_errors` for backend health. Reports pass/fail with details on what broke.
 
 ## @vg-capture
 

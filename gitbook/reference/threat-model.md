@@ -113,7 +113,7 @@ Three layers of transport security, from strongest to fallback:
 
 ### Known Limitation: HMAC Key in Handshake
 
-The HMAC handshake sends the session key in the `/handshake` response. This means any localhost process that calls `/handshake` can obtain the key and sign requests. HMAC does NOT prevent a determined local attacker - it prevents casual/accidental injection and provides:
+The HMAC handshake no longer sends the session key in the response (fixed in SRR-008, v0.7.4). The extension receives the key via native messaging or reads it from `.viewgraph/.session-key`. This means a localhost process cannot obtain the signing key by calling `/handshake`. HMAC provides:
 
 - **Replay protection** - 30-second timestamp window, each signature is unique
 - **Session tracking** - sessionId ties requests to a specific handshake
