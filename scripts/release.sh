@@ -32,6 +32,17 @@ cd ../server && npx vitest run tests/unit --silent 2>&1 | tail -1
 echo "  Running MCP smoke test..."
 npx vitest run tests/integration/mcp-smoke.test.js --silent 2>&1 | tail -1
 cd ..
+
+# Verify no hardcoded version strings that disagree with package.json
+echo "  Checking for stale version strings..."
+STALE=$(grep -rn "\"0\.[0-9]\+\.[0-9]\+\"" server/src/constants.js extension/lib/constants.js 2>/dev/null | grep -v "node_modules" | grep -v "package.json" | grep -v "${VERSION}" | grep -v "//")
+if [ -n "$STALE" ]; then
+  echo "  ERROR: Found hardcoded version strings that don't match ${VERSION}:"
+  echo "$STALE"
+  echo "  Fix these before releasing."
+  exit 1
+fi
+
 echo "  ✓ Tests pass"
 
 # ── Version bump ──
