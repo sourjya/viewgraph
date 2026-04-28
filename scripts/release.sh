@@ -29,6 +29,8 @@ echo ""
 echo "[1/7] Running tests..."
 cd extension && npx vitest run --silent 2>&1 | tail -1
 cd ../server && npx vitest run tests/unit --silent 2>&1 | tail -1
+echo "  Running MCP smoke test..."
+npx vitest run tests/integration/mcp-smoke.test.js --silent 2>&1 | tail -1
 cd ..
 echo "  ✓ Tests pass"
 
