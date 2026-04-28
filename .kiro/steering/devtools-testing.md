@@ -81,3 +81,13 @@ DevTools MCP shows the live page. ViewGraph MCP shows structured captures. Use b
 - ViewGraph for structured DOM analysis, a11y audits, annotation review
 - Cross-reference: if a ViewGraph capture shows an issue, use DevTools to reproduce and inspect live
 - After fixing: use DevTools to verify visually, then ViewGraph capture to verify structurally
+
+## Release Checklist Reminder
+
+On every version bump, BEFORE pushing:
+1. Build extension ZIPs: `bash scripts/build-extension.sh`
+2. Commit the new ZIPs in `downloads/`
+3. Push, tag, create GitHub release with `gh release create`
+4. Upload ZIPs to release: `gh release upload vX.X.X downloads/*.zip`
+
+Do NOT push a tag without extension ZIPs attached to the release.
