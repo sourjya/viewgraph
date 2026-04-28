@@ -8,13 +8,13 @@ The `viewgraph-uninstall` command removes ViewGraph's configuration from a singl
 npx @viewgraph/core uninstall
 ```
 
-This only affects the current project — your other projects are not touched.
+This only affects the current project. Your other projects are not touched.
 
 ### What the script does
 
-1. **Lists what it found** — MCP config entries, steering docs, prompts, hooks
-2. **Asks about your capture data** — the `.viewgraph/` directory contains your DOM captures, screenshots, annotations, and config. You choose whether to keep or delete it.
-3. **Asks about config files** — removes the `viewgraph` entry from your MCP config, deletes steering docs, prompts, and hooks
+1. **Lists what it found** - MCP config entries, steering docs, prompts, hooks
+2. **Asks about your capture data** - the `.viewgraph/` directory contains your DOM captures, screenshots, annotations, and config. You choose whether to keep or delete it.
+3. **Asks about config files** - removes the `viewgraph` entry from your MCP config, deletes steering docs, prompts, and hooks
 4. **Shows confirmation** for each step before acting
 
 ### What it removes
