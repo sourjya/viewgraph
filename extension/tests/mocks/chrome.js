@@ -39,8 +39,8 @@ export function mockChrome(overrides = {}) {
           const fn = ops[msg.op];
           if (!fn) { if (cb) cb({ ok: false, error: `Unknown op: ${msg.op}` }); return true; }
           fn(msg.args || {})
-            .then((result) => { if (cb) cb({ ok: true, result }); })
-            .catch((err) => { if (cb) cb({ ok: false, error: err.message }); });
+            .then((result) => { if (cb && typeof chrome !== 'undefined') cb({ ok: true, result }); })
+            .catch((err) => { if (cb && typeof chrome !== 'undefined') cb({ ok: false, error: err.message }); });
           return true; // async response
         }
         // M19: discovery.js delegates to SW via vg-get-server
