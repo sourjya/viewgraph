@@ -32,12 +32,6 @@ export function collectBuildMetadata() {
 
   // Check for sourcemaps
   const scripts = [...document.querySelectorAll('script[src]')].slice(0, 20);
-  const hasSourcemaps = scripts.some((s) => {
-    // Check for sourceMappingURL comment (can't read cross-origin script content,
-    // but .map files alongside scripts indicate sourcemaps)
-    return s.src.endsWith('.js') || s.src.endsWith('.mjs');
-  });
-
   // Collect script sources (truncated)
   const scriptSources = scripts.map((s) => {
     const url = s.src;
