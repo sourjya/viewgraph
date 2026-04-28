@@ -41,8 +41,10 @@ ViewGraph wraps captured text in delimiters to help you distinguish data from in
 ## When checking your work
 
 1. After fixing UI issues, call `request_capture` with guidance "Verify fix - reload and check"
-2. Once the user captures, use `compare_captures` to diff before and after
-3. Use `audit_accessibility` to verify no a11y regressions
+2. Once the user captures, call `verify_fix` with the new capture filename (and optionally the previous capture for regression diff)
+3. If verdict is PASS: all clear, resolve annotations
+4. If verdict is FAIL: read the `checks` and `topIssues` to identify what broke, fix, and re-verify
+5. For visual regressions, use `compare_screenshots` to pixel-diff before/after PNGs
 
 ## When reviewing unresolved issues
 

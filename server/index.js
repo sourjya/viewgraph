@@ -65,6 +65,7 @@ import { register as registerValidateCapture } from '#src/tools/validate-capture
 import { register as registerCompareStyles } from '#src/tools/compare-styles.js';
 import { register as registerGetComponentCoverage } from '#src/tools/get-component-coverage.js';
 import { register as registerGetCaptureHistory } from '#src/tools/get-capture-history.js';
+import { register as registerVerifyFix } from '#src/tools/verify-fix.js';
 import { register as registerGetSessionStatus } from '#src/tools/get-session-status.js';
 import { registerPrompts } from '#src/prompts.js';
 import { createRequestQueue } from '#src/request-queue.js';
@@ -153,6 +154,7 @@ registerValidateCapture(server, indexer, CAPTURES_DIR);
 registerCompareStyles(server, indexer, CAPTURES_DIR);
 registerGetComponentCoverage(server, indexer, CAPTURES_DIR);
 registerGetCaptureHistory(server, indexer);
+registerVerifyFix(server, indexer, CAPTURES_DIR);
 registerGetSessionStatus(server, indexer);
 } // end !SLIM_MODE
 
