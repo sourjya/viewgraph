@@ -2,15 +2,17 @@
 
 Remove ViewGraph from a project. This removes the MCP server configuration, steering docs, prompts, and hooks. Optionally removes capture data.
 
-## Quick Uninstall
+## Remove from a Project
 
-From your project root:
+Run from the project folder where ViewGraph is installed:
 
 ```bash
 npx @viewgraph/core uninstall
 ```
 
-Or if installed globally:
+This removes ViewGraph's configuration, steering docs, prompts, and hooks from the current project. Your other projects are not affected.
+
+If you installed `@viewgraph/core` globally, you can also run:
 
 ```bash
 viewgraph-uninstall
