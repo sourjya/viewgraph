@@ -10,11 +10,13 @@
  * @see server/src/tools/list-captures.js - flat list (this tool groups by URL)
  */
 
+import { z } from 'zod';
+
 export function register(server, indexer) {
   server.tool(
     'get_capture_history',
     'Group captures by URL into timelines. Shows capture count, date range, and element count changes per page.',
-    { url_filter: { type: 'string', description: 'Filter to URLs containing this substring' } },
+    { url_filter: z.string().optional().describe('Filter to URLs containing this substring') },
     async ({ url_filter }) => {
       const all = indexer.list({ limit: 200, urlFilter: url_filter });
       if (!all.length) {
