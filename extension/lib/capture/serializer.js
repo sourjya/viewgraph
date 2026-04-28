@@ -1,11 +1,29 @@
 /**
- * ViewGraph v2.1 Serializer
+ * ViewGraph v2.3 Serializer
  *
- * Assembles a ViewGraph v2.1 JSON capture from scored element data.
- * Produces all required sections: metadata, summary, nodes, relations, details.
+ * Assembles a ViewGraph v2.3 JSON capture from scored element data.
+ * Produces all required sections: metadata, summary, nodes, relations,
+ * provenance, styleTable, details.
  *
  * Runs in the content script context. Returns a plain object (not stringified).
  */
+
+import { extractStyles } from './traverser.js';
+
+/**
+ * Lazily extract styles from an element's _computedRef.
+ * Only called for high/med salience nodes to avoid wasted work on low nodes.
+ * @param {object} el - Scored element with _computedRef
+ * @returns {object|null} Style groups or null
+ */
+function getStyles(el) {
+  if (el.styles) return el.styles;
+  if (el._computedRef) {
+    el.styles = extractStyles(el._computedRef);
+    delete el._computedRef; // Free the CSSStyleDeclaration reference
+  }
+  return el.styles || null;
+}
 
 /**
  * Build the metadata section from page state.
@@ -54,10 +72,11 @@ function buildSummary(elements, metadata) {
   const bgColors = new Set();
 
   elements.filter((el) => el.salience === 'high' || el.salience === 'med').forEach((el) => {
-    if (el.styles.typography?.['font-family']) fonts.add(el.styles.typography['font-family']);
-    if (el.styles.typography?.['font-size']) fontSizes.add(el.styles.typography['font-size']);
-    if (el.styles.visual?.color) colors.add(el.styles.visual.color);
-    if (el.styles.visual?.['background-color']) bgColors.add(el.styles.visual['background-color']);
+    const styles = getStyles(el);
+    if (styles?.typography?.['font-family']) fonts.add(styles.typography['font-family']);
+    if (styles?.typography?.['font-size']) fontSizes.add(styles.typography['font-size']);
+    if (styles?.visual?.color) colors.add(styles.visual.color);
+    if (styles?.visual?.['background-color']) bgColors.add(styles.visual['background-color']);
   });
 
   // High-salience interactive elements for quick reference
@@ -237,15 +256,18 @@ function buildDetails(elements) {
     // Progressive style disclosure with default omission + dedup
     let styles = null;
     if (el.salience === 'high') {
-      styles = filterStyleDefaults(el.styles);
+      styles = filterStyleDefaults(getStyles(el));
     } else if (el.salience === 'med') {
-      const { layout, visual, typography, spacing } = el.styles;
-      const raw = {};
-      if (layout) raw.layout = layout;
-      if (visual) raw.visual = visual;
-      if (typography) raw.typography = typography;
-      if (spacing) raw.spacing = spacing;
-      styles = filterStyleDefaults(raw);
+      const rawStyles = getStyles(el);
+      if (rawStyles) {
+        const { layout, visual, typography, spacing } = rawStyles;
+        const medStyles = {};
+        if (layout) medStyles.layout = layout;
+        if (visual) medStyles.visual = visual;
+        if (typography) medStyles.typography = typography;
+        if (spacing) medStyles.spacing = spacing;
+        styles = filterStyleDefaults(medStyles);
+      }
     }
     // low: no styles
 

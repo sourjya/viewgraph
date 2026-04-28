@@ -1,4 +1,4 @@
-# 38 MCP Tools
+# 41 MCP Tools
 
 Your agent discovers these automatically. You don't call them - you describe what you want and the agent picks the right tool.
 
@@ -83,6 +83,14 @@ Your agent discovers these automatically. You don't call them - you describe wha
 | `compare_styles` | Diff computed CSS of an element between captures |
 | `get_component_coverage` | Report testid coverage per framework component |
 | `validate_capture` | Check capture quality (empty pages, missing data) |
+
+**Verification (3)**
+
+| Tool | What the agent does with it |
+|---|---|
+| `verify_fix` | One-call smoke test: a11y + layout + console + network + regressions |
+| `get_capture_history` | Group captures by URL into timelines with change tracking |
+| `get_capture_diff` | RFC 6902 JSON Patch between sequential captures (50-1500x smaller) |
 
 {% endtab %}
 

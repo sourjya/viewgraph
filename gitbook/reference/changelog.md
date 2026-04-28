@@ -6,6 +6,43 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ---
 
+## v0.7.3 - April 29, 2026
+
+### New MCP Tools (41 total)
+- `verify_fix` - composite smoke test: a11y + layout + console + network + regressions in one call
+- `get_capture_history` - group captures by URL into timelines with node count deltas
+- `get_capture_diff` - RFC 6902 JSON Patch between sequential captures (50-1500x compression)
+
+### Token Efficiency
+- Style dedup table: shared styles referenced by hash, 50% dedup rate measured
+- Default value omission: browser defaults (visibility:visible, opacity:1, etc.) filtered out, 41.8% waste eliminated
+- Provenance metadata: field-level source tagging (measured/derived/inferred) in every capture
+
+### New Enrichment Collectors (20 total)
+- Error boundary state: React error boundaries in fallback mode
+- Service worker state: active controller, cache names
+- Build metadata: dev/prod mode, bundler detection (Vite, webpack, Next.js, Nuxt, Astro)
+- Heuristic name computation: W3C accessible name algorithm reduces a11y audit false positives
+
+### TracePulse Integration
+- Frontend error bridge: console errors and failed requests pushed to TracePulse for cross-stack correlation
+- `@vg-verify` prompt: composite verify pattern (verify_fix + get_errors)
+- HMR detection surfaced in verify_fix response
+
+### Extension
+- Welcome page on first install with 3-step setup guide
+- Background console error watcher with real-time notifications
+- Smart alert dot on collapsed strip when issues detected
+
+### Developer Experience
+- `viewgraph-uninstall` CLI: guided project removal with data preservation option
+- MCP smoke test: verifies all tools register before every release
+- Release script: automated 7-step pipeline (tests, build, tag, push, GitHub release)
+- All 41 tools in autoApprove list
+- ESLint: 0 errors, 0 warnings across entire codebase
+
+---
+
 ## v0.4.8 - April 26, 2026
 
 ### Bug Fixes

@@ -69,7 +69,7 @@ Click `?` in the header for keyboard shortcuts, version info, and quick links.
 
 {% tabs %}
 {% tab title="Send to Agent" %}
-Pushes annotations + full DOM capture + 17 enrichment collectors to the MCP server. Your agent receives everything needed to fix the code.
+Pushes annotations + full DOM capture + 20 enrichment collectors to the MCP server. Your agent receives everything needed to fix the code.
 
 ![Annotations waiting for agent fix](../.gitbook/assets/sent-waiting-for-fix.png)
 
@@ -99,7 +99,7 @@ Downloads a ZIP archive with:
 
 ---
 
-## 16 Enrichment Collectors
+## 20 Enrichment Collectors
 
 Every capture automatically includes data from these collectors:
 
@@ -134,6 +134,9 @@ Every capture automatically includes data from these collectors:
 | Client storage | localStorage, sessionStorage, cookies (sensitive values redacted) |
 | CSS custom properties | CSS variables defined on `:root` and `body` |
 | Transient state | Toasts, flash content, animation jank, render thrashing (30s buffer) |
+| Error boundaries | React components in error fallback state, generic error DOM patterns |
+| Service worker | Active controller, cache names, offline mode detection |
+| Build metadata | Dev/prod mode, bundler detection (Vite, webpack, Next.js, Nuxt, Astro) |
 {% endtab %}
 {% endtabs %}
 

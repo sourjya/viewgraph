@@ -88,7 +88,7 @@ function buildSelector(el) {
  * Extract computed styles for an element, grouped by category.
  * Only includes non-default values.
  */
-function extractStyles(computed) {
+export function extractStyles(computed) {
   const styles = {};
   for (const [category, props] of Object.entries(STYLE_PROPS)) {
     const values = {};
@@ -204,7 +204,8 @@ export function traverseDOM(root = document.body) {
       isInteractive: INTERACTIVE_TAGS.has(tag) || el.getAttribute('role') === 'button' || el.onclick != null,
       isSemantic: SEMANTIC_TAGS.has(tag),
       isRendered: checkRendered(el),
-      styles: extractStyles(computed),
+      styles: null, // Deferred: extracted in serializer only for high/med salience
+      _computedRef: computed, // Temporary reference for deferred style extraction
       attributes: {},
     };
 
