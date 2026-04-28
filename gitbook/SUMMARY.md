@@ -11,6 +11,7 @@
 * [Install from GitHub (Latest)](getting-started/manual-install.md)
 * [Multi-Project Setup](getting-started/multi-project.md)
 * [Cross-Tool Setup](getting-started/cross-tool-setup.md)
+* [Uninstall](getting-started/uninstall.md)
 
 ## Tutorials
 
@@ -27,7 +28,7 @@
 ## Features
 
 * [Browser Extension](features/extension.md)
-* [MCP Tools (38)](features/mcp-tools.md)
+* [MCP Tools (40)](features/mcp-tools.md)
 * [How the Extension Communicates](features/architecture.md)
 * [Playwright Integration](features/playwright.md)
 * [Kiro Power (Hooks & Prompts)](features/kiro-power.md)

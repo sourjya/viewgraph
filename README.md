@@ -76,6 +76,8 @@ The server runs automatically via `npx` - no install needed. It auto-creates `.v
 
 **Alternative:** `npm install -g @viewgraph/core` for explicit version pinning, then run `viewgraph-init` from each project folder to configure URL patterns and capture routing.
 
+**Uninstall:** `npx @viewgraph/core uninstall` from your project folder. Removes MCP config, steering docs, prompts, and hooks. Optionally removes capture data. [Uninstall guide](https://chaoslabz.gitbook.io/viewgraph/getting-started/uninstall).
+
 The extension sidebar opens with **Review** (annotate and comment) and **Inspect** (network errors, console issues) tabs. Export via **Send to Agent** (MCP), **Copy Markdown** (Jira/GitHub), or **Download Report** (ZIP).
 
 For detailed setup with screenshots, browser-specific instructions, and multi-project configuration, see the [Quick Start Guide](https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start).
