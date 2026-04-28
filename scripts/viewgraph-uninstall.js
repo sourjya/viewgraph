@@ -63,7 +63,7 @@ function dirSize(dir) {
 
 const W = 42;
 const line1 = ` </>  ViewGraph v${VERSION}`;
-const line2 = ' Uninstall from this project';
+const line2 = ' ! Uninstall from this project';
 console.log(`
   \u250c${'\u2500'.repeat(W)}\u2510
   \u2502\x1b[1m\x1b[38;5;141m${line1}\x1b[0m${' '.repeat(W - line1.length)}\u2502
