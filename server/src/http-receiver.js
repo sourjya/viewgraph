@@ -369,6 +369,29 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       // Rolling archive: move eligible resolved captures to archive/ (non-blocking)
       try { runArchive(targetDir, { keepLatestPerUrl: 2 }).catch(() => {}); } catch { /* best effort */ }
 
+      // TracePulse bridge: push frontend errors to TP's log collector (non-blocking)
+      // Enables get_correlated_errors to pair frontend failures with backend stack traces.
+      try {
+        const tpUrl = process.env.TRACEPULSE_COLLECTOR_URL;
+        if (tpUrl) {
+          const errors = [];
+          const consoleErrs = capture.console?.errors || [];
+          for (const err of consoleErrs.slice(0, 10)) {
+            errors.push({ source: 'viewgraph', level: 'error', service: 'frontend', message: `[console.error] ${err.message || err}`, timestamp: capture.metadata?.timestamp });
+          }
+          const failedReqs = capture.network?.failed || [];
+          for (const req of failedReqs.slice(0, 10)) {
+            errors.push({ source: 'viewgraph', level: 'error', service: 'frontend', message: `[HTTP ${req.status || 'ERR'}] ${req.url || req.name || 'unknown'}`, timestamp: capture.metadata?.timestamp });
+          }
+          if (errors.length > 0) {
+            for (const evt of errors) {
+              fetch(`${tpUrl}/collect`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(evt), signal: AbortSignal.timeout(2000) }).catch(() => {});
+            }
+            console.error(`${LOG_PREFIX} Pushed ${errors.length} frontend error(s) to TracePulse`);
+          }
+        }
+      } catch { /* TP not running or not configured - silent */ }
+
       return json(res, 201, { filename, requestId: match?.id ?? null });
     }
 

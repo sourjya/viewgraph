@@ -50,10 +50,10 @@ describe('registerPrompts', () => {
     expect(result.messages[0].content.text).toContain('vg-review');
   });
 
-  it('(+) registers all 11 prompt files', () => {
+  it('(+) registers all 12 prompt files', () => {
     const mockServer = { prompt: vi.fn() };
     registerPrompts(mockServer);
-    expect(mockServer.prompt.mock.calls.length).toBe(11);
+    expect(mockServer.prompt.mock.calls.length).toBe(12);
   });
 
   it('(-) handles missing prompts directory gracefully', () => {

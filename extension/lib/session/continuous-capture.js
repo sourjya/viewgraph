@@ -28,6 +28,8 @@ let lastCaptureTime = 0;
 let capturing = false;
 let enabled = false;
 let onCapture = null;
+/** Whether the most recent trigger was from an HMR event (vs MutationObserver). */
+let _lastTriggerWasHmr = false;
 
 /**
  * Start watching for DOM changes and HMR events.
@@ -61,11 +63,15 @@ export function stopWatcher() {
 /** @returns {boolean} Whether the watcher is currently active. */
 export function isWatcherEnabled() { return enabled; }
 
+/** @returns {boolean} Whether the last auto-capture trigger was from an HMR event. */
+export function wasHmrTriggered() { return _lastTriggerWasHmr; }
+
 /** Reset all internal state. Used in tests. */
 export function resetWatcher() {
   stopWatcher();
   lastCaptureTime = 0;
   capturing = false;
+  _lastTriggerWasHmr = false;
 }
 
 // ---------------------------------------------------------------------------
@@ -82,6 +88,7 @@ function startMutationObserver() {
       return true;
     });
     if (!relevant) return;
+    _lastTriggerWasHmr = false;
     clearTimeout(mutationTimer);
     mutationTimer = setTimeout(triggerCapture, MUTATION_DEBOUNCE_MS);
   });
@@ -97,6 +104,7 @@ function startMutationObserver() {
 
 /** Shared handler for any HMR-like event. */
 function onHmrEvent() {
+  _lastTriggerWasHmr = true;
   clearTimeout(hmrTimer);
   hmrTimer = setTimeout(triggerCapture, HMR_DEBOUNCE_MS);
 }

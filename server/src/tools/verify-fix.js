@@ -119,9 +119,10 @@ export function register(server, indexer, capturesDir) {
       }
 
       const allPass = Object.values(checks).every((c) => c.pass);
+      const hmrDetected = !!parsed.metadata?.hmrSource || !!parsed.metadata?.autoCapture;
       const summary = allPass
-        ? `✅ All checks passed on ${targetFile}`
-        : `❌ ${Object.values(checks).filter((c) => !c.pass).length} check(s) failed on ${targetFile}`;
+        ? `✅ All checks passed on ${targetFile}${hmrDetected ? ' (HMR capture)' : ''}`
+        : `❌ ${Object.values(checks).filter((c) => !c.pass).length} check(s) failed on ${targetFile}${hmrDetected ? ' (HMR capture)' : ''}`;
 
       return jsonResponse({
         verdict: allPass ? 'PASS' : 'FAIL',
@@ -129,6 +130,8 @@ export function register(server, indexer, capturesDir) {
         capture: targetFile,
         previousCapture: previous_filename || null,
         url: parsed.metadata?.url,
+        hmrDetected,
+        hmrSource: parsed.metadata?.hmrSource || null,
         checks,
         // Top issues for quick scanning
         topIssues: [

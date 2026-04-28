@@ -10,7 +10,7 @@
  */
 
 import { ATTR } from '#lib/selector.js';
-import { startWatcher, stopWatcher, isWatcherEnabled } from '#lib/session/continuous-capture.js';
+import { startWatcher, stopWatcher, isWatcherEnabled, wasHmrTriggered } from '#lib/session/continuous-capture.js';
 import { isRecording, startSession, stopSession, getState } from '#lib/session/session-manager.js';
 import { startJourney, stopJourney } from '#lib/session/journey-recorder.js';
 import * as transport from '#lib/transport-client.js';
@@ -40,7 +40,7 @@ export async function renderToggles(container, callbacks = {}) {
   try {
     const stored = await chrome.storage.local.get('vg_auto_capture');
     if (stored.vg_auto_capture && !watcherOn) {
-      startWatcher(() => { chrome.runtime.sendMessage({ type: 'capture-page' }); });
+      startWatcher(() => { chrome.runtime.sendMessage({ type: 'capture-page', hmrTriggered: wasHmrTriggered() }); });
       watcherOn = true;
     }
   } catch { /* storage unavailable */ }
@@ -54,7 +54,7 @@ export async function renderToggles(container, callbacks = {}) {
       Object.assign(autoToggle.style, TOGGLE_OFF);
       chrome.storage.local.set({ vg_auto_capture: false });
     } else {
-      startWatcher(() => { chrome.runtime.sendMessage({ type: 'capture-page' }); });
+      startWatcher(() => { chrome.runtime.sendMessage({ type: 'capture-page', hmrTriggered: wasHmrTriggered() }); });
       autoToggle.textContent = 'ON';
       Object.assign(autoToggle.style, TOGGLE_ON);
       chrome.storage.local.set({ vg_auto_capture: true });
