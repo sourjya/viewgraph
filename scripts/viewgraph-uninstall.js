@@ -132,80 +132,81 @@ if (removals.length === 0 && !vgDirInfo) {
   process.exit(0);
 }
 
-console.log('  The following will be removed:\n');
+if (removals.length > 0) {
+  console.log('  The following configuration files will be removed:\n');
 
-const mcpConfigs = removals.filter((r) => r.type === 'mcp-config');
-if (mcpConfigs.length) {
-  console.log('  \x1b[1mMCP Configuration\x1b[0m');
-  for (const r of mcpConfigs) console.log(`    \x1b[31m✕\x1b[0m ${r.path} (${r.agent} — viewgraph server entry)`);
-  console.log('');
+  const mcpConfigs = removals.filter((r) => r.type === 'mcp-config');
+  if (mcpConfigs.length) {
+    console.log('  \x1b[1mMCP Configuration\x1b[0m');
+    for (const r of mcpConfigs) console.log(`    \x1b[31m✕\x1b[0m ${r.path} (${r.agent} — viewgraph server entry)`);
+    console.log('');
+  }
+
+  const steeringFiles = removals.filter((r) => r.type === 'steering');
+  if (steeringFiles.length) {
+    console.log('  \x1b[1mSteering Docs\x1b[0m');
+    for (const r of steeringFiles) console.log(`    \x1b[31m✕\x1b[0m ${r.path}`);
+    console.log('');
+  }
+
+  const promptFiles = removals.filter((r) => r.type === 'prompt');
+  if (promptFiles.length) {
+    console.log('  \x1b[1mPrompt Shortcuts\x1b[0m');
+    for (const r of promptFiles) console.log(`    \x1b[31m✕\x1b[0m ${r.path}`);
+    console.log('');
+  }
+
+  const hookFiles = removals.filter((r) => r.type === 'hook');
+  if (hookFiles.length) {
+    console.log('  \x1b[1mHooks\x1b[0m');
+    for (const r of hookFiles) console.log(`    \x1b[31m✕\x1b[0m ${r.path}`);
+    console.log('');
+  }
 }
 
-const steeringFiles = removals.filter((r) => r.type === 'steering');
-if (steeringFiles.length) {
-  console.log('  \x1b[1mSteering Docs\x1b[0m');
-  for (const r of steeringFiles) console.log(`    \x1b[31m✕\x1b[0m ${r.path}`);
-  console.log('');
-}
-
-const promptFiles = removals.filter((r) => r.type === 'prompt');
-if (promptFiles.length) {
-  console.log('  \x1b[1mPrompt Shortcuts\x1b[0m');
-  for (const r of promptFiles) console.log(`    \x1b[31m✕\x1b[0m ${r.path}`);
-  console.log('');
-}
-
-const hookFiles = removals.filter((r) => r.type === 'hook');
-if (hookFiles.length) {
-  console.log('  \x1b[1mHooks\x1b[0m');
-  for (const r of hookFiles) console.log(`    \x1b[31m✕\x1b[0m ${r.path}`);
-  console.log('');
-}
-
-// ── Remove config/steering/prompts/hooks ──
-
-console.log('');
-const proceed = await ask('  Proceed with removal? (y/N) ');
-if (!proceed) { console.log('\n  Cancelled.\n'); process.exit(0); }
-
-console.log('');
-
-// Remove MCP config entries (remove the viewgraph key, keep the rest)
-for (const r of mcpConfigs) {
-  try {
-    const config = JSON.parse(readFileSync(r.configPath, 'utf-8'));
-    delete config.mcpServers.viewgraph;
-    writeFileSync(r.configPath, JSON.stringify(config, null, 2) + '\n');
-    console.log(`  \x1b[32m✓\x1b[0m Removed viewgraph from ${r.path}`);
-  } catch (e) { console.log(`  \x1b[33m⚠\x1b[0m Could not update ${r.path}: ${e.message}`); }
-}
-
-// Remove files
-for (const r of [...steeringFiles, ...promptFiles, ...hookFiles]) {
-  try { rmSync(r.fullPath); console.log(`  \x1b[32m✓\x1b[0m Removed ${r.path}`); }
-  catch (e) { console.log(`  \x1b[33m⚠\x1b[0m Could not remove ${r.path}: ${e.message}`); }
-}
-
-// ── .viewgraph data directory (separate prompt) ──
+// ── .viewgraph data directory ──
 
 if (vgDirInfo) {
-  console.log('');
   console.log('  \x1b[1m.viewgraph/ Data Directory\x1b[0m');
-  console.log(`    Contains: ${vgDirInfo.captureCount} capture(s), config, auth tokens`);
-  console.log(`    Size: ${formatSize(vgDirInfo.totalSize)}`);
+  console.log(`    Contains: ${vgDirInfo.captureCount} DOM capture(s), screenshots, annotations,`);
+  console.log('    project config, and auth tokens.');
+  console.log(`    Total size: ${formatSize(vgDirInfo.totalSize)}`);
   console.log('');
-  console.log('    This directory holds your DOM captures, screenshots, annotations,');
-  console.log('    and project config. Removing it deletes all capture history.');
+  console.log('    Keeping this directory lets you re-install ViewGraph later');
+  console.log('    with all your capture history intact.');
   console.log('');
 
-  const removeData = await ask('  Remove .viewgraph/ data directory? (y/N) ');
+  const removeData = await ask('  Delete .viewgraph/ and all capture data? (y/N) ');
   if (removeData) {
     try {
       rmSync(vgDir, { recursive: true, force: true });
-      console.log(`  \x1b[32m✓\x1b[0m Removed .viewgraph/ (${formatSize(vgDirInfo.totalSize)})`);
+      console.log(`  \x1b[32m✓\x1b[0m Deleted .viewgraph/ (${formatSize(vgDirInfo.totalSize)})`);
     } catch (e) { console.log(`  \x1b[33m⚠\x1b[0m Could not remove .viewgraph/: ${e.message}`); }
   } else {
-    console.log('  \x1b[36mℹ\x1b[0m Kept .viewgraph/ — captures and config preserved');
+    console.log('  \x1b[36mℹ\x1b[0m Kept .viewgraph/ — your captures and config are preserved');
+  }
+  console.log('');
+}
+
+// ── Remove config files ──
+
+if (removals.length > 0) {
+  const proceed = await ask('  Remove ViewGraph configuration files listed above? (y/N) ');
+  if (!proceed) { console.log('\n  Cancelled.\n'); process.exit(0); }
+  console.log('');
+
+  for (const r of removals.filter((r) => r.type === 'mcp-config')) {
+    try {
+      const config = JSON.parse(readFileSync(r.configPath, 'utf-8'));
+      delete config.mcpServers.viewgraph;
+      writeFileSync(r.configPath, JSON.stringify(config, null, 2) + '\n');
+      console.log(`  \x1b[32m✓\x1b[0m Removed viewgraph from ${r.path}`);
+    } catch (e) { console.log(`  \x1b[33m⚠\x1b[0m Could not update ${r.path}: ${e.message}`); }
+  }
+
+  for (const r of removals.filter((r) => r.type !== 'mcp-config')) {
+    try { rmSync(r.fullPath); console.log(`  \x1b[32m✓\x1b[0m Removed ${r.path}`); }
+    catch (e) { console.log(`  \x1b[33m⚠\x1b[0m Could not remove ${r.path}: ${e.message}`); }
   }
 }
 
