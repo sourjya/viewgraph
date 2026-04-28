@@ -19,6 +19,62 @@ The `compare_captures` tool already computes structural diffs, but it returns a 
 
 ## Proposed Design
 
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Current: Full Capture Every Time               │
+│                                                                   │
+│  HMR reload ──► Extension captures full DOM (47KB)               │
+│                      │                                            │
+│                      ▼                                            │
+│              Server stores full capture                           │
+│                      │                                            │
+│                      ▼                                            │
+│              Agent: get_latest_capture ──► 12,200 tokens          │
+│              Agent: compare_captures   ──►  3,000 tokens          │
+│                                           ─────────               │
+│                                Total:     15,200 tokens           │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    Proposed: Patch Mode                           │
+│                                                                   │
+│  HMR reload ──► Extension captures full DOM (47KB)               │
+│                      │                                            │
+│                      ▼                                            │
+│              Server stores full capture                           │
+│              Server computes patch from previous ──► 412 bytes    │
+│                      │                                            │
+│                      ▼                                            │
+│              Agent: get_capture_diff ──► 50 tokens                │
+│                                         ─────────                 │
+│                                Total:   50 tokens (300x less)     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Patch Generation Flow
+
+```mermaid
+sequenceDiagram
+    participant Ext as Extension
+    participant Srv as MCP Server
+    participant Idx as Indexer
+    participant Agent as AI Agent
+
+    Note over Ext: Developer changes CSS
+    Note over Ext: Vite hot-reloads
+    Ext->>Srv: POST /capture (full 47KB)
+    Srv->>Idx: Index new capture
+    Srv->>Srv: Find previous capture for same URL
+    Srv->>Srv: Compute RFC 6902 JSON Patch
+    Srv->>Srv: Store capture + patch
+
+    Agent->>Srv: get_capture_diff(latest)
+    Srv-->>Agent: { patch: [...], stats: { ops: 3, ratio: "115:1" } }
+    Note over Agent: Reads 50 tokens instead of 12,200
+```
+
 ### RFC 6902 JSON Patch Format
 
 Use the standard JSON Patch format (RFC 6902) to represent changes between sequential captures:
@@ -74,6 +130,30 @@ Response:
 
 ### Delivery Modes
 
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Delivery Mode Selection                    │
+│                                                               │
+│  Is this the first capture of this URL?                       │
+│  ├── YES ──► Return FULL capture (no base to diff against)   │
+│  └── NO                                                       │
+│       │                                                       │
+│       ▼                                                       │
+│  Compute patch from previous capture                          │
+│       │                                                       │
+│       ▼                                                       │
+│  Is patch size > 50% of full capture?                         │
+│  ├── YES ──► Return FULL (patch isn't saving much)           │
+│  └── NO                                                       │
+│       │                                                       │
+│       ▼                                                       │
+│  What did the agent request?                                  │
+│  ├── get_latest_capture ──► FULL (default, backward compat)  │
+│  ├── get_capture_diff   ──► SUMMARY + PATCH (recommended)    │
+│  └── get_capture_diff(patch_only=true) ──► PATCH only        │
+└─────────────────────────────────────────────────────────────┘
+```
+
 | Mode | When to use | What agent receives |
 |---|---|---|
 | `full` | First capture of a URL, or agent requests full context | Complete capture JSON |
@@ -83,6 +163,25 @@ Response:
 The agent can request any mode. Default for `get_latest_capture` stays `full`. The new `get_capture_diff` tool defaults to `patch`.
 
 ## Token Impact Analysis
+
+### Compression Visualization
+
+```
+Full capture (27 nodes, demo page):
+████████████████████████████████████████████████ 12,200 tokens
+
+Summary + Patch (1 CSS change):
+█                                                  250 tokens (98% less)
+
+Patch only (1 CSS change):
+▏                                                   50 tokens (99.6% less)
+
+Full capture (208 nodes, dashboard):
+████████████████████████████████████████████████████████████████████████████ 75,000 tokens
+
+Summary + Patch (1 CSS change):
+▏                                                   270 tokens (99.6% less)
+```
 
 ### Theoretical Compression
 
@@ -149,6 +248,42 @@ Total: ~50 tokens consumed (300x reduction)
 ```
 
 ## Experiment Design
+
+### Experiment Pipeline
+
+```mermaid
+flowchart TD
+    subgraph "Setup"
+        VITE[Vite Dev Server\n+ Demo Pages] --> CHANGES[20 Incremental\nCode Changes]
+    end
+
+    subgraph "Capture"
+        CHANGES --> AC[Auto-Capture\nPairs]
+        AC --> PAIRS[40 Sequential\nCapture Pairs]
+    end
+
+    subgraph "Exp 1: Compression"
+        PAIRS --> DIFF[Compute JSON Patch\nper pair]
+        DIFF --> RATIO[Compression Ratio\nper change type]
+    end
+
+    subgraph "Exp 2: Comprehension"
+        PAIRS --> CTRL[Control:\nFull capture]
+        PAIRS --> TA[Treatment A:\nPatch only]
+        PAIRS --> TB[Treatment B:\nSummary + Patch]
+        CTRL --> EVAL{Agent evaluates:\nWhat changed?\nWhat to fix?}
+        TA --> EVAL
+        TB --> EVAL
+        EVAL --> ACC[Accuracy\nComparison]
+    end
+
+    subgraph "Exp 3: End-to-End"
+        BUGS[5 Demo Bugs] --> WF1[Workflow:\nFull captures]
+        BUGS --> WF2[Workflow:\nPatch mode]
+        WF1 --> TOK[Total Token\nConsumption]
+        WF2 --> TOK
+    end
+```
 
 ### Experiment 1: Compression Ratio Measurement
 
@@ -220,6 +355,26 @@ Total: ~50 tokens consumed (300x reduction)
 **Success criteria:** >95% exact match rate. Mismatches are limited to metadata fields (timestamp, stats).
 
 ## Implementation Plan (if experiments pass)
+
+### Phased Rollout
+
+```mermaid
+gantt
+    title JSON Patch Implementation Phases
+    dateFormat  YYYY-MM-DD
+    section Phase 1
+    Add fast-json-patch dep     :p1a, 2026-05-01, 1d
+    Patch generation in receiver:p1b, after p1a, 2d
+    get_capture_diff MCP tool   :p1c, after p1b, 1d
+    Tests                       :p1d, after p1c, 1d
+    section Phase 2
+    Delivery mode parameter     :p2a, after p1d, 1d
+    Auto-capture default mode   :p2b, after p2a, 1d
+    Fallback logic              :p2c, after p2b, 1d
+    section Phase 3 (Optional)
+    Client-side delta           :p3a, after p2c, 2d
+    Server reconstruction       :p3b, after p3a, 1d
+```
 
 ### Phase 1: Server-Side Patch Generation
 1. Add `fast-json-patch` dependency to server

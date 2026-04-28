@@ -17,6 +17,39 @@ The browser's accessibility tree is the **semantic** ground truth. It resolves:
 
 ### What ViewGraph gets wrong today
 
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              Current A11y Inference (Syntactic)                   │
+│                                                                   │
+│  DOM ──► Check aria-label? ──► Check alt? ──► Check role?        │
+│                │                    │              │               │
+│                ▼                    ▼              ▼               │
+│          Present/absent      Present/absent  Present/absent       │
+│                                                                   │
+│  ❌ Does NOT resolve:                                             │
+│     - Implicit roles (<nav> = navigation)                         │
+│     - Name from text content (<button>Sign in</button>)           │
+│     - Label association (<label for="email">)                     │
+│     - Presentation role (role="presentation")                     │
+│     - aria-labelledby references                                  │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│              Browser A11y Tree (Semantic - Ground Truth)          │
+│                                                                   │
+│  DOM ──► Browser Engine ──► Name Computation Algorithm ──► Tree   │
+│                                      │                            │
+│                                      ▼                            │
+│                              Resolved for each node:              │
+│                              - Computed role                      │
+│                              - Computed name + source             │
+│                              - States (focusable, expanded...)    │
+│                              - Parent/child in a11y tree          │
+│                                                                   │
+│  ✅ Handles ALL edge cases the browser handles                    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 | Scenario | ViewGraph says | Browser says | Impact |
 |---|---|---|---|
 | `<button>Sign in</button>` | "button has no accessible name" (no `aria-label`) | Name: "Sign in" (from text content) | **False positive** - flags a non-issue |
@@ -97,6 +130,49 @@ vs.
 
 **Option D (Hybrid)** with Option C as the immediate implementation. CDP integration is a future enhancement gated on user research about permission acceptance.
 
+### Architecture: Hybrid Approach
+
+```mermaid
+flowchart TD
+    subgraph Extension
+        CAP[Capture Triggered] --> HC{Heuristic Name\nComputation}
+        HC --> AX[ax block on each node]
+        CAP --> CDP{CDP Available?}
+        CDP -->|debugger permission\ngranted| CDPAX[CDP AX Tree]
+        CDP -->|no permission| HC
+        CDPAX --> AX
+    end
+
+    subgraph Provenance
+        AX --> TAG{Tag source}
+        TAG -->|from CDP| T1["_source: cdp:Accessibility"]
+        TAG -->|from heuristic| T2["_source: heuristic:name-computation"]
+    end
+
+    subgraph MCP Server
+        AX --> AUDIT[audit_accessibility]
+        AUDIT --> FP{False positive?}
+        FP -->|name exists| SKIP[Skip - not a real issue]
+        FP -->|name missing| FLAG[Flag as violation]
+    end
+```
+
+### Option Comparison Matrix
+
+### Option Comparison Matrix
+
+```
+┌──────────────┬────────────┬───────────┬──────────┬──────────────┐
+│ Option       │ Accuracy   │ Permissions│ Firefox  │ Complexity   │
+├──────────────┼────────────┼───────────┼──────────┼──────────────┤
+│ A: CDP only  │ ★★★★★      │ debugger  │ ✗ None   │ Medium       │
+│ B: Exp. API  │ ★★★★       │ None      │ ✗ None   │ Low          │
+│ C: Heuristic │ ★★★★       │ None      │ ✓ Works  │ Medium       │
+│ D: Hybrid    │ ★★★★★      │ Optional  │ ✓ Falls  │ High         │
+│   (recommended)           │           │   back   │              │
+└──────────────┴────────────┴───────────┴──────────┴──────────────┘
+```
+
 ## Before/After Example
 
 ### Before (current - attribute-only)
@@ -170,6 +246,34 @@ For the Shanti dashboard (208 nodes): ~20,800 bytes (+7%)
 **But:** This replaces the current `audit_accessibility` false positives, which waste agent tokens on investigating non-issues. Net token efficiency may improve if false positive rate drops significantly.
 
 ## Experiment Design
+
+### Experiment Pipeline
+
+```mermaid
+flowchart LR
+    subgraph "Exp 1: False Positive Rate"
+        BC[Bulk Captures\n48 sites] --> VG[ViewGraph\naudit_accessibility]
+        BC --> AXE[axe-core\nresults]
+        VG --> CMP{Compare}
+        AXE --> CMP
+        CMP --> FPR[False Positive\nRate per rule]
+    end
+
+    subgraph "Exp 2: Name Computation"
+        TP[10 Test Pages] --> HEUR[Heuristic\nName Computation]
+        TP --> CDPGT[CDP Ground Truth\nvia DevTools MCP]
+        HEUR --> ACC{Match?}
+        CDPGT --> ACC
+        ACC --> RATE[Accuracy %\nper element type]
+    end
+
+    subgraph "Exp 3: Agent A/B"
+        BUGS[Demo Bugs\n8 a11y bugs] --> CTRL[Control:\nno ax block]
+        BUGS --> TREAT[Treatment:\nwith ax block]
+        CTRL --> METRIC[Fix accuracy\nFalse starts\nTool calls]
+        TREAT --> METRIC
+    end
+```
 
 ### Experiment 1: False Positive Rate Measurement
 

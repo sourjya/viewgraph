@@ -18,6 +18,25 @@ This matters because:
 
 The format spec (v2.2.0) defines a `metadata.provenance` map at the section level:
 
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Current Capture Flow                      │
+│                                                              │
+│  DOM API ──┐                                                 │
+│            ├──► Traverser ──► Serializer ──► JSON Capture    │
+│  Heuristics┘         │                          │            │
+│                      │                          ▼            │
+│              No provenance              All fields look      │
+│              tags emitted               identical to agent   │
+│                                                              │
+│  Agent reads: "font-size": "56px"                            │
+│  Agent reads: "selector": "div > h1"                         │
+│  Agent reads: "cluster": "header"                            │
+│                                                              │
+│  ❓ Which is measured? Which is guessed? No way to tell.     │
+└─────────────────────────────────────────────────────────────┘
+```
+
 ```json
 "provenance": {
   "geometry": "getBoundingClientRect",
@@ -33,7 +52,56 @@ The format spec (v2.2.0) defines a `metadata.provenance` map at the section leve
 
 ## Proposed Design
 
-### Option A: Field-Level Provenance Tags (Inline)
+### Data Flow with Provenance
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                   Proposed Capture Flow                           │
+│                                                                   │
+│  getBoundingClientRect() ──► bbox ──────────► "measured"          │
+│  getComputedStyle()      ──► styles ────────► "measured"          │
+│  element.textContent     ──► visibleText ───► "measured"          │
+│                                                                   │
+│  CSS selector generator  ──► locators ──────► "derived"           │
+│  Salience scorer         ──► salience ──────► "derived"           │
+│  isRendered walk         ──► isRendered ────► "derived"           │
+│                                                                   │
+│  Fiber walk / heuristic  ──► component ─────► "inferred"          │
+│  Cluster assignment      ──► cluster ───────► "inferred"          │
+│                                                                   │
+│  User annotation         ──► comment ───────► "user"              │
+│                                                                   │
+│         ┌─────────────────────────────────────────┐               │
+│         │         Provenance Table                 │               │
+│         │  bboxDocument: measured                  │               │
+│         │  styles.*: measured                      │               │
+│         │  locators[css]: derived                  │               │
+│         │  locators[testId]: measured              │               │
+│         │  cluster: inferred                       │               │
+│         └─────────────────────────────────────────┘               │
+│                          │                                        │
+│                          ▼                                        │
+│              Agent reads table ONCE,                              │
+│              knows confidence level                               │
+│              for every field type                                 │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### Decision Tree: How Agent Uses Provenance
+
+```mermaid
+flowchart TD
+    A[Agent reads field value] --> B{Check provenance table}
+    B -->|measured| C[Trust directly - use in fix]
+    B -->|derived| D{Is it a selector?}
+    B -->|inferred| F[Verify before using]
+    B -->|user| G[Treat as bug report context]
+    D -->|Yes| E[Call find_source to verify]
+    D -->|No| C
+    F --> H[Call find_source or request_capture]
+```
+
+### Option A: Inline Tags
 
 Add a `_p` suffix field next to each value:
 
@@ -213,6 +281,22 @@ Agent sees: `"strategy": "css", "value": "form > button"` - is this reliable? Sh
 Agent sees: the provenance table says `locators[strategy=css]` is `"derived"` - this is a heuristic selector. The agent should call `find_source` to verify, or prefer a testid locator if available.
 
 ## Experiment Design
+
+### Experiment Pipeline
+
+```
+┌─────────────┐    ┌──────────────┐    ┌──────────────┐    ┌────────────┐
+│  Existing    │    │  Generate    │    │  Measure     │    │  Compare   │
+│  Captures    │───►│  Variants    │───►│  Token Cost  │───►│  Results   │
+│  (7 files)   │    │  A / B / C   │    │  (tiktoken)  │    │  (CSV)     │
+└─────────────┘    └──────────────┘    └──────────────┘    └────────────┘
+                                                                 │
+                   ┌──────────────┐    ┌──────────────┐          │
+                   │  Demo Bugs   │    │  Agent A/B   │          │
+                   │  (23 bugs)   │───►│  Fix Test    │──────────┘
+                   │              │    │  +/- prov.   │
+                   └──────────────┘    └──────────────┘
+```
 
 ### Experiment 1: Token Cost Measurement
 
