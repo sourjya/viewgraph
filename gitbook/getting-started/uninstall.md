@@ -41,6 +41,22 @@ The `.viewgraph/` directory contains your captures, screenshots, annotations, co
 - **Yes** — deletes all captures, config, and tokens. Cannot be undone.
 - **No** — keeps the data. You can re-install ViewGraph later and your captures will still be there.
 
+## Remove Globally
+
+To fully remove ViewGraph from your system:
+
+```bash
+# 1. Remove from each project
+cd your-project && npx @viewgraph/core uninstall
+
+# 2. Uninstall the npm package
+npm uninstall -g @viewgraph/core
+
+# 3. Remove the browser extension
+# Chrome: chrome://extensions → find ViewGraph → Remove
+# Firefox: about:addons → find ViewGraph → Remove
+```
+
 ## What It Does NOT Remove
 
 - The browser extension — uninstall from Chrome (`chrome://extensions`) or Firefox (`about:addons`) separately
