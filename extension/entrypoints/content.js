@@ -47,7 +47,12 @@ export default defineContentScript({
 
   main() {
     // Install console interceptor early to catch errors from page scripts
-    installConsoleInterceptor();
+    installConsoleInterceptor({
+      onError: (count) => {
+        // Notify background script so it can update badge
+        try { chrome.runtime.sendMessage({ type: 'vg-console-error', count }); } catch { /* sidebar not open */ }
+      },
+    });
 
     // Check if auto-capture is enabled in settings
     chrome.storage.sync.get('viewgraph-settings', (result) => {

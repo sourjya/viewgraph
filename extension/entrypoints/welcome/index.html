@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to ViewGraph</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+    .container { max-width: 640px; width: 100%; }
+    .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
+    .logo img { width: 48px; height: 48px; }
+    .logo h1 { font-size: 28px; font-weight: 700; color: #f1f5f9; }
+    .logo .version { font-size: 14px; color: #6366f1; font-weight: 500; margin-left: 8px; }
+    h2 { font-size: 20px; font-weight: 600; color: #f1f5f9; margin: 32px 0 16px; }
+    p { color: #94a3b8; line-height: 1.7; margin-bottom: 12px; }
+    .steps { list-style: none; counter-reset: step; }
+    .steps li {
+      counter-increment: step;
+      padding: 16px 16px 16px 52px;
+      position: relative;
+      border-left: 2px solid #334155;
+      margin-left: 16px;
+    }
+    .steps li:last-child { border-left-color: transparent; }
+    .steps li::before {
+      content: counter(step);
+      position: absolute; left: -13px; top: 14px;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: #6366f1; color: white;
+      font-size: 13px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .steps li strong { color: #e2e8f0; }
+    code {
+      background: rgba(99, 102, 241, 0.15); color: #a5b4fc;
+      padding: 2px 6px; border-radius: 4px; font-size: 13px;
+    }
+    .cta {
+      display: inline-block; margin-top: 24px;
+      padding: 12px 24px; background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white; border-radius: 8px; text-decoration: none;
+      font-weight: 600; font-size: 15px;
+    }
+    .cta:hover { opacity: 0.9; }
+    .links { margin-top: 32px; display: flex; gap: 24px; flex-wrap: wrap; }
+    .links a { color: #6366f1; text-decoration: none; font-size: 14px; }
+    .links a:hover { text-decoration: underline; }
+    .footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid #334155; color: #475569; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="../icon-128.png" alt="ViewGraph">
+      <h1>ViewGraph <span class="version" id="version"></span></h1>
+    </div>
+
+    <p>The UI context layer for AI coding agents. Capture DOM snapshots, annotate issues, and send them to your AI agent for fixing.</p>
+
+    <h2>Get started in 3 steps</h2>
+    <ol class="steps">
+      <li>
+        <strong>Connect to your agent</strong>
+        <p>Run from your project folder:</p>
+        <p><code>npx @viewgraph/core init</code></p>
+        <p>This configures the MCP server for Kiro, Claude Code, Cursor, or Windsurf.</p>
+      </li>
+      <li>
+        <strong>Capture a page</strong>
+        <p>Open your app in the browser and click the <strong>ViewGraph icon</strong> in the toolbar. The sidebar opens with Review and Inspect tabs.</p>
+      </li>
+      <li>
+        <strong>Annotate and send</strong>
+        <p>Click elements to annotate issues. Add comments describing what's wrong. Click <strong>Send to Agent</strong> and your AI agent receives the full DOM context.</p>
+      </li>
+    </ol>
+
+    <a href="https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start" class="cta" target="_blank" rel="noopener">Full Quick Start Guide</a>
+
+    <div class="links">
+      <a href="https://chaoslabz.gitbook.io/viewgraph" target="_blank" rel="noopener">Documentation</a>
+      <a href="https://github.com/sourjya/viewgraph" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://chaoslabz.gitbook.io/viewgraph/reference/keyboard-shortcuts" target="_blank" rel="noopener">Keyboard Shortcuts</a>
+      <a href="https://chaoslabz.gitbook.io/viewgraph/reference/faq" target="_blank" rel="noopener">FAQ</a>
+    </div>
+
+    <div class="footer">
+      ViewGraph is open source (AGPL-3.0). Your captures stay on your machine - nothing is sent to external servers.
+    </div>
+  </div>
+  <script>
+    document.getElementById('version').textContent = 'v' + (chrome.runtime.getManifest?.()?.version || '');
+  </script>
+</body>
+</html>

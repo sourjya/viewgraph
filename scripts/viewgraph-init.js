@@ -130,6 +130,7 @@ function mcpConfig() {
           'analyze_journey', 'visualize_flow', 'validate_capture',
           'get_component_coverage', 'list_baselines', 'list_sessions', 'get_session',
           'list_archived', 'set_baseline', 'generate_spec', 'find_missing_testids',
+          'get_capture_diff',
         ],
       },
     },

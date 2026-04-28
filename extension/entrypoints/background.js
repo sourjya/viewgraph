@@ -130,6 +130,13 @@ export default defineBackground(() => {
   syncAlarms.startSync();
   if (chrome.alarms?.onAlarm) chrome.alarms.onAlarm.addListener(syncAlarms.onAlarm);
 
+  // Show welcome page on first install
+  chrome.runtime.onInstalled.addListener((details) => {
+    if (details.reason === 'install') {
+      chrome.tabs.create({ url: chrome.runtime.getURL('welcome/index.html') });
+    }
+  });
+
   // ---------------------------------------------------------------------------
   // Panic capture - instant mid-action snapshot via keyboard shortcut (Ctrl+Shift+V)
   // Captures DOM + screenshot without opening sidebar or moving focus.

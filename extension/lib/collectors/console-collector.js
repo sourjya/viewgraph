@@ -19,14 +19,18 @@ let warnings = [];
 let errorCount = 0;
 let warningCount = 0;
 let installed = false;
+/** Optional callback fired when a new error is captured. */
+let _onError = null;
 
 /**
  * Install console interceptors. Call once, as early as possible.
  * Wraps console.error and console.warn to capture messages.
+ * @param {{ onError?: function }} [opts] - Optional callback for real-time error notifications
  */
-export function installConsoleInterceptor() {
+export function installConsoleInterceptor(opts = {}) {
   if (installed) return;
   installed = true;
+  _onError = opts.onError || null;
 
   const origError = console.error;
   const origWarn = console.warn;
@@ -34,6 +38,7 @@ export function installConsoleInterceptor() {
   console.error = (...args) => {
     captureEntry(errors, args);
     errorCount++;
+    if (_onError) _onError(errorCount);
     origError.apply(console, args);
   };
 
@@ -49,12 +54,14 @@ export function installConsoleInterceptor() {
     if (e.message) {
       captureEntry(errors, [e.message]);
       errorCount++;
+      if (_onError) _onError(errorCount);
     }
   });
   window.addEventListener('unhandledrejection', (e) => {
     const msg = e.reason?.message || String(e.reason || 'Unhandled promise rejection');
     captureEntry(errors, [msg]);
     errorCount++;
+    if (_onError) _onError(errorCount);
   });
 }
 
@@ -91,4 +98,5 @@ export function resetConsoleCollector() {
   errorCount = 0;
   warningCount = 0;
   installed = false;
+  _onError = null;
 }

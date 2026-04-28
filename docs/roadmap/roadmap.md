@@ -6,7 +6,7 @@ v0.7.0
 
 ## Status Summary
 
-**Shipped:** 40 MCP tools, 12 prompt templates, 17 enrichment collectors, 1769 tests (1244 extension + 525 server)
+**Shipped:** 41 MCP tools, 12 prompt templates, 17 enrichment collectors, 1771 tests (1244 extension + 527 server)
 
 **All major features complete.** Current focus: experiment-validated optimizations and cross-tool integration.
 
@@ -18,7 +18,7 @@ These require experiments to validate before implementation. Each has a detailed
 |------|----------|-----------------|--------|----------|
 | Provenance Metadata | Capture Format | >15% non-measured fields | **PASS (28.3%)** | [provenance-metadata.md](../ideas/provenance-metadata.md) |
 | CDP Accessibility Tree | Capture Accuracy | >20% false positive rate | **PASS (35%)** | [cdp-accessibility-tree.md](../ideas/cdp-accessibility-tree.md) |
-| JSON Patch Diffs | Token Efficiency | Agent comprehension >90% | Pending | [json-patch-incremental-diffs.md](../ideas/json-patch-incremental-diffs.md) |
+| JSON Patch Diffs | Token Efficiency | Agent comprehension >90% | **SHIPPED v0.7.3** | [json-patch-incremental-diffs.md](../ideas/json-patch-incremental-diffs.md) |
 | Style Dedup Table | Token Efficiency | >30% dedup rate | **PASS (50%) → SHIPPED v0.7.0** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
 | Default Value Omission | Token Efficiency | >25% default rate | **PASS (41.8%) → SHIPPED v0.7.0** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
 | Enrichment Opt-In | Token Efficiency | ≥3 sections >70% empty | **FAIL (2/10)** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
@@ -39,6 +39,11 @@ These require experiments to validate before implementation. Each has a detailed
 | ESLint zero warnings | 40 warnings eliminated across entire codebase |
 | M8.1 extensible init | AGENT_SETUP registry pattern in viewgraph-init.js |
 | F10 smart alerts | Auto-audit results wired to collapsed strip badge |
+| JSON Patch diffs (#41) | get_capture_diff - RFC 6902 patches, 50-1500x compression for sequential captures |
+| Provenance metadata | Hybrid provenance table in captures - field-level source tagging (<2% overhead) |
+| Background error watcher | Persistent console interceptor with real-time error notifications |
+| Extension onboarding | Welcome page on first install with 3-step setup guide |
+| Uninstall CLI | viewgraph-uninstall - guided project removal with data preservation option |
 
 ## Remaining Polish
 

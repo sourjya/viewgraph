@@ -16,7 +16,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SERVER_ENTRY = path.resolve(__dirname, '..', '..', 'index.js');
 
-const EXPECTED_TOOL_COUNT = 40;
+const EXPECTED_TOOL_COUNT = 41;
 
 /**
  * Send a JSON-RPC message to the server and collect responses.

@@ -28,7 +28,7 @@
 ## Features
 
 * [Browser Extension](features/extension.md)
-* [MCP Tools (40)](features/mcp-tools.md)
+* [MCP Tools (41)](features/mcp-tools.md)
 * [How the Extension Communicates](features/architecture.md)
 * [Playwright Integration](features/playwright.md)
 * [Kiro Power (Hooks & Prompts)](features/kiro-power.md)

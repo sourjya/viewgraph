@@ -294,7 +294,45 @@ function buildRelations(relations) {
 }
 
 /**
- * Serialize scored elements into a complete ViewGraph v2.1 capture.
+ * Build the provenance table - declares the source of each field type.
+ * Hybrid approach: table covers all fields, per-node overrides only when needed.
+ * <2% token overhead validated by experiment (28.3% of fields are non-measured).
+ * @see docs/ideas/provenance-metadata.md - Option C (Hybrid)
+ * @returns {object}
+ */
+function buildProvenance() {
+  return {
+    defaults: {
+      'bboxDocument': 'measured',
+      'visibleText': 'measured',
+      'styles.*': 'measured',
+      'attributes.*': 'measured',
+      'locators[strategy=testId]': 'measured',
+      'locators[strategy=id]': 'measured',
+      'locators[strategy=css]': 'derived',
+      'locators[strategy=role]': 'measured',
+      'alias': 'derived',
+      'actions': 'derived',
+      'isRendered': 'derived',
+      'salience': 'derived',
+      'cluster': 'inferred',
+      'parent': 'measured',
+      'children': 'measured',
+      'network': 'measured',
+      'console': 'measured',
+      'breakpoints': 'derived',
+      'stacking': 'derived',
+      'focus': 'derived',
+      'scroll': 'measured',
+      'landmarks': 'measured',
+      'components': 'inferred',
+      'annotations': 'user',
+    },
+  };
+}
+
+/**
+ * Serialize scored elements into a complete ViewGraph v2.3 capture.
  * @param {Array} elements - Scored elements from salience.scoreAll()
  * @param {Array} relations - Relations from traverser
  * @param {object} [enrichment] - Optional enrichment data (network, console)
@@ -308,6 +346,7 @@ export function serialize(elements, relations, enrichment = {}) {
     summary: buildSummary(elements, metadata),
     nodes: buildNodes(elements),
     relations: buildRelations(relations),
+    provenance: buildProvenance(),
     styleTable,
     details,
   };
