@@ -102,7 +102,7 @@ v3: $150/month
 - **File-backed capture receipts** - agent receives a 200-token receipt instead of 100K inline
 - **Delta capture mode** - only what changed since last capture (90-99% reduction)
 - **Container merging** - remove semantically empty wrapper divs (35-40% node reduction)
-- **TOON compact format** - header-then-rows for uniform data (70-87% reduction)
+- **TOON compact format** - header-then-rows for uniform data ([TOON format spec](https://github.com/toon-format/toon)), 70-87% reduction
 
 ### Phase 3 (v3.1)
 - **Set-of-Marks screenshots** - numbered labels on screenshots matching text refs

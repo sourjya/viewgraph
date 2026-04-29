@@ -139,7 +139,7 @@ observation depth as a runtime parameter, not bake one depth into the format.
 
 Research in 2025-2026 has clarified format trade-offs:
 
-TOON (Token Oriented Object Notation) achieves approximately 40% token reduction
+TOON ([Token Oriented Object Notation](https://github.com/toon-format/toon)) achieves approximately 40% token reduction
 for flat, uniform, table-like data by declaring field names once in a header row.
 For nested, irregular, or highly structured data, TOON loses its advantage and JSON
 and YAML do a better job preserving structure and clarity.
