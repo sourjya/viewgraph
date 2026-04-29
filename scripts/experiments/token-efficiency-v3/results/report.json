@@ -1,0 +1,90 @@
+{
+  "experiment": "Token Efficiency - v3 Format",
+  "date": "2026-04-29T12:01:33.732Z",
+  "dataset": {
+    "captures": 171
+  },
+  "v2Baseline": {
+    "totalTokens": 22817765,
+    "medianBytes": 470629,
+    "medianTokens": 117657
+  },
+  "v3Full": {
+    "totalTokens": 17049645,
+    "medianBytes": 344423,
+    "medianTokens": 86106,
+    "reductionPct": 25,
+    "medianReductionPct": 21
+  },
+  "v3InteractiveOnly": {
+    "totalTokens": 414730,
+    "medianBytes": 7720,
+    "medianTokens": 1930,
+    "reductionPct": 98,
+    "medianReductionPct": 99
+  },
+  "v3Receipt": {
+    "totalTokens": 10773,
+    "tokensPerCapture": 63,
+    "reductionPct": 100
+  },
+  "perProjectSummary": {
+    "bulk-capture": {
+      "captures": 80,
+      "v2Tokens": 8723969,
+      "v3FullTokens": 5675206,
+      "reductionPct": 35
+    },
+    "home-management": {
+      "captures": 5,
+      "v2Tokens": 26295,
+      "v3FullTokens": 23265,
+      "reductionPct": 12
+    },
+    "planiq": {
+      "captures": 75,
+      "v2Tokens": 13406169,
+      "v3FullTokens": 10802839,
+      "reductionPct": 19
+    },
+    "shared-libs": {
+      "captures": 1,
+      "v2Tokens": 93859,
+      "v3FullTokens": 79088,
+      "reductionPct": 16
+    },
+    "viewgraph": {
+      "captures": 10,
+      "v2Tokens": 567473,
+      "v3FullTokens": 469247,
+      "reductionPct": 17
+    }
+  },
+  "costAnalysis": {
+    "pricePerMillionTokens": 3,
+    "model": "Claude 3.5 Sonnet (output)",
+    "tenStepTask": {
+      "v2": {
+        "tokens": 1000000,
+        "cost": "$3.00",
+        "note": "100K per step × 10 steps"
+      },
+      "v3Smart": {
+        "tokens": 32000,
+        "cost": "$0.10",
+        "note": "1 full (25K) + 9 receipts (200 each) + reads (5K)"
+      },
+      "v3InteractiveOnly": {
+        "tokens": 4000,
+        "cost": "$0.01",
+        "note": "Manifest only per step"
+      }
+    },
+    "monthlySavings": {
+      "tasksPerDay": 50,
+      "v2Monthly": "$4,500",
+      "v3Monthly": "$150",
+      "saved": "$4,350"
+    }
+  }
+}
