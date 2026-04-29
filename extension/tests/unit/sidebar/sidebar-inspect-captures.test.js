@@ -6,6 +6,12 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+// Increase default waitFor timeout for CI environments where DOM updates are slower
+vi.setConfig({ testTimeout: 15000 });
+
+/** Helper: wait for async DOM updates after tab switch. */
+const tick = (ms = 200) => new Promise((r) => setTimeout(r, ms));
 import {
   start, stop, create, destroy, ATTR,
   resetServerCache, transport,
@@ -86,6 +92,7 @@ describe('inspect tab captures section', () => {
     start();
     create();
     clickInspectTab();
+    await tick();
     const ic = getInspectContent();
     await vi.waitFor(() => {
       const hrs = ic.querySelectorAll('hr');
@@ -106,6 +113,7 @@ describe('inspect tab captures section', () => {
     start();
     create();
     clickInspectTab();
+    await tick();
     const ic = getInspectContent();
     await vi.waitFor(() => {
       expect(ic.textContent).toContain('SNAPSHOTS');
@@ -122,6 +130,7 @@ describe('inspect tab captures section', () => {
     start();
     create();
     clickInspectTab();
+    await tick();
     const ic = getInspectContent();
     await vi.waitFor(() => {
       expect(ic.textContent).toContain('SNAPSHOTS');
@@ -140,6 +149,7 @@ describe('inspect tab captures section', () => {
     start();
     create();
     clickInspectTab();
+    await tick();
     const ic = getInspectContent();
     await vi.waitFor(() => {
       expect(ic.textContent).toContain('empty');
@@ -154,6 +164,7 @@ describe('inspect tab captures section', () => {
     start();
     create();
     clickInspectTab();
+    await tick();
     const ic = getInspectContent();
     await vi.waitFor(() => {
       expect(ic.textContent).toContain('SNAPSHOTS');
@@ -166,6 +177,7 @@ describe('inspect tab captures section', () => {
     start();
     create();
     clickInspectTab();
+    await tick();
     const ic = getInspectContent();
     await new Promise((r) => setTimeout(r, 50));
     expect(ic.textContent).not.toContain('SNAPSHOTS');
@@ -179,6 +191,7 @@ describe('inspect tab captures section', () => {
     start();
     create();
     clickInspectTab();
+    await tick();
     const ic = getInspectContent();
     await vi.waitFor(() => {
       const id = ic.querySelector(`[${ATTR}="capture-id"]`);
@@ -196,6 +209,7 @@ describe('inspect tab captures section', () => {
     start();
     create();
     clickInspectTab();
+    await tick();
     const ic = getInspectContent();
     await vi.waitFor(() => {
       const title = ic.querySelector(`[${ATTR}="capture-title"]`);
@@ -212,6 +226,7 @@ describe('inspect tab captures section', () => {
     start();
     create();
     clickInspectTab();
+    await tick();
     const ic = getInspectContent();
     await vi.waitFor(() => {
       expect(ic.querySelector(`[${ATTR}="capture-id"]`)).toBeTruthy();
@@ -229,6 +244,7 @@ describe('inspect tab captures section', () => {
     start();
     create();
     clickInspectTab();
+    await tick();
     const ic = getInspectContent();
     await vi.waitFor(() => {
       expect(ic.querySelector(`[${ATTR}="copy-id"]`)).toBeTruthy();
