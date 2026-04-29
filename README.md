@@ -172,6 +172,10 @@ Format spec: [`docs/architecture/viewgraph-v2-format.md`](./docs/architecture/vi
 - [Competitive Analysis](./docs/references/competitive-analysis-browser-mcp.md) - browser MCP comparison
 - [Product Analysis](./docs/product/product-analysis.md) - user journeys, pain points, competitor matrix
 
+## Companion Tools
+
+ViewGraph sees the UI. [TracePulse](https://chaoslabz.gitbook.io/tracepulse) feels the backend. Together with [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp), they form the three-layer agentic debugging stack: backend verification (TracePulse) + browser verification (Chrome DevTools MCP) + visual verification (ViewGraph).
+
 ## Acknowledgments
 
 ViewGraph's capture format was inspired by [Element to LLM](https://addons.mozilla.org/en-US/firefox/addon/element-to-llm/) (E2LLM) by [insitu.im](https://insitu.im/) - the first browser extension to frame DOM capture as a structured perception layer for AI agents. The core insight - that agents need a purpose-built intermediate representation, not raw HTML - came from E2LLM. ViewGraph extended these foundations through [deep format research](./docs/references/viewgraph-format-research.md) that produced 20 improvement proposals across token efficiency, accessibility, enrichment, and bidirectional MCP integration. [Full comparison](https://chaoslabz.gitbook.io/viewgraph/how-it-compares/capture-format#acknowledgments).
