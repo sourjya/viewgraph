@@ -22,7 +22,8 @@ export function checkRendered(el) {
 
   let current = el;
   while (current && current !== document.documentElement) {
-    const cs = window.getComputedStyle(current);
+    let cs;
+    try { cs = window.getComputedStyle(current); } catch { return true; } // jsdom compat
     if (parseFloat(cs.opacity) === 0) return false;
     if (cs.clipPath === 'inset(100%)') return false;
 

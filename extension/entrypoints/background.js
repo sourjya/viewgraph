@@ -277,7 +277,7 @@ export default defineBackground(() => {
       (async () => {
         try {
           const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-          if (!tab?.id) { sendResponse({ ok: false }); return; }
+          if (!tab?.id || !isInjectable(tab.url)) { sendResponse({ ok: false }); return; }
           await chrome.scripting.executeScript({
             target: { tabId: tab.id },
             files: ['axe.min.js'],

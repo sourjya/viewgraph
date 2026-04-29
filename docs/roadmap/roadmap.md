@@ -116,6 +116,7 @@ Based on [v3 Agentic Enhancements Research](../architecture/viewgraph-v3-agentic
 
 | SRR | Date | Scope | Report |
 |-----|------|-------|--------|
+| SRR-010 | 2026-04-29 | Tier 2 post-cleanup | 2 MEDIUM (fingerprinting, inject guard), 10 test failures fixed |
 | SRR-009 | 2026-04-29 | Tier 2 v3 enhancements | 1 HIGH (filePath write), 3 MEDIUM, 3 LOW fixed |
 | SRR-008 | 2026-04-29 | Tier 3 full codebase | 1 CRITICAL (handshake), 3 HIGH, 4 MEDIUM fixed |
 | SRR-007 | 2026-04-27 | Tier 3 sprint-end | [Report](../security/SRR-007-2026-04-27-T3.md) |

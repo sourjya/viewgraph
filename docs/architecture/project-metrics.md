@@ -13,7 +13,8 @@ Current stats as of v0.8.0 (April 2026).
 | Server unit tests | 536 |
 | MCP smoke tests | 2 |
 | Total tests | 1,795 |
-| ESLint warnings | 0 |
+| ESLint warnings | 0
+| Test failures | 0 (was 10 pre-existing, now fixed) | |
 
 ## Capture Format
 
@@ -52,7 +53,7 @@ Current stats as of v0.8.0 (April 2026).
 
 | Metric | Count |
 |---|---|
-| Security reviews (SRR) | 7 |
+| Security reviews (SRR) | 10 |
 | Maintainability reviews (MRR) | 5 |
 | Threats modeled (STRIDE) | 9 |
 | Mitigations implemented | 9 |

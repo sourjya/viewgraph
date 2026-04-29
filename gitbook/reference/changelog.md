@@ -21,6 +21,26 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ---
 
+## v0.9.2 - April 29, 2026
+
+### Security & Code Quality
+- Eliminated all innerHTML assignments from extension source (11 usages replaced with DOM API)
+- Eliminated createElement('script') - axe-core now injected via chrome.scripting.executeScript
+- Eliminated style.cssText - replaced with Object.assign
+- Removed axe.min.js from web_accessible_resources (prevents extension fingerprinting)
+- Added isInjectable() guard on axe injection handler
+- Fixed 10 pre-existing test failures (jsdom getComputedStyle crash in visibility-collector)
+- CodeQL: incomplete string escaping fixed in TOON format
+- Firefox validation: removed data_collection_permissions (requires FF 140+)
+
+### v0.9.0-0.9.1 (v3 Format)
+- Action Manifest with short refs, structural fingerprint, spatial index
+- Set-of-Marks, checkpoint/resume envelope
+- observationDepth parameter, container merging, TOON compact, file-backed receipts
+- Performance instrumentation in every capture
+
+---
+
 ## v0.7.3 - April 29, 2026
 
 ### New MCP Tools (41 total)

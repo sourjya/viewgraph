@@ -42,7 +42,7 @@ export default defineConfig({
       },
     },
     web_accessible_resources: [
-      { resources: ['icon-16.png', 'icon-48.png', 'axe.min.js'], matches: ['<all_urls>'] },
+      { resources: ['icon-16.png', 'icon-48.png'], matches: ['<all_urls>'] },
     ],
     // Firefox requires an explicit add-on ID for MV3
     browser_specific_settings: {
