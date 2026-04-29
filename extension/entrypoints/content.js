@@ -78,14 +78,46 @@ export default defineContentScript({
         (async () => {
           try {
             const viewport = { width: window.innerWidth, height: window.innerHeight };
+            // Performance instrumentation: measure each capture phase
+            const t = typeof performance !== 'undefined' ? performance : null;
+            t?.mark('vg:traverse-start');
             const { elements, relations, containerMerge } = traverseDOM();
+            t?.mark('vg:traverse-end');
+            t?.measure('vg:traverse', 'vg:traverse-start', 'vg:traverse-end');
+
             const scored = scoreAll(elements, viewport);
+
+            t?.mark('vg:enrichment-start');
             const enrichment = await collectAllEnrichment();
+            t?.mark('vg:enrichment-end');
+            t?.measure('vg:enrichment', 'vg:enrichment-start', 'vg:enrichment-end');
+
             if (isRecording()) {
               addStep(message.sessionNote);
               enrichment.session = getCaptureMetadata();
             }
+
+            t?.mark('vg:serialize-start');
             const capture = serialize(scored, relations, enrichment, { containerMerge });
+            t?.mark('vg:serialize-end');
+            t?.measure('vg:serialize', 'vg:serialize-start', 'vg:serialize-end');
+
+            // Embed capture timings in the performance section
+            if (t) {
+              const measures = t.getEntriesByType('measure').filter((m) => m.name.startsWith('vg:'));
+              capture.captureTimings = {
+                traverseMs: Math.round(measures.find((m) => m.name === 'vg:traverse')?.duration || 0),
+                enrichmentMs: Math.round(measures.find((m) => m.name === 'vg:enrichment')?.duration || 0),
+                serializeMs: Math.round(measures.find((m) => m.name === 'vg:serialize')?.duration || 0),
+                totalMs: Math.round(measures.reduce((sum, m) => sum + m.duration, 0)),
+                nodeCount: elements.length,
+                mergedNodes: containerMerge?.mergedCount || 0,
+              };
+              // Clean up marks
+              measures.forEach((m) => { try { t.clearMeasures(m.name); } catch { /* */ } });
+              t.getEntriesByType('mark').filter((m) => m.name.startsWith('vg:')).forEach((m) => { try { t.clearMarks(m.name); } catch { /* */ } });
+            }
+
             if (message.requestId) capture.metadata.requestId = message.requestId;
             const snapshot = message.includeSnapshot ? captureSnapshot() : null;
             sendResponse({ ok: true, capture, snapshot });
@@ -152,14 +184,37 @@ export default defineContentScript({
       if (message.type === 'send-review') {
         (async () => {
           const viewport = { width: window.innerWidth, height: window.innerHeight };
+          const t = typeof performance !== 'undefined' ? performance : null;
+          t?.mark('vg:traverse-start');
           const { elements, relations, containerMerge } = traverseDOM();
+          t?.mark('vg:traverse-end');
+          t?.measure('vg:traverse', 'vg:traverse-start', 'vg:traverse-end');
           const scored = scoreAll(elements, viewport);
+          t?.mark('vg:enrichment-start');
           const enrichment = await collectAllEnrichment();
+          t?.mark('vg:enrichment-end');
+          t?.measure('vg:enrichment', 'vg:enrichment-start', 'vg:enrichment-end');
           if (isRecording()) {
             addStep(message.sessionNote);
             enrichment.session = getCaptureMetadata();
           }
+          t?.mark('vg:serialize-start');
           const capture = serialize(scored, relations, enrichment, { containerMerge });
+          t?.mark('vg:serialize-end');
+          t?.measure('vg:serialize', 'vg:serialize-start', 'vg:serialize-end');
+          if (t) {
+            const measures = t.getEntriesByType('measure').filter((m) => m.name.startsWith('vg:'));
+            capture.captureTimings = {
+              traverseMs: Math.round(measures.find((m) => m.name === 'vg:traverse')?.duration || 0),
+              enrichmentMs: Math.round(measures.find((m) => m.name === 'vg:enrichment')?.duration || 0),
+              serializeMs: Math.round(measures.find((m) => m.name === 'vg:serialize')?.duration || 0),
+              totalMs: Math.round(measures.reduce((sum, m) => sum + m.duration, 0)),
+              nodeCount: elements.length,
+              mergedNodes: containerMerge?.mergedCount || 0,
+            };
+            measures.forEach((m) => { try { t.clearMeasures(m.name); } catch { /* */ } });
+            t.getEntriesByType('mark').filter((m) => m.name.startsWith('vg:')).forEach((m) => { try { t.clearMarks(m.name); } catch { /* */ } });
+          }
           capture.metadata.captureMode = 'review';
           // BUG-028: send only unsent annotations when previous batch exists
           const allAnns = getAnnotations();

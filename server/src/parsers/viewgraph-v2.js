@@ -91,6 +91,7 @@ export function parseCapture(jsonString) {
     'animations', 'intersection', 'mediaQueries',
     'storage', 'cssCustomProperties', 'transient',
     'errorBoundaries', 'serviceWorker', 'buildMetadata', 'accessibleNames',
+    'captureTimings',
   ];
 
   // Resolve styleRef -> inline styles for backward compatibility with analysis tools.
@@ -176,6 +177,7 @@ export function parseSummary(jsonString) {
       animatingElements: raw.animations?.count ?? 0,
       offscreenElements: raw.intersection?.offscreen ?? 0,
       activeMediaQueries: raw.mediaQueries?.active?.length ?? 0,
+      captureTimings: raw.captureTimings ?? null,
     },
   };
 }
