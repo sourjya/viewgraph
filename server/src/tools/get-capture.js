@@ -32,8 +32,10 @@ export function register(server, _indexer, capturesDir) {
         .describe(`Capture filename (e.g., "${PROJECT_PREFIX}-localhost-2026-04-08T060815.json")`),
       filePath: z.string().optional()
         .describe('If provided, write capture to this file path and return the path instead of inline content'),
+      observationDepth: z.enum(['interactive-only', 'ax-plus-content', 'full-detail']).optional()
+        .describe('Control how much data to return. interactive-only: ~400 tokens (actionManifest only). ax-plus-content: ~8K tokens (manifest + summary + text). full-detail: everything (default).'),
     },
-    async ({ filename, filePath: outputPath }) => {
+    async ({ filename, filePath: outputPath, observationDepth }) => {
       let filePath;
       try {
         filePath = validateCapturePath(filename, capturesDir);
@@ -43,12 +45,64 @@ export function register(server, _indexer, capturesDir) {
 
       try {
         const content = await readFile(filePath, 'utf-8');
+
+        // observationDepth: filter response to reduce tokens
+        if (observationDepth && observationDepth !== 'full-detail') {
+          try {
+            const capture = JSON.parse(content);
+            let filtered;
+            if (observationDepth === 'interactive-only') {
+              filtered = {
+                metadata: { url: capture.metadata?.url, title: capture.metadata?.title, timestamp: capture.metadata?.timestamp, structuralFingerprint: capture.metadata?.structuralFingerprint },
+                actionManifest: capture.actionManifest,
+              };
+            } else { // ax-plus-content
+              filtered = {
+                metadata: capture.metadata,
+                summary: capture.summary,
+                actionManifest: capture.actionManifest,
+                provenance: capture.provenance,
+                console: capture.console ? { summary: capture.console.summary, errors: capture.console.errors } : null,
+                network: capture.network ? { summary: capture.network.summary, failed: capture.network.failed } : null,
+              };
+            }
+            const json = JSON.stringify(filtered, null, 2);
+            if (outputPath) {
+              const { writeFileSync, mkdirSync } = await import('fs');
+              mkdirSync(path.dirname(outputPath), { recursive: true });
+              writeFileSync(outputPath, json);
+              return { content: [{ type: 'text', text: `Capture (${observationDepth}) written to: ${outputPath}` }] };
+            }
+            return { content: [{ type: 'text', text: `${NOTICE_CAPTURE}\n\nCapture: ${filename} (${observationDepth})\n\n${json}` }] };
+          } catch { /* parse failed, fall through to full */ }
+        }
+
         // Write to file if filePath provided (for large captures)
         if (outputPath) {
           const { writeFileSync, mkdirSync } = await import('fs');
           mkdirSync(path.dirname(outputPath), { recursive: true });
           writeFileSync(outputPath, content);
-          return { content: [{ type: 'text', text: `Capture written to: ${outputPath} (${(Buffer.byteLength(content) / 1024).toFixed(1)} KB)` }] };
+          // Return a capture receipt instead of just the path
+          try {
+            const cap = JSON.parse(content);
+            const receipt = {
+              captureReceipt: {
+                filename,
+                path: outputPath,
+                timestamp: cap.metadata?.timestamp,
+                url: cap.metadata?.url,
+                title: cap.metadata?.title,
+                structuralFingerprint: cap.metadata?.structuralFingerprint,
+                stats: cap.actionManifest?.stats || { total: cap.metadata?.stats?.totalNodes || 0 },
+                viewportRefs: cap.actionManifest?.viewportRefs?.slice(0, 10) || [],
+                consoleErrors: cap.console?.summary?.errors || 0,
+                failedRequests: cap.network?.summary?.failed || 0,
+              },
+            };
+            return { content: [{ type: 'text', text: JSON.stringify(receipt, null, 2) }] };
+          } catch {
+            return { content: [{ type: 'text', text: `Capture written to: ${outputPath} (${(Buffer.byteLength(content) / 1024).toFixed(1)} KB)` }] };
+          }
         }
         const size = Buffer.byteLength(content);
         const notice = NOTICE_CAPTURE + '\n\n';

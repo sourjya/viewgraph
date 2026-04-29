@@ -78,14 +78,14 @@ export default defineContentScript({
         (async () => {
           try {
             const viewport = { width: window.innerWidth, height: window.innerHeight };
-            const { elements, relations } = traverseDOM();
+            const { elements, relations, containerMerge } = traverseDOM();
             const scored = scoreAll(elements, viewport);
             const enrichment = await collectAllEnrichment();
             if (isRecording()) {
               addStep(message.sessionNote);
               enrichment.session = getCaptureMetadata();
             }
-            const capture = serialize(scored, relations, enrichment);
+            const capture = serialize(scored, relations, enrichment, { containerMerge });
             if (message.requestId) capture.metadata.requestId = message.requestId;
             const snapshot = message.includeSnapshot ? captureSnapshot() : null;
             sendResponse({ ok: true, capture, snapshot });
@@ -152,14 +152,14 @@ export default defineContentScript({
       if (message.type === 'send-review') {
         (async () => {
           const viewport = { width: window.innerWidth, height: window.innerHeight };
-          const { elements, relations } = traverseDOM();
+          const { elements, relations, containerMerge } = traverseDOM();
           const scored = scoreAll(elements, viewport);
           const enrichment = await collectAllEnrichment();
           if (isRecording()) {
             addStep(message.sessionNote);
             enrichment.session = getCaptureMetadata();
           }
-          const capture = serialize(scored, relations, enrichment);
+          const capture = serialize(scored, relations, enrichment, { containerMerge });
           capture.metadata.captureMode = 'review';
           // BUG-028: send only unsent annotations when previous batch exists
           const allAnns = getAnnotations();

@@ -79,10 +79,10 @@ export function isAutoCapturing() {
  */
 function buildCapture(event) {
   const viewport = { width: window.innerWidth, height: window.innerHeight };
-  const { elements, relations } = traverseDOM();
+  const { elements, relations, containerMerge } = traverseDOM();
   const scored = scoreAll(elements, viewport);
   const enrichment = collectEnrichmentSync();
-  const capture = serialize(scored, relations, enrichment);
+  const capture = serialize(scored, relations, enrichment, { containerMerge });
   capture.metadata.captureMode = 'auto';
   capture.metadata.hmrSource = event.source;
   capture.metadata.autoCapture = { number: captureCount, source: event.source, timestamp: event.timestamp };

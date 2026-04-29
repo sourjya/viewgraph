@@ -421,7 +421,30 @@ function buildActionManifest(elements) {
       inViewport: viewportRefs.length,
     },
     refScheme: { type: 'sequential-e', lastRef: `e${refCounter - 1}` },
+    // TOON compact text: header-then-rows for ~87% token reduction vs JSON
+    compact: buildToonManifest(byAction),
   };
+}
+
+/**
+ * Build TOON-format compact text for the action manifest.
+ * Header-then-rows format: ~87% fewer tokens than JSON for tabular data.
+ * @see docs/architecture/viewgraph-v3-format-agentic-enhancements.md - Enhancement 6
+ * @param {object} byAction - Action groups from buildActionManifest
+ * @returns {string} TOON-format text
+ */
+function buildToonManifest(byAction) {
+  const lines = ['# fields: ref tag alias axName locator bbox inViewport'];
+  for (const [action, entries] of Object.entries(byAction)) {
+    if (!entries.length) continue;
+    lines.push(`${action}[${entries.length}]:`);
+    for (const e of entries) {
+      const loc = e.locator ? `${e.locator.strategy}:${e.locator.value}` : '-';
+      const bbox = e.bbox ? `[${e.bbox.join(',')}]` : '-';
+      lines.push(`${e.ref} ${e.tag} ${e.alias || '-'} "${e.axName || ''}" ${loc} ${bbox} ${e.inViewport ? 'Y' : 'N'}`);
+    }
+  }
+  return lines.join('\n');
 }
 
 /** Check if a bbox [x, y, w, h] is within the viewport. */
@@ -455,9 +478,10 @@ function computeFingerprint(elements) {
  * @param {Array} elements - Scored elements from salience.scoreAll()
  * @param {Array} relations - Relations from traverser
  * @param {object} [enrichment] - Optional enrichment data (network, console)
+ * @param {object} [options] - Optional: containerMerge stats from traverser
  * @returns {object} Complete ViewGraph v2.4 JSON object
  */
-export function serialize(elements, relations, enrichment = {}) {
+export function serialize(elements, relations, enrichment = {}, options = {}) {
   const metadata = buildMetadata(elements);
   const { details, styleTable } = buildDetails(elements);
   const actionManifest = buildActionManifest(elements);
@@ -507,6 +531,9 @@ export function serialize(elements, relations, enrichment = {}) {
   // Update capture size estimate
   const jsonStr = JSON.stringify(capture);
   capture.metadata.stats.captureSizeBytes = jsonStr.length;
+  if (options.containerMerge) {
+    capture.coverage = { containerMerge: options.containerMerge };
+  }
 
   return capture;
 }

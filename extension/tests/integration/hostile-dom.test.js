@@ -20,9 +20,9 @@ beforeEach(() => {
 /** Run the full capture pipeline and return the result. */
 function capture() {
   const viewport = { width: 1280, height: 720 };
-  const { elements, relations } = traverseDOM();
+  const { elements, relations, containerMerge } = traverseDOM();
   const scored = scoreAll(elements, viewport);
-  return serialize(scored, relations, {});
+  return serialize(scored, relations, {}, { containerMerge });
 }
 
 /**
@@ -31,7 +31,7 @@ function capture() {
  * filter everything out. We test traversal separately.
  */
 function traverseOnly() {
-  const { elements, relations } = traverseDOM();
+  const { elements, relations, containerMerge } = traverseDOM();
   return { elements, relations };
 }
 

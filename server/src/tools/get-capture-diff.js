@@ -126,6 +126,14 @@ export function register(server, indexer, capturesDir) {
         target: targetFile,
         url: targetUrl,
         hmrDetected: !!target.parsed.metadata?.hmrSource,
+        changeSignal: {
+          nodesAdded: summary.nodes > 0 ? summary.nodes : 0,
+          nodesRemoved: meaningfulPatch.filter((op) => op.op === 'remove' && op.path.includes('/nodes/')).length,
+          stylesChanged: summary.styles,
+          textChanged: summary.text,
+          layoutChanged: summary.layout,
+          fingerprintMatch: target.parsed.metadata?.structuralFingerprint === prev.parsed.metadata?.structuralFingerprint,
+        },
         patch: meaningfulPatch,
         stats: {
           operations: meaningfulPatch.length,
