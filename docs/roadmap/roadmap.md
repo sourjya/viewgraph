@@ -84,6 +84,51 @@ Based on [v3 Agentic Enhancements Research](../architecture/viewgraph-v3-agentic
 | 15 | Spatial index quadtree | **Shipped v0.9.1** | O(log n) point/region queries |
 | 16 | MCP tool consolidation (41 → 5) | Planned | Schema overhead reduction |
 
+## Code Health Sprint (MRR-008)
+
+Sourced from [MRR-008 (2026-04-30)](../reviews/MRR-008-2026-04-30.md). Full task breakdown across three phases. Complete before v1.0 launch prep.
+
+### Phase 1 — Safe immediate fixes (~90 min total, zero regression risk)
+
+| Task | Finding | File(s) | Effort |
+|------|---------|---------|--------|
+| Add `process.stderr.write` to 6 silent catch blocks | 13.4 | `post-capture-audit.js`, `middleware.js`, `source-linker.js`, `tool-helpers.js`, `spec-generator.js` | 30 min |
+| Replace baseline stubs with explicit error responses | 13.5 | `native-message-handler.js:103-106` | 5 min |
+| Fix indexer eviction to delete Map's first key instead of sort | 13.6 | `indexer.js:56-64` | 5 min |
+| Fix TracePulse SSRF check to use `new URL().hostname` | 13.11 | `http-receiver.js:381` | 10 min |
+| Fix `validate-path.js` trailing-slash comparison | 13.12 | `utils/validate-path.js:21` | 5 min |
+| Replace O(n) challenge cleanup with per-challenge `setTimeout` | 13.16 | `auth/middleware.js:42-48` | 20 min |
+| Add background expiry sweep to session-store | 13.17 | `auth/session-store.js` | 10 min |
+| Replace `Math.random()` chunk IDs with `crypto.randomUUID()` | 13.23 | `native-host.js:56` | 5 min |
+| Remove dead `httpReceiver.getInfo?.()` call | 13.24 | `index.js:246` | 15 min |
+| Wrap get-capture.js diff-export I/O in try-catch | 13.26 | `tools/get-capture.js:59,79,90` | 10 min |
+
+### Phase 2 — Refactors (~1 day, low-medium risk)
+
+| Task | Finding | File(s) | Effort |
+|------|---------|---------|--------|
+| Convert `readAndParseMulti` to `Promise.all` + add `warnings` field | 13.1 | `utils/tool-helpers.js:159-165` | 20 min |
+| Enforce `_MAX_FILE_SIZE` in source-linker + parallelize reads | 13.3 | `analysis/source-linker.js:31,94-115` | 1-2 hr |
+| Single-pass JSON.stringify in get-capture-diff | 13.7 | `tools/get-capture-diff.js:77-90` | 30 min |
+| Cache `getNodeDetails()` results in get-component-coverage | 13.8 | `tools/get-component-coverage.js:95-99` | 30 min |
+| Replace node mutation with local Map in a11y-rules | 13.13 | `analysis/a11y-rules.js:94,119` | 45 min |
+| Add rem/em/pt resolution to `contrast.js parseFontSize` | 13.14 | `analysis/contrast.js:96` | 1 hr |
+| Add `bboxKnown: false` state to capture-diff missing-bbox case | 13.15 | `analysis/capture-diff.js:24-26` | 45 min |
+| Extract `extractAllAnnotations()` and `getAnnotationSelector()` helpers | 13.19 | `utils/tool-helpers.js` + 7 callers | 1 hr |
+| Migrate 12 remaining tools from bare response objects to `jsonResponse()` | 13.20 | Various `tools/*.js` | 1-2 hr |
+| Standardize all tool response fields to camelCase | 13.21 | Various `tools/*.js` | 1-2 hr |
+| Add `log()` helper, replace 15 `console.log` calls | 13.22 | `server/src/` wide | 30 min |
+
+### Phase 3 — Structural (dedicated code-health sprint, before launch)
+
+| Task | Finding | File(s) | Effort |
+|------|---------|---------|--------|
+| O(N²→N) rewrite of consistency-checker — pre-index by testid | 13.2 | `analysis/consistency-checker.js:163-184` | 2-3 hr |
+| Archive eligibility without full file reads | 13.9 | `archive.js:150-162` | 1-2 hr |
+| Align WS/HTTP payload limits (or document constraint) | 13.10 | `ws-server.js:39`, `http-receiver.js:38` | 30 min |
+| Implement `withCapture()` wrapper, migrate all 25 callers | 13.18 | `utils/tool-helpers.js` + all `tools/*.js` | 4-6 hr |
+| Split `http-receiver.js` into router + config handler + TracePulse relay + capture receiver | 13.25 | `http-receiver.js` (623 lines) | 2-3 hr |
+
 ## Remaining Polish
 
 | Item | Effort | Description |
@@ -126,5 +171,6 @@ Based on [v3 Agentic Enhancements Research](../architecture/viewgraph-v3-agentic
 
 | MRR | Date | Report |
 |-----|------|--------|
+| MRR-008 | 2026-04-30 | 22 new findings (5 HIGH, 11 MEDIUM, 6 LOW) — full server fresh-eyes pass. Performance, silent failures, abstraction debt. | [Report](../reviews/MRR-008-2026-04-30.md) |
 | MRR-007 | 2026-04-29 | 6 HIGH (test gaps), 4 MEDIUM, 4 LOW. Test gaps documented for next sprint. |
 | MRR-005 | 2026-04-27 | [Report](../reviews/MRR-005-2026-04-27.md) |

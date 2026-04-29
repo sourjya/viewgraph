@@ -6,6 +6,7 @@ Tracks all maintainability reviews, findings, and their resolution status.
 
 | # | Date | Scope | Findings | Report |
 |---|---|---|---|---|
+| MRR-008 | 2026-04-30 | Full server codebase — fresh-eyes pass of all 60 server/src/ files | 22 new findings (5 HIGH, 11 MEDIUM, 6 LOW), 10 carried | [MRR-008](MRR-008-2026-04-30.md) |
 | MRR-005 | 2026-04-27 | M19 service worker migration - sw/, transport-client, discovery, sidebar, background, mock, prompts | 12 new findings (1 HIGH, 6 MEDIUM, 5 LOW), 13 carried | [MRR-005](MRR-005-2026-04-27.md) |
 | MRR-004 | 2026-04-27 | Full codebase - server/src/, extension/lib/, extension/entrypoints/ | 14 new findings (4 HIGH, 6 MEDIUM, 4 LOW), 13 carried | [MRR-004](MRR-004-2026-04-27.md) |
 | MRR-003 | 2026-04-24 | Auth modules, annotate.js markers, sync.js, transport.js, settings.js, help.js | 4 new findings, 3 Phase 1 items resolved | [MRR-003](MRR-003-2026-04-24.md) |
@@ -13,6 +14,37 @@ Tracks all maintainability reviews, findings, and their resolution status.
 | Codebase Review | 2026-04-18 | Full codebase | 18 findings, 5 themes | [Codebase Review](../architecture/codebase-review-2026-04-18.md) |
 
 ## Open Findings
+
+### MRR-008 (New)
+
+| ID | Severity | Summary | Status |
+|---|---|---|---|
+| 13.1 | HIGH | `readAndParseMulti` is sequential — 14 tool callers pay O(n) latency instead of O(1) | Open |
+| 13.2 | HIGH | O(N²×M²) nested loop in `consistency-checker.js` — catastrophic at scale | Open |
+| 13.3 | HIGH | O(files×searches×lines) in `source-linker.js`; `_MAX_FILE_SIZE` TODO never enforced | Open |
+| 13.4 | HIGH | 6 silent catch blocks across server swallow errors without logging | Open |
+| 13.5 | HIGH | `native-message-handler.js` baseline stubs return fake-success `[]`/`null` | Open |
+| 13.6 | MEDIUM | `indexer.js` sorts full index on every eviction (O(n log n) → O(1) fix available) | Open |
+| 13.7 | MEDIUM | `get-capture-diff.js` serializes the same parsed object 3× per call | Open |
+| 13.8 | MEDIUM | `get-component-coverage.js` calls `getNodeDetails()` in a nested loop (O(n²)) | Open |
+| 13.9 | MEDIUM | `archive.js` reads all captures into memory to check eligibility | Open |
+| 13.10 | MEDIUM | WebSocket `maxPayload` (1 MB) and HTTP `MAX_BODY` (5 MB) mismatched | Open |
+| 13.11 | MEDIUM | TracePulse SSRF check uses string matching instead of URL parsing | Open |
+| 13.12 | MEDIUM | `validate-path.js` trailing-slash edge case allows false positive | Open |
+| 13.13 | MEDIUM | `a11y-rules.js` mutates caller's input node object via `_contrastResult` | Open |
+| 13.14 | MEDIUM | `contrast.js` applies wrong WCAG threshold for non-px font sizes (rem/em/pt) | Open |
+| 13.15 | MEDIUM | `capture-diff.js` treats missing bbox as "unchanged" instead of "unknown" | Open |
+| 13.16 | MEDIUM | `auth/middleware.js` challenge cleanup is O(n) inline on every handshake request | Open |
+| 13.17 | MEDIUM | `session-store.js` expired sessions accumulate indefinitely, no background sweep | Open |
+| 13.18 | MEDIUM | `withCapture()` wrapper still missing — 25 tools repeat inline error-check pattern | Open |
+| 13.19 | MEDIUM | `extractAllAnnotations()` and `getAnnotationSelector()` utilities missing — 4-file duplication | Open |
+| 13.20 | MEDIUM | 12 tools still use bare response objects instead of `jsonResponse()` | Open |
+| 13.21 | MEDIUM | Tool response fields inconsistent: `node_count` vs `nodeCount`, `element_id` vs `nodeId` | Open |
+| 13.22 | LOW | 15 `console.log` calls write to stdout (MCP transport) instead of stderr | Open |
+| 13.23 | LOW | `native-host.js` uses `Math.random()` for chunk IDs instead of `crypto.randomUUID()` | Open |
+| 13.24 | LOW | `index.js` calls `httpReceiver.getInfo?.()` but method doesn't exist — dead code | Open |
+| 13.25 | LOW | `http-receiver.js` is 623 lines handling 8 distinct concerns — needs splitting | Open |
+| 13.26 | LOW | `get-capture.js` diff-export file I/O has no try-catch | Open |
 
 ### MRR-005 (New)
 
