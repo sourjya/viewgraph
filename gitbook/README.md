@@ -103,6 +103,8 @@ See [Who Benefits?](who-benefits.md) for the full breakdown.
 Research shows AI agents spend **60-80% of their token budget** on finding information, not fixing problems. One study found an agent reading 25 files to answer a question that needed 3.
 {% endhint %}
 
+<figure><img src=".gitbook/assets/viewgraph-token-efficiency.svg" alt="ViewGraph token efficiency: 100K tokens down to 400, $3 per task down to $0.10"></figure>
+
 Most browser tools send your agent the entire page on every interaction. That's 100,000+ tokens per step - and your agent pays for every one.
 
 ViewGraph v3 sends only what your agent actually needs:

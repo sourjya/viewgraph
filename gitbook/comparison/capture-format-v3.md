@@ -1,5 +1,7 @@
 # The Capture Format: v2 to v3
 
+<figure><img src="../.gitbook/assets/viewgraph-token-efficiency.svg" alt="ViewGraph token efficiency infographic"></figure>
+
 ViewGraph's capture format is designed for one thing: giving AI agents the right context with the fewest tokens.
 
 ## The Token Problem

@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#f87171"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#4ade80"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="420" rx="16" fill="url(#bg)"/>
+
+  <!-- Title -->
+  <text x="480" y="36" text-anchor="middle" fill="#f8fafc" font-size="18" font-weight="700" letter-spacing="0.5">WHY YOUR AI AGENT NEEDS VIEWGRAPH</text>
+
+  <!-- Divider line -->
+  <line x1="40" y1="50" x2="920" y2="50" stroke="#334155" stroke-width="1"/>
+
+  <!-- ═══ PANEL 1: THE PROBLEM ═══ -->
+  <text x="160" y="78" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1.5">THE PROBLEM</text>
+
+  <!-- Big page icon -->
+  <rect x="90" y="95" width="140" height="100" rx="6" fill="#1e293b" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="160" y="120" text-anchor="middle" fill="#f87171" font-size="10" font-weight="600">FULL PAGE DOM</text>
+  <!-- Lines representing DOM nodes -->
+  <line x1="105" y1="132" x2="215" y2="132" stroke="#334155" stroke-width="2"/>
+  <line x1="105" y1="142" x2="195" y2="142" stroke="#334155" stroke-width="2"/>
+  <line x1="105" y1="152" x2="210" y2="152" stroke="#334155" stroke-width="2"/>
+  <line x1="105" y1="162" x2="180" y2="162" stroke="#334155" stroke-width="2"/>
+  <line x1="105" y1="172" x2="200" y2="172" stroke="#334155" stroke-width="2"/>
+  <line x1="105" y1="182" x2="215" y2="182" stroke="#334155" stroke-width="2"/>
+
+  <!-- Token count -->
+  <text x="160" y="218" text-anchor="middle" fill="#f87171" font-size="28" font-weight="800">100K</text>
+  <text x="160" y="236" text-anchor="middle" fill="#94a3b8" font-size="11">tokens per page</text>
+
+  <!-- Cost -->
+  <rect x="115" y="248" width="90" height="28" rx="14" fill="#7f1d1d"/>
+  <text x="160" y="267" text-anchor="middle" fill="#fca5a5" font-size="13" font-weight="700">$3.00 / task</text>
+
+  <!-- Research citation -->
+  <text x="160" y="300" text-anchor="middle" fill="#64748b" font-size="9" font-style="italic">"Agents spend 60-80% of tokens</text>
+  <text x="160" y="312" text-anchor="middle" fill="#64748b" font-size="9" font-style="italic">on orientation, not fixing"</text>
+  <text x="160" y="326" text-anchor="middle" fill="#475569" font-size="8">- Morph, Cognition, SWE-Pruner 2026</text>
+
+  <!-- ═══ ARROW 1→2 ═══ -->
+  <path d="M 280 180 L 320 180" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <defs><marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#475569"/></marker></defs>
+
+  <!-- ═══ PANEL 2: THE WASTE ═══ -->
+  <text x="480" y="78" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1.5">WHERE TOKENS GO</text>
+
+  <!-- Donut chart -->
+  <circle cx="480" cy="170" r="60" fill="none" stroke="#334155" stroke-width="24"/>
+  <!-- 70% orientation (red) -->
+  <circle cx="480" cy="170" r="60" fill="none" stroke="url(#red)" stroke-width="24" stroke-dasharray="264 113" stroke-dashoffset="0" transform="rotate(-90 480 170)"/>
+  <!-- 30% fixing (green) -->
+  <circle cx="480" cy="170" r="60" fill="none" stroke="url(#green)" stroke-width="24" stroke-dasharray="113 264" stroke-dashoffset="-264" transform="rotate(-90 480 170)"/>
+
+  <!-- Center text -->
+  <text x="480" y="166" text-anchor="middle" fill="#f8fafc" font-size="16" font-weight="800">70%</text>
+  <text x="480" y="182" text-anchor="middle" fill="#94a3b8" font-size="9">wasted</text>
+
+  <!-- Legend -->
+  <rect x="400" y="248" width="10" height="10" rx="2" fill="#f87171"/>
+  <text x="416" y="258" fill="#e2e8f0" font-size="10">Orientation &amp; retrieval</text>
+  <rect x="400" y="266" width="10" height="10" rx="2" fill="#4ade80"/>
+  <text x="416" y="276" fill="#e2e8f0" font-size="10">Actual problem-solving</text>
+
+  <!-- Stat callouts -->
+  <text x="480" y="305" text-anchor="middle" fill="#94a3b8" font-size="10">Chrome DevTools MCP: 132K tokens</text>
+  <text x="480" y="319" text-anchor="middle" fill="#94a3b8" font-size="10">Playwright MCP: 114K tokens</text>
+  <text x="480" y="333" text-anchor="middle" fill="#6366f1" font-size="10" font-weight="600">ViewGraph v3: 7K tokens</text>
+
+  <!-- ═══ ARROW 2→3 ═══ -->
+  <path d="M 600 180 L 640 180" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+  <!-- ═══ PANEL 3: THE FIX ═══ -->
+  <text x="800" y="78" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1.5">VIEWGRAPH v3</text>
+
+  <!-- Slim manifest icon -->
+  <rect x="730" y="95" width="140" height="60" rx="6" fill="#1e293b" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="800" y="115" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600">ACTION MANIFEST</text>
+  <text x="800" y="130" text-anchor="middle" fill="#6366f1" font-size="9" font-family="monospace">e1 btn "Submit" Y</text>
+  <text x="800" y="142" text-anchor="middle" fill="#6366f1" font-size="9" font-family="monospace">e2 inp "Email"  Y</text>
+
+  <!-- Token count -->
+  <text x="800" y="185" text-anchor="middle" fill="#4ade80" font-size="28" font-weight="800">400</text>
+  <text x="800" y="203" text-anchor="middle" fill="#94a3b8" font-size="11">tokens (interactive-only)</text>
+
+  <!-- Cost -->
+  <rect x="755" y="215" width="90" height="28" rx="14" fill="#14532d"/>
+  <text x="800" y="234" text-anchor="middle" fill="#86efac" font-size="13" font-weight="700">$0.10 / task</text>
+
+  <!-- 7 optimizations -->
+  <text x="800" y="264" text-anchor="middle" fill="#e2e8f0" font-size="10" font-weight="600">7 optimizations:</text>
+
+  <text x="690" y="282" fill="#4ade80" font-size="10">✓</text>
+  <text x="703" y="282" fill="#cbd5e1" font-size="9">Action Manifest (80-85%)</text>
+
+  <text x="690" y="296" fill="#4ade80" font-size="10">✓</text>
+  <text x="703" y="296" fill="#cbd5e1" font-size="9">Style dedup (50%)</text>
+
+  <text x="690" y="310" fill="#4ade80" font-size="10">✓</text>
+  <text x="703" y="310" fill="#cbd5e1" font-size="9">Default omission (41.8%)</text>
+
+  <text x="690" y="324" fill="#4ade80" font-size="10">✓</text>
+  <text x="703" y="324" fill="#cbd5e1" font-size="9">Container merging (30-50%)</text>
+
+  <text x="830" y="282" fill="#4ade80" font-size="10">✓</text>
+  <text x="843" y="282" fill="#cbd5e1" font-size="9">Short refs (@e1)</text>
+
+  <text x="830" y="296" fill="#4ade80" font-size="10">✓</text>
+  <text x="843" y="296" fill="#cbd5e1" font-size="9">File-backed receipts</text>
+
+  <text x="830" y="310" fill="#4ade80" font-size="10">✓</text>
+  <text x="843" y="310" fill="#cbd5e1" font-size="9">JSON Patch diffs</text>
+
+  <!-- ═══ BOTTOM BAR ═══ -->
+  <rect x="40" y="355" width="880" height="50" rx="8" fill="url(#accent)" opacity="0.15"/>
+  <text x="480" y="377" text-anchor="middle" fill="#a5b4fc" font-size="12" font-weight="600">97% TOKEN REDUCTION  ·  $3.00 → $0.10 PER TASK  ·  $4,350 SAVED PER MONTH (50 tasks/day)</text>
+  <text x="480" y="395" text-anchor="middle" fill="#6366f1" font-size="10">41 MCP TOOLS  ·  21 ENRICHMENT COLLECTORS  ·  1,797 TESTS  ·  10 SECURITY REVIEWS  ·  AGPL-3.0</text>
+</svg>
