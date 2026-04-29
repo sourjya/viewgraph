@@ -85,7 +85,7 @@ Every field is tagged with its source: `measured` (DOM API), `derived` (computed
 
 ## Cost Impact
 
-At typical LLM pricing ($3/million tokens):
+Based on Claude 3.5 Sonnet output pricing ($3/million tokens) and a 10-step bug fix workflow (capture page, read annotations, find source, fix code, re-capture, verify):
 
 ```
 Cost per 10-step task:
@@ -97,6 +97,8 @@ Monthly (50 tasks/day):
 v2: $4,500/month
 v3: $150/month
 ```
+
+Token counts measured from 175 real captures across 4 projects + 48 diverse websites. A "task" = 10 agent steps where each step may capture, read, or diff a page. v2 re-captures the full page each step (~100K tokens). v3 uses file-backed receipts (~200 tokens) + targeted reads (~500 tokens) + delta patches (~1K tokens). See [experiment scripts](https://github.com/sourjya/viewgraph/tree/main/scripts/experiments) for methodology.
 
 ## What's Coming Next
 

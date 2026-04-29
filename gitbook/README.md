@@ -120,6 +120,10 @@ ViewGraph v3 (smart) ██                                      7,000
 
 **That's $3.00 per task down to $0.10.** At 50 tasks a day, that's $4,350 saved per month.
 
+{% hint style="info" %}
+**How we calculated this:** A "task" is a 10-step bug fix (capture, read, find source, fix, verify). At $3/million tokens (Claude 3.5 Sonnet output pricing), a v2 full-capture workflow consuming ~1M tokens costs $3.00. ViewGraph v3 smart mode uses ~32K tokens for the same task ($0.10). Token counts measured from real captures across 4 projects. See [experiment data](https://github.com/sourjya/viewgraph/tree/main/scripts/experiments).
+{% endhint %}
+
 How? ViewGraph pre-indexes interactive elements into a flat manifest. Your agent reads 20 lines instead of scanning 600. Style dedup removes duplicate CSS. Default omission strips browser defaults that carry zero information. Container merging removes empty wrapper divs. The result: same fixes, 97% fewer tokens.
 
 [See the full token efficiency breakdown](comparison/capture-format-v3.md)
