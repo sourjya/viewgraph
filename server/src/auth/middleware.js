@@ -38,13 +38,12 @@ export function createAuthMiddleware({ secret, requireAuth = false }) {
   function handleHandshake() {
     const challenge = randomBytes(32).toString('hex');
     pendingChallenges.set(challenge, Date.now());
-    // Clean expired challenges and enforce max size
-    for (const [c, t] of pendingChallenges) {
-      if (Date.now() - t > CHALLENGE_TTL_MS) pendingChallenges.delete(c);
-    }
+    // 13.16: Auto-expire each challenge instead of O(n) sweep on every handshake
+    setTimeout(() => pendingChallenges.delete(challenge), CHALLENGE_TTL_MS);
+    // Enforce max size as safety valve
     if (pendingChallenges.size > 50) {
-      const oldest = [...pendingChallenges.entries()].sort((a, b) => a[1] - b[1])[0];
-      if (oldest) pendingChallenges.delete(oldest[0]);
+      const first = pendingChallenges.keys().next().value;
+      if (first) pendingChallenges.delete(first);
     }
     // S4-1: Do NOT return the secret. The extension receives it via native
     // messaging or reads it from .viewgraph/.session-key. Returning it here

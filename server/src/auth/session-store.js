@@ -20,6 +20,15 @@ const DEFAULT_TTL_MS = 24 * 60 * 60 * 1000;
 export function createSessionStore() {
   const sessions = new Map();
 
+  // 13.17: Background sweep every 5 minutes to prevent unbounded accumulation
+  const sweepInterval = setInterval(() => {
+    const now = Date.now();
+    for (const [id, s] of sessions) {
+      if (now - s.createdAt > s.ttlMs) sessions.delete(id);
+    }
+  }, 5 * 60 * 1000);
+  if (sweepInterval.unref) sweepInterval.unref(); // Don't keep process alive
+
   return {
     /**
      * Create a new session.

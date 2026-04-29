@@ -53,7 +53,7 @@ export function chunkMessage(msg, maxSize = DEFAULT_CHUNK_SIZE) {
   const json = JSON.stringify(msg);
   if (json.length <= maxSize) return [msg];
 
-  const id = Math.random().toString(36).slice(2, 10);
+  const id = crypto.randomUUID().slice(0, 8);
   const chunks = [];
   for (let i = 0; i < json.length; i += maxSize) {
     chunks.push({

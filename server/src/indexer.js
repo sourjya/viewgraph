@@ -53,15 +53,17 @@ export function createIndexer({ maxCaptures = 50 } = {}) {
     return matches[0];
   }
 
-  /** Evict oldest entries when index exceeds maxCaptures. */
+  /** Evict oldest entries when index exceeds maxCaptures. O(n) delete instead of O(n log n) sort. */
   function evict() {
     if (index.size <= maxCaptures) return;
-    const sorted = Array.from(index.entries())
-      .sort(([, a], [, b]) => new Date(a.timestamp) - new Date(b.timestamp));
-    while (index.size > maxCaptures) {
-      const [oldest] = sorted.shift();
-      index.delete(oldest);
+    // Map iterates in insertion order; find oldest by timestamp
+    let oldestKey = null;
+    let oldestTime = Infinity;
+    for (const [key, meta] of index) {
+      const t = new Date(meta.timestamp).getTime();
+      if (t < oldestTime) { oldestTime = t; oldestKey = key; }
     }
+    if (oldestKey) index.delete(oldestKey);
   }
 
   return { add, remove, get, list, getLatest };

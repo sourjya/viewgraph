@@ -100,10 +100,10 @@ export function createMessageHandler(deps) {
 
         case 'baselines':
         case 'baselines:list':
-          return { baselines: [] }; // TODO: wire to baselines module
+          return { error: 'Baselines not available via native messaging. Use HTTP /baselines endpoint.' };
 
         case 'baselines:compare':
-          return { diff: null }; // TODO: wire to baselines module
+          return { error: 'Baseline comparison not available via native messaging. Use HTTP /baselines/compare endpoint.' };
 
         default: {
           // Dynamic routes: requests:ID:ack, requests:ID:decline

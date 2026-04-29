@@ -67,7 +67,7 @@ export async function suggestFilename(query, capturesDir) {
   let files;
   try {
     files = (await readdir(capturesDir)).filter((f) => f.endsWith('.json'));
-  } catch { return null; }
+  } catch (e) { console.error("[viewgraph] readAndParse failed:", e.message); return null; }
   if (files.length === 0) return null;
 
   const q = query.toLowerCase();

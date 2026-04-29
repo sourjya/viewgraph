@@ -377,8 +377,15 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       // Enables get_correlated_errors to pair frontend failures with backend stack traces.
       try {
         const tpUrl = process.env.TRACEPULSE_COLLECTOR_URL;
-        // S3-1: Only allow localhost URLs to prevent SSRF via env var injection
-        if (tpUrl && /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?/.test(tpUrl)) {
+        // S3-1 + 13.11: Validate via URL parsing, not regex
+        let tpHostValid = false;
+        if (tpUrl) {
+          try {
+            const u = new URL(tpUrl);
+            tpHostValid = u.hostname === '127.0.0.1' || u.hostname === 'localhost';
+          } catch { /* invalid URL */ }
+        }
+        if (tpHostValid) {
           const errors = [];
           const consoleErrs = capture.console?.errors || [];
           for (const err of consoleErrs.slice(0, 10)) {

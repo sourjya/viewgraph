@@ -18,7 +18,8 @@ import path from 'path';
 export function validateCapturePath(filename, capturesDir) {
   const safe = path.basename(filename);
   const resolved = path.resolve(capturesDir, safe);
-  if (!resolved.startsWith(path.resolve(capturesDir))) {
+  const resolvedDir = path.resolve(capturesDir);
+  if (!resolved.startsWith(resolvedDir + path.sep) && resolved !== resolvedDir) {
     throw new Error('Path traversal not allowed');
   }
   return resolved;

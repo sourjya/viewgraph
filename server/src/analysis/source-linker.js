@@ -93,7 +93,7 @@ export async function findSource(projectRoot, query) {
 
   for (const file of files) {
     let content;
-    try { content = await readFile(file, 'utf-8'); } catch { continue; }
+    try { content = await readFile(file, 'utf-8'); } catch { continue; } // file unreadable - skip
 
     const lines = content.split('\n');
     for (const search of searches) {

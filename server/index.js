@@ -243,7 +243,7 @@ async function main() {
       capturesDir: CAPTURES_DIR,
       indexer,
       queue: requestQueue,
-      getInfo: () => httpReceiver.getInfo?.() || { capturesDir: CAPTURES_DIR, serverVersion: SERVER_VERSION },
+      getInfo: () => ({ capturesDir: CAPTURES_DIR, serverVersion: SERVER_VERSION }),
       getConfig: () => {
         try { return JSON.parse(readFileSync(path.resolve(configDir, 'config.json'), 'utf-8')); } catch { return {}; }
       },
