@@ -1,30 +1,30 @@
 {
   "experiment": "Token Efficiency - v3 Format",
-  "date": "2026-04-29T12:01:33.732Z",
+  "date": "2026-04-29T12:18:44.710Z",
   "dataset": {
-    "captures": 171
+    "captures": 243
   },
   "v2Baseline": {
-    "totalTokens": 22817765,
-    "medianBytes": 470629,
-    "medianTokens": 117657
+    "totalTokens": 28666019,
+    "medianBytes": 352779,
+    "medianTokens": 88195
   },
   "v3Full": {
-    "totalTokens": 17049645,
-    "medianBytes": 344423,
-    "medianTokens": 86106,
-    "reductionPct": 25,
-    "medianReductionPct": 21
+    "totalTokens": 22754050,
+    "medianBytes": 307445,
+    "medianTokens": 76861,
+    "reductionPct": 21,
+    "medianReductionPct": 17
   },
   "v3InteractiveOnly": {
-    "totalTokens": 414730,
+    "totalTokens": 614270,
     "medianBytes": 7720,
     "medianTokens": 1930,
     "reductionPct": 98,
-    "medianReductionPct": 99
+    "medianReductionPct": 98
   },
   "v3Receipt": {
-    "totalTokens": 10773,
+    "totalTokens": 15309,
     "tokensPerCapture": 63,
     "reductionPct": 100
   },
@@ -34,6 +34,12 @@
       "v2Tokens": 8723969,
       "v3FullTokens": 5675206,
       "reductionPct": 35
+    },
+    "bulk-capture-v3": {
+      "captures": 72,
+      "v2Tokens": 5848254,
+      "v3FullTokens": 5704405,
+      "reductionPct": 2
     },
     "home-management": {
       "captures": 5,

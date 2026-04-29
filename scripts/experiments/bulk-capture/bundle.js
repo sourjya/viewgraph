@@ -30,11 +30,11 @@ const EXT_LIB = join(__dirname, '..', '..', '..', 'extension', 'lib');
  * collected and exposed on window.__vg at the end.
  */
 const MODULE_FILES = [
-  'visibility-collector.js',
-  'traverser.js',
-  'salience.js',
-  'serializer.js',
-  'html-snapshot.js',
+  'collectors/visibility-collector.js',
+  'capture/traverser.js',
+  'capture/salience.js',
+  'capture/serializer.js',
+  'capture/html-snapshot.js',
 ];
 
 /**
