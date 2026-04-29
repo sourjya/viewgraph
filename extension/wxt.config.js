@@ -49,9 +49,6 @@ export default defineConfig({
       gecko: {
         id: 'viewgraph@chaoslabz.com',
         strict_min_version: '115.0',
-        data_collection_permissions: {
-          required: ['none'],
-        },
       },
     },
   },

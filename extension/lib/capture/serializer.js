@@ -460,7 +460,7 @@ function buildToonManifest(byAction) {
     for (const e of entries) {
       const loc = e.locator ? `${e.locator.strategy}:${e.locator.value}` : '-';
       const bbox = e.bbox ? `[${e.bbox.join(',')}]` : '-';
-      lines.push(`${e.ref} ${e.tag} ${e.alias || '-'} "${(e.axName || '').replace(/"/g, '\\"')}" ${loc} ${bbox} ${e.inViewport ? 'Y' : 'N'}`);
+      lines.push(`${e.ref} ${e.tag} ${e.alias || '-'} "${(e.axName || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"')}" ${loc} ${bbox} ${e.inViewport ? 'Y' : 'N'}`);
     }
   }
   return lines.join('\n');

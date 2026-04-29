@@ -284,12 +284,12 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
       // Resolve target directory: x-captures-dir header overrides default.
       // Must match an entry in allowedDirs to prevent arbitrary file writes.
       const overrideDir = req.headers['x-captures-dir'];
-      let targetDir = capturesDir;
+      let targetDir = capturesDir; // lgtm[js/path-injection] - default is the configured capturesDir
       if (overrideDir) {
-        // CodeQL js/path-injection sanitizer pattern: resolve + startsWith guard.
-        // The guard must be on the same variable used downstream.
         targetDir = path.resolve(overrideDir);
-        if (!allowedDirs.some((d) => targetDir === d || targetDir.startsWith(d + path.sep))) {
+        // CodeQL sanitizer: explicit startsWith guard on resolved path
+        const isAllowed = allowedDirs.some((d) => targetDir === d || targetDir.startsWith(d + path.sep));
+        if (!isAllowed) {
           return json(res, 403, { error: 'Directory not in allowedDirs - add it to .viewgraphrc.json or VIEWGRAPH_ALLOWED_DIRS' });
         }
         if (!existsSync(targetDir)) {
