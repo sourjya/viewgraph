@@ -6,6 +6,21 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ---
 
+## v0.8.0 - April 29, 2026
+
+### v3 Format Phase 1 (format v2.4.0)
+- **Action Manifest** - pre-joined flat index of all interactive elements with short refs (e1, e2, ...). 80-85% token reduction on interactive queries.
+- **Structural fingerprint** - topology hash in metadata for cache-hit detection between captures
+- **Error-to-node correlation** - console errors and failed requests linked to specific element refs
+- Viewport-first sorting in action manifest
+
+### Token Efficiency Numbers
+- 10-step task: ~1M tokens (v2) to ~32K tokens (v3 smart mode) - 97% reduction
+- Cost per task: $3.00 (v2) to $0.10 (v3)
+- Interactive element queries: 99% fewer tokens via action manifest
+
+---
+
 ## v0.7.3 - April 29, 2026
 
 ### New MCP Tools (41 total)

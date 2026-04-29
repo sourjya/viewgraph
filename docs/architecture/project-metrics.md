@@ -1,6 +1,6 @@
 # Project Metrics
 
-Current stats as of v0.7.3 (April 2026).
+Current stats as of v0.8.0 (April 2026).
 
 ## Code
 
@@ -19,7 +19,7 @@ Current stats as of v0.7.3 (April 2026).
 
 | Metric | Value |
 |---|---|
-| Format version | v2.3.0 |
+| Format version | v2.4.0 |
 | Median capture size | 665 KB (before optimization) |
 | Style dedup rate | 50% (measured across 175 captures) |
 | Default value waste | 41.8% of style values are browser defaults |

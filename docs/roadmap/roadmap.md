@@ -2,11 +2,11 @@
 
 ## Current Version
 
-v0.7.0
+v0.8.0
 
 ## Status Summary
 
-**Shipped:** 41 MCP tools, 12 prompt templates, 21 enrichment collectors, 1795 tests (1259 extension + 536 server)
+**Shipped:** 41 MCP tools, 12 prompt templates, 21 enrichment collectors, 1797 tests (1259 extension + 538 server)
 
 **All major features complete.** Current focus: experiment-validated optimizations and cross-tool integration.
 
@@ -24,7 +24,7 @@ These require experiments to validate before implementation. Each has a detailed
 | Enrichment Opt-In | Token Efficiency | ≥3 sections >70% empty | **FAIL (2/10)** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
 | Selector Stability | Capture Quality | >90% stability | **PASS (97.2%)** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
 
-## Recently Shipped (v0.7.0)
+## Recently Shipped (v0.8.0)
 
 | Feature | Description |
 |---------|-------------|
@@ -44,6 +44,10 @@ These require experiments to validate before implementation. Each has a detailed
 | Background error watcher | Persistent console interceptor with real-time error notifications |
 | Extension onboarding | Welcome page on first install with 3-step setup guide |
 | Uninstall CLI | viewgraph-uninstall - guided project removal with data preservation option |
+| v3 Action Manifest | Pre-joined flat index of interactive elements with short refs (e1-eN). 80-85% token reduction. |
+| v3 Structural fingerprint | Topology hash for cache-hit detection between captures |
+| v3 Error-to-node correlation | Console errors and failed requests linked to element refs |
+| v3 GitBook marketing page | Token comparison charts, cost analysis ($3 vs $0.10 per task) |
 
 ## v3 Format Enhancement Roadmap
 
@@ -53,11 +57,11 @@ Based on [v3 Agentic Enhancements Research](../architecture/viewgraph-v3-agentic
 
 | # | Enhancement | Status | Token Impact |
 |---|---|---|---|
-| 1 | Action Manifest (pre-joined interactive index) | Building | 80-85% reduction on interactive queries |
-| 2 | Stable short refs (@e1-@eN) | Building | Fewer tokens per tool call |
-| 3 | Structural fingerprint in metadata | Building | Cache-hit detection for unchanged pages |
-| 4 | Error-to-node correlation (correlatedRefs) | Building | Eliminates 200-500 tokens LLM reasoning per error |
-| 5 | lastActionTarget in metadata | Building | Agent knows what it just acted on |
+| 1 | Action Manifest (pre-joined interactive index) | **Shipped v0.8.0** | 80-85% reduction on interactive queries |
+| 2 | Stable short refs (@e1-@eN) | **Shipped v0.8.0** | Fewer tokens per tool call |
+| 3 | Structural fingerprint in metadata | **Shipped v0.8.0** | Cache-hit detection for unchanged pages |
+| 4 | Error-to-node correlation (correlatedRefs) | **Shipped v0.8.0** | Eliminates 200-500 tokens LLM reasoning per error |
+| 5 | lastActionTarget in metadata | **Shipped v0.8.0** | Agent knows what it just acted on |
 | 6 | Compact enum codec (compactCodec) | Planned | 70-87% on repeated structures |
 | 7 | Viewport-first node ordering | Planned | 20-30% faster scan-to-first-match |
 

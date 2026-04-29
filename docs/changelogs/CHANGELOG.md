@@ -8,6 +8,23 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ---
 
+## [0.8.0] - 2026-04-29
+
+### v3 Format Phase 1 (format v2.4.0)
+- Action Manifest: pre-joined flat index of all interactive elements
+- Stable short refs (e1-eN) on every actionable element
+- Structural fingerprint in metadata for cache-hit detection
+- Error-to-node correlation: console errors linked to element refs
+- Viewport-first sorting in action manifest
+
+### Documentation
+- GitBook: "v2 to v3: Token Efficiency" page with comparison charts and cost analysis
+- v3 roadmap: 16 enhancements across 3 phases
+- docs/architecture reorganized: security, references, product, reviews in proper folders
+- All internal doc links verified and fixed
+
+---
+
 ## [0.7.4] - 2026-04-29
 
 ### New MCP Tools (41 total)
