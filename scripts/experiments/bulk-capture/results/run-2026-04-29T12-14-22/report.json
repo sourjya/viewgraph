@@ -1,0 +1,1094 @@
+{
+  "timestamp": "2026-04-29T12:16:01.439Z",
+  "totalSites": 46,
+  "excludedSites": 18,
+  "cleanSites": 28,
+  "sitesWithAccuracy": 22,
+  "excludedReasons": {
+    "botBlocked": 11,
+    "cspBlocked": 3,
+    "navFailed": 4,
+    "total": 18,
+    "urls": {
+      "botBlocked": [
+        "https://caniuse.com",
+        "https://medium.com",
+        "https://netlify.com",
+        "https://trello.com",
+        "https://www.flickr.com/explore",
+        "https://www.producthunt.com",
+        "https://www.reddit.com",
+        "https://www.speedtest.net",
+        "https://www.target.com",
+        "https://www.theverge.com",
+        "https://www.virustotal.com"
+      ],
+      "cspBlocked": [
+        "https://pagespeed.web.dev",
+        "https://translate.google.com",
+        "https://www.youtube.com"
+      ],
+      "navFailed": [
+        "https://mastodon.social/explore",
+        "https://www.aljazeera.net",
+        "https://www.asahi.com",
+        "https://www.ndtv.com"
+      ]
+    }
+  },
+  "weights": {
+    "testidRecall": 0.2,
+    "interactiveRecall": 0.2,
+    "selectorAccuracy": 0.2,
+    "bboxAccuracy": 0.15,
+    "textAccuracy": 0.1,
+    "semanticRecall": 0.1,
+    "elementRecall": 0.05
+  },
+  "accuracy": {
+    "overall": {
+      "mean": 0.89,
+      "median": 0.909,
+      "p5": 0.7,
+      "p95": 0.971
+    },
+    "dimensions": {
+      "testidRecall": {
+        "mean": 0.956,
+        "median": 1,
+        "p5": 0.875,
+        "p95": 1,
+        "weight": 0.2
+      },
+      "interactiveRecall": {
+        "mean": 0.822,
+        "median": 0.929,
+        "p5": 0,
+        "p95": 1,
+        "weight": 0.2
+      },
+      "selectorAccuracy": {
+        "mean": 0.987,
+        "median": 1,
+        "p5": 0.956,
+        "p95": 1,
+        "weight": 0.2
+      },
+      "bboxAccuracy": {
+        "mean": 1,
+        "median": 1,
+        "p5": 1,
+        "p95": 1,
+        "weight": 0.15
+      },
+      "textAccuracy": {
+        "mean": 0.6,
+        "median": 0.519,
+        "p5": 0.309,
+        "p95": 1,
+        "weight": 0.1
+      },
+      "semanticRecall": {
+        "mean": 0.781,
+        "median": 0.833,
+        "p5": 0.111,
+        "p95": 1,
+        "weight": 0.1
+      },
+      "elementRecall": {
+        "mean": 0.987,
+        "median": 1,
+        "p5": 0.956,
+        "p95": 1,
+        "weight": 0.05
+      }
+    }
+  },
+  "dimensions": {
+    "elementRecall": {
+      "sites": 22,
+      "recall": {
+        "mean": 0.671,
+        "median": 0.782,
+        "p5": 0.01,
+        "p95": 1,
+        "min": 0.002,
+        "max": 1
+      },
+      "vgNodeCounts": {
+        "mean": 718.955,
+        "median": 445,
+        "p5": 1,
+        "p95": 1390,
+        "min": 0,
+        "max": 4853
+      },
+      "gtVisibleCounts": {
+        "mean": 1025.773,
+        "median": 758,
+        "p5": 11,
+        "p95": 1763,
+        "min": 0,
+        "max": 5886
+      }
+    },
+    "testidRecall": {
+      "sites": 22,
+      "mean": 0.956,
+      "median": 1,
+      "p5": 0.875,
+      "p95": 1,
+      "min": 0.163,
+      "max": 1,
+      "medianDomTestids": 0,
+      "sitesWithZeroTestids": 15
+    },
+    "interactiveRecall": {
+      "sites": 22,
+      "mean": 0.822,
+      "median": 0.929,
+      "p5": 0,
+      "p95": 1,
+      "min": 0,
+      "max": 1,
+      "medianDomInteractive": 97
+    },
+    "selectorAccuracy": {
+      "sites": 22,
+      "mean": 0.987,
+      "median": 1,
+      "p5": 0.956,
+      "p95": 1,
+      "min": 0.818,
+      "max": 1
+    },
+    "bboxAccuracy": {
+      "sites": 22,
+      "within5px": {
+        "mean": 1,
+        "median": 1,
+        "p5": 1,
+        "p95": 1,
+        "min": 1,
+        "max": 1
+      },
+      "within10px": {
+        "mean": 1,
+        "median": 1,
+        "p5": 1,
+        "p95": 1,
+        "min": 1,
+        "max": 1
+      },
+      "meanDeviation": {
+        "mean": 0,
+        "median": 0,
+        "p5": 0,
+        "p95": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "textAccuracy": {
+      "sites": 22,
+      "exactMatchRate": {
+        "mean": 0.513,
+        "median": 0.423,
+        "p5": 0.237,
+        "p95": 1,
+        "min": 0.214,
+        "max": 1
+      },
+      "matchRate": {
+        "mean": 0.6,
+        "median": 0.519,
+        "p5": 0.309,
+        "p95": 1,
+        "min": 0.232,
+        "max": 1
+      },
+      "totalEmptyText": 520
+    },
+    "semanticRecall": {
+      "sites": 22,
+      "mean": 0.781,
+      "median": 0.833,
+      "p5": 0.111,
+      "p95": 1,
+      "min": 0,
+      "max": 1
+    }
+  },
+  "groundTruth": {
+    "totalElements": {
+      "mean": 1518,
+      "median": 1315,
+      "p95": 2802,
+      "total": 40989
+    },
+    "visibleElements": {
+      "mean": 964,
+      "median": 758,
+      "p95": 1763,
+      "total": 26041
+    },
+    "hiddenElements": {
+      "mean": 554,
+      "median": 441,
+      "p95": 1280,
+      "total": 14948
+    },
+    "interactiveElements": {
+      "mean": 195,
+      "median": 140,
+      "p95": 446,
+      "total": 5271
+    },
+    "semanticElements": {
+      "mean": 30,
+      "median": 10,
+      "p95": 53,
+      "total": 822
+    },
+    "elementsWithTestid": {
+      "mean": 60,
+      "median": 0,
+      "p95": 520,
+      "total": 1629
+    },
+    "elementsWithRole": {
+      "mean": 41,
+      "median": 30,
+      "p95": 133,
+      "total": 1097
+    },
+    "elementsWithAriaLabel": {
+      "mean": 34,
+      "median": 16,
+      "p95": 121,
+      "total": 912
+    },
+    "elementsWithText": {
+      "mean": 784,
+      "median": 553,
+      "p95": 1613,
+      "total": 21181
+    },
+    "shadowRoots": {
+      "mean": 5,
+      "median": 0,
+      "p95": 48,
+      "total": 148
+    },
+    "visibilityRatio": {
+      "mean": 0.656,
+      "median": 0.679,
+      "p5": 0.381,
+      "p95": 0.952,
+      "min": 0,
+      "max": 1
+    }
+  },
+  "byCategory": [
+    {
+      "group": "social",
+      "sites": 1,
+      "overallMedian": 0.8,
+      "overallMean": 0.8,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 1,
+        "textAccuracy": 1,
+        "semanticRecall": 1,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "spa",
+      "sites": 8,
+      "overallMedian": 0.899,
+      "overallMean": 0.888,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.909,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.561,
+        "semanticRecall": 0.75,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "data",
+      "sites": 5,
+      "overallMedian": 0.903,
+      "overallMean": 0.843,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.874,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.371,
+        "semanticRecall": 0.957,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "webcomponents",
+      "sites": 1,
+      "overallMedian": 0.904,
+      "overallMean": 0.904,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.969,
+        "selectorAccuracy": 0.956,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.417,
+        "semanticRecall": 0.8,
+        "elementRecall": 0.956
+      }
+    },
+    {
+      "group": "tools",
+      "sites": 1,
+      "overallMedian": 0.919,
+      "overallMean": 0.919,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.519,
+        "semanticRecall": 0.667,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "i18n",
+      "sites": 3,
+      "overallMedian": 0.929,
+      "overallMean": 0.923,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.999,
+        "selectorAccuracy": 0.988,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.553,
+        "semanticRecall": 0.796,
+        "elementRecall": 0.988
+      }
+    },
+    {
+      "group": "media",
+      "sites": 1,
+      "overallMedian": 0.932,
+      "overallMean": 0.932,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.486,
+        "semanticRecall": 0.833,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "ecommerce",
+      "sites": 2,
+      "overallMedian": 0.943,
+      "overallMean": 0.972,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.818,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.889,
+        "semanticRecall": 1,
+        "elementRecall": 0.818
+      }
+    }
+  ],
+  "byComplexity": [
+    {
+      "group": "moderate",
+      "sites": 6,
+      "overallMedian": 0.904,
+      "overallMean": 0.921,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.969,
+        "selectorAccuracy": 0.988,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.553,
+        "semanticRecall": 0.8,
+        "elementRecall": 0.988
+      }
+    },
+    {
+      "group": "complex",
+      "sites": 16,
+      "overallMedian": 0.909,
+      "overallMean": 0.879,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.918,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.5,
+        "semanticRecall": 0.833,
+        "elementRecall": 1
+      }
+    }
+  ],
+  "byRendering": [
+    {
+      "group": "hybrid",
+      "sites": 5,
+      "overallMedian": 0.904,
+      "overallMean": 0.911,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.969,
+        "selectorAccuracy": 0.998,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.486,
+        "semanticRecall": 0.833,
+        "elementRecall": 0.998
+      }
+    },
+    {
+      "group": "csr",
+      "sites": 13,
+      "overallMedian": 0.909,
+      "overallMean": 0.869,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.909,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.564,
+        "semanticRecall": 0.833,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "static",
+      "sites": 1,
+      "overallMedian": 0.923,
+      "overallMean": 0.923,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.232,
+        "semanticRecall": 1,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "ssr",
+      "sites": 3,
+      "overallMedian": 0.953,
+      "overallMean": 0.937,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.988,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.713,
+        "semanticRecall": 0.833,
+        "elementRecall": 0.988
+      }
+    }
+  ],
+  "byScript": [
+    {
+      "group": "cyrillic",
+      "sites": 1,
+      "overallMedian": 0.888,
+      "overallMean": 0.888,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.88,
+        "selectorAccuracy": 0.977,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.553,
+        "semanticRecall": 0.625,
+        "elementRecall": 0.977
+      }
+    },
+    {
+      "group": "latin",
+      "sites": 20,
+      "overallMedian": 0.909,
+      "overallMean": 0.887,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.929,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.519,
+        "semanticRecall": 0.833,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "cjk",
+      "sites": 1,
+      "overallMedian": 0.953,
+      "overallMean": 0.953,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 0.988,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.73,
+        "semanticRecall": 0.833,
+        "elementRecall": 0.988
+      }
+    }
+  ],
+  "byA11y": [
+    {
+      "group": "low",
+      "sites": 7,
+      "overallMedian": 0.888,
+      "overallMean": 0.844,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.909,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.553,
+        "semanticRecall": 0.75,
+        "elementRecall": 1
+      }
+    },
+    {
+      "group": "high",
+      "sites": 3,
+      "overallMedian": 0.903,
+      "overallMean": 0.899,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 0.918,
+        "selectorAccuracy": 0.99,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.417,
+        "semanticRecall": 0.905,
+        "elementRecall": 0.99
+      }
+    },
+    {
+      "group": "medium",
+      "sites": 12,
+      "overallMedian": 0.923,
+      "overallMean": 0.915,
+      "dimensions": {
+        "testidRecall": 1,
+        "interactiveRecall": 1,
+        "selectorAccuracy": 1,
+        "bboxAccuracy": 1,
+        "textAccuracy": 0.519,
+        "semanticRecall": 0.833,
+        "elementRecall": 1
+      }
+    }
+  ],
+  "operational": {
+    "timing": {
+      "navigation": {
+        "count": 45,
+        "p50": 6597,
+        "p95": 20000,
+        "mean": 7425
+      },
+      "groundTruth": {
+        "count": 38,
+        "p50": 33,
+        "p95": 234,
+        "mean": 49
+      },
+      "viewgraph": {
+        "count": 38,
+        "p50": 90,
+        "p95": 851,
+        "mean": 198
+      },
+      "accuracy": {
+        "count": 30,
+        "p50": 96,
+        "p95": 861,
+        "mean": 259
+      },
+      "snapshot": {
+        "count": 38,
+        "p50": 77,
+        "p95": 431,
+        "mean": 130
+      },
+      "screenshot": {
+        "count": 38,
+        "p50": 135,
+        "p95": 452,
+        "mean": 164
+      }
+    },
+    "sizes": {
+      "viewgraph": {
+        "count": 30,
+        "p50": 217189,
+        "p95": 969170,
+        "mean": 323417
+      },
+      "snapshot": {
+        "count": 30,
+        "p50": 569261,
+        "p95": 2743962,
+        "mean": 797305
+      },
+      "screenshot": {
+        "count": 38,
+        "p50": 176272,
+        "p95": 702383,
+        "mean": 248327
+      }
+    },
+    "successRates": {
+      "total": 46,
+      "navigation": {
+        "count": 42,
+        "pct": 0.913
+      },
+      "viewgraph": {
+        "count": 30,
+        "pct": 0.652
+      },
+      "snapshot": {
+        "count": 30,
+        "pct": 0.652
+      },
+      "screenshot": {
+        "count": 38,
+        "pct": 0.826
+      },
+      "accuracy": {
+        "count": 30,
+        "pct": 0.652
+      },
+      "allOk": {
+        "count": 21,
+        "pct": 0.457
+      }
+    },
+    "failures": {
+      "errors": [
+        {
+          "category": "bot-blocked",
+          "count": 11,
+          "examples": [
+            "Likely blocked: captcha-iframe",
+            "Likely blocked: cloudflare-title"
+          ]
+        },
+        {
+          "category": "capture-crash",
+          "count": 16,
+          "examples": [
+            "Cannot read properties of undefined (reading 'traverseDOM')",
+            "Cannot read properties of undefined (reading 'captureSnapshot')"
+          ]
+        },
+        {
+          "category": "nav-error",
+          "count": 1,
+          "examples": [
+            "net::ERR_CONNECTION_CLOSED at https://mastodon.social/explore"
+          ]
+        },
+        {
+          "category": "inject-error",
+          "count": 3,
+          "examples": [
+            "Failed to set the 'text' property on 'HTMLScriptElement': This document requires 'TrustedScript' assignment.\npptr:evalua"
+          ]
+        },
+        {
+          "category": "nav-timeout",
+          "count": 3,
+          "examples": [
+            "Navigation timeout of 20000 ms exceeded"
+          ]
+        },
+        {
+          "category": "capture-empty",
+          "count": 1,
+          "examples": [
+            "0 nodes captured"
+          ]
+        },
+        {
+          "category": "timeout",
+          "count": 1,
+          "examples": [
+            "Timeout after 20000ms for https://www.wired.com"
+          ]
+        }
+      ],
+      "botDetection": {
+        "blockedCount": 11,
+        "blockedPct": 0.239,
+        "blockedUrls": [
+          "https://caniuse.com",
+          "https://medium.com",
+          "https://netlify.com",
+          "https://trello.com",
+          "https://www.flickr.com/explore",
+          "https://www.producthunt.com",
+          "https://www.reddit.com",
+          "https://www.speedtest.net",
+          "https://www.target.com",
+          "https://www.theverge.com",
+          "https://www.virustotal.com"
+        ],
+        "signalCounts": {
+          "captcha-iframe": 9,
+          "cloudflare-title": 2
+        }
+      }
+    }
+  },
+  "worstSites": [
+    {
+      "url": "https://www.flightradar24.com",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 0.16279069767441862,
+      "interactiveRecall": 0.26666666666666666,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.7849462365591398,
+      "semanticRecall": 0.1111111111111111,
+      "overall": 0.575
+    },
+    {
+      "url": "https://notion.so",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 1,
+      "semanticRecall": 0,
+      "overall": 0.7
+    },
+    {
+      "url": "https://www.quora.com",
+      "category": "social",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 1,
+      "semanticRecall": 1,
+      "overall": 0.8
+    },
+    {
+      "url": "https://codesandbox.io",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 0.9932546374367622,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9090909090909091,
+      "selectorAccuracy": 0.9932546374367622,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.4940577249575552,
+      "semanticRecall": 0.5,
+      "overall": 0.88
+    },
+    {
+      "url": "https://lenta.ru",
+      "category": "i18n",
+      "complexity": "moderate",
+      "elementRecall": 0.976890756302521,
+      "testidRecall": 1,
+      "interactiveRecall": 0.88,
+      "selectorAccuracy": 0.976890756302521,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.5526881720430108,
+      "semanticRecall": 0.625,
+      "overall": 0.888
+    },
+    {
+      "url": "https://vercel.com",
+      "category": "spa",
+      "complexity": "moderate",
+      "elementRecall": 0.9978165938864629,
+      "testidRecall": 1,
+      "interactiveRecall": 0.7123287671232876,
+      "selectorAccuracy": 0.9978165938864629,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.5612691466083151,
+      "semanticRecall": 0.9047619047619048,
+      "overall": 0.889
+    },
+    {
+      "url": "https://www.canva.com",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0.8791946308724832,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.40325497287522605,
+      "semanticRecall": 0.8333333333333334,
+      "overall": 0.899
+    },
+    {
+      "url": "https://earthquake.usgs.gov/earthquakes/map/",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0.7777777777777778,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.5187165775401069,
+      "semanticRecall": 0.9565217391304348,
+      "overall": 0.903
+    },
+    {
+      "url": "https://ourworldindata.org",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 0.9898897058823529,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9177631578947368,
+      "selectorAccuracy": 0.9898897058823529,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.30919220055710306,
+      "semanticRecall": 0.9130434782608695,
+      "overall": 0.903
+    },
+    {
+      "url": "https://shoelace.style",
+      "category": "webcomponents",
+      "complexity": "moderate",
+      "elementRecall": 0.9559902200488998,
+      "testidRecall": 1,
+      "interactiveRecall": 0.96875,
+      "selectorAccuracy": 0.9559902200488998,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.41687979539641945,
+      "semanticRecall": 0.8,
+      "overall": 0.904
+    },
+    {
+      "url": "https://data.worldbank.org",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 0.9907407407407407,
+      "testidRecall": 1,
+      "interactiveRecall": 0.8736842105263158,
+      "selectorAccuracy": 0.9907407407407407,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.3707165109034268,
+      "semanticRecall": 1,
+      "overall": 0.909
+    },
+    {
+      "url": "https://excalidraw.com",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 0.875,
+      "interactiveRecall": 0.9285714285714286,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.7868020304568528,
+      "semanticRecall": 0.75,
+      "overall": 0.914
+    },
+    {
+      "url": "https://regex101.com",
+      "category": "tools",
+      "complexity": "moderate",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.5191011235955056,
+      "semanticRecall": 0.6666666666666666,
+      "overall": 0.919
+    },
+    {
+      "url": "https://gitlab.com/explore",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.563508064516129,
+      "semanticRecall": 0.6666666666666666,
+      "overall": 0.923
+    },
+    {
+      "url": "https://www.worldometers.info",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.23159784560143626,
+      "semanticRecall": 1,
+      "overall": 0.923
+    }
+  ],
+  "bestSites": [
+    {
+      "url": "https://www.wayfair.com",
+      "category": "ecommerce",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 1,
+      "semanticRecall": 1,
+      "overall": 1
+    },
+    {
+      "url": "https://render.com",
+      "category": "spa",
+      "complexity": "moderate",
+      "elementRecall": 0.9992805755395684,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9992805755395684,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.712742980561555,
+      "semanticRecall": 1,
+      "overall": 0.971
+    },
+    {
+      "url": "https://www.nhk.or.jp/news/",
+      "category": "i18n",
+      "complexity": "moderate",
+      "elementRecall": 0.9878048780487805,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.9878048780487805,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.7300411522633745,
+      "semanticRecall": 0.8333333333333334,
+      "overall": 0.953
+    },
+    {
+      "url": "https://www.nordstrom.com",
+      "category": "ecommerce",
+      "complexity": "complex",
+      "elementRecall": 0.8181818181818182,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 0.8181818181818182,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.8888888888888888,
+      "semanticRecall": 1,
+      "overall": 0.943
+    },
+    {
+      "url": "https://www.gettyimages.com",
+      "category": "media",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.4863636363636364,
+      "semanticRecall": 0.8333333333333334,
+      "overall": 0.932
+    },
+    {
+      "url": "https://stackblitz.com",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9629629629629629,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.3672316384180791,
+      "semanticRecall": 1,
+      "overall": 0.929
+    },
+    {
+      "url": "https://www.spiegel.de",
+      "category": "i18n",
+      "complexity": "complex",
+      "elementRecall": 0.9983515351329075,
+      "testidRecall": 1,
+      "interactiveRecall": 0.9985401459854014,
+      "selectorAccuracy": 0.9983515351329075,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.5003095975232198,
+      "semanticRecall": 0.7964824120603015,
+      "overall": 0.929
+    },
+    {
+      "url": "https://gitlab.com/explore",
+      "category": "spa",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.563508064516129,
+      "semanticRecall": 0.6666666666666666,
+      "overall": 0.923
+    },
+    {
+      "url": "https://www.worldometers.info",
+      "category": "data",
+      "complexity": "complex",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.23159784560143626,
+      "semanticRecall": 1,
+      "overall": 0.923
+    },
+    {
+      "url": "https://regex101.com",
+      "category": "tools",
+      "complexity": "moderate",
+      "elementRecall": 1,
+      "testidRecall": 1,
+      "interactiveRecall": 1,
+      "selectorAccuracy": 1,
+      "bboxAccuracy": 1,
+      "textAccuracy": 0.5191011235955056,
+      "semanticRecall": 0.6666666666666666,
+      "overall": 0.919
+    }
+  ]
+}

@@ -145,4 +145,4 @@ AI starts operations but rarely cleans them up. This is the most consistent AI f
 - University of Waterloo (2026): 25% error rate across Copilot, Cursor, Claude Code
 - Fordel Studios: 12-point AI code review checklist
 - sumvec.ai: AI Coding Protocol - systematic failure patterns
-- ViewGraph bug pattern analysis: docs/engineering/bug-pattern-analysis.md
+- ViewGraph bug pattern analysis: docs/architecture/bug-pattern-analysis.md

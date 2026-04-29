@@ -23,7 +23,7 @@ Organized by trigger type.
 | `CONTRIBUTING.md` | "N MCP tool handlers" |
 | `npm-readme.md` | Tool count |
 | `power/prompts/vg-help.md` + `.kiro/prompts/vg-help.md` | "all N tools" |
-| `docs/audits/security-audit-*.md` | Tool count in attack surface |
+| `docs/reviews/security-audit-*.md` | Tool count in attack surface |
 | `docs/demo/demo-strategy.md` | "all N MCP tools" |
 | `.kiro/specs/npx-init/requirements.md` | Package description |
 | `.kiro/steering/versioning.md` | Tag example |

@@ -507,7 +507,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - 982 tests verified: 46 routing, 10 security, all edge cases covered
 - Prompt engineering audit: all 8 prompts tightened with scope boundaries and output formats
 - BUG-012: steering doc overriding prompt constraints - fixed with priority section
-- Reports: `docs/audits/codebase-audit-2026-04-15.md`, `docs/audits/prompt-engineering-audit-2026-04-15.md`
+- Reports: `docs/reviews/codebase-audit-2026-04-15.md`, `docs/reviews/prompt-engineering-audit-2026-04-15.md`
 
 #### ADR-010: Auth Removal for Beta (2026-04-13)
 - Removed HTTP auth tokens from server, extension, and init script
@@ -560,7 +560,7 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - Eliminated `docs/ideas/` - moved 4 files to `docs/architecture/` and `docs/decisions/`
 - Moved `product-positioning.md` and `problem-feature-mapping.md` from `docs/roadmap/` to `docs/architecture/`
 - Moved `sidebar-ux-fixes.md` from `docs/roadmap/` to `docs/bugs/`
-- Created `docs/audits/` for timestamped review reports (3 files moved from `docs/architecture/`)
+- Created `docs/reviews/` for timestamped review reports (3 files moved from `docs/architecture/`)
 - Merged `output-format-research.md` into `viewgraph-format-research.md` (single format research doc)
 - Updated all cross-references (8 links across 5 files)
 

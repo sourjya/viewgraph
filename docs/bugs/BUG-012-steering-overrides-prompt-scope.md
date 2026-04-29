@@ -29,7 +29,7 @@ Added new top-level section: "When the user uses a @vg- prompt shortcut" - expli
 - Repeated "Do NOT" instructions to overcome LLM tendency to "be helpful"
 
 ### All prompts audited
-Full audit of all 8 prompts documented in `docs/audits/prompt-engineering-audit-2026-04-15.md`. Each prompt now has explicit action scope, consistent output format, and error handling.
+Full audit of all 8 prompts documented in `docs/reviews/prompt-engineering-audit-2026-04-15.md`. Each prompt now has explicit action scope, consistent output format, and error handling.
 
 ## Files Changed
 

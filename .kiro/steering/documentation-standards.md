@@ -17,15 +17,19 @@ All documentation must be placed in the appropriate `docs/` subdirectory based o
 
 ### docs/architecture/
 - **Purpose**: Technical documentation of HOW the system works today
-- **Content**: System structure, data flows, format specs, project metrics
+- **Content**: System structure, data flows, format specs, project metrics, feature specs
 
 ### docs/product/
-- **Purpose**: Product strategy, UX design, and go-to-market
-- **Content**: Product analysis, positioning, UX designs, pain points, feature mapping
+- **Purpose**: Product strategy, UX design, marketing, and go-to-market
+- **Content**: Product analysis, positioning, UX designs, pain points, feature mapping, cost analysis, demo scripts
 
 ### docs/references/
 - **Purpose**: Research, competitive analysis, and external documentation
 - **Content**: Format research, competitive analysis, migration research, strategic recommendations
+
+### docs/reviews/
+- **Purpose**: Code reviews, audits, and maintainability reports
+- **Content**: Security audits, code quality audits, maintainability reviews, UX reviews
 
 ### docs/roadmap/
 - **Purpose**: Project planning and milestone tracking
@@ -56,7 +60,7 @@ All documentation must be placed in the appropriate `docs/` subdirectory based o
 ### docs/references/
 - **Purpose**: External documentation, research materials, API guides
 
-### docs/engineering/
+### docs/architecture/
 - **Purpose**: Engineering process documentation, execution standards
 
 ### docs/security/
