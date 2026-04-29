@@ -6,7 +6,13 @@ Last updated: v0.9.2 (2026-04-29)
 
 ---
 
-## Chrome Web Store - Detailed Description
+## Chrome Web Store
+
+### Short Description (132 chars)
+
+The UI context layer for AI coding agents. Annotate UI bugs, send to your agent with full DOM context. 41 MCP tools.
+
+### Detailed Description
 
 ViewGraph is the UI context layer for AI coding agents. When you see a bug in the browser, click it, describe what's wrong, and send it to your agent. The agent receives the element's exact CSS selector, computed styles, accessibility state, and your comment - then finds the source file and fixes the code.
 
@@ -59,40 +65,94 @@ Add to your agent's MCP config:
 
 Quick Start: https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start
 
----
+### Privacy Practices - alarms justification
 
-## Chrome Web Store - Short Description (132 chars)
-
-The UI context layer for AI coding agents. Annotate UI bugs, send to your agent with full DOM context. 41 MCP tools.
+ViewGraph uses chrome.alarms to poll for resolved annotations every 5 minutes when the sidebar is closed. When the AI agent resolves an issue via the MCP server, the extension needs to detect this and update the sidebar badge count. The alarm triggers a lightweight check against the local MCP server (localhost only) - no external network requests are made.
 
 ---
 
-## Firefox Add-ons - Summary (250 chars)
+## Firefox Add-ons
 
-The UI context layer for AI coding agents. Click elements, describe bugs, send to your AI assistant with full DOM context, computed styles, and 21 enrichment collectors. Works with Kiro, Claude Code, Cursor.
+### Summary (250 chars)
 
-## Firefox Add-ons - Description
+AI-powered UI capture and annotation for coding agents. Click bugs, get auto-suggestions, panic capture mid-action, see live fix status, HMAC-signed communication, and 5-layer injection defense. Works with any MCP agent.
 
-(Same as Chrome Web Store detailed description above)
+### Description (Markdown supported)
+
+ViewGraph is the **UI context layer for AI coding agents**. When you see a bug in the browser, click it, describe what's wrong, and send it to your agent. The agent receives the element's exact CSS selector, computed styles, accessibility state, and your comment - then finds the source file and fixes the code.
+
+**Annotation & Capture**
+- Click any element to annotate with comments, severity, and category
+- Shift+drag to select a region
+- **Panic capture** (Ctrl+Shift+V): instant DOM + screenshot snapshot mid-action, without opening the sidebar
+- **Live annotation status**: see real-time progress as your agent works (queued → fixing → resolved)
+- Idea mode: toggle the lightbulb to switch from bug reporting to feature ideation
+- Smart suggestions: clickable chips for detected issues (missing aria-label, no testid, low contrast)
+- Keyboard shortcuts: Ctrl+Enter (send), Ctrl+Shift+C (copy), 1/2/3 (severity), Esc (close)
+
+**Enrichment & Diagnostics**
+- 21 enrichment collectors: network, console, accessibility, layout, components, client storage, transient state, error boundaries, service worker state, build metadata, and more
+- Page Activity: captures toasts, flash content, animation jank, and render thrashing via 30s mutation buffer
+- Built-in diagnostics: copy or create notes from any section - no DevTools needed
+- Auto-audit: automatically runs a11y, layout, and testid audits after each capture
+- Auto-inspect suggestions: automatic 3-tier scan (accessibility, quality, testability) with add-to-review flow
+
+**v3 Format - Token Efficiency**
+- **Action Manifest**: pre-indexed interactive elements with short refs (@e1-@eN) - 80-85% fewer tokens
+- **Style dedup + default omission**: 30-45% smaller captures
+- **Container merging**: 30-50% fewer nodes (semantically empty wrappers removed)
+- **observationDepth**: interactive-only mode uses ~400 tokens vs ~100K full capture
+- **Structural fingerprint**: cache-hit detection between captures
+- **Spatial index**: O(log n) element queries by coordinate
+- **TOON compact format**: ~87% fewer tokens for action manifest
+- **Performance instrumentation**: capture timings in every snapshot
+
+**Export & Integration**
+- Three export modes: **Send to Agent** (MCP), **Copy Markdown** (Jira/GitHub), **Download ZIP** report
+- Baseline management: set and compare structural baselines from the sidebar
+- Multi-project support with automatic URL routing (up to 4 simultaneous projects)
+- Session recording for multi-step user journeys
+- HTML snapshots and screenshots saved alongside captures
+- **TracePulse integration**: frontend errors bridged to backend monitoring
+- Works with **Kiro, Claude Code, Cursor, Windsurf, Cline**, and any MCP-compatible agent
+- 41 MCP tools for querying, auditing, diffing, and generating specs
+
+**No agent required.** Testers and reviewers can use ViewGraph standalone. Annotate issues, copy as Markdown for Jira/GitHub, or download a ZIP report with screenshots. No MCP server needed.
+
+**Security**
+- HMAC-signed requests: challenge-response handshake, replay-proof signatures
+- URL trust indicator: shield icon shows trusted/configured/untrusted pages. Send gate blocks untrusted URLs.
+- Prompt injection defense: 5-layer protection (sanitize, wrap, detect, harden, gate)
+- STRIDE threat model with 9 identified and mitigated threats. 9 security reviews passed.
+- No account required. No data sent to external servers. All captures stay on your machine.
+- Open source ([AGPL-3.0](https://github.com/sourjya/viewgraph))
+
+**Links**
+- [Quick Start](https://chaoslabz.gitbook.io/viewgraph/getting-started/quick-start) - zero to first fix in 5 minutes
+- [Documentation](https://chaoslabz.gitbook.io/viewgraph)
+- [Security & Threat Model](https://chaoslabz.gitbook.io/viewgraph/reference/threat-model)
+- [GitHub](https://github.com/sourjya/viewgraph)
 
 ---
 
-## Firefox Add-ons - Release Notes Template
+## Firefox Add-ons - Release Notes
 
 ### v0.9.2
 - v3 format complete: Action Manifest, short refs, structural fingerprint, spatial index, Set-of-Marks, checkpoint/resume
-- 64% smaller content script (axe-core lazy loaded)
+- 64% smaller content script (axe-core lazy loaded from web-accessible resource)
 - Container merging (30-50% fewer nodes)
 - observationDepth parameter (interactive-only: ~400 tokens)
 - TOON compact format (~87% fewer tokens)
 - Performance instrumentation in every capture
 - TracePulse integration for frontend-backend error correlation
-- Security: path validation, PII redaction expanded, timing data privacy fix
+- Security: path validation on file write, PII redaction expanded, timing data privacy fix
 - Welcome page on first install
+- verify_fix: one-call smoke test (a11y + layout + console + network + regressions)
+- Uninstall CLI: npx @viewgraph/core uninstall
 
 ---
 
-## Firefox Add-ons - Notes for Reviewer Template
+## Firefox Add-ons - Notes for Reviewer
 
 What this extension does:
 Developer tool that captures structured DOM snapshots and sends them to AI coding assistants via the Model Context Protocol (MCP). Used by developers to annotate UI bugs and send them to AI agents for fixing.
@@ -101,7 +161,7 @@ Permissions:
 - activeTab: Capture DOM of current tab when user clicks the toolbar icon
 - storage: User preferences (auto-capture, collapse state) and annotation data
 - scripting: Content script injection for DOM traversal and annotation overlays
-- alarms: Background sync polling for resolved annotations (every 5 min)
+- alarms: Background sync polling for resolved annotations (every 5 min, localhost only)
 - host_permissions (all_urls): Captures DOM from any page the developer works on. Only activates on toolbar icon click - no background scanning.
 
 Key technical notes:
@@ -109,6 +169,7 @@ Key technical notes:
 - web_accessible_resources includes axe.min.js and icon files.
 - No remote code. All JS bundled. No CDN, no eval(), no external dynamic loading.
 - No data collection. No telemetry, no analytics. All data stays in local .viewgraph/ directory.
+- MCP server runs on localhost only (127.0.0.1, ports 9876-9879).
 
 Source: https://github.com/sourjya/viewgraph (AGPL-3.0)
 
