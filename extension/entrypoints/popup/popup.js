@@ -14,15 +14,18 @@ chrome.storage.local.get('vg-blocked-reason', (result) => {
     chrome.storage.local.remove('vg-blocked-reason');
     // Show blocked message instead of normal UI
     const container = document.querySelector('.container');
-    container.innerHTML = `
-      <div class="header">
-        <img src="/icon-48.png" width="20" height="20" alt="">
-        <h1>ViewGraph</h1>
-      </div>
-      <div style="padding: 8px 0; font-size: 12px; color: #9ca3af; line-height: 1.5;">
-        ${reason}
-      </div>
-    `;
+    container.replaceChildren();
+    const header = document.createElement('div');
+    header.className = 'header';
+    const img = document.createElement('img');
+    img.src = '/icon-48.png'; img.width = 20; img.height = 20; img.alt = '';
+    const h1 = document.createElement('h1');
+    h1.textContent = 'ViewGraph';
+    header.append(img, h1);
+    const msg = document.createElement('div');
+    Object.assign(msg.style, { padding: '8px 0', fontSize: '12px', color: '#9ca3af', lineHeight: '1.5' });
+    msg.textContent = reason;
+    container.append(header, msg);
     // Reset popup so next click on injectable page goes through onClicked
     chrome.action.setPopup({ popup: '' });
     return;

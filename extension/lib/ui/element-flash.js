@@ -26,13 +26,13 @@ export function flashElement(el, options = {}) {
   const rect = el.getBoundingClientRect();
   const overlay = document.createElement('div');
   overlay.className = FLASH_CLASS;
-  overlay.style.cssText = `
-    position: fixed; pointer-events: none; z-index: 2147483646;
-    top: ${rect.top}px; left: ${rect.left}px;
-    width: ${rect.width}px; height: ${rect.height}px;
-    background: ${options.color || 'rgba(99, 102, 241, 0.3)'};
-    border-radius: 4px;
-  `;
+  Object.assign(overlay.style, {
+    position: 'fixed', pointerEvents: 'none', zIndex: '2147483646',
+    top: `${rect.top}px`, left: `${rect.left}px`,
+    width: `${rect.width}px`, height: `${rect.height}px`,
+    background: options.color || 'rgba(99, 102, 241, 0.3)',
+    borderRadius: '4px',
+  });
   document.body.appendChild(overlay);
   // Force reflow then add animation class
   overlay.offsetHeight; // Force reflow before animation

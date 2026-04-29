@@ -22,32 +22,31 @@ let _axeLoaded = false;
 
 /**
  * Inject axe-core from the extension's web-accessible resource.
- * Only injects once per page load. Uses script tag injection since
- * content scripts in MV3 must be single files (can't code-split).
+ * Uses chrome.scripting.executeScript via the background service worker
+ * to avoid DOM script injection. Falls back to dynamic import if unavailable.
  * @returns {Promise<boolean>} true if axe is available
  */
 async function ensureAxeLoaded() {
   if (_axeLoaded && typeof window.axe !== 'undefined') return true;
 
   try {
-    // Try web-accessible resource first (no bundling, ~550KB saved)
-    const url = chrome.runtime.getURL('axe.min.js');
-    await new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = url;
-      script.onload = () => { _axeLoaded = true; resolve(); };
-      script.onerror = reject;
-      (document.head || document.documentElement).appendChild(script);
+    // Ask background script to inject axe.min.js via chrome.scripting API
+    // This avoids createElement('script') in the content script
+    const response = await new Promise((resolve) => {
+      chrome.runtime.sendMessage({ type: 'inject-axe' }, resolve);
     });
-    return typeof window.axe !== 'undefined';
-  } catch {
-    // Fallback: try dynamic import (bundled version, if available)
-    try {
-      const mod = await import('axe-core');
-      if (mod.default?.run) { _axeLoaded = true; return true; }
-    } catch { /* neither method available */ }
-    return false;
-  }
+    if (response?.ok) {
+      _axeLoaded = true;
+      return typeof window.axe !== 'undefined';
+    }
+  } catch { /* background not available */ }
+
+  // Fallback: dynamic import (bundled version, if available)
+  try {
+    const mod = await import('axe-core');
+    if (mod.default?.run) { _axeLoaded = true; return true; }
+  } catch { /* neither method available */ }
+  return false;
 }
 
 /**

@@ -272,6 +272,23 @@ export default defineBackground(() => {
       return false;
     }
 
+    // Inject axe-core into page main world via chrome.scripting (avoids createElement('script'))
+    if (message.type === 'inject-axe') {
+      (async () => {
+        try {
+          const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+          if (!tab?.id) { sendResponse({ ok: false }); return; }
+          await chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ['axe.min.js'],
+            world: 'MAIN',
+          });
+          sendResponse({ ok: true });
+        } catch (e) { sendResponse({ ok: false, error: e.message }); }
+      })();
+      return true;
+    }
+
     // Open extension options page from sidebar settings
     if (message.type === 'open-options') {
       chrome.tabs.create({ url: chrome.runtime.getURL('options.html') });
