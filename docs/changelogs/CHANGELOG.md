@@ -10,6 +10,18 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ## [0.9.1] - 2026-04-29 (post-release fixes)
 
+### MRR-008 Phase 1 (2026-04-30)
+- 9 safe immediate fixes from full server maintainability review
+- 13.4: Error logging on 6 silent catch blocks
+- 13.5: Native message handler stubs return explicit errors
+- 13.6: Indexer eviction O(n log n) → O(n)
+- 13.11: TracePulse SSRF check uses URL parsing
+- 13.12: validate-path trailing-slash edge case
+- 13.16: Challenge cleanup per-setTimeout (O(1) per handshake)
+- 13.17: Session store background expiry sweep
+- 13.23: crypto.randomUUID() for chunk IDs
+- 13.24: Dead httpReceiver.getInfo call removed
+
 ### Security (SRR-009)
 - HIGH: Path validation on filePath parameter in get_capture and compare_screenshots (arbitrary file write prevention)
 - MEDIUM: Replace performance.mark/measure with local Date.now() timing (prevents page script fingerprinting)

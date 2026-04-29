@@ -23,6 +23,16 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ## v0.9.2 - April 29, 2026
 
+### MRR-008 Phase 1 Fixes (April 30)
+- 9 safe immediate fixes from Claude Code's fresh-eyes server review
+- Error logging added to 6 silent catch blocks
+- Indexer eviction O(n log n) to O(n), challenge cleanup O(n) to O(1)
+- SSRF check upgraded from regex to URL parsing
+- validate-path trailing-slash edge case fixed
+- Session store background expiry sweep (prevents memory leak)
+- crypto.randomUUID() replaces Math.random() for chunk IDs
+- Dead code removed, native message stubs return explicit errors
+
 ### Security & Code Quality
 - Eliminated all innerHTML assignments from extension source (11 usages replaced with DOM API)
 - Eliminated createElement('script') - axe-core now injected via chrome.scripting.executeScript

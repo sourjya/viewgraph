@@ -88,7 +88,7 @@ Based on [v3 Agentic Enhancements Research](../architecture/viewgraph-v3-agentic
 
 Sourced from [MRR-008 (2026-04-30)](../reviews/MRR-008-2026-04-30.md). Full task breakdown across three phases. Complete before v1.0 launch prep.
 
-### Phase 1 — Safe immediate fixes (~90 min total, zero regression risk)
+### Phase 1 — Safe immediate fixes (✅ COMPLETE — 9 of 10 fixed, 1 already done)
 
 | Task | Finding | File(s) | Effort |
 |------|---------|---------|--------|
