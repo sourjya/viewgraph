@@ -45,6 +45,41 @@ These require experiments to validate before implementation. Each has a detailed
 | Extension onboarding | Welcome page on first install with 3-step setup guide |
 | Uninstall CLI | viewgraph-uninstall - guided project removal with data preservation option |
 
+## v3 Format Enhancement Roadmap
+
+Based on [v3 Agentic Enhancements Research](../architecture/viewgraph-v3-agentic-enhancements.md). Goal: 97% token reduction for multi-step agent workflows.
+
+### Phase 1 - v2.4 (High impact, low effort)
+
+| # | Enhancement | Status | Token Impact |
+|---|---|---|---|
+| 1 | Action Manifest (pre-joined interactive index) | Building | 80-85% reduction on interactive queries |
+| 2 | Stable short refs (@e1-@eN) | Building | Fewer tokens per tool call |
+| 3 | Structural fingerprint in metadata | Building | Cache-hit detection for unchanged pages |
+| 4 | Error-to-node correlation (correlatedRefs) | Building | Eliminates 200-500 tokens LLM reasoning per error |
+| 5 | lastActionTarget in metadata | Building | Agent knows what it just acted on |
+| 6 | Compact enum codec (compactCodec) | Planned | 70-87% on repeated structures |
+| 7 | Viewport-first node ordering | Planned | 20-30% faster scan-to-first-match |
+
+### Phase 2 - v3.0 (Medium effort)
+
+| # | Enhancement | Status | Token Impact |
+|---|---|---|---|
+| 8 | File-backed capture receipts | Planned | ~99.8% on capture transmission |
+| 9 | Delta capture mode with changeSignal | Planned | 90-99% on follow-up captures |
+| 10 | D2Snap container merging | Planned | 35-40% on nodes/details |
+| 11 | TOON compact serialization | Planned | 70-87% on uniform structures |
+| 12 | observationDepth parameter | Planned | ~96% at interactive-only depth |
+
+### Phase 3 - v3.1 (Higher effort)
+
+| # | Enhancement | Status | Token Impact |
+|---|---|---|---|
+| 13 | Set-of-Marks annotated screenshots | Planned | Visual + text ref equivalence |
+| 14 | Checkpoint/resume envelope | Planned | Multi-step recovery |
+| 15 | Spatial index quadtree | Planned | O(log n) point/region queries |
+| 16 | MCP tool consolidation (41 → 5) | Planned | Schema overhead reduction |
+
 ## Remaining Polish
 
 | Item | Effort | Description |

@@ -38,6 +38,7 @@
 * [ViewGraph vs Competitors](comparison/overview.md)
 * [Capture Accuracy](comparison/accuracy.md)
 * [The Capture Format](comparison/capture-format.md)
+* [v2 to v3: Token Efficiency](comparison/capture-format-v3.md)
 
 ## Reference
 

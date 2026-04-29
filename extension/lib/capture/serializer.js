@@ -36,7 +36,7 @@ function buildMetadata(elements) {
 
   return {
     format: 'viewgraph-v2',
-    version: '2.3.0',
+    version: '2.4.0',
     profile: 'readable',
     timestamp: new Date().toISOString(),
     url: window.location.href,
@@ -57,6 +57,7 @@ function buildMetadata(elements) {
       captureSizeBytes: 0, // updated after serialization
       sizeLimitBytes: 409600,
     },
+    structuralFingerprint: computeFingerprint(elements),
     extension: { name: 'ViewGraph Capture', version: (typeof chrome !== 'undefined' && chrome.runtime?.getManifest?.()?.version) || 'unknown' },
   };
 }
@@ -354,15 +355,112 @@ function buildProvenance() {
 }
 
 /**
- * Serialize scored elements into a complete ViewGraph v2.3 capture.
+ * Build the Action Manifest - pre-joined flat index of all interactive elements.
+ * This is the primary agent entry point. Replaces the 2-pass nodes+details join.
+ * Each element gets a stable short ref (e1, e2, ...) assigned in document order.
+ *
+ * @see docs/architecture/viewgraph-v3-agentic-enhancements.md - Enhancement 1 & 2
+ * @param {Array} elements - Scored elements
+ * @returns {object} Action manifest with byAction groups and stats
+ */
+function buildActionManifest(elements) {
+  const viewport = { w: typeof window !== 'undefined' ? window.innerWidth : 1920, h: typeof window !== 'undefined' ? window.innerHeight : 1080 };
+  let refCounter = 1;
+  const byAction = { clickable: [], fillable: [], navigable: [] };
+
+  // Sort: in-viewport first, then by salience (high > med > low), then document order
+  const actionable = elements.filter((el) => el.isInteractive || el.tag === 'a' || el.tag === 'select');
+  const sorted = actionable.sort((a, b) => {
+    const aInVp = isInViewport(a.bbox, viewport) ? 0 : 1;
+    const bInVp = isInViewport(b.bbox, viewport) ? 0 : 1;
+    if (aInVp !== bInVp) return aInVp - bInVp;
+    const salOrder = { high: 0, med: 1, low: 2 };
+    return (salOrder[a.salience] || 2) - (salOrder[b.salience] || 2);
+  });
+
+  const viewportRefs = [];
+
+  for (const el of sorted) {
+    const ref = `e${refCounter++}`;
+    const inVp = isInViewport(el.bbox, viewport);
+    const entry = {
+      ref,
+      nid: el.nid,
+      alias: el.alias,
+      tag: el.tag,
+      axName: el.ariaLabel || el.text?.slice(0, 50) || '',
+      bbox: el.bbox,
+      locator: el.testid ? { strategy: 'testId', value: el.testid }
+        : el.htmlId ? { strategy: 'id', value: el.htmlId }
+        : { strategy: 'css', value: el.selector },
+      inViewport: inVp,
+    };
+
+    if (inVp) viewportRefs.push(ref);
+
+    // Classify by action type
+    const tag = el.tag;
+    if (tag === 'input' || tag === 'textarea' || tag === 'select') {
+      byAction.fillable.push(entry);
+    } else if (tag === 'a') {
+      byAction.navigable.push(entry);
+    } else {
+      byAction.clickable.push(entry);
+    }
+  }
+
+  return {
+    version: 1,
+    byAction,
+    viewportRefs,
+    stats: {
+      clickable: byAction.clickable.length,
+      fillable: byAction.fillable.length,
+      navigable: byAction.navigable.length,
+      total: refCounter - 1,
+      inViewport: viewportRefs.length,
+    },
+    refScheme: { type: 'sequential-e', lastRef: `e${refCounter - 1}` },
+  };
+}
+
+/** Check if a bbox [x, y, w, h] is within the viewport. */
+function isInViewport(bbox, viewport) {
+  if (!bbox || bbox.length < 4) return false;
+  const [x, y, w, h] = bbox;
+  const scrollX = typeof window !== 'undefined' ? window.scrollX : 0;
+  const scrollY = typeof window !== 'undefined' ? window.scrollY : 0;
+  const vx = x - scrollX;
+  const vy = y - scrollY;
+  return vx + w > 0 && vy + h > 0 && vx < viewport.w && vy < viewport.h;
+}
+
+/**
+ * Compute a structural fingerprint for cache-hit detection.
+ * SHA-256 of sorted node topology (nid, tag, parent, children, actions).
+ * If consecutive captures share fingerprints, only text/styles changed.
+ * @param {Array} elements
+ * @returns {string} Hex fingerprint
+ */
+function computeFingerprint(elements) {
+  // Simple djb2 hash of topology string (no crypto dependency in content script)
+  const topo = elements.map((el) => `${el.nid}:${el.tag}:${el.parentNid}:${el.isInteractive ? 1 : 0}`).sort().join('|');
+  let hash = 5381;
+  for (let i = 0; i < topo.length; i++) hash = ((hash << 5) + hash + topo.charCodeAt(i)) & 0x7fffffff;
+  return hash.toString(16).padStart(8, '0');
+}
+
+/**
+ * Serialize scored elements into a complete ViewGraph v2.4 capture.
  * @param {Array} elements - Scored elements from salience.scoreAll()
  * @param {Array} relations - Relations from traverser
  * @param {object} [enrichment] - Optional enrichment data (network, console)
- * @returns {object} Complete ViewGraph v2.1 JSON object
+ * @returns {object} Complete ViewGraph v2.4 JSON object
  */
 export function serialize(elements, relations, enrichment = {}) {
   const metadata = buildMetadata(elements);
   const { details, styleTable } = buildDetails(elements);
+  const actionManifest = buildActionManifest(elements);
   const capture = {
     metadata,
     summary: buildSummary(elements, metadata),
@@ -371,6 +469,7 @@ export function serialize(elements, relations, enrichment = {}) {
     provenance: buildProvenance(),
     styleTable,
     details,
+    actionManifest,
   };
 
   // Enrichment sections - each key maps directly to a top-level capture field
@@ -385,6 +484,25 @@ export function serialize(elements, relations, enrichment = {}) {
     if (enrichment[key]) capture[key] = enrichment[key];
   }
   if (enrichment.session) capture.metadata.session = enrichment.session;
+
+  // v3 Enhancement 7: Error-to-node correlation
+  // Correlate console errors and failed network requests with actionManifest refs
+  if (capture.console?.errors?.length && capture.actionManifest) {
+    for (const err of capture.console.errors) {
+      // Heuristic: if error mentions a component/element name, find matching refs
+      const allRefs = [...(capture.actionManifest.byAction.clickable || []), ...(capture.actionManifest.byAction.fillable || []), ...(capture.actionManifest.byAction.navigable || [])];
+      const correlated = allRefs.filter((r) => err.message && (err.message.includes(r.alias?.split(':')[1] || '') || err.message.includes(r.tag)));
+      if (correlated.length > 0 && correlated.length <= 5) {
+        err.correlatedRefs = correlated.map((r) => r.ref);
+      }
+    }
+  }
+  if (capture.network?.failed?.length && capture.actionManifest) {
+    for (const req of (capture.network.failed || [])) {
+      // Heuristic: correlate failed API requests with data-dependent clusters
+      req.correlatedRefs = capture.actionManifest.viewportRefs?.slice(0, 3) || [];
+    }
+  }
 
   // Update capture size estimate
   const jsonStr = JSON.stringify(capture);

@@ -36,7 +36,7 @@ describe('serialize', () => {
   it('metadata has correct format and version', () => {
     const capture = serialize([el()], []);
     expect(capture.metadata.format).toBe('viewgraph-v2');
-    expect(capture.metadata.version).toBe('2.3.0');
+    expect(capture.metadata.version).toBe('2.4.0');
   });
 
   it('metadata includes stats with salience counts', () => {
