@@ -1,99 +1,90 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 340" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 340" font-family="system-ui, -apple-system, sans-serif">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#0f172a"/>
       <stop offset="100%" stop-color="#1e293b"/>
     </linearGradient>
-    <marker id="arrowGray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-      <polygon points="0 0, 8 3, 0 6" fill="#475569"/>
+    <marker id="aGray" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+      <polygon points="0 0, 6 2.5, 0 5" fill="#475569"/>
     </marker>
-    <marker id="arrowIndigo" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-      <polygon points="0 0, 8 3, 0 6" fill="#818cf8"/>
+    <marker id="aIndigo" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+      <polygon points="0 0, 6 2.5, 0 5" fill="#818cf8"/>
     </marker>
-    <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-      <polygon points="0 0, 8 3, 0 6" fill="#6ee7b7"/>
+    <marker id="aGreen" markerWidth="6" markerHeight="5" refX="6" refY="2.5" orient="auto">
+      <polygon points="0 0, 6 2.5, 0 5" fill="#6ee7b7"/>
     </marker>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.3"/>
-    </filter>
+    <filter id="sh"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.3"/></filter>
   </defs>
 
-  <!-- Background -->
   <rect width="800" height="340" rx="12" fill="url(#bg)"/>
 
-  <!-- ═══ ROW 1: Your App → Browser → Extension ═══ -->
+  <!-- ROW 1: Your App → Browser → Extension -->
 
-  <!-- Your App box -->
-  <rect x="30" y="40" width="140" height="56" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="30" y="40" width="140" height="56" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5" filter="url(#sh)"/>
   <text x="100" y="62" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="600" letter-spacing="0.5">ANY STACK</text>
   <text x="100" y="80" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">Your App</text>
 
-  <!-- Arrow: App → Browser -->
-  <line x1="170" y1="68" x2="218" y2="68" stroke="#475569" stroke-width="2" stroke-dasharray="6 3" marker-end="url(#arrowGray)"/>
-  <text x="194" y="58" text-anchor="middle" fill="#64748b" font-size="9">HTML</text>
+  <line x1="170" y1="68" x2="220" y2="68" stroke="#475569" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#aGray)"/>
+  <text x="195" y="58" text-anchor="middle" fill="#64748b" font-size="9">HTML</text>
 
-  <!-- Browser box -->
-  <rect x="226" y="40" width="140" height="56" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5" filter="url(#shadow)"/>
-  <text x="296" y="62" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="600" letter-spacing="0.5">RENDERS UI</text>
-  <text x="296" y="80" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">Browser</text>
+  <rect x="228" y="40" width="140" height="56" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="298" y="62" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="600" letter-spacing="0.5">RENDERS UI</text>
+  <text x="298" y="80" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="700">Browser</text>
 
-  <!-- Arrow: Browser → Extension -->
-  <line x1="366" y1="68" x2="428" y2="68" stroke="#818cf8" stroke-width="2.5" marker-end="url(#arrowIndigo)"/>
+  <line x1="368" y1="68" x2="430" y2="68" stroke="#818cf8" stroke-width="1.5" marker-end="url(#aIndigo)"/>
 
-  <!-- Extension box (highlighted) -->
-  <rect x="436" y="28" width="210" height="80" rx="12" fill="#1e1b4b" stroke="#818cf8" stroke-width="2" filter="url(#shadow)"/>
-  <text x="541" y="48" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600" letter-spacing="0.5">VIEWGRAPH EXTENSION</text>
-  <text x="541" y="66" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="700">DOM Snapshot → Custom JSON</text>
-  <text x="541" y="82" text-anchor="middle" fill="#818cf8" font-size="10">17 collectors + annotations</text>
-  <text x="541" y="98" text-anchor="middle" fill="#64748b" font-size="9">Salience-scored, token-optimized</text>
+  <!-- Extension box -->
+  <rect x="438" y="28" width="210" height="80" rx="12" fill="#1e1b4b" stroke="#818cf8" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="543" y="48" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600" letter-spacing="0.5">VIEWGRAPH EXTENSION</text>
+  <text x="543" y="66" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="700">DOM Snapshot + Action Manifest</text>
+  <text x="543" y="82" text-anchor="middle" fill="#818cf8" font-size="10">21 collectors + annotations + short refs</text>
+  <text x="543" y="98" text-anchor="middle" fill="#64748b" font-size="9">v3 format: 97% fewer tokens than raw DOM</text>
 
-  <!-- Arrow: Extension → Server (vertical) -->
-  <line x1="541" y1="108" x2="541" y2="152" stroke="#818cf8" stroke-width="2.5" marker-end="url(#arrowIndigo)"/>
+  <!-- Vertical arrow: Extension → Server -->
+  <line x1="543" y1="108" x2="543" y2="154" stroke="#818cf8" stroke-width="1.5" marker-end="url(#aIndigo)"/>
 
-  <!-- Security label on vertical arrow -->
-  <rect x="555" y="118" width="120" height="28" rx="6" fill="rgba(99,102,241,0.1)" stroke="#4f46e5" stroke-width="1"/>
-  <text x="615" y="130" text-anchor="middle" fill="#a5b4fc" font-size="8" font-weight="600">localhost / native msg</text>
-  <text x="615" y="140" text-anchor="middle" fill="#64748b" font-size="7">HMAC-signed or pipe</text>
+  <rect x="557" y="118" width="120" height="28" rx="6" fill="rgba(99,102,241,0.1)" stroke="#4f46e5" stroke-width="1"/>
+  <text x="617" y="130" text-anchor="middle" fill="#a5b4fc" font-size="8" font-weight="600">localhost / native msg</text>
+  <text x="617" y="140" text-anchor="middle" fill="#64748b" font-size="7">HMAC-signed or pipe</text>
 
-  <!-- ═══ ROW 2: Agent ← MCP ← Server ═══ -->
+  <!-- ROW 2: Agent ← MCP ← Server -->
 
-  <!-- ViewGraph Server box (highlighted) -->
-  <rect x="416" y="160" width="250" height="76" rx="12" fill="#1e1b4b" stroke="#818cf8" stroke-width="2" filter="url(#shadow)"/>
-  <text x="541" y="180" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600" letter-spacing="0.5">VIEWGRAPH MCP SERVER</text>
-  <text x="541" y="198" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="700">37 Tools - Query - Audit - Diff</text>
-  <text x="541" y="214" text-anchor="middle" fill="#818cf8" font-size="10">Progressive disclosure: 500 tokens first</text>
-  <text x="541" y="228" text-anchor="middle" fill="#64748b" font-size="9">vs 100K+ for a screenshot</text>
+  <rect x="418" y="162" width="250" height="76" rx="12" fill="#1e1b4b" stroke="#818cf8" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="543" y="182" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600" letter-spacing="0.5">VIEWGRAPH MCP SERVER</text>
+  <text x="543" y="200" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="700">41 Tools - Query - Audit - Verify - Diff</text>
+  <text x="543" y="216" text-anchor="middle" fill="#818cf8" font-size="10">observationDepth: 400 tokens (interactive-only)</text>
+  <text x="543" y="230" text-anchor="middle" fill="#64748b" font-size="9">File-backed receipts + JSON Patch diffs</text>
 
-  <!-- Arrow: Server → Agent -->
-  <line x1="416" y1="198" x2="338" y2="198" stroke="#6ee7b7" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
-  <text x="377" y="188" text-anchor="middle" fill="#6ee7b7" font-size="9" font-weight="600">MCP stdio</text>
+  <line x1="418" y1="200" x2="340" y2="200" stroke="#6ee7b7" stroke-width="1.5" marker-end="url(#aGreen)"/>
+  <text x="379" y="190" text-anchor="middle" fill="#6ee7b7" font-size="9" font-weight="600">MCP stdio</text>
 
-  <!-- AI Agent box -->
-  <rect x="100" y="160" width="230" height="76" rx="12" fill="#052e16" stroke="#059669" stroke-width="2" filter="url(#shadow)"/>
-  <text x="215" y="180" text-anchor="middle" fill="#6ee7b7" font-size="9" font-weight="600" letter-spacing="0.5">YOUR AI AGENT</text>
-  <text x="215" y="199" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="700">Kiro - Claude - Cursor - Windsurf</text>
-  <text x="215" y="216" text-anchor="middle" fill="#86efac" font-size="10">Reads capture → finds source → fixes code</text>
-  <text x="215" y="230" text-anchor="middle" fill="#64748b" font-size="9">Never touches the running app</text>
+  <rect x="100" y="162" width="232" height="76" rx="12" fill="#052e16" stroke="#059669" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="216" y="182" text-anchor="middle" fill="#6ee7b7" font-size="9" font-weight="600" letter-spacing="0.5">YOUR AI CODING AGENT</text>
+  <text x="216" y="201" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="700">Kiro - Claude - Cursor - Windsurf</text>
+  <text x="216" y="218" text-anchor="middle" fill="#86efac" font-size="10">Reads manifest - finds source - fixes code</text>
+  <text x="216" y="232" text-anchor="middle" fill="#64748b" font-size="9">Never touches the running app</text>
 
-  <!-- ═══ BOTTOM: Key benefits ═══ -->
+  <!-- Bottom benefits -->
   <rect x="30" y="268" width="740" height="56" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
 
-  <rect x="42" y="276" width="130" height="20" rx="10" fill="rgba(99,102,241,0.15)"/>
-  <text x="107" y="290" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600">Any web app</text>
+  <rect x="42" y="276" width="100" height="20" rx="10" fill="rgba(99,102,241,0.15)"/>
+  <text x="92" y="290" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600">Any web app</text>
 
-  <rect x="182" y="276" width="130" height="20" rx="10" fill="rgba(99,102,241,0.15)"/>
-  <text x="247" y="290" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600">Any MCP agent</text>
+  <rect x="150" y="276" width="120" height="20" rx="10" fill="rgba(99,102,241,0.15)"/>
+  <text x="210" y="290" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600">Any MCP agent</text>
 
-  <rect x="322" y="276" width="140" height="20" rx="10" fill="rgba(99,102,241,0.15)"/>
-  <text x="392" y="290" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600">100% local - no cloud</text>
+  <rect x="278" y="276" width="120" height="20" rx="10" fill="rgba(99,102,241,0.15)"/>
+  <text x="338" y="290" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600">100% local</text>
 
-  <rect x="472" y="276" width="140" height="20" rx="10" fill="rgba(99,102,241,0.15)"/>
-  <text x="542" y="290" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600">50-200x fewer tokens</text>
+  <rect x="406" y="276" width="140" height="20" rx="10" fill="rgba(99,102,241,0.15)"/>
+  <text x="476" y="290" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600">97% fewer tokens</text>
 
-  <rect x="622" y="276" width="138" height="20" rx="10" fill="rgba(99,102,241,0.15)"/>
-  <text x="691" y="290" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600">Zero config setup</text>
+  <rect x="554" y="276" width="100" height="20" rx="10" fill="rgba(99,102,241,0.15)"/>
+  <text x="604" y="290" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600">Zero config</text>
 
-  <!-- Security row -->
+  <rect x="662" y="276" width="100" height="20" rx="10" fill="rgba(99,102,241,0.15)"/>
+  <text x="712" y="290" text-anchor="middle" fill="#a5b4fc" font-size="9" font-weight="600">$0.10 / task</text>
+
   <rect x="42" y="302" width="718" height="16" rx="8" fill="rgba(5,150,105,0.08)"/>
-  <text x="401" y="313" text-anchor="middle" fill="#059669" font-size="8" font-weight="600">🔒 HMAC-signed requests | Native messaging (planned) | Closed shadow DOM | 6 security reviews | 0 open HIGH</text>
+  <text x="401" y="313" text-anchor="middle" fill="#059669" font-size="8" font-weight="600">HMAC-signed requests | Native messaging | Closed shadow DOM | 10 security reviews | AGPL-3.0</text>
 </svg>
