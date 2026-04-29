@@ -100,6 +100,16 @@ v3: $150/month
 
 Token counts measured from 175 real captures across 4 projects + 48 diverse websites. A "task" = 10 agent steps where each step may capture, read, or diff a page. v2 re-captures the full page each step (~100K tokens). v3 uses file-backed receipts (~200 tokens) + targeted reads (~500 tokens) + delta patches (~1K tokens). See [experiment scripts](https://github.com/sourjya/viewgraph/tree/main/scripts/experiments) for methodology.
 
+**The real impact: Opus becomes affordable.** Without ViewGraph v3, using Opus 4.7 for UI fixes costs $37,500/month. With v3: $1,200/month.
+
+| Model | v2 monthly (50 tasks/day) | v3 monthly | Savings |
+|---|---|---|---|
+| Opus 4.7 ($25/M output) | $37,500 | $1,200 | $36,300 |
+| Sonnet 4.6 ($15/M output) | $22,500 | $720 | $21,780 |
+| Haiku 4.5 ($5/M output) | $7,500 | $240 | $7,260 |
+
+[Full cost analysis across all models](https://github.com/sourjya/viewgraph/blob/main/docs/product/token-cost-analysis.md)
+
 ## What's Coming Next
 
 ### Phase 2 (v3.0)
