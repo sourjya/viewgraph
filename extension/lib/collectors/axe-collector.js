@@ -1,18 +1,14 @@
 /**
  * Axe-Core Accessibility Collector
  *
- * Runs axe-core accessibility scan on the current page and returns
- * structured results. axe-core is imported as a dependency and runs
- * in the content script context.
+ * Runs axe-core accessibility scan on the current page. axe-core is loaded
+ * lazily from a web-accessible resource (public/axe.min.js) instead of being
+ * bundled into the content script. This saves ~550KB from the initial bundle.
  *
  * If axe-core fails to load or run, returns null so the capture pipeline
- * falls back to ViewGraph's built-in a11y rules (which cover fewer checks
- * but are always available).
+ * falls back to ViewGraph's built-in a11y rules.
  *
- * axe-core provides 100+ WCAG rules vs ViewGraph's 6 built-in rules.
- * Results are included in the capture as the `axe` enrichment section.
- *
- * @see docs/architecture/strategic-recommendations.md - R2
+ * @see docs/architecture/viewgraph-v3-format-agentic-enhancements.md
  */
 
 /** Maximum violations to include (cap for capture size). */
@@ -21,15 +17,51 @@ const MAX_VIOLATIONS = 50;
 /** Maximum nodes per violation (cap for capture size). */
 const MAX_NODES_PER = 5;
 
+/** Whether axe-core has been injected into the page. */
+let _axeLoaded = false;
+
+/**
+ * Inject axe-core from the extension's web-accessible resource.
+ * Only injects once per page load. Uses script tag injection since
+ * content scripts in MV3 must be single files (can't code-split).
+ * @returns {Promise<boolean>} true if axe is available
+ */
+async function ensureAxeLoaded() {
+  if (_axeLoaded && typeof window.axe !== 'undefined') return true;
+
+  try {
+    // Try web-accessible resource first (no bundling, ~550KB saved)
+    const url = chrome.runtime.getURL('axe.min.js');
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = url;
+      script.onload = () => { _axeLoaded = true; resolve(); };
+      script.onerror = reject;
+      (document.head || document.documentElement).appendChild(script);
+    });
+    return typeof window.axe !== 'undefined';
+  } catch {
+    // Fallback: try dynamic import (bundled version, if available)
+    try {
+      const mod = await import('axe-core');
+      if (mod.default?.run) { _axeLoaded = true; return true; }
+    } catch { /* neither method available */ }
+    return false;
+  }
+}
+
 /**
  * Run axe-core scan and return structured results.
  * Returns null if axe-core is unavailable or scan fails.
- * @returns {Promise<{ violations: Array, passes: number, incomplete: number, inapplicable: number, timestamp: string }|null>}
+ * @returns {Promise<object|null>}
  */
 export async function collectAxeResults() {
   try {
-    const axe = await import('axe-core');
-    const results = await axe.default.run(document, {
+    const loaded = await ensureAxeLoaded();
+    if (!loaded) return null;
+
+    const axeInstance = window.axe;
+    const results = await axeInstance.run(document, {
       runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'] },
       resultTypes: ['violations', 'passes', 'incomplete'],
     });
@@ -50,10 +82,10 @@ export async function collectAxeResults() {
       passes: results.passes.length,
       incomplete: results.incomplete.length,
       inapplicable: results.inapplicable.length,
+      source: 'axe-core (lazy-loaded from web-accessible resource)',
       timestamp: new Date().toISOString(),
     };
   } catch {
-    // axe-core unavailable or scan failed - return null for graceful fallback
     return null;
   }
 }

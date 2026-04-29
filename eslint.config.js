@@ -48,6 +48,6 @@ export default [
   // Experiment scripts contain page.evaluate() callbacks with browser globals
   // that ESLint can't understand in a Node.js context
   {
-    ignores: ['**/node_modules/**', '**/.output/**', '**/dist/**', '**/logs/**', '**/.wxt/**', 'scripts/experiments/**', 'packages/playwright/bundle-prebuilt.js'],
+    ignores: ['**/node_modules/**', '**/.output/**', '**/dist/**', '**/logs/**', '**/.wxt/**', 'scripts/experiments/**', 'packages/playwright/bundle-prebuilt.js', 'extension/public/axe.min.js'],
   },
 ];

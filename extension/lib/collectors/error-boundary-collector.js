@@ -27,7 +27,6 @@ export function collectErrorBoundaries() {
     const fiber = reactRoot._reactRootContainer?._internalRoot?.current || findFiber(reactRoot);
     if (fiber) {
       walkFiber(fiber, (node) => {
-        // Error boundaries have a stateNode with componentDidCatch
         if (node.stateNode?.componentDidCatch && node.memoizedState?.isError) {
           boundaries.push({
             component: node.type?.displayName || node.type?.name || 'Unknown',
@@ -38,6 +37,31 @@ export function collectErrorBoundaries() {
       });
     }
     if (boundaries.length > 0) return { boundaries, framework: 'react' };
+  }
+
+  // Vue: check for app-level error handler and component error state
+  const vueRoot = document.querySelector('[data-v-app]') || document.getElementById('app');
+  if (vueRoot?.__vue_app__) {
+    const app = vueRoot.__vue_app__;
+    // Vue 3: app.config.errorHandler is set when errors are caught
+    if (app.config?.errorHandler) {
+      boundaries.push({ component: 'Vue.errorHandler', hasError: true, framework: 'vue' });
+    }
+    // Check for components with __isKeepAlive or error state
+    if (app._instance?.isMounted === false) {
+      boundaries.push({ component: 'Vue.rootComponent', hasError: true, framework: 'vue', note: 'Root component failed to mount' });
+    }
+  }
+
+  // Svelte: check for error-related DOM patterns from Svelte's {#await} and error boundaries
+  for (const el of document.querySelectorAll('[data-svelte-h]')) {
+    if (el.textContent?.toLowerCase().includes('error') && el.closest('[class*="error"]')) {
+      boundaries.push({
+        selector: el.tagName.toLowerCase() + (el.className ? '.' + el.className.split(' ')[0] : ''),
+        text: el.textContent.trim().slice(0, MAX_TEXT_LENGTH),
+        framework: 'svelte',
+      });
+    }
   }
 
   // Generic: look for common error fallback patterns in DOM

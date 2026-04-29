@@ -9,6 +9,14 @@
 import { defineConfig } from 'wxt';
 
 export default defineConfig({
+  // Exclude axe-core from bundle - loaded lazily from public/axe.min.js
+  vite: () => ({
+    build: {
+      rollupOptions: {
+        external: ['axe-core'],
+      },
+    },
+  }),
   manifest: {
     name: 'ViewGraph Capture',
     description: 'Capture DOM structure, screenshots, and annotations for AI-powered UI analysis',
@@ -34,7 +42,7 @@ export default defineConfig({
       },
     },
     web_accessible_resources: [
-      { resources: ['icon-16.png', 'icon-48.png'], matches: ['<all_urls>'] },
+      { resources: ['icon-16.png', 'icon-48.png', 'axe.min.js'], matches: ['<all_urls>'] },
     ],
     // Firefox requires an explicit add-on ID for MV3
     browser_specific_settings: {
