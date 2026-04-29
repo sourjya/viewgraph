@@ -113,5 +113,5 @@ v3: $150/month
 
 The full format specification is maintained on GitHub:
 - [v2.4 Format Spec](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/viewgraph-v2-format.md)
-- [v3 Research Document](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/viewgraph-v3-agentic-enhancements.md)
+- [v3 Research Document](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/viewgraph-v3-format-agentic-enhancements.md)
 - [Token Efficiency Experiments](https://github.com/sourjya/viewgraph/blob/main/docs/ideas/token-efficiency-experiments.md)
