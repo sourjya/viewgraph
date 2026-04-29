@@ -36,6 +36,14 @@ export function register(server, _indexer, capturesDir) {
         .describe('Control how much data to return. interactive-only: ~400 tokens (actionManifest only). ax-plus-content: ~8K tokens (manifest + summary + text). full-detail: everything (default).'),
     },
     async ({ filename, filePath: outputPath, observationDepth }) => {
+      // S3-7: Validate outputPath is within the project directory
+      if (outputPath) {
+        const resolved = path.resolve(outputPath);
+        const projectRoot = path.resolve(capturesDir, '..');
+        if (!resolved.startsWith(projectRoot + path.sep) && resolved !== projectRoot) {
+          return errorResponse('Error: filePath must be within the project directory');
+        }
+      }
       let filePath;
       try {
         filePath = validateCapturePath(filename, capturesDir);

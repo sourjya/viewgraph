@@ -116,6 +116,8 @@ Based on [v3 Agentic Enhancements Research](../architecture/viewgraph-v3-agentic
 
 | SRR | Date | Scope | Report |
 |-----|------|-------|--------|
+| SRR-009 | 2026-04-29 | Tier 2 v3 enhancements | 1 HIGH (filePath write), 3 MEDIUM, 3 LOW fixed |
+| SRR-008 | 2026-04-29 | Tier 3 full codebase | 1 CRITICAL (handshake), 3 HIGH, 4 MEDIUM fixed |
 | SRR-007 | 2026-04-27 | Tier 3 sprint-end | [Report](../security/SRR-007-2026-04-27-T3.md) |
 | SRR-006 | 2026-04-24 | Tier 3 sprint-end | [Report](../security/SRR-006-2026-04-24-T3.md) |
 
@@ -123,4 +125,5 @@ Based on [v3 Agentic Enhancements Research](../architecture/viewgraph-v3-agentic
 
 | MRR | Date | Report |
 |-----|------|--------|
+| MRR-007 | 2026-04-29 | 6 HIGH (test gaps), 4 MEDIUM, 4 LOW. Test gaps documented for next sprint. |
 | MRR-005 | 2026-04-27 | [Report](../reviews/MRR-005-2026-04-27.md) |

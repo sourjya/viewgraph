@@ -232,6 +232,8 @@ export function traverseDOM(root = document.body) {
     if (!MERGE_TAGS.has(el.tag)) return true;
     if (el.testid || el.htmlId || el.role || el.ariaLabel) return true;
     if (el.isInteractive) return true;
+    // S3-8: Preserve nodes with data-* or aria-* attributes (may contain security-relevant data)
+    if (Object.keys(el.attributes || {}).length > 0) return true;
     if (el.text && el.text.trim() && el.childNids.length === 0) return true; // leaf text node
     // Merge: re-parent children to this node's parent
     if (el.childNids.length <= 1) {

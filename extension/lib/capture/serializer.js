@@ -10,6 +10,9 @@
 
 import { extractStyles } from './traverser.js';
 
+/** Default viewport fallback for test environments where window is unavailable. */
+const DEFAULT_VIEWPORT = { w: 1920, h: 1080 };
+
 /**
  * Lazily extract styles from an element's _computedRef.
  * Only called for high/med salience nodes to avoid wasted work on low nodes.
@@ -122,7 +125,7 @@ function buildSummary(elements, metadata) {
  */
 function buildNodes(elements) {
   const nodes = { high: {}, med: {}, low: {} };
-  const viewport = { w: typeof window !== 'undefined' ? window.innerWidth : 1920, h: typeof window !== 'undefined' ? window.innerHeight : 1080 };
+  const viewport = { w: typeof window !== 'undefined' ? window.innerWidth : DEFAULT_VIEWPORT.w, h: typeof window !== 'undefined' ? window.innerHeight : DEFAULT_VIEWPORT.h };
 
   // Viewport-first ordering: sort inViewport elements first within each tier
   const sorted = [...elements].sort((a, b) => {
@@ -380,7 +383,7 @@ function buildProvenance() {
  * @returns {object} Action manifest with byAction groups and stats
  */
 function buildActionManifest(elements) {
-  const viewport = { w: typeof window !== 'undefined' ? window.innerWidth : 1920, h: typeof window !== 'undefined' ? window.innerHeight : 1080 };
+  const viewport = { w: typeof window !== 'undefined' ? window.innerWidth : DEFAULT_VIEWPORT.w, h: typeof window !== 'undefined' ? window.innerHeight : DEFAULT_VIEWPORT.h };
   let refCounter = 1;
   const byAction = { clickable: [], fillable: [], navigable: [] };
 
@@ -457,7 +460,7 @@ function buildToonManifest(byAction) {
     for (const e of entries) {
       const loc = e.locator ? `${e.locator.strategy}:${e.locator.value}` : '-';
       const bbox = e.bbox ? `[${e.bbox.join(',')}]` : '-';
-      lines.push(`${e.ref} ${e.tag} ${e.alias || '-'} "${e.axName || ''}" ${loc} ${bbox} ${e.inViewport ? 'Y' : 'N'}`);
+      lines.push(`${e.ref} ${e.tag} ${e.alias || '-'} "${(e.axName || '').replace(/"/g, '\\"')}" ${loc} ${bbox} ${e.inViewport ? 'Y' : 'N'}`);
     }
   }
   return lines.join('\n');
@@ -614,7 +617,7 @@ export function serialize(elements, relations, enrichment = {}, options = {}) {
   const metadata = buildMetadata(elements);
   const { details, styleTable } = buildDetails(elements);
   const actionManifest = buildActionManifest(elements);
-  const viewport = { w: typeof window !== 'undefined' ? window.innerWidth : 1920, h: typeof window !== 'undefined' ? window.innerHeight : 1080 };
+  const viewport = { w: typeof window !== 'undefined' ? window.innerWidth : DEFAULT_VIEWPORT.w, h: typeof window !== 'undefined' ? window.innerHeight : DEFAULT_VIEWPORT.h };
   const spatialIndex = buildSpatialIndex(actionManifest, viewport);
   const marks = buildMarks(actionManifest);
   const capture = {

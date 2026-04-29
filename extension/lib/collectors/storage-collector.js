@@ -12,7 +12,7 @@
  */
 
 /** Patterns that indicate sensitive values - redact these. */
-const SENSITIVE_PATTERNS = /token|secret|key|password|auth|session|jwt|csrf|api.?key/i;
+const SENSITIVE_PATTERNS = /token|secret|key|password|auth|session|jwt|csrf|api.?key|email|phone|address|ssn|credit.?card|account|user.?name/i;
 
 /** Max entries per storage type to prevent oversized captures. */
 const MAX_ENTRIES = 50;

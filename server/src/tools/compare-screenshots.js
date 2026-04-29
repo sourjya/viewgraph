@@ -38,6 +38,14 @@ export function register(server, _indexer, capturesDir) {
       filePath: z.string().optional().describe('If provided, write diff image to this path and return the path'),
     },
     async ({ file_a, file_b, threshold, filePath: outputPath }) => {
+      // S3-7: Validate outputPath is within the project directory
+      if (outputPath) {
+        const resolved = path.resolve(outputPath);
+        const projectRoot = path.resolve(capturesDir, '..');
+        if (!resolved.startsWith(projectRoot + path.sep) && resolved !== projectRoot) {
+          return errorResponse('Error: filePath must be within the project directory');
+        }
+      }
       try {
         const dir = path.resolve(capturesDir, '..');
         const pathA = path.join(dir, path.basename(file_a));

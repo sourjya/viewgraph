@@ -8,6 +8,18 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ---
 
+## [0.9.1] - 2026-04-29 (post-release fixes)
+
+### Security (SRR-009)
+- HIGH: Path validation on filePath parameter in get_capture and compare_screenshots (arbitrary file write prevention)
+- MEDIUM: Replace performance.mark/measure with local Date.now() timing (prevents page script fingerprinting)
+- MEDIUM: Expand storage collector sensitive patterns (email, phone, address, SSN, credit card)
+- LOW: Container merge preserves nodes with data-*/aria-* attributes
+- LOW: Escape quotes in TOON compact axName field
+- Viewport fallback constant extracted (was inline 1920x1080 x3)
+
+---
+
 ## [0.8.0] - 2026-04-29
 
 ### v3 Format Phase 1 (format v2.4.0)
