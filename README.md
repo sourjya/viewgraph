@@ -138,6 +138,24 @@ ViewGraph's capture accuracy is measured automatically against 150 diverse real-
 
 Full methodology, per-site breakdowns, and run history: [`scripts/experiments/bulk-capture/`](./scripts/experiments/bulk-capture/)
 
+## Token Efficiency (v3 Format)
+
+ViewGraph v3 (format v2.4.0) reduces agent token consumption by up to 97% compared to full-capture approaches:
+
+| Optimization | Measured Impact | Method |
+|---|---|---|
+| Action Manifest | 80-85% reduction on interactive queries | Pre-joined flat index with short refs |
+| Style dedup | 50% dedup rate across 175 captures | Shared style table, hash-based refs |
+| Default omission | 41.8% of style values removed | Browser defaults filtered at serialization |
+| Container merging | 30-50% fewer nodes | D2Snap-aligned empty wrapper removal |
+| observationDepth | 96% reduction at interactive-only | Agent chooses depth per request |
+| File-backed receipts | 99.8% reduction on transmission | ~200 token receipt instead of full JSON |
+| JSON Patch diffs | 50-1500x compression | RFC 6902 patches for sequential captures |
+
+All measurements from experiments on 175 real captures across 4 projects + 48 diverse websites. See [`scripts/experiments/`](./scripts/experiments/) for methodology and results.
+
+Format spec: [`docs/architecture/viewgraph-v2-format.md`](./docs/architecture/viewgraph-v2-format.md) | Research: [`docs/architecture/viewgraph-v3-format-agentic-enhancements.md`](./docs/architecture/viewgraph-v3-format-agentic-enhancements.md)
+
 ## Documentation
 
 - [User Guide](https://chaoslabz.gitbook.io/viewgraph) - getting started, tutorials, feature guides

@@ -2,6 +2,21 @@
 
 ViewGraph occupies a unique position: the UI context layer for AI coding agents. It bridges what humans see in the browser and what agents need to fix code.
 
+## The Token Efficiency Gap
+
+Every browser tool sends data to your agent. The question is how much.
+
+| Tool | Tokens per page | Per 10-step task | Monthly cost (50 tasks/day) |
+|---|---|---|---|
+| Chrome DevTools MCP | ~17K schema + full AXTree | ~132,000 | ~$6,000 |
+| Playwright MCP | ~11K AXTree per step | ~114,000 | ~$5,100 |
+| ViewGraph v2 (full) | ~100K full JSON | ~1,000,000 | ~$4,500 |
+| **ViewGraph v3 (smart)** | **~400 interactive-only** | **~7,000** | **~$150** |
+
+Sources: TestDino 2026, ytyng.com 2026, Pulumi/agent-browser 2026, ViewGraph experiments on 175 captures.
+
+ViewGraph v3 achieves this through: Action Manifest (pre-indexed interactive elements), style dedup, default omission, container merging, observationDepth parameter, and file-backed capture receipts. [Full breakdown](capture-format-v3.md).
+
 ## Comparison Matrix
 
 {% tabs %}
@@ -13,8 +28,8 @@ ViewGraph occupies a unique position: the UI context layer for AI coding agents.
 | **Human annotations** | Click/drag + comments + severity + categories | No | No (agent-only screenshots) |
 | **Review & collab** | Annotate → Send to Agent / Copy MD / ZIP report | No | Artifact trail (screenshots, logs) |
 | **Non-technical users** | PMs, QA, designers can click and describe | Developers only | Developers only |
-| **Structured DOM capture** | Full snapshot: styles, bbox, selectors, 17 enrichment collectors | Screenshot + accessibility tree | Screenshot + page state |
-| **MCP tools** | 38 tools (query, audit, diff, annotate, generate) | Browser tool (screenshot, click, type) | Browser agent (navigate, screenshot) |
+| **Structured DOM capture** | Full snapshot: styles, bbox, selectors, 21 enrichment collectors | Screenshot + accessibility tree | Screenshot + page state |
+| **MCP tools** | 41 tools (query, audit, diff, annotate, verify, generate) | Browser tool (screenshot, click, type) | Browser agent (navigate, screenshot) |
 | **Transient state capture** | Toast detection, animation jank, flash content (30s buffer) | No | No |
 | **Works with any agent** | Any MCP agent (Kiro, Claude, Cursor, Windsurf, Cline) | Cursor only | Antigravity only |
 | **Export without AI** | Copy Markdown (Jira/GitHub) + ZIP report | No | No |
@@ -74,7 +89,7 @@ There are three categories of browser tools for AI agents:
 
 4. **Transient state capture.** 30-second mutation buffer catches toasts, flash content, animation jank, and render thrashing - bugs that disappear before you can screenshot them.
 
-5. **17 enrichment collectors** in every capture: network, console, accessibility, stacking, focus, scroll, landmarks, components, animations, storage, CSS variables, transient state, and more. IDE browsers capture screenshots; ViewGraph captures the full diagnostic picture.
+5. **21 enrichment collectors** in every capture: network, console, accessibility, stacking, focus, scroll, landmarks, components, animations, storage, CSS variables, transient state, and more. IDE browsers capture screenshots; ViewGraph captures the full diagnostic picture.
 
 ## Token Efficiency: The Biggest Win
 

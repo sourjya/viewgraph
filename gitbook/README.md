@@ -97,6 +97,33 @@ See [Who Benefits?](who-benefits.md) for the full breakdown.
 
 ---
 
+## Your Agent Is Wasting Tokens
+
+{% hint style="warning" %}
+Research shows AI agents spend **60-80% of their token budget** on finding information, not fixing problems. One study found an agent reading 25 files to answer a question that needed 3.
+{% endhint %}
+
+Most browser tools send your agent the entire page on every interaction. That's 100,000+ tokens per step - and your agent pays for every one.
+
+ViewGraph v3 sends only what your agent actually needs:
+
+```
+Tokens per 10-step browser task:
+
+Chrome DevTools MCP  ████████████████████████████████████  132,000+
+Playwright MCP       ██████████████████████████████        114,000
+ViewGraph v2 (full)  ████████████████████████████          100,000
+ViewGraph v3 (smart) ██                                      7,000
+```
+
+**That's $3.00 per task down to $0.10.** At 50 tasks a day, that's $4,350 saved per month.
+
+How? ViewGraph pre-indexes interactive elements into a flat manifest. Your agent reads 20 lines instead of scanning 600. Style dedup removes duplicate CSS. Default omission strips browser defaults that carry zero information. Container merging removes empty wrapper divs. The result: same fixes, 97% fewer tokens.
+
+[See the full token efficiency breakdown](comparison/capture-format-v3.md)
+
+---
+
 ## Open Source
 
 AGPL-3.0 licensed. Full source on [GitHub](https://github.com/sourjya/viewgraph).
