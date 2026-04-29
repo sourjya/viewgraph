@@ -962,7 +962,7 @@ standard-format exports.
 
 - [39] `docs/architecture/technical-design.md` - ViewGraph project technical design
  document (internal). Full architecture spec for extension + MCP server.
-- [40] `docs/architecture/viewgraph-format-research.md` - Output formats for full fidelity page layout understanding
+- [40] `docs/references/viewgraph-format-research.md` - Output formats for full fidelity page layout understanding
  by-agentic-coding-agents.md` - Research survey of representation formats
  for agentic coding agents (internal). Covers DOM, AX trees, CDP snapshots,
  PDF, SVG, design exports, native mobile, annotation standards. Proposes

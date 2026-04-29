@@ -51,19 +51,19 @@ Kiro specs for each milestone. Each spec contains `requirements.md`, `design.md`
 | Doc | Description |
 |---|---|
 | [ViewGraph v2 Format Spec](../../docs/architecture/viewgraph-v2-format.md) | Capture format (v2.1.0) |
-| [Format Research](../../docs/architecture/viewgraph-format-research.md) | Format analysis, 44 references |
-| [Scans and Recommendations](../../docs/architecture/scans-and-recommendations.md) | 22 automated scans across 6 categories |
-| [Security Assessment](../../docs/architecture/security-assessment.md) | Threat model and mitigations |
-| [UX Design](../../docs/architecture/ux-analysis.md) | Two-tab sidebar model, design decisions, user journeys |
+| [Format Research](../../docs/references/viewgraph-format-research.md) | Format analysis, 44 references |
+| [Scans and Recommendations](../../docs/references/scans-and-recommendations.md) | 22 automated scans across 6 categories |
+| [Security Assessment](../../docs/security/security-assessment.md) | Threat model and mitigations |
+| [UX Design](../../docs/product/ux-analysis.md) | Two-tab sidebar model, design decisions, user journeys |
 | [Ideation Pipeline](../../docs/architecture/ideation-pipeline.md) | Idea mode data flow, annotation-to-spec pipeline |
-| [SW Migration Research](../../docs/architecture/service-worker-migration-research.md) | Service worker communication migration analysis |
+| [SW Migration Research](../../docs/references/service-worker-migration-research.md) | Service worker communication migration analysis |
 
 ## Ideas (not yet specced)
 
 | Doc | Description |
 |---|---|
-| [Extension UX and Intelligence](../../docs/architecture/extension-ux-and-intelligence.md) | Annotation UI patterns, memory/intelligence features |
-| [Product Positioning](../../docs/architecture/product-positioning.md) | GTM strategy, messaging, audience |
-| [Problem-Feature Mapping](../../docs/architecture/problem-feature-mapping.md) | 7 core USPs mapped to features and gaps |
+| [Extension UX and Intelligence](../../docs/product/extension-ux-and-intelligence.md) | Annotation UI patterns, memory/intelligence features |
+| [Product Positioning](../../docs/product/product-positioning.md) | GTM strategy, messaging, audience |
+| [Problem-Feature Mapping](../../docs/product/problem-feature-mapping.md) | 7 core USPs mapped to features and gaps |
 | [Live Annotation Status](../../docs/ideas/live-annotation-status.md) | Real-time lifecycle updates (draft > sent > fixing > resolved) |
 | [Rolling Archive](../../docs/ideas/rolling-archive.md) | Auto-archive resolved captures with index.json (implemented v0.4.7) |

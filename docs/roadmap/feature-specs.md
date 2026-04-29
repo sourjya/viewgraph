@@ -336,7 +336,7 @@ Open (3)  Resolved (1)  All (4)        ← status filter (existing)
 
 Also: router pattern for `http-receiver.js`, auto-discovery for tool registration.
 
-**Full analysis:** `docs/architecture/modularity-audit.md`
+**Full analysis:** `docs/reviews/modularity-audit.md`
 
 **Dependencies:** None (pure refactor, no feature changes)
 **Effort:** Large (8-10 hours for sidebar, 3-4 hours for server)

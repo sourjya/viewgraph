@@ -4,10 +4,10 @@ ViewGraph undergoes structured threat modeling using the [STRIDE methodology](ht
 
 This threat model was produced using the [AWS Labs Threat Modeling MCP Server](https://github.com/awslabs/threat-modeling-mcp-server) by [Aidin Ferdowsi](https://github.com/aidinferdowsi) (AWS), which provided structured STRIDE analysis and [Threat Composer](https://github.com/awslabs/threat-composer) JSON export.
 
-For the full engineering report, see [GitHub](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-stride.md).
+For the full engineering report, see [GitHub](https://github.com/sourjya/viewgraph/blob/main/docs/security/threat-model-stride.md).
 
 {% hint style="info" %}
-**Latest threat model** (April 24, 2026): [Full STRIDE report](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-2026-04-24.md) | [Threat Composer JSON](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-2026-04-24.json) - 9 threats, 9 mitigations, all linked. 7 security reviews passed.
+**Latest threat model** (April 24, 2026): [Full STRIDE report](https://github.com/sourjya/viewgraph/blob/main/docs/security/threat-model-2026-04-24.md) | [Threat Composer JSON](https://github.com/sourjya/viewgraph/blob/main/docs/security/threat-model-2026-04-24.json) - 9 threats, 9 mitigations, all linked. 7 security reviews passed.
 {% endhint %}
 
 ## Scope

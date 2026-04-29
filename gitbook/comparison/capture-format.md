@@ -118,7 +118,7 @@ A typical 500-element page produces a 20-40KB capture. A raw HTML dump of the sa
 
 ViewGraph's capture format was inspired by [Element to LLM](https://addons.mozilla.org/en-US/firefox/addon/element-to-llm/) (E2LLM) by [insitu.im](https://insitu.im/) - the first browser extension to frame DOM capture as a structured perception layer for AI agents. E2LLM's SiFR format introduced key ideas: salience scoring, action tagging (`[clickable]`, `[fillable]`), and spatial relationship mapping - proving that a purpose-built intermediate representation beats both raw HTML and screenshots for agent consumption.
 
-ViewGraph extended these foundations through [deep format research](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/viewgraph-format-research.md) that identified 8 weaknesses in SiFR v2 and produced 20 improvement proposals. The core insight - that AI agents need a structured perception layer, not raw HTML - came from E2LLM. ViewGraph's format builds on that insight with significant structural changes:
+ViewGraph extended these foundations through [deep format research](https://github.com/sourjya/viewgraph/blob/main/docs/references/viewgraph-format-research.md) that identified 8 weaknesses in SiFR v2 and produced 20 improvement proposals. The core insight - that AI agents need a structured perception layer, not raw HTML - came from E2LLM. ViewGraph's format builds on that insight with significant structural changes:
 
 | Dimension | SiFR v2 (E2LLM) | ViewGraph v2 |
 |---|---|---|
@@ -136,11 +136,11 @@ ViewGraph extended these foundations through [deep format research](https://gith
 | **AI integration** | Clipboard paste to any LLM | Bidirectional MCP protocol - agent queries, requests captures, resolves annotations |
 | **License** | BSL 1.1 (proprietary) | AGPL-3.0 (open source) |
 
-Full analysis: [Format Research - SiFR v2 Analysis](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/viewgraph-format-research.md)
+Full analysis: [Format Research - SiFR v2 Analysis](https://github.com/sourjya/viewgraph/blob/main/docs/references/viewgraph-format-research.md)
 
 ## Format Specification
 
 The full format specification (v2.2.0) with field definitions, coordinate frame conventions, and serialization rules is available at:
 
 - [ViewGraph v2 Format Spec](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/viewgraph-v2-format.md)
-- [Format Research](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/viewgraph-format-research.md) - design rationale, token efficiency benchmarks, competitive format analysis
+- [Format Research](https://github.com/sourjya/viewgraph/blob/main/docs/references/viewgraph-format-research.md) - design rationale, token efficiency benchmarks, competitive format analysis

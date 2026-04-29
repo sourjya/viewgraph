@@ -25,6 +25,6 @@
 - [x] 16. Write tests for fuzzy matching and error message formatting
 
 ## Phase 5: Documentation
-- [x] 17. Update docs/architecture/security-assessment.md with prompt injection mitigations
+- [x] 17. Update docs/security/security-assessment.md with prompt injection mitigations
 - [x] 18. Update gitbook/features/mcp-tools.md with workflow guidance
 - [x] 19. Update CHANGELOG

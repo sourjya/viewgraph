@@ -57,7 +57,7 @@
 
 ### ViewGraph v2 Format Specification
 - Formal format spec: docs/architecture/viewgraph-v2-format.md (13 sections)
-- Format research doc: docs/architecture/viewgraph-format-research.md (40 references)
+- Format research doc: docs/references/viewgraph-format-research.md (40 references)
 - Analyzed Element to LLM v2.8.1 SiFR format  -  identified 8 weaknesses, proposed 12 improvements
 - Key design decisions: semantic node IDs, compact bbox arrays, progressive style disclosure,
   semantic-only relations by default, optional ACCESSIBILITY and CONSOLE sections

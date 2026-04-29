@@ -4,7 +4,7 @@
 
 Migrate all extension-to-server communication from content script to service worker in 6 phases. Each phase is independently deployable and testable. TDD mandatory.
 
-**Research:** [`docs/architecture/service-worker-migration-research.md`](../../../docs/architecture/service-worker-migration-research.md)
+**Research:** [`docs/references/service-worker-migration-research.md`](../../../docs/references/service-worker-migration-research.md)
 
 ---
 
@@ -302,7 +302,7 @@ Migrate all extension-to-server communication from content script to service wor
 
 ### Step 19: Update Documentation
 
-- [ ] 19.1 Update `docs/architecture/security-assessment.md` - add section on SW migration security improvements
+- [ ] 19.1 Update `docs/security/security-assessment.md` - add section on SW migration security improvements
 - [ ] 19.2 Update `extension/README.md` - architecture section reflects new communication model
 - [ ] 19.3 Update `.kiro/steering/project-conventions.md` - add async lifecycle guard note for SW modules
 - [ ] 19.4 Update `docs/changelogs/CHANGELOG.md`

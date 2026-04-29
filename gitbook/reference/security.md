@@ -61,13 +61,13 @@ The entire codebase is open source under AGPL-3.0. You can inspect every line:
 
 - [Extension source](https://github.com/sourjya/viewgraph/tree/main/extension)
 - [Server source](https://github.com/sourjya/viewgraph/tree/main/server)
-- [STRIDE Threat Model](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/threat-model-stride.md) - 9 threats, 9 mitigations, 4 threat actors
-- [Security assessment](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/security-assessment.md)
+- [STRIDE Threat Model](https://github.com/sourjya/viewgraph/blob/main/docs/security/threat-model-stride.md) - 9 threats, 9 mitigations, 4 threat actors
+- [Security assessment](https://github.com/sourjya/viewgraph/blob/main/docs/security/security-assessment.md)
 - [SRR-001 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-001-2026-04-18.md)
 - [SRR-002 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-002-2026-04-19-T2.md)
 - [SRR-004 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-004-2026-04-21-T3.md)
 - [SRR-005 Security Review](https://github.com/sourjya/viewgraph/blob/main/docs/security/SRR-005-2026-04-24-T2.md)
-- [Codebase Review](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/codebase-review-2026-04-18.md)
+- [Codebase Review](https://github.com/sourjya/viewgraph/blob/main/docs/reviews/codebase-review-2026-04-18.md)
 
 ## Security Audits Performed
 
@@ -97,7 +97,7 @@ The project undergoes periodic security reviews using a 3-tier model:
 - Config schema validation, auto-learn localhost-only, shadow DOM closed mode
 - Security headers, WebSocket limits, error sanitization, F19 wrapping gaps closed
 
-**[Security Assessment (April 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/architecture/security-assessment.md):**
+**[Security Assessment (April 2026)](https://github.com/sourjya/viewgraph/blob/main/docs/security/security-assessment.md):**
 - HTTP server endpoint review (16 endpoints)
 - Input validation on all POST endpoints
 - Path traversal prevention on file writes

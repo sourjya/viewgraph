@@ -79,7 +79,7 @@
 
 | Page | Source content | What to write |
 |---|---|---|
-| **extension.md** | docs/architecture/ux-analysis.md | Two-tab model, hover/click/drag, sidebar, annotation panel, export options. Screenshots. |
+| **extension.md** | docs/product/ux-analysis.md | Two-tab model, hover/click/drag, sidebar, annotation panel, export options. Screenshots. |
 | **mcp-tools.md** | README.md "MCP Tools (36)" section | All 36 tools grouped by category with descriptions. |
 | **annotations.md** | product-analysis.md Journey 1 | Full annotation lifecycle: create, severity, category, send, resolve, sync. |
 | **accessibility.md** | product-analysis.md Pain Point 3 | Built-in rules + axe-core, contrast checking, audit_accessibility tool. |

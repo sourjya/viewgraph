@@ -4,7 +4,7 @@
 
 Move all extension-to-server communication (HTTP, WebSocket, auth, polling) from the content script to the service worker. The content script becomes a pure UI layer that communicates with the service worker via `chrome.runtime.sendMessage`. This fixes the architectural inversion where an ephemeral component (content script) owns persistent communication, and enables background sync when the sidebar is closed.
 
-**Research:** [`docs/architecture/service-worker-migration-research.md`](../../../docs/architecture/service-worker-migration-research.md)
+**Research:** [`docs/references/service-worker-migration-research.md`](../../../docs/references/service-worker-migration-research.md)
 
 ## User Stories
 
