@@ -109,6 +109,8 @@ v3: $150/month
 - **Checkpoint/resume** - multi-step task recovery without full re-capture
 - **Spatial index** - O(log n) "what's at this coordinate?" queries
 
+All three phases are now shipped in v0.9.x.
+
 ## Format Spec
 
 The full format specification is maintained on GitHub:

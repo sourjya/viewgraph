@@ -474,6 +474,119 @@ function computeFingerprint(elements) {
 }
 
 /**
+ * Build a spatial index (quadtree) for O(log n) point/region queries.
+ * Uses human-readable quadrant labels (TL, TR, BL, BR) with a refIndex
+ * reverse map for single-lookup "which cell contains ref eN?".
+ *
+ * @see docs/architecture/viewgraph-v3-format-agentic-enhancements.md - Enhancement 8
+ * @param {object} actionManifest - Action manifest with byAction groups
+ * @param {{ w: number, h: number }} viewport - Viewport dimensions
+ * @returns {object|null} Spatial index or null if too few elements
+ */
+function buildSpatialIndex(actionManifest, viewport) {
+  const allEntries = [
+    ...(actionManifest.byAction.clickable || []),
+    ...(actionManifest.byAction.fillable || []),
+    ...(actionManifest.byAction.navigable || []),
+  ];
+  if (allEntries.length < 5) return null; // Not worth indexing
+
+  const MAX_DEPTH = 4;
+  const MIN_CELL_PX = 80;
+  const refIndex = {};
+  const cells = {};
+
+  function buildCell(entries, x, y, w, h, label, depth) {
+    const contained = entries.filter((e) => {
+      if (!e.bbox || e.bbox.length < 4) return false;
+      const [ex, ey, ew, eh] = e.bbox;
+      const cx = ex + ew / 2;
+      const cy = ey + eh / 2;
+      return cx >= x && cx < x + w && cy >= y && cy < y + h;
+    });
+
+    if (contained.length === 0) return;
+
+    if (depth >= MAX_DEPTH || w / 2 < MIN_CELL_PX || h / 2 < MIN_CELL_PX || contained.length <= 3) {
+      cells[label] = { refs: contained.map((e) => e.ref), children: null };
+      for (const e of contained) refIndex[e.ref] = { cell: label, bbox: e.bbox };
+      return;
+    }
+
+    const hw = w / 2;
+    const hh = h / 2;
+    const childLabels = [`${label}-TL`, `${label}-TR`, `${label}-BL`, `${label}-BR`];
+    cells[label] = { refs: [], children: childLabels };
+
+    buildCell(contained, x, y, hw, hh, childLabels[0], depth + 1);
+    buildCell(contained, x + hw, y, hw, hh, childLabels[1], depth + 1);
+    buildCell(contained, x, y + hh, hw, hh, childLabels[2], depth + 1);
+    buildCell(contained, x + hw, y + hh, hw, hh, childLabels[3], depth + 1);
+  }
+
+  const scrollX = typeof window !== 'undefined' ? window.scrollX : 0;
+  const scrollY = typeof window !== 'undefined' ? window.scrollY : 0;
+  buildCell(allEntries, scrollX, scrollY, viewport.w, viewport.h, 'L0', 0);
+
+  return {
+    type: 'quadtree',
+    coordinateFrame: 'viewport',
+    bounds: [scrollX, scrollY, viewport.w, viewport.h],
+    maxDepth: MAX_DEPTH,
+    minCellPx: MIN_CELL_PX,
+    refIndex,
+    cells,
+  };
+}
+
+/**
+ * Build the Set-of-Marks section linking mark numbers to element refs.
+ * Mark number = ref number. [1] in screenshot = @e1 in text.
+ *
+ * @see docs/architecture/viewgraph-v3-format-agentic-enhancements.md - Enhancement 9
+ * @param {object} actionManifest - Action manifest with byAction groups
+ * @returns {object} Marks section
+ */
+function buildMarks(actionManifest) {
+  const allEntries = [
+    ...(actionManifest.byAction.clickable || []),
+    ...(actionManifest.byAction.fillable || []),
+    ...(actionManifest.byAction.navigable || []),
+  ];
+  return {
+    style: 'numbered-box-with-ref',
+    scope: 'actionManifest',
+    stableAcrossDeltas: true,
+    total: allEntries.length,
+    assignments: allEntries.map((e) => ({
+      mark: parseInt(e.ref.slice(1), 10),
+      ref: e.ref,
+      nid: e.nid,
+      alias: e.alias,
+      bbox: e.bbox,
+    })),
+  };
+}
+
+/**
+ * Build an empty checkpoint envelope for multi-step agent workflows.
+ * The agent populates completedSteps and failedStep as it progresses.
+ *
+ * @see docs/architecture/viewgraph-v3-format-agentic-enhancements.md - Enhancement 10
+ * @returns {object} Empty checkpoint structure
+ */
+function buildCheckpoint() {
+  return {
+    traceId: null,
+    runId: null,
+    stepId: 0,
+    completedSteps: [],
+    failedStep: null,
+    resumeToken: null,
+  };
+}
+
+/**
  * Serialize scored elements into a complete ViewGraph v2.4 capture.
  * @param {Array} elements - Scored elements from salience.scoreAll()
  * @param {Array} relations - Relations from traverser
@@ -485,6 +598,9 @@ export function serialize(elements, relations, enrichment = {}, options = {}) {
   const metadata = buildMetadata(elements);
   const { details, styleTable } = buildDetails(elements);
   const actionManifest = buildActionManifest(elements);
+  const viewport = { w: typeof window !== 'undefined' ? window.innerWidth : 1920, h: typeof window !== 'undefined' ? window.innerHeight : 1080 };
+  const spatialIndex = buildSpatialIndex(actionManifest, viewport);
+  const marks = buildMarks(actionManifest);
   const capture = {
     metadata,
     summary: buildSummary(elements, metadata),
@@ -494,6 +610,9 @@ export function serialize(elements, relations, enrichment = {}, options = {}) {
     styleTable,
     details,
     actionManifest,
+    ...(spatialIndex ? { spatialIndex } : {}),
+    marks,
+    checkpoint: buildCheckpoint(),
   };
 
   // Enrichment sections - each key maps directly to a top-level capture field

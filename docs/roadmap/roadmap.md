@@ -69,19 +69,19 @@ Based on [v3 Agentic Enhancements Research](../architecture/viewgraph-v3-agentic
 
 | # | Enhancement | Status | Token Impact |
 |---|---|---|---|
-| 8 | File-backed capture receipts | Planned | ~99.8% on capture transmission |
-| 9 | Delta capture mode with changeSignal | Planned | 90-99% on follow-up captures |
-| 10 | D2Snap container merging | Planned | 35-40% on nodes/details |
-| 11 | TOON compact serialization | Planned | 70-87% on uniform structures |
-| 12 | observationDepth parameter | Planned | ~96% at interactive-only depth |
+| 8 | File-backed capture receipts | **Shipped v0.9.0** | ~99.8% on capture transmission |
+| 9 | Delta capture mode with changeSignal | **Shipped v0.9.0** | 90-99% on follow-up captures |
+| 10 | D2Snap container merging | **Shipped v0.9.0** | 35-40% on nodes/details |
+| 11 | TOON compact serialization | **Shipped v0.9.0** | 70-87% on uniform structures |
+| 12 | observationDepth parameter | **Shipped v0.9.0** | ~96% at interactive-only depth |
 
 ### Phase 3 - v3.1 (Higher effort)
 
 | # | Enhancement | Status | Token Impact |
 |---|---|---|---|
-| 13 | Set-of-Marks annotated screenshots | Planned | Visual + text ref equivalence |
-| 14 | Checkpoint/resume envelope | Planned | Multi-step recovery |
-| 15 | Spatial index quadtree | Planned | O(log n) point/region queries |
+| 13 | Set-of-Marks section | **Shipped v0.9.1** | Visual + text ref equivalence |
+| 14 | Checkpoint/resume envelope | **Shipped v0.9.1** | Multi-step recovery |
+| 15 | Spatial index quadtree | **Shipped v0.9.1** | O(log n) point/region queries |
 | 16 | MCP tool consolidation (41 → 5) | Planned | Schema overhead reduction |
 
 ## Remaining Polish

@@ -31,7 +31,7 @@ function capture() {
  * filter everything out. We test traversal separately.
  */
 function traverseOnly() {
-  const { elements, relations, containerMerge } = traverseDOM();
+  const { elements, relations } = traverseDOM();
   return { elements, relations };
 }
 
