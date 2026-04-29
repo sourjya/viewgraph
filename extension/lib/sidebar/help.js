@@ -9,6 +9,7 @@
 
 import { ATTR } from '#lib/selector.js';
 import { COLOR, FONT } from './styles.js';
+import { svgFromString } from './icons.js';
 
 /**
  * Create the help card element with shortcuts and links.
@@ -31,7 +32,7 @@ export function createHelpCard() {
   titleText.textContent = 'Keyboard Shortcuts';
   Object.assign(titleText.style, { fontWeight: '700', fontSize: '13px', color: COLOR.primaryLight, flex: '1' });
   const collapseBtn = document.createElement('button');
-  collapseBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
+  collapseBtn.replaceChildren(svgFromString('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>'));
   Object.assign(collapseBtn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',
     padding: '2px', display: 'flex', alignItems: 'center', borderRadius: '4px',
@@ -109,7 +110,7 @@ export function createHelpCard() {
     a.rel = 'noopener';
     Object.assign(a.style, { color: COLOR.primary, fontSize: '11px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' });
     const ico = document.createElement('span');
-    ico.innerHTML = iconSvg;
+    ico.replaceChildren(svgFromString(iconSvg));
     Object.assign(ico.style, { display: 'inline-flex', flexShrink: '0' });
     const txt = document.createElement('span');
     txt.textContent = label;

@@ -13,6 +13,7 @@ import { diagnoseElement } from './ui/element-diagnostics.js';
 
 import { ATTR } from './selector.js';
 import { COLOR, FONT } from './sidebar/styles.js';
+import { svgFromString } from './sidebar/icons.js';
 let panelEl = null;
 let currentId = null;
 let onCommentChange = null;
@@ -396,7 +397,7 @@ export async function show(annotation, callbacks = {}) {
 function makeHeaderBtn(svgHtml, title) {
   const btn = document.createElement('button');
   btn.setAttribute(ATTR, 'btn');
-  btn.innerHTML = svgHtml;
+  btn.replaceChildren(svgFromString(svgHtml));
   btn.title = title;
   Object.assign(btn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',

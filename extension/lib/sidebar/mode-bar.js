@@ -10,6 +10,7 @@
 
 import { ATTR } from '#lib/selector.js';
 import { COLOR, FONT } from './styles.js';
+import { svgFromString } from './icons.js';
 
 /** SVG icons for each capture mode (trusted internal strings). */
 export const MODE_ICONS = {
@@ -43,7 +44,7 @@ export function createModeBar({ onModeClick }) {
   for (const [key, icon] of Object.entries(MODE_ICONS)) {
     const btn = document.createElement('button');
     btn.setAttribute(ATTR, `mode-${key}`);
-    btn.innerHTML = icon;
+    btn.replaceChildren(svgFromString(icon));
     const labelSpan = document.createElement('span');
     Object.assign(labelSpan.style, { fontSize: '10px', marginTop: '2px' });
     labelSpan.textContent = key.charAt(0).toUpperCase() + key.slice(1);

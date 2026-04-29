@@ -90,7 +90,7 @@ export function createSettings() {
   helpLink.addEventListener('mouseenter', () => { helpLink.style.textDecoration = 'underline'; });
   helpLink.addEventListener('mouseleave', () => { helpLink.style.textDecoration = 'none'; });
   const advLink = document.createElement('a');
-  advLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>All servers';
+  advLink.replaceChildren(svgFromString('<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'), document.createTextNode('All servers'));
   advLink.href = '#';
   Object.assign(advLink.style, { color: COLOR.primaryHover, fontSize: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', cursor: 'pointer' });
   advLink.addEventListener('mouseenter', () => { advLink.style.textDecoration = 'underline'; });
@@ -105,7 +105,7 @@ export function createSettings() {
     e.preventDefault();
     if (allServersSection.style.display === 'none') {
       allServersSection.style.display = 'block';
-      advLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><polyline points="18 15 12 9 6 15"/></svg>All servers';
+      advLink.replaceChildren(svgFromString('<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><polyline points="18 15 12 9 6 15"/></svg>'), document.createTextNode('All servers'));
       // Fetch all servers
       allServersSection.textContent = 'Scanning...';
       try {
@@ -138,7 +138,7 @@ export function createSettings() {
       } catch { allServersSection.textContent = 'Failed to scan.'; }
     } else {
       allServersSection.style.display = 'none';
-      advLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>All servers';
+      advLink.replaceChildren(svgFromString('<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'), document.createTextNode('All servers'));
     }
   });
   cardFooter.append(helpLink, advLink);
