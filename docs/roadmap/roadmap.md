@@ -2,7 +2,7 @@
 
 ## Current Version
 
-v0.8.0
+v0.9.1
 
 ## Status Summary
 
@@ -24,7 +24,7 @@ These require experiments to validate before implementation. Each has a detailed
 | Enrichment Opt-In | Token Efficiency | ≥3 sections >70% empty | **FAIL (2/10)** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
 | Selector Stability | Capture Quality | >90% stability | **PASS (97.2%)** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
 
-## Recently Shipped (v0.8.0)
+## Recently Shipped (v0.9.1)
 
 | Feature | Description |
 |---------|-------------|
@@ -62,8 +62,8 @@ Based on [v3 Agentic Enhancements Research](../architecture/viewgraph-v3-agentic
 | 3 | Structural fingerprint in metadata | **Shipped v0.8.0** | Cache-hit detection for unchanged pages |
 | 4 | Error-to-node correlation (correlatedRefs) | **Shipped v0.8.0** | Eliminates 200-500 tokens LLM reasoning per error |
 | 5 | lastActionTarget in metadata | **Shipped v0.8.0** | Agent knows what it just acted on |
-| 6 | Compact enum codec (compactCodec) | Planned | 70-87% on repeated structures |
-| 7 | Viewport-first node ordering | Planned | 20-30% faster scan-to-first-match |
+| 6 | Compact enum codec (compactCodec) | **Shipped v0.9.1** | 70-87% on repeated structures |
+| 7 | Viewport-first node ordering | **Shipped v0.9.1** | 20-30% faster scan-to-first-match |
 
 ### Phase 2 - v3.0 (Medium effort)
 

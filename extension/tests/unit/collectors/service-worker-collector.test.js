@@ -7,7 +7,7 @@
  * @see lib/collectors/service-worker-collector.js
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { collectServiceWorkerState } from '#lib/collectors/service-worker-collector.js';
 
 describe('collectServiceWorkerState', () => {

@@ -58,6 +58,12 @@ function buildMetadata(elements) {
       sizeLimitBytes: 409600,
     },
     structuralFingerprint: computeFingerprint(elements),
+    compactCodec: {
+      actions: { clickable: 'c', fillable: 'f', hoverable: 'h', scrollable: 's', navigable: 'n', draggable: 'd' },
+      axStates: { focusable: 'fo', editable: 'ed', required: 'rq', disabled: 'ds', expanded: 'ex', selected: 'sl', checked: 'ck' },
+      tiers: { high: 'h', med: 'm', low: 'l' },
+      tags: { button: 'btn', input: 'inp', a: 'lnk', select: 'sel', textarea: 'txt', dialog: 'dlg', nav: 'nav', form: 'frm' },
+    },
     extension: { name: 'ViewGraph Capture', version: (typeof chrome !== 'undefined' && chrome.runtime?.getManifest?.()?.version) || 'unknown' },
   };
 }
@@ -116,8 +122,17 @@ function buildSummary(elements, metadata) {
  */
 function buildNodes(elements) {
   const nodes = { high: {}, med: {}, low: {} };
+  const viewport = { w: typeof window !== 'undefined' ? window.innerWidth : 1920, h: typeof window !== 'undefined' ? window.innerHeight : 1080 };
 
-  for (const el of elements) {
+  // Viewport-first ordering: sort inViewport elements first within each tier
+  const sorted = [...elements].sort((a, b) => {
+    if (a.salience !== b.salience) return 0; // Keep tier grouping
+    const aVp = isInViewport(a.bbox, viewport) ? 0 : 1;
+    const bVp = isInViewport(b.bbox, viewport) ? 0 : 1;
+    return aVp - bVp;
+  });
+
+  for (const el of sorted) {
     const tier = nodes[el.salience];
     if (!tier[el.tag]) tier[el.tag] = {};
     tier[el.tag][el.nid] = {
@@ -126,6 +141,7 @@ function buildNodes(elements) {
       children: el.childNids,
       actions: el.isInteractive ? ['clickable'] : undefined,
       isRendered: el.isRendered,
+      inViewport: isInViewport(el.bbox, viewport),
       cluster: null,
     };
   }
