@@ -2,7 +2,7 @@
 
 <figure><img src=".gitbook/assets/viewgraph-logo.png" alt="ViewGraph" width="420"></figure>
 
-> *Built with Kiro, for Kiro - and every MCP-compatible agent.*
+> *Built with Kiro, for Kiro - and every MCP-compatible coding agent.*
 
 See a bug. Click it. Describe it. Your agent fixes it.
 
