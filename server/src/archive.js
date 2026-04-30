@@ -31,12 +31,24 @@ const DEFAULTS = { ageThresholdHours: 24, keepLatestPerUrl: 2 };
 export function isEligible(capture, opts = {}) {
   const { now = new Date(), ageThresholdHours = DEFAULTS.ageThresholdHours } = opts;
   const anns = capture.annotations || [];
-  // Any unresolved annotation disqualifies
   if (anns.some((a) => !a.resolved)) return false;
-  // Must be older than threshold
   const ts = new Date(capture.metadata?.timestamp || 0);
   const ageMs = now.getTime() - ts.getTime();
   return ageMs >= ageThresholdHours * 3600_000;
+}
+
+/**
+ * 13.9: Check eligibility from indexer metadata without reading the full file.
+ * @param {{ annotationCount: number, resolvedCount: number, timestamp: string }} meta
+ * @param {{ now?: Date, ageThresholdHours?: number }} opts
+ * @returns {boolean}
+ */
+export function isEligibleFromMeta(meta, opts = {}) {
+  const { now = new Date(), ageThresholdHours = DEFAULTS.ageThresholdHours } = opts;
+  const unresolved = (meta.annotationCount || 0) - (meta.resolvedCount || 0);
+  if (unresolved > 0) return false;
+  const ts = new Date(meta.timestamp || 0);
+  return (now.getTime() - ts.getTime()) >= ageThresholdHours * 3600_000;
 }
 
 /**
@@ -145,15 +157,19 @@ export async function archiveCapture(capturesDir, filename) {
  * @returns {{ archived: number, skipped: number }}
  */
 export async function runArchive(capturesDir, opts = {}) {
-  const { now = new Date(), ageThresholdHours = DEFAULTS.ageThresholdHours, keepLatestPerUrl = DEFAULTS.keepLatestPerUrl } = opts;
+  const { now = new Date(), ageThresholdHours = DEFAULTS.ageThresholdHours, keepLatestPerUrl = DEFAULTS.keepLatestPerUrl, indexer = null } = opts;
 
   let files;
   try { files = readdirSync(capturesDir).filter((f) => f.endsWith('.json') && f.startsWith('viewgraph-')); } catch { return { archived: 0, skipped: 0 }; }
 
-  // 13.9: Still reads all files (needed for keepLatestPerUrl ordering),
-  // but skips JSON parse for files that are clearly too new based on filename timestamp.
+  // 13.9: Use indexer metadata for fast eligibility pre-filter when available
   const candidates = [];
   for (const f of files) {
+    // Fast path: check eligibility from indexer metadata (no file read)
+    if (indexer) {
+      const meta = indexer.get(f);
+      if (meta && !isEligibleFromMeta(meta, { now, ageThresholdHours })) continue;
+    }
     try {
       const raw = readFileSync(path.join(capturesDir, f), 'utf-8');
       const capture = JSON.parse(raw);
