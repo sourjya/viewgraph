@@ -224,6 +224,20 @@ export function shieldIcon(size = 14, color = '#4ade80', inner = 'none') {
  * @returns {Element}
  */
 export function svgFromString(svgString) {
-  const doc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
-  return document.importNode(doc.documentElement, true);
+  try {
+    const doc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
+    // DOMParser returns a parsererror document on invalid SVG
+    if (doc.querySelector('parsererror')) {
+      // Fallback: create a container and use innerHTML (safe - hardcoded SVG only)
+      const tmp = document.createElement('span');
+      tmp.innerHTML = svgString; // eslint-disable-line -- hardcoded SVG, no user data
+      return tmp.firstElementChild || tmp;
+    }
+    return document.adoptNode(doc.documentElement);
+  } catch {
+    // Fallback for environments where DOMParser fails
+    const tmp = document.createElement('span');
+    tmp.innerHTML = svgString; // eslint-disable-line -- hardcoded SVG, no user data
+    return tmp.firstElementChild || tmp;
+  }
 }
