@@ -229,24 +229,32 @@ export function traverseDOM(root = document.body) {
   const MERGE_TAGS = new Set(['div', 'section', 'article', 'span', 'main', 'aside']);
   let mergedCount = 0;
   const filtered = elements.filter((el) => {
+    // Keep non-container tags (buttons, inputs, headings, etc.) unconditionally
     if (!MERGE_TAGS.has(el.tag)) return true;
+    // Keep elements with semantic identity - agents need these as locators
     if (el.testid || el.htmlId || el.role || el.ariaLabel) return true;
     if (el.isInteractive) return true;
     // S3-8: Preserve nodes with data-* or aria-* attributes (may contain security-relevant data)
     if (Object.keys(el.attributes || {}).length > 0) return true;
     if (el.text && el.text.trim() && el.childNids.length === 0) return true; // leaf text node
-    // Merge: re-parent children to this node's parent
+
+    // Merge threshold: only merge wrappers with 0 or 1 children.
+    // Wrappers with 2+ children are structural (flex/grid containers) and must be kept
+    // to preserve layout relationships between siblings.
     if (el.childNids.length <= 1) {
+      // Re-parent: point this node's children to this node's parent,
+      // so the tree stays connected after this node is removed
       for (const child of elements) {
         if (child.parentNid === el.nid) child.parentNid = el.parentNid;
       }
       mergedCount++;
-      return false;
+      return false; // remove this wrapper from the output
     }
     return true;
   });
 
-  // Update childNids after merging
+  // Post-merge cleanup: childNids arrays may reference removed nodes.
+  // Rebuild them to only include nodes that survived the merge filter.
   const remainingNids = new Set(filtered.map((el) => el.nid));
   for (const el of filtered) {
     el.childNids = el.childNids.filter((nid) => remainingNids.has(nid));

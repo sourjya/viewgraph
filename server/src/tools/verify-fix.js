@@ -20,7 +20,11 @@ import { diffCaptures } from '#src/analysis/capture-diff.js';
 // Audit Helpers (each independently testable)
 // ──────────────────────────────────────────────
 
-/** Run a11y audit on all nodes. Returns { issues, axeViolations }. */
+/**
+ * Run a11y audit on all nodes. Combines ViewGraph rules with axe-core violations.
+ * @param {object} parsed - Parsed capture with nodes and axeResults sections
+ * @returns {{ issues: Array<object>, axeViolations: number }} A11y issues and axe violation count
+ */
 export function runA11yAudit(parsed) {
   const nodes = flattenNodes(parsed);
   const issues = [];
@@ -33,24 +37,40 @@ export function runA11yAudit(parsed) {
   return { issues, axeViolations: parsed.axe?.violations?.length || 0 };
 }
 
-/** Run layout audit. Returns issue count. */
+/**
+ * Run layout audit for overflow, overlap, and viewport issues.
+ * @param {object} parsed - Parsed capture with nodes and summary sections
+ * @returns {number} Total layout issue count
+ */
 export function runLayoutAudit(parsed) {
   const layout = analyzeLayout(parsed);
   return (layout.overflows?.length || 0) + (layout.overlaps?.length || 0) + (layout.viewportOverflows?.length || 0);
 }
 
-/** Check console errors. Returns { errors, warnings }. */
+/**
+ * Check console errors and warnings from the capture's enrichment data.
+ * @param {object} parsed - Parsed capture with enrichment.console section
+ * @returns {{ errors: number, warnings: number }} Console error and warning counts
+ */
 export function checkConsole(parsed) {
   return { errors: parsed.console?.errors?.length || 0, warnings: parsed.console?.warnings?.length || 0 };
 }
 
-/** Check network failures. Returns { failed, total }. */
+/**
+ * Check network failures from the capture's enrichment data.
+ * @param {object} parsed - Parsed capture with enrichment.network section
+ * @returns {{ failed: number, total: number }} Failed and total request counts
+ */
 export function checkNetwork(parsed) {
   const net = parsed.network || {};
   return { failed: net.failed?.length || 0, total: net.total || 0 };
 }
 
-/** Count interactive elements missing data-testid. Returns { missing, total }. */
+/**
+ * Count interactive elements missing data-testid attributes.
+ * @param {object} parsed - Parsed capture with actionManifest section
+ * @returns {{ missing: number, total: number }} Missing testid count and total interactive elements
+ */
 export function checkTestids(parsed) {
   const nodes = flattenNodes(parsed);
   const interactive = filterInteractive(nodes);
@@ -62,7 +82,13 @@ export function checkTestids(parsed) {
   return { missing, total: interactive.length };
 }
 
-/** Run regression diff against a previous capture. Returns regressions object or null. */
+/**
+ * Run regression diff against a previous capture. Detects removed, added, and moved elements.
+ * @param {string} previousFile - Filename of the before capture (null to skip)
+ * @param {string} targetFile - Filename of the after capture
+ * @param {string} capturesDir - Absolute path to captures directory
+ * @returns {Promise<object|null>} Regressions object with counts and details, or null if clean
+ */
 export async function checkRegressions(previousFile, targetFile, capturesDir) {
   if (!previousFile) return null;
   try {
@@ -80,7 +106,18 @@ export async function checkRegressions(previousFile, targetFile, capturesDir) {
   } catch { return null; }
 }
 
-/** Assemble verdict from individual check results. */
+/**
+ * Assemble pass/fail verdict from individual check results.
+ * @param {string} targetFile - Capture filename being verified
+ * @param {object} parsed - Parsed capture data (for HMR detection)
+ * @param {{ issues: Array, axeViolations: number }} a11y - A11y audit results
+ * @param {number} layoutIssues - Layout issue count
+ * @param {{ errors: number, warnings: number }} console - Console check results
+ * @param {{ failed: number, total: number }} network - Network check results
+ * @param {{ missing: number, total: number }} testids - Testid coverage results
+ * @param {object|null} regressions - Regression diff results or null
+ * @returns {{ verdict: string, checks: object, topIssues: Array, hmrDetected: boolean }}
+ */
 export function assembleVerdict(targetFile, parsed, a11y, layoutIssues, console, network, testids, regressions) {
   const checks = {
     a11y: { issues: a11y.issues.length + a11y.axeViolations, pass: a11y.issues.length + a11y.axeViolations === 0 },

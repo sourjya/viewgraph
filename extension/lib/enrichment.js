@@ -59,6 +59,8 @@ export async function collectAllEnrichment() {
     transient: safeCollect('transient', collectTransient),
     errorBoundaries: safeCollect('errorBoundaries', collectErrorBoundaries),
     buildMetadata: safeCollect('buildMetadata', collectBuildMetadata),
+    // Compute accessible names for all interactive elements and format as
+    // { element, name, source, role } records. Capped at 100 to limit payload size.
     accessibleNames: safeCollect('accessibleNames', () => {
       const map = computeAllNames();
       const results = [];
@@ -99,6 +101,7 @@ export function collectEnrichmentSync() {
     transient: safeCollect('transient', collectTransient),
     errorBoundaries: safeCollect('errorBoundaries', collectErrorBoundaries),
     buildMetadata: safeCollect('buildMetadata', collectBuildMetadata),
+    // Synchronous version of accessible names collection (same logic as async variant above)
     accessibleNames: safeCollect('accessibleNames', () => {
       const map = computeAllNames();
       const results = [];

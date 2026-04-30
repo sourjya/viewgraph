@@ -73,6 +73,10 @@ function buildMetadata(elements) {
 
 /**
  * Build the summary section - page overview for LLM orientation.
+ * Extracts style palette, landmark structure, and element counts for the capture header.
+ * @param {Array<object>} elements - Traversed DOM elements with computed styles and bbox
+ * @param {object} metadata - Page metadata (url, title, viewport, timestamp)
+ * @returns {object} Summary object with page, elements, landmarks, styles, and stacking sections
  */
 function buildSummary(elements, metadata) {
   // Extract style palette from high-salience elements
@@ -122,6 +126,9 @@ function buildSummary(elements, metadata) {
 
 /**
  * Build the nodes section - element tree grouped by salience tier.
+ * High-salience elements get full detail; low-salience get compact refs.
+ * @param {Array<object>} elements - Traversed DOM elements with salience scores
+ * @returns {{ high: object, med: object, low: object }} Nodes grouped by salience tier
  */
 function buildNodes(elements) {
   const nodes = { high: {}, med: {}, low: {} };
@@ -314,6 +321,9 @@ function buildDetails(elements) {
 
 /**
  * Build ranked locator array for an element.
+ * Strategies ordered by reliability: testId > aria-label > role > CSS selector.
+ * @param {object} el - Traversed element with testid, ariaLabel, role, selector fields
+ * @returns {Array<{ strategy: string, value: string, rank: number }>} Ranked locators
  */
 function buildLocators(el) {
   const locators = [];
@@ -327,6 +337,9 @@ function buildLocators(el) {
 
 /**
  * Build the relations section from extracted relations.
+ * Maps parent-child, label-for, and aria-owns relationships.
+ * @param {Array<{ source: string, target: string, type: string }>} relations - Extracted DOM relations
+ * @returns {{ semantic: Array, groups: Array }} Relations grouped by type
  */
 function buildRelations(relations) {
   return {
@@ -466,7 +479,13 @@ function buildToonManifest(byAction) {
   return lines.join('\n');
 }
 
-/** Check if a bbox [x, y, w, h] is within the viewport. */
+/**
+ * Check if a bbox [x, y, w, h] is within the viewport.
+ * Accounts for scroll offset so partially visible elements are included.
+ * @param {Array<number>} bbox - Bounding box [x, y, width, height] in page coordinates
+ * @param {{ w: number, h: number }} viewport - Viewport dimensions
+ * @returns {boolean} True if any part of the element is visible in the viewport
+ */
 function isInViewport(bbox, viewport) {
   if (!bbox || bbox.length < 4) return false;
   const [x, y, w, h] = bbox;
