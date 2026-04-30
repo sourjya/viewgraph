@@ -84,47 +84,46 @@ function pickStyles(styles) {
 
 /**
  * Find matching elements between two captures.
- * @param {Array} elemsA - Elements from capture A
- * @param {Array} elemsB - Elements from capture B
+ * 13.2: Pre-index elemsB for O(N+M) instead of O(N×M).
+ * @param {Array} elemsA
+ * @param {Array} elemsB
  * @returns {Array<{ a: object, b: object, matchType: string }>}
  */
 function findMatches(elemsA, elemsB) {
   const matches = [];
-  const usedB = new Set();
 
-  // Pass 1: match by data-testid (highest confidence)
+  // Build indexes on elemsB for O(1) lookup
+  const byTestid = new Map();
+  const byRoleClass = new Map();
+  const byTagClass = new Map();
+  for (const b of elemsB) {
+    if (b.testid) byTestid.set(b.testid, b);
+    if (b.role && b.classes) byRoleClass.set(`${b.role}|${b.tag}|${b.classes}`, b);
+    if (b.classes && b.classes.length >= 4) byTagClass.set(`${b.tag}|${b.classes}`, b);
+  }
+
+  const matchedA = new Set();
+  const matchedB = new Set();
+
+  // Pass 1: testid
   for (const a of elemsA) {
     if (!a.testid) continue;
-    const b = elemsB.find((e, i) => !usedB.has(i) && e.testid === a.testid);
-    if (b) {
-      const idx = elemsB.indexOf(b);
-      usedB.add(idx);
-      matches.push({ a, b, matchType: 'testid' });
-    }
+    const b = byTestid.get(a.testid);
+    if (b && !matchedB.has(b)) { matches.push({ a, b, matchType: 'testid' }); matchedA.add(a); matchedB.add(b); }
   }
 
-  // Pass 2: match by role + tag + classes
+  // Pass 2: role + tag + classes
   for (const a of elemsA) {
-    if (matches.some((m) => m.a === a)) continue;
-    if (!a.role || !a.classes) continue;
-    const b = elemsB.find((e, i) => !usedB.has(i) && e.role === a.role && e.tag === a.tag && e.classes === a.classes);
-    if (b) {
-      const idx = elemsB.indexOf(b);
-      usedB.add(idx);
-      matches.push({ a, b, matchType: 'role+class' });
-    }
+    if (matchedA.has(a) || !a.role || !a.classes) continue;
+    const b = byRoleClass.get(`${a.role}|${a.tag}|${a.classes}`);
+    if (b && !matchedB.has(b)) { matches.push({ a, b, matchType: 'role+class' }); matchedA.add(a); matchedB.add(b); }
   }
 
-  // Pass 3: match by tag + classes (no role needed)
+  // Pass 3: tag + classes
   for (const a of elemsA) {
-    if (matches.some((m) => m.a === a)) continue;
-    if (!a.classes || a.classes.length < 4) continue;
-    const b = elemsB.find((e, i) => !usedB.has(i) && e.tag === a.tag && e.classes === a.classes);
-    if (b) {
-      const idx = elemsB.indexOf(b);
-      usedB.add(idx);
-      matches.push({ a, b, matchType: 'tag+class' });
-    }
+    if (matchedA.has(a) || !a.classes || a.classes.length < 4) continue;
+    const b = byTagClass.get(`${a.tag}|${a.classes}`);
+    if (b && !matchedB.has(b)) { matches.push({ a, b, matchType: 'tag+class' }); matchedA.add(a); matchedB.add(b); }
   }
 
   return matches;

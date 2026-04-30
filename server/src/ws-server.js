@@ -36,6 +36,9 @@ const PING_INTERVAL_MS = 30000;
  * @returns {{ broadcast: function, getClientCount: function, close: function }}
  */
 export function createWebSocketServer(httpServer, options = {}) {
+  // 13.10: WS maxPayload is intentionally lower than HTTP MAX_BODY (5MB).
+  // WS carries only events (annotation status, audit results) - never full captures.
+  // Full captures go through HTTP POST /capture.
   const wss = new WebSocketServer({ noServer: true, maxPayload: 1 * 1024 * 1024 });
   const clients = new Set();
   let pingTimer = null;

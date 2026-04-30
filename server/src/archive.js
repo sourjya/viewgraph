@@ -150,7 +150,8 @@ export async function runArchive(capturesDir, opts = {}) {
   let files;
   try { files = readdirSync(capturesDir).filter((f) => f.endsWith('.json') && f.startsWith('viewgraph-')); } catch { return { archived: 0, skipped: 0 }; }
 
-  // Parse all captures and check eligibility
+  // 13.9: Still reads all files (needed for keepLatestPerUrl ordering),
+  // but skips JSON parse for files that are clearly too new based on filename timestamp.
   const candidates = [];
   for (const f of files) {
     try {
