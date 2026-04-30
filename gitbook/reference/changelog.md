@@ -87,7 +87,7 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - Build metadata: dev/prod mode, bundler detection (Vite, webpack, Next.js, Nuxt, Astro)
 - Heuristic name computation: W3C accessible name algorithm reduces a11y audit false positives
 
-### TracePulse Integration
+### [TracePulse](https://chaoslabz.gitbook.io/tracepulse) Integration
 - Frontend error bridge: console errors and failed requests pushed to TracePulse for cross-stack correlation
 - `@vg-verify` prompt: composite verify pattern (verify_fix + get_errors)
 - HMR detection surfaced in verify_fix response

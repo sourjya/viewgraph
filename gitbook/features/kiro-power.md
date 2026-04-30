@@ -69,7 +69,7 @@ In Kiro CLI, type `@vg` then Tab to see all shortcuts. The `@` prefix triggers p
 | `@vg-ideate` | Generate feature specs from idea-mode annotations |
 | `@vg-help` | List all ViewGraph tools with explanations |
 | `@vg-debug-ui` | 5-step UI debugging recipe (assess, annotate, audit, fix, verify) |
-| `@vg-debug-fullstack` | Full-stack debug with Chrome DevTools MCP + TracePulse |
+| `@vg-debug-fullstack` | Full-stack debug with Chrome DevTools MCP + [TracePulse](https://chaoslabz.gitbook.io/tracepulse) |
 
 ## Steering Docs (3)
 

@@ -1,6 +1,6 @@
 # Cross-Tool Setup
 
-ViewGraph works alongside other MCP tools to give your agent complete visibility across the stack. This guide shows you how to set up ViewGraph with Chrome DevTools MCP and TracePulse so your agent can debug frontend, backend, and UI issues in one workflow.
+ViewGraph works alongside other MCP tools to give your agent complete visibility across the stack. This guide shows you how to set up ViewGraph with Chrome DevTools MCP and [TracePulse](https://chaoslabz.gitbook.io/tracepulse) so your agent can debug frontend, backend, and UI issues in one workflow.
 
 ## What Each Tool Does
 

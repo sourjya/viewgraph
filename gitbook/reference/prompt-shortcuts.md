@@ -24,7 +24,7 @@ Pulls unresolved annotations via `get_unresolved`. For each: reads the comment, 
 
 Post-fix verification: frontend + backend health check.
 
-Calls `verify_fix` for a one-call smoke test (a11y, layout, console errors, network failures, regressions). If TracePulse is available, also calls `get_errors` for backend health. Reports pass/fail with details on what broke.
+Calls `verify_fix` for a one-call smoke test (a11y, layout, console errors, network failures, regressions). If [TracePulse](https://chaoslabz.gitbook.io/tracepulse) is available, also calls `get_errors` for backend health. Reports pass/fail with details on what broke.
 
 ## @vg-capture
 

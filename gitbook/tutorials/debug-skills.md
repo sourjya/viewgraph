@@ -113,7 +113,7 @@ The agent checks its tool list for:
 
 - **ViewGraph tools** (always available) - DOM state, accessibility, layout, annotations
 - **Chrome DevTools MCP tools** (if installed) - live console errors, network requests, performance
-- **TracePulse tools** (if installed) - backend server logs, build errors
+- **[TracePulse](https://chaoslabz.gitbook.io/tracepulse) tools** (if installed) - backend server logs, build errors
 
 The agent uses whatever is available and skips steps for tools that aren't installed.
 
