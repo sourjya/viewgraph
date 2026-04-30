@@ -10,6 +10,14 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ## [0.9.1] - 2026-04-29 (post-release fixes)
 
+### MRR-008 Phase 2 (2026-04-30)
+- 13.1: readAndParseMulti sequential → Promise.all (14 callers)
+- 13.7: get-capture-diff triple stringify → single pass
+- 13.8: get-component-coverage getNodeDetails cache (O(n²) → O(n))
+- 13.13: a11y-rules WeakMap (no more caller node mutation)
+- 13.14: contrast.js parseFontSize handles rem/em/pt
+- 13.15: capture-diff missing bbox → 'unknown' not 'unchanged'
+
 ### MRR-008 Phase 1 (2026-04-30)
 - 9 safe immediate fixes from full server maintainability review
 - 13.4: Error logging on 6 silent catch blocks

@@ -103,7 +103,7 @@ Sourced from [MRR-008 (2026-04-30)](../reviews/MRR-008-2026-04-30.md). Full task
 | Remove dead `httpReceiver.getInfo?.()` call | 13.24 | `index.js:246` | 15 min |
 | Wrap get-capture.js diff-export I/O in try-catch | 13.26 | `tools/get-capture.js:59,79,90` | 10 min |
 
-### Phase 2 — Refactors (~1 day, low-medium risk)
+### Phase 2 — Refactors (✅ 6 of 12 fixed — remaining 6 are lower priority)
 
 | Task | Finding | File(s) | Effort |
 |------|---------|---------|--------|

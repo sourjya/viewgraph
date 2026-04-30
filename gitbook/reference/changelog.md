@@ -33,6 +33,14 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - crypto.randomUUID() replaces Math.random() for chunk IDs
 - Dead code removed, native message stubs return explicit errors
 
+### MRR-008 Phase 2 Fixes (April 30)
+- readAndParseMulti: sequential to Promise.all (14 tool callers benefit)
+- get-capture-diff: triple JSON.stringify to single pass
+- get-component-coverage: getNodeDetails cache (O(n squared) to O(n))
+- a11y-rules: WeakMap instead of mutating caller's node objects
+- contrast.js: parseFontSize handles rem/em/pt (was px-only)
+- capture-diff: missing bbox returns 'unknown' not 'unchanged'
+
 ### Security & Code Quality
 - Eliminated all innerHTML assignments from extension source (11 usages replaced with DOM API)
 - Eliminated createElement('script') - axe-core now injected via chrome.scripting.executeScript
