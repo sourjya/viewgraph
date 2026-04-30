@@ -146,7 +146,7 @@ Spec: [`.kiro/specs/extension-perf-pipeline/`](../../.kiro/specs/extension-perf-
 | Phase | Scope | Effort | Status |
 |-------|-------|--------|--------|
 | Phase 1 | Bundle size gate + vitest bench (traverser, serializer) + perf-gate.js | 1 day | Not started |
-| Phase 2 | Puppeteer E2E perf (sidebar open, capture time, annotation render) | 1-2 days | Not started |
+| Phase 2 | Puppeteer E2E perf (sidebar open, capture time, annotation render) + enrichment verification (console/network error capture against known fixtures) | 1-2 days | Not started |
 | Phase 3 | GitHub Actions workflow + release.sh integration | 0.5 day | Not started |
 
 ## Tool Clustering + Progressive Disclosure (Spec)

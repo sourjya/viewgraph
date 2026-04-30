@@ -51,7 +51,19 @@
 - [ ] Assert capture time < 2000ms on demo page
 - **Deliverable:** Test passes with timing output
 
-### Task 2.4: Annotation render time
+### Task 2.4: Enrichment verification (console + network errors)
+- [ ] Load `docs/demo/index.html` which has 8 planted bugs including JS errors and failed requests
+- [ ] Trigger capture after page loads
+- [ ] Read the capture JSON from disk
+- [ ] Assert `enrichment.console.errors` contains the planted console errors
+- [ ] Assert `enrichment.console.summary.errors > 0`
+- [ ] Assert `enrichment.network.summary.failed >= 0` (demo page may have failed requests)
+- [ ] Assert `enrichment.network.requests` array is populated
+- [ ] Assert cached resources are NOT marked as failed
+- [ ] Test with a page that has intentional CORS errors, verify they appear in capture
+- **Deliverable:** Enrichment data verified against known error fixtures
+
+### Task 2.5: Annotation render time
 - [ ] Add `performance.mark`/`performance.measure` to annotation overlay code
 - [ ] Measure annotation render via PerformanceObserver in Puppeteer
 - [ ] Assert < 100ms per annotation
