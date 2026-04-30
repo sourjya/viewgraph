@@ -108,7 +108,7 @@ Token counts measured from 175 real captures across 4 projects + 48 diverse webs
 | Sonnet 4.6 ($15/M output) | $22,500 | $720 | $21,780 |
 | Haiku 4.5 ($5/M output) | $7,500 | $240 | $7,260 |
 
-[Full cost analysis across all models](https://github.com/sourjya/viewgraph/blob/main/docs/product/token-cost-analysis.md)
+[Full cost analysis across all models](https://github.com/sourjya/viewgraph/blob/main/docs/references/token-cost-analysis.md)
 
 ## What's Coming Next
 

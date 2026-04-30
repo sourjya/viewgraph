@@ -172,7 +172,7 @@ Format spec: [`docs/architecture/viewgraph-v2-format.md`](./docs/architecture/vi
 - [ViewGraph v2 Format Spec](./docs/architecture/viewgraph-v2-format.md) - capture format (v2.1.0)
 - [Format Research](./docs/references/viewgraph-format-research.md) - format analysis and design rationale
 - [Competitive Analysis](./docs/references/competitive-analysis-browser-mcp.md) - browser MCP comparison
-- [Product Analysis](./docs/product/product-analysis.md) - user journeys, pain points, competitor matrix
+- [Product Analysis](./docs/references/product-analysis.md) - user journeys, pain points, competitor matrix
 
 ## Companion Tools
 
@@ -186,7 +186,7 @@ But perception alone isn't enough. The complete agent nervous system:
 | **Ears** (feedback) | [TracePulse](https://chaoslabz.gitbook.io/tracepulse) | Hears the backend - errors, hot-reloads, build state, signal scoring |
 | **Hands** (action) | [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp) | Acts in the browser - click, type, navigate, screenshot, JS eval |
 
-ViewGraph also serves humans directly: click what's broken, describe it, send to your agent. No other tool in the ecosystem is both a human annotation tool and an agent perception layer. [Full positioning](docs/product/viewgraph-vs-devtools-positioning.md).
+ViewGraph also serves humans directly: click what's broken, describe it, send to your agent. No other tool in the ecosystem is both a human annotation tool and an agent perception layer. [Full positioning](docs/references/viewgraph-vs-devtools-positioning.md).
 
 ## Acknowledgments
 

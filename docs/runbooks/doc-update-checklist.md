@@ -18,8 +18,8 @@ Organized by trigger type.
 | `gitbook/features/kiro-power.md` | "N tools are the same" |
 | `gitbook/.gitbook/assets/viewgraph-numbers-speak.svg` | Footer text |
 | `docs/roadmap/roadmap.md` | Current totals line + completion table |
-| `docs/product/product-analysis.md` | Tool count mentions |
-| `docs/product/gitbook-structure.md` | Cross-reference counts |
+| `docs/references/product-analysis.md` | Tool count mentions |
+| `docs/runbooks/gitbook-structure.md` | Cross-reference counts |
 | `CONTRIBUTING.md` | "N MCP tool handlers" |
 | `npm-readme.md` | Tool count |
 | `power/prompts/vg-help.md` + `.kiro/prompts/vg-help.md` | "all N tools" |

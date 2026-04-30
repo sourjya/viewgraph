@@ -19,9 +19,9 @@ All documentation must be placed in the appropriate `docs/` subdirectory based o
 - **Purpose**: Technical documentation of HOW the system works today
 - **Content**: System structure, data flows, format specs, project metrics, feature specs
 
-### docs/product/
-- **Purpose**: Product strategy, UX design, marketing, and go-to-market
-- **Content**: Product analysis, positioning, UX designs, pain points, feature mapping, cost analysis, demo scripts
+### docs/references/
+- **Purpose**: Research, competitive analysis, product strategy, and external documentation
+- **Content**: Format research, competitive analysis, product positioning, marketing ideas, UX analysis, pain points, token cost analysis, migration research, strategic recommendations
 
 ### docs/references/
 - **Purpose**: Research, competitive analysis, and external documentation

@@ -50,7 +50,7 @@ These run automatically during capture:
 | Settings overlay | Server status, project mapping |
 | Options page | Advanced multi-project URL-to-directory mapping |
 
-See [UX Design](../docs/product/ux-analysis.md) for design decisions and user journeys.
+See [UX Design](../docs/references/ux-analysis.md) for design decisions and user journeys.
 
 ## Enrichment Collectors (14)
 
