@@ -14,8 +14,26 @@ Chrome DevTools MCP is the **motor cortex** - it executes actions in the browser
 
 You need both. A brain with hands but no eyes is groping in the dark. A brain with eyes but no hands can see but not act.
 
-## The Research: Why Structured Perception Beats Raw Observation
 
+## The Perception-Action Architecture
+
+Research on LLM-based GUI agents has converged on a modular architecture with three distinct components: **Perception**, **Planning**, and **Acting** (Li & Huang, arXiv 2504.20464, 2025; Qin et al., "GUI Agents", arXiv 2412.13501, 2024). This is not a metaphor - it is the formal architecture used by every major web agent system:
+
+- The **Perception module** processes raw observations (DOM, screenshots, accessibility trees) into structured representations the LLM can reason about
+- The **Planning module** (the LLM itself) decides what action to take based on perceived state
+- The **Acting module** executes the chosen action in the environment
+
+ViewGraph is a **dedicated perception module** for coding agents. Chrome DevTools MCP is a **dedicated acting module**. TracePulse is a **perception module for the backend**. Without ViewGraph, the agent's perception is limited to raw a11y trees (DevTools MCP's `take_snapshot`) or screenshots - both of which research shows are suboptimal for high-capability models.
+
+The analogy to biological nervous systems is direct:
+- ViewGraph = **visual cortex** (transforms raw sensory input into structured perception)
+- Chrome DevTools MCP = **motor cortex** (executes actions in the environment)
+- TracePulse = **auditory cortex** (processes runtime signals from the backend)
+- The LLM = **prefrontal cortex** (planning and decision-making)
+
+An agent with only DevTools MCP has hands but impoverished vision. An agent with only ViewGraph can see but cannot act. The complete perception-action loop requires both.
+
+## The Research: Why Structured Perception Beats Raw Observation
 ### Higher-capability models need richer observations, not simpler ones
 
 The "Read More, Think More" paper (Enomoto et al., arXiv 2604.01535, April 2026) tested web agents on WorkArena L1 across 10 LLMs and found:
@@ -95,10 +113,12 @@ Human sees bug -> ViewGraph captures context -> Agent reasons about fix
 
 | # | Paper | Key Finding for ViewGraph |
 |---|---|---|
-| 1 | Enomoto et al., "Read More, Think More" (arXiv 2604.01535, 2026) | High-capability models gain +14-17 points with structured HTML+CSS vs a11y-only. Diff-based history matches full at 1/3 tokens. |
-| 2 | Zhou et al., WebArena (arXiv 2307.13854, 2023) | Structured DOM > screenshots for web agent tasks |
-| 3 | Deng et al., Mind2Web (ACL 2024) | Cross-encoder relevance scoring of DOM elements improves agent grounding |
-| 4 | D2Snap (arXiv 2508.04412, 2025) | Targeted container merging preserves hierarchy agents need; wholesale flattening hurts |
-| 5 | Vercel D0 research (Pulumi 2026) | 2 tools at 100% success vs 17 tools at 80% - fewer, richer tools outperform many thin ones |
-| 6 | arXiv 2601.14470 (2026) | 59.4% of agent tokens wasted on re-reading own work |
-| 7 | isagentready.com (2026) | Chrome DevTools MCP loads ~17,000 tokens of schemas before first action |
+| 1 | Enomoto et al., "Read More, Think More" ([arXiv 2604.01535](https://arxiv.org/html/2604.01535v1), 2026) | High-capability models gain +14-17 points with structured HTML+CSS vs a11y-only. Diff-based history matches full at 1/3 tokens. |
+| 2 | Li & Huang, "GUI Agents with Foundation Models Enhanced by RL" ([arXiv 2504.20464](https://arxiv.org/abs/2504.20464), 2025) | Formalizes the Perception-Planning-Acting modular architecture for GUI agents. ViewGraph is the perception module. |
+| 3 | Qin et al., "GUI Agents" ([arXiv 2412.13501](https://arxiv.org/abs/2412.13501), 2024) | Comprehensive survey categorizing perception, reasoning, planning, and acting capabilities. Validates the modular architecture. |
+| 4 | Zhou et al., WebArena ([arXiv 2307.13854](https://arxiv.org/abs/2307.13854), 2023) | Structured DOM > screenshots for web agent tasks |
+| 5 | Deng et al., Mind2Web (ACL 2024) | Cross-encoder relevance scoring of DOM elements improves agent grounding |
+| 6 | D2Snap ([arXiv 2508.04412](https://arxiv.org/abs/2508.04412), 2025) | Targeted container merging preserves hierarchy agents need; wholesale flattening hurts |
+| 7 | Vercel D0 research (Pulumi 2026) | 2 tools at 100% success vs 17 tools at 80% - fewer, richer tools outperform many thin ones |
+| 8 | [arXiv 2601.14470](https://arxiv.org/html/2601.14470v1) (2026) | 59.4% of agent tokens wasted on re-reading own work |
+| 9 | isagentready.com (2026) | Chrome DevTools MCP loads ~17,000 tokens of schemas before first action |
