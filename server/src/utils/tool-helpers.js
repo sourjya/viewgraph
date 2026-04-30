@@ -157,11 +157,18 @@ export async function readAndParsePair(fileA, fileB, capturesDir, level = 'full'
  * @returns {Promise<Array<{ filename: string, parsed: object }>>}
  */
 export async function readAndParseMulti(filenames, capturesDir, level = 'full') {
-  const results = [];
-  for (const filename of filenames) {
-    const { ok, parsed } = await readAndParse(filename, capturesDir, level);
-    if (ok) results.push({ filename, parsed });
-  }
+  // 13.1: Parallel reads instead of sequential O(n) latency
+  const settled = await Promise.all(
+    filenames.map(async (filename) => {
+      const { ok, parsed } = await readAndParse(filename, capturesDir, level);
+      return ok ? { filename, parsed } : null;
+    }),
+  );
+  const results = settled.filter(Boolean);
+  const warnings = filenames.length - results.length > 0
+    ? [`${filenames.length - results.length} of ${filenames.length} captures could not be read`]
+    : [];
+  results.warnings = warnings;
   return results;
 }
 

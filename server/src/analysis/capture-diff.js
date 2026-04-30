@@ -22,7 +22,9 @@ function getMatchKey(node, parsed) {
  * Check if two bounding boxes differ.
  */
 function bboxDiffers(a, b) {
-  if (!a || !b) return false;
+  // 13.15: Missing bbox = unknown, not unchanged. Return null for unknown.
+  if (!a && !b) return false;
+  if (!a || !b) return null; // one side missing = unknown
   return a.x !== b.x || a.y !== b.y || a.w !== b.w || a.h !== b.h;
 }
 
@@ -73,7 +75,7 @@ export function diffCaptures(a, b) {
   // Elements in both - check for layout changes
   for (const [key, nodeA] of mapA) {
     const nodeB = mapB.get(key);
-    if (nodeB && bboxDiffers(nodeA.bbox, nodeB.bbox)) {
+    if (nodeB && bboxDiffers(nodeA.bbox, nodeB.bbox) === true) {
       moved.push({ id: nodeA.id, before: nodeA.bbox, after: nodeB.bbox });
     }
   }

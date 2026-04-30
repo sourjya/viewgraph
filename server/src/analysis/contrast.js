@@ -72,11 +72,17 @@ export function contrastRatio(color1, color2) {
 // WCAG compliance check (FR-2)
 // ---------------------------------------------------------------------------
 
-/** Parse a CSS font-size string to a number in px. Returns null if unresolvable. */
+/** Parse a CSS font-size string to a number in px. Handles px, rem, em, pt. Returns null if unresolvable. */
 function parseFontSize(str) {
   if (!str) return null;
-  const match = str.match(/^([\d.]+)px$/);
-  return match ? parseFloat(match[1]) : null;
+  const match = str.match(/^([\d.]+)(px|rem|em|pt)$/);
+  if (!match) return null;
+  const val = parseFloat(match[1]);
+  const unit = match[2];
+  if (unit === 'px') return val;
+  if (unit === 'rem' || unit === 'em') return val * 16; // assume 16px base
+  if (unit === 'pt') return val * (4 / 3); // 1pt = 1.333px
+  return null;
 }
 
 /**

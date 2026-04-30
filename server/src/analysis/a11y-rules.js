@@ -91,11 +91,14 @@ export const RULES = [
       // Pass both AA and AAA - no issue
       if (result.aa && result.aaa) return false;
       // Store result for auditNode to read severity and build description
-      node._contrastResult = result;
+      _contrastCache.set(node, result);
       return true;
     },
   },
 ];
+
+// 13.13: Store contrast results without mutating caller's node objects
+const _contrastCache = new WeakMap();
 
 /**
  * Run all audit rules against a single node.
@@ -107,16 +110,15 @@ export function auditNode(node, details) {
   const issues = [];
   for (const rule of RULES) {
     if (rule.check(node, details || { attributes: {} })) {
-      // Contrast rule has dynamic severity based on AA vs AAA failure
       let severity = rule.severity;
       let description = rule.description;
-      if (rule.rule === 'insufficient-contrast' && node._contrastResult) {
-        const r = node._contrastResult;
-        severity = r.aa ? 'warning' : 'error';
-        const ratioStr = r.ratio.toFixed(1);
-        const threshold = r.aa ? 'AAA' : 'AA';
-        description = `Contrast ratio ${ratioStr}:1 fails WCAG ${threshold}`;
-        delete node._contrastResult;
+      if (rule.rule === 'insufficient-contrast') {
+        const r = _contrastCache.get(node);
+        if (r) {
+          severity = r.aa ? 'warning' : 'error';
+          description = `Contrast ratio ${r.ratio.toFixed(1)}:1 fails WCAG ${r.aa ? 'AAA' : 'AA'}`;
+          _contrastCache.delete(node);
+        }
       }
       issues.push({ rule: rule.rule, severity, description, elementId: node.id, tag: node.tag });
     }

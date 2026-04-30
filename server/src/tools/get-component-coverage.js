@@ -91,10 +91,17 @@ export function register(server, _indexer, capturesDir) {
       const interactiveIds = new Set(interactive.map((n) => n.id));
       const results = [];
 
+      // 13.8: Cache getNodeDetails to avoid O(n²) repeated lookups
+      const detailsCache = new Map();
+      const getCachedDetails = (id) => {
+        if (!detailsCache.has(id)) detailsCache.set(id, getNodeDetails(parsed, id));
+        return detailsCache.get(id);
+      };
+
       for (const [name, comp] of componentMap) {
         const compInteractive = comp.nodeIds.filter((id) => interactiveIds.has(id));
         const withTestid = compInteractive.filter((id) => {
-          const details = getNodeDetails(parsed, id);
+          const details = getCachedDetails(id);
           return details?.attributes?.['data-testid'];
         });
 
@@ -106,7 +113,7 @@ export function register(server, _indexer, capturesDir) {
           missingTestid: compInteractive.length - withTestid.length,
           coverage: compInteractive.length > 0 ? Math.round((withTestid.length / compInteractive.length) * 100) : 100,
           missingElements: compInteractive.filter((id) => {
-            const details = getNodeDetails(parsed, id);
+            const details = getCachedDetails(id);
             return !details?.attributes?.['data-testid'];
           }),
         });

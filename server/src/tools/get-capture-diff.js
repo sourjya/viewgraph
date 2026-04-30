@@ -73,13 +73,13 @@ export function register(server, indexer, capturesDir) {
         });
       }
 
-      // S5-1: Guard against O(n²) diff on very large captures
-      const prevSize = JSON.stringify(prev.parsed).length;
-      const targetSize = JSON.stringify(target.parsed).length;
-      if (prevSize + targetSize > 2_000_000) {
+      // S5-1 + 13.7: Single stringify per object for size check
+      const targetStr = JSON.stringify(target.parsed);
+      const prevStr = JSON.stringify(prev.parsed);
+      if (prevStr.length + targetStr.length > 2_000_000) {
         return jsonResponse({
           mode: 'full',
-          reason: `Captures too large for diff (${Math.round((prevSize + targetSize) / 1024)}KB combined)`,
+          reason: `Captures too large for diff (${Math.round((prevStr.length + targetStr.length) / 1024)}KB combined)`,
           capture: targetFile,
           previousCapture: prevFile,
           url: targetUrl,
@@ -96,7 +96,7 @@ export function register(server, indexer, capturesDir) {
       );
 
       const patchSize = JSON.stringify(meaningfulPatch).length;
-      const fullSize = JSON.stringify(target.parsed).length;
+      const fullSize = targetStr.length;
       const ratio = fullSize > 0 ? Math.round(fullSize / Math.max(patchSize, 1)) : 1;
 
       // Fall back to full if patch is >50% of full size (structural rewrite)
