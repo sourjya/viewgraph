@@ -19,6 +19,36 @@ MCP helper. Those are features. The category is the context layer.
 
 ---
 
+## Mission
+
+**Fewer wasted tokens. Faster shipping. Lower carbon footprint. Responsible AI in action.**
+
+ViewGraph exists to make AI-assisted development environmentally responsible. AI coding agents spend [60-80% of their token budget on orientation and retrieval](https://arxiv.org/html/2601.14470v1), not problem-solving. Every wasted token is wasted compute, wasted energy, and avoidable carbon emissions.
+
+Global data center electricity demand is projected to [more than double by 2030 to ~945 TWh](https://www.iea.org/news/ai-is-set-to-drive-surging-electricity-demand-from-data-centres-while-offering-the-potential-to-transform-how-the-energy-sector-works) -- more than Japan's entire energy consumption. LLM inference (not training) now accounts for [more than 90% of total AI power consumption](https://arxiv.org/html/2512.03024). Every tool that reduces wasted inference directly reduces the carbon intensity of AI development.
+
+ViewGraph's token efficiency is not a feature -- it is the product's reason for existing. By giving agents exactly the UI context they need in the smallest possible token footprint, ViewGraph reduces the environmental cost of every AI-assisted coding session.
+
+| What we measure | What it means |
+|---|---|
+| 97% token reduction per task | 97% less compute, 97% less energy |
+| 80-85% reduction on interactive queries | Agents stop re-reading entire pages |
+| 50-1500x compression on sequential captures | Near-zero overhead for iterative workflows |
+| 99.8% reduction on capture transmission | File-backed receipts instead of inline JSON |
+
+This is not greenwashing. These are measured results from [experiments on 175 real captures](../../scripts/experiments/) across 4 projects and 48 diverse websites.
+
+---
+
+## Core Values
+
+1. **Environmental responsibility** -- Every design decision is evaluated against token cost. Less waste = less compute = less carbon.
+2. **Radical transparency** -- All measurements are reproducible. Experiment scripts, datasets, and results are committed to the repo.
+3. **Open source** -- AGPL-3.0. Free for the global developer community. Responsible AI should not be paywalled.
+4. **Ethical AI usage** -- Agents should use the minimum context needed. Progressive disclosure, not context flooding.
+
+---
+
 ## Core Problem Statement
 
 Current coding agents can read code, but they still guess the live UI.
@@ -73,20 +103,22 @@ Regression review, component audits, pattern replication.
 
 ---
 
-## Five Marketing Pillars
+## Six Marketing Pillars
 
-1. **Better test generation** - agent sees actual interactive page, not
+1. **Responsible AI** - Every token saved is compute not burned, energy not
+   consumed, carbon not emitted. ViewGraph makes agentic coding sustainable.
+2. **Better test generation** - agent sees actual interactive page, not
    guessed JSX or a screenshot
-2. **Better regression detection** - before/after captures give structural
+3. **Better regression detection** - before/after captures give structural
    evidence, not eyeballing
-3. **Better QA-to-dev handoff** - bug report becomes structured artifact,
+4. **Better QA-to-dev handoff** - bug report becomes structured artifact,
    not screenshot plus suffering
-4. **Better accessibility remediation** - agents work from rendered UI and
+5. **Better accessibility remediation** - agents work from rendered UI and
    computed semantics
-5. **Better design-to-code context** - agents reproduce and extend real
+6. **Better design-to-code context** - agents reproduce and extend real
    layout patterns faster
 
-These five are enough for launch. No feature soup.
+Pillar 1 is the mission. Pillars 2-6 are how the mission manifests in daily work.
 
 ---
 
