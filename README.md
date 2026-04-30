@@ -176,7 +176,17 @@ Format spec: [`docs/architecture/viewgraph-v2-format.md`](./docs/architecture/vi
 
 ## Companion Tools
 
-ViewGraph sees the UI. [TracePulse](https://chaoslabz.gitbook.io/tracepulse) feels the backend. Together with [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp), they form the three-layer agentic debugging stack: backend verification (TracePulse) + browser verification (Chrome DevTools MCP) + visual verification (ViewGraph).
+ViewGraph is the **optic nerve** for AI coding agents - it transforms raw DOM into structured perception that LLMs can reason about. [Research shows](https://arxiv.org/html/2604.01535v1) high-capability models gain +14-17 points on web tasks when given structured layout data (CSS, bounding boxes, z-index) vs raw accessibility trees alone. ViewGraph delivers exactly that, at 1,930 tokens median vs ~17,000 for raw snapshots.
+
+But perception alone isn't enough. The complete agent nervous system:
+
+| Layer | Tool | Role |
+|---|---|---|
+| **Eyes** (perception) | [ViewGraph](https://chaoslabz.gitbook.io/viewgraph) | Sees the UI - structured captures, diffs, a11y audits, source mapping |
+| **Ears** (feedback) | [TracePulse](https://chaoslabz.gitbook.io/tracepulse) | Hears the backend - errors, hot-reloads, build state, signal scoring |
+| **Hands** (action) | [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp) | Acts in the browser - click, type, navigate, screenshot, JS eval |
+
+ViewGraph also serves humans directly: click what's broken, describe it, send to your agent. No other tool in the ecosystem is both a human annotation tool and an agent perception layer. [Full positioning](docs/product/viewgraph-vs-devtools-positioning.md).
 
 ## Acknowledgments
 
