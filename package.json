@@ -73,12 +73,12 @@
     "url": "https://github.com/sourjya/viewgraph.git"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
-    "chokidar": "^5.0.0",
-    "pixelmatch": "^7.1.0",
-    "pngjs": "^7.0.0",
-    "ws": "^8.20.0",
-    "zod": "^4.3.6",
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "chokidar": "5.0.0",
+    "pixelmatch": "7.1.0",
+    "pngjs": "7.0.0",
+    "ws": "8.20.0",
+    "zod": "4.3.6",
     "fast-json-patch": "3.1.1"
   },
   "devDependencies": {

@@ -138,6 +138,19 @@ Sourced from [MRR-008 (2026-04-30)](../reviews/MRR-008-2026-04-30.md). Full task
 | generate_tests MCP tool | Medium | Dedicated tool that produces a complete Playwright/Cypress test file from a capture. Currently a prompt (`@vg-tests`) - elevate to a tool that returns runnable code with correct locators for every interactive element. |
 | Extended Enrichment (Tier 2) | Medium | Error boundary state, service worker state, build metadata |
 
+## Extension Performance Pipeline (Spec)
+
+Automated performance regression detection for the extension. 3 phases, CI-ready.
+Spec: [`.kiro/specs/extension-perf-pipeline/`](../../.kiro/specs/extension-perf-pipeline/requirements.md) | Reference: [`docs/references/extension-performance-testing-pipeline.md`](../references/extension-performance-testing-pipeline.md)
+
+| Phase | Scope | Effort | Status |
+|-------|-------|--------|--------|
+| Phase 1 | Bundle size gate + vitest bench (traverser, serializer) + perf-gate.js | 1 day | Not started |
+| Phase 2 | Puppeteer E2E perf (sidebar open, capture time, annotation render) | 1-2 days | Not started |
+| Phase 3 | GitHub Actions workflow + release.sh integration | 0.5 day | Not started |
+
+Key budgets: content script < 50KB, sidebar open < 500ms, capture < 2000ms, annotation render < 100ms.
+
 ## Other Ideas (Backlog)
 
 | Idea | Status | Doc |
