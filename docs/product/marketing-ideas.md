@@ -50,6 +50,15 @@ Developer fixes code
 - **Agent sees the full picture without switching tools**
 
 ### Token Efficiency Is a Product Feature
+
+### Test Generation → Monitoring Loop
+- ViewGraph captures a page → `@vg-tests` generates a Playwright test file with correct locators for every interactive element
+- `@viewgraph/playwright` fixture captures DOM during E2E tests for structural regression detection
+- TracePulse parses pytest/jest output and surfaces test failures as structured events
+- Together: generate tests (VG) → run tests → monitor results (TP) → fix failures → re-capture → verify
+- One tool generates, the other monitors. No gap between "tests exist" and "tests are healthy."
+
+### Token Efficiency Is a Product Feature
 - Every ViewGraph response is designed with a token budget
 - Provenance metadata tells agents which data to trust vs verify
 - observationDepth lets agents request only what they need
@@ -72,6 +81,11 @@ Developer fixes code
 - "41 MCP tools. Works with Kiro, Claude Code, Cursor, Windsurf, Cline."
 - "Structural regression detection without screenshots. Baseline comparison catches missing elements."
 - "Checkpoint/resume for multi-step agent workflows. Recovery without full re-capture."
+
+### For Test Automation Teams
+- "ViewGraph generates the tests. TracePulse monitors the results. Full loop: capture page → `@vg-tests` → complete Playwright test file with correct locators → tests run → TracePulse parses pytest/jest output → failures surfaced as structured events → agent fixes → repeat."
+- "`@viewgraph/playwright` fixture: add `await viewgraph.capture('checkout-page')` to existing tests. Diff captures between runs. Detect structural regressions without screenshots."
+- "20-30 minutes of manual test inspection reduced to one prompt. The agent reads every interactive element, generates assertions for each, and produces a runnable test file."
 
 ## Competitive Positioning Claims
 
