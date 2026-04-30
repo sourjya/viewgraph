@@ -119,7 +119,7 @@ Sourced from [MRR-008 (2026-04-30)](../reviews/MRR-008-2026-04-30.md). Full task
 | Standardize all tool response fields to camelCase | 13.21 | Various `tools/*.js` | 1-2 hr |
 | Add `log()` helper, replace 15 `console.log` calls | 13.22 | `server/src/` wide | 30 min |
 
-### Phase 3 — Structural (dedicated code-health sprint, before launch)
+### Phase 3 — Structural (2 of 5 fixed, 3 deferred to dedicated sprint)
 
 | Task | Finding | File(s) | Effort |
 |------|---------|---------|--------|

@@ -41,6 +41,10 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - contrast.js: parseFontSize handles rem/em/pt (was px-only)
 - capture-diff: missing bbox returns 'unknown' not 'unchanged'
 
+### MRR-008 Phase 3 Fixes (April 30)
+- consistency-checker: O(N squared x M squared) to O(N+M) via pre-indexed matching
+- WS/HTTP payload limits documented as intentional (WS: events only, HTTP: captures)
+
 ### Security & Code Quality
 - Eliminated all innerHTML assignments from extension source (11 usages replaced with DOM API)
 - Eliminated createElement('script') - axe-core now injected via chrome.scripting.executeScript
