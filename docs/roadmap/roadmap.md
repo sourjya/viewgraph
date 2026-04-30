@@ -135,6 +135,7 @@ Sourced from [MRR-008 (2026-04-30)](../reviews/MRR-008-2026-04-30.md). Full task
 |------|--------|-------------|
 | Performance optimization | Medium | Lazy-load heavy modules, optimize DOM traversal for large pages |
 | traverseDOM chunking | Medium | Split single-pass DOM traversal into chunks for 2000+ node pages (prevents long tasks). Needs profiling data. |
+| generate_tests MCP tool | Medium | Dedicated tool that produces a complete Playwright/Cypress test file from a capture. Currently a prompt (`@vg-tests`) - elevate to a tool that returns runnable code with correct locators for every interactive element. |
 | Extended Enrichment (Tier 2) | Medium | Error boundary state, service worker state, build metadata |
 
 ## Other Ideas (Backlog)
