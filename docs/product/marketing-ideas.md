@@ -8,11 +8,11 @@ Extracted from [MCP Tooling Research](../references/mcp-tooling-research--the-ca
 
 ViewGraph and TracePulse exist to make agentic coding environmentally sustainable. The research is clear:
 
-- Global data center electricity demand will [more than double by 2030 to ~945 TWh](https://www.iea.org/news/ai-is-set-to-drive-surging-electricity-demand-from-data-centres-while-offering-the-potential-to-transform-how-the-energy-sector-works) -- more than Japan's entire energy consumption ([IEA 2025](https://www.iea.org/reports/energy-and-ai/ai-and-climate-change))
+- Global data center electricity demand will [more than double by 2030 to ~945 TWh](https://www.iea.org/news/ai-is-set-to-drive-surging-electricity-demand-from-data-centres-while-offering-the-potential-to-transform-how-the-energy-sector-works) - more than Japan's entire energy consumption ([IEA 2025](https://www.iea.org/reports/energy-and-ai/ai-and-climate-change))
 - Data center power demand will grow [160% by 2030](https://gs.com/insights/articles/AI-poised-to-drive-160-increase-in-power-demand), driven largely by AI workloads ([Goldman Sachs Research](https://gs.com/insights/articles/AI-poised-to-drive-160-increase-in-power-demand))
 - Global data center CO2 emissions projected to rise from [~220M tonnes in 2024 to 300-320M tonnes by 2035](https://www.iea.org/reports/energy-and-ai/ai-and-climate-change)
 - LLM inference (not training) accounts for [more than 90% of total AI power consumption](https://arxiv.org/html/2512.03024)
-- AI agents spend [59.4% of token consumption re-reading their own work](https://flowpad.ai/blog/are-you-ready-for-the-ai-coding-subsidy-to-end) -- not writing code or solving problems ([arXiv 2601.14470](https://arxiv.org/html/2601.14470v1))
+- AI agents spend [59.4% of token consumption re-reading their own work](https://flowpad.ai/blog/are-you-ready-for-the-ai-coding-subsidy-to-end) - not writing code or solving problems ([arXiv 2601.14470](https://arxiv.org/html/2601.14470v1))
 
 **The chain:** Fewer wasted tokens -> fewer GPU inference cycles -> less data center energy -> lower carbon emissions -> direct environmental impact.
 

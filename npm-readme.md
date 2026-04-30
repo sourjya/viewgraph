@@ -2,7 +2,7 @@
 
 The UI context layer for AI coding agents. Built to make agentic coding environmentally sustainable.
 
-AI agents waste [60-80% of their tokens](https://arxiv.org/html/2601.14470v1) on orientation, not problem-solving. Every wasted token is wasted compute, wasted energy, and avoidable carbon emissions. ViewGraph delivers the UI context agents need in the smallest possible token footprint -- 97% fewer tokens per task, measured across 175 real captures.
+AI agents waste [60-80% of their tokens](https://arxiv.org/html/2601.14470v1) on orientation, not problem-solving. Every wasted token is wasted compute, wasted energy, and avoidable carbon emissions. ViewGraph delivers the UI context agents need in the smallest possible token footprint - 97% fewer tokens per task, measured across 175 real captures.
 
 A browser extension captures structured DOM snapshots from any web page, and this MCP server exposes them to your AI assistant through the [Model Context Protocol](https://modelcontextprotocol.io/).
 

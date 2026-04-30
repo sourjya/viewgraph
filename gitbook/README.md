@@ -23,7 +23,7 @@ See a bug. Click it. Describe it. Your agent fixes it.
 And when they try, they waste enormous resources doing it.
 
 {% hint style="warning" %}
-**AI agents spend [60-80% of their tokens](https://arxiv.org/html/2601.14470v1) on orientation, not problem-solving.** Every wasted token is wasted compute, wasted energy, and avoidable carbon emissions. With data center energy demand projected to [double by 2030](https://www.iea.org/news/ai-is-set-to-drive-surging-electricity-demand-from-data-centres-while-offering-the-potential-to-transform-how-the-energy-sector-works), responsible AI means giving agents exactly the context they need -- nothing more.
+**AI agents spend [60-80% of their tokens](https://arxiv.org/html/2601.14470v1) on orientation, not problem-solving.** Every wasted token is wasted compute, wasted energy, and avoidable carbon emissions. With data center energy demand projected to [double by 2030](https://www.iea.org/news/ai-is-set-to-drive-surging-electricity-demand-from-data-centres-while-offering-the-potential-to-transform-how-the-energy-sector-works), responsible AI means giving agents exactly the context they need - nothing more.
 {% endhint %}
 
 - The agent **guesses** CSS fixes instead of seeing the actual layout
@@ -32,7 +32,7 @@ And when they try, they waste enormous resources doing it.
 - Visual regressions **slip through** because tests check behavior, not structure
 - QA handoffs require **back-and-forth** to clarify what's actually broken
 
-These problems cost teams hours per bug -- and burn tokens doing it. ViewGraph solves [23 of them](why-viewgraph.md) with **97% fewer tokens** than full-capture approaches.
+These problems cost teams hours per bug - and burn tokens doing it. ViewGraph solves [23 of them](why-viewgraph.md) with **97% fewer tokens** than full-capture approaches.
 
 ---
 

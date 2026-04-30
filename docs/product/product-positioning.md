@@ -25,9 +25,9 @@ MCP helper. Those are features. The category is the context layer.
 
 ViewGraph exists to make AI-assisted development environmentally responsible. AI coding agents spend [60-80% of their token budget on orientation and retrieval](https://arxiv.org/html/2601.14470v1), not problem-solving. Every wasted token is wasted compute, wasted energy, and avoidable carbon emissions.
 
-Global data center electricity demand is projected to [more than double by 2030 to ~945 TWh](https://www.iea.org/news/ai-is-set-to-drive-surging-electricity-demand-from-data-centres-while-offering-the-potential-to-transform-how-the-energy-sector-works) -- more than Japan's entire energy consumption. LLM inference (not training) now accounts for [more than 90% of total AI power consumption](https://arxiv.org/html/2512.03024). Every tool that reduces wasted inference directly reduces the carbon intensity of AI development.
+Global data center electricity demand is projected to [more than double by 2030 to ~945 TWh](https://www.iea.org/news/ai-is-set-to-drive-surging-electricity-demand-from-data-centres-while-offering-the-potential-to-transform-how-the-energy-sector-works) - more than Japan's entire energy consumption. LLM inference (not training) now accounts for [more than 90% of total AI power consumption](https://arxiv.org/html/2512.03024). Every tool that reduces wasted inference directly reduces the carbon intensity of AI development.
 
-ViewGraph's token efficiency is not a feature -- it is the product's reason for existing. By giving agents exactly the UI context they need in the smallest possible token footprint, ViewGraph reduces the environmental cost of every AI-assisted coding session.
+ViewGraph's token efficiency is not a feature - it is the product's reason for existing. By giving agents exactly the UI context they need in the smallest possible token footprint, ViewGraph reduces the environmental cost of every AI-assisted coding session.
 
 | What we measure | What it means |
 |---|---|
@@ -42,10 +42,10 @@ This is not greenwashing. These are measured results from [experiments on 175 re
 
 ## Core Values
 
-1. **Environmental responsibility** -- Every design decision is evaluated against token cost. Less waste = less compute = less carbon.
-2. **Radical transparency** -- All measurements are reproducible. Experiment scripts, datasets, and results are committed to the repo.
-3. **Open source** -- AGPL-3.0. Free for the global developer community. Responsible AI should not be paywalled.
-4. **Ethical AI usage** -- Agents should use the minimum context needed. Progressive disclosure, not context flooding.
+1. **Environmental responsibility** - Every design decision is evaluated against token cost. Less waste = less compute = less carbon.
+2. **Radical transparency** - All measurements are reproducible. Experiment scripts, datasets, and results are committed to the repo.
+3. **Open source** - AGPL-3.0. Free for the global developer community. Responsible AI should not be paywalled.
+4. **Ethical AI usage** - Agents should use the minimum context needed. Progressive disclosure, not context flooding.
 
 ---
 

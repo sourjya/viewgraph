@@ -16,7 +16,7 @@ Three bugs found, annotated, and fixed - without opening DevTools.
 
 ## Why Not Just Paste a Screenshot?
 
-The most common workaround for "the agent can't see my UI" is pasting a screenshot. Here's why that falls short -- for your workflow and for the planet:
+The most common workaround for "the agent can't see my UI" is pasting a screenshot. Here's why that falls short - for your workflow and for the planet:
 
 | | Screenshot in IDE | ViewGraph capture |
 |---|---|---|
@@ -29,7 +29,7 @@ The most common workaround for "the agent can't see my UI" is pasting a screensh
 | **Agent action** | "I see a big heading" | "h1 at `index.html:38`, font-size 56px" |
 | **Cross-page** | One screenshot per page | Structural diff, baseline, consistency check |
 
-A screenshot costs 50-200x more tokens and gives the agent almost nothing actionable. That's 50-200x more compute, more energy, and more carbon -- for a worse result.
+A screenshot costs 50-200x more tokens and gives the agent almost nothing actionable. That's 50-200x more compute, more energy, and more carbon - for a worse result.
 
 <figure><img src=".gitbook/assets/viewgraph-environmental-impact.svg" alt="The Environmental Cost of Wasted AI Tokens - ViewGraph breaks the chain"></figure>
 
