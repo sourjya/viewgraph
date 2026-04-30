@@ -17,6 +17,8 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 - 13.20: get-capture-history migrated to jsonResponse()
 - 13.21: camelCase deferred (MCP parameter names are agent-facing)
 - 13.25: http-receiver split deferred (needs integration tests first)
+- 13.9: Archive fast-path via isEligibleFromMeta() - skips file reads for non-eligible captures
+- 13.20: jsonResponse migration confirmed complete (7 tools already migrated)
 
 ### MRR-008 Phase 2 (2026-04-30)
 - 13.1: readAndParseMulti sequential → Promise.all (14 callers)

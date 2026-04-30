@@ -48,6 +48,8 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 - get-capture-history migrated to jsonResponse()
 - camelCase standardization deferred (MCP parameter names are agent-facing)
 - http-receiver split deferred (needs integration test coverage first)
+- Archive fast-path: isEligibleFromMeta() skips file reads using indexer metadata
+- jsonResponse migration confirmed complete (all target tools already migrated)
 
 ### Security & Code Quality
 - Eliminated all innerHTML assignments from extension source (11 usages replaced with DOM API)
