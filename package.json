@@ -78,7 +78,8 @@
     "pixelmatch": "^7.1.0",
     "pngjs": "^7.0.0",
     "ws": "^8.20.0",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "fast-json-patch": "3.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
