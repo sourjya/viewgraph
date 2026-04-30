@@ -149,6 +149,30 @@ Spec: [`.kiro/specs/extension-perf-pipeline/`](../../.kiro/specs/extension-perf-
 | Phase 2 | Puppeteer E2E perf (sidebar open, capture time, annotation render) | 1-2 days | Not started |
 | Phase 3 | GitHub Actions workflow + release.sh integration | 0.5 day | Not started |
 
+## Tool Clustering + Progressive Disclosure (Spec)
+
+Reduce MCP schema token overhead by 85%+ (from ~8,200 to ~1,200 tokens/turn) by grouping 41 tools into 6 workflow-based gateway tools. Agents discover sub-actions via progressive disclosure.
+Spec: [`.kiro/specs/tool-clustering/`](../../.kiro/specs/tool-clustering/requirements.md) | Reference: [`docs/references/mcp-tooling-research--the-case-for-rearchitecting-tracepulse-and-viewgraph.md`](../references/mcp-tooling-research--the-case-for-rearchitecting-tracepulse-and-viewgraph.md)
+
+| Phase | Scope | Effort | Status |
+|-------|-------|--------|--------|
+| Phase 1 | Gateway factory + cluster config + mode switching | 1-2 days | Not started |
+| Phase 2 | Wire all 6 clusters (Capture, Audit, Compare, Annotate, Session, Source) | 1 day | Not started |
+| Phase 3 | Update prompts, measure tokens, switch default to clustered | 0.5 day | Not started |
+
+Key numbers: 41 tools -> 6 gateways. ~8,200 -> ~1,200 schema tokens/turn. ~205,000 tokens saved per 25-turn session.
+
+## Schema Token Optimization (Spec)
+
+Compress tool descriptions (25-35% reduction) and extract shared parameter schemas. Complements tool clustering.
+Spec: [`.kiro/specs/schema-token-optimization/`](../../.kiro/specs/schema-token-optimization/requirements.md)
+
+| Phase | Scope | Effort | Status |
+|-------|-------|--------|--------|
+| Phase 1 | Measure baseline token counts | 0.5 day | Not started |
+| Phase 2 | Compress all 41 tool descriptions | 1 day | Not started |
+| Phase 3 | Extract shared Zod param schemas | 0.5 day | Not started |
+
 Key budgets: content script < 50KB, sidebar open < 500ms, capture < 2000ms, annotation render < 100ms.
 
 ## Other Ideas (Backlog)
