@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 680" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#0c0f1a"/>
+      <stop offset="100%" stop-color="#1a1f35"/>
+    </linearGradient>
+    <linearGradient id="red-glow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#dc2626"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+    <linearGradient id="green-glow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#16a34a"/>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+    <linearGradient id="amber" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="purple" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <filter id="glow-red"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glow-green"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="680" rx="16" fill="url(#bg)"/>
+
+  <!-- Title block -->
+  <text x="480" y="38" text-anchor="middle" fill="#94a3b8" font-size="12" font-weight="600" letter-spacing="2">THE ENVIRONMENTAL COST OF</text>
+  <text x="480" y="68" text-anchor="middle" fill="#f8fafc" font-size="26" font-weight="800" letter-spacing="1">WASTED AI TOKENS</text>
+  <line x1="340" y1="80" x2="620" y2="80" stroke="#334155" stroke-width="1"/>
+
+  <!-- ═══ ROW 1: THE CRISIS (3 stat cards) ═══ -->
+
+  <!-- Card 1: DC Energy -->
+  <rect x="30" y="100" width="290" height="120" rx="12" fill="#1e1b2e" stroke="#312e4a" stroke-width="1"/>
+  <text x="175" y="128" text-anchor="middle" fill="#f87171" font-size="11" font-weight="700" letter-spacing="1.5">DATA CENTER ENERGY</text>
+  <text x="175" y="168" text-anchor="middle" fill="#fca5a5" font-size="36" font-weight="800" filter="url(#glow-red)">2x</text>
+  <text x="175" y="190" text-anchor="middle" fill="#94a3b8" font-size="11">demand doubles by 2030 to 945 TWh</text>
+  <text x="175" y="208" text-anchor="middle" fill="#64748b" font-size="9">More than Japan's entire energy consumption -- IEA 2025</text>
+
+  <!-- Card 2: CO2 -->
+  <rect x="335" y="100" width="290" height="120" rx="12" fill="#1e1b2e" stroke="#312e4a" stroke-width="1"/>
+  <text x="480" y="128" text-anchor="middle" fill="#f87171" font-size="11" font-weight="700" letter-spacing="1.5">CO2 EMISSIONS</text>
+  <text x="480" y="168" text-anchor="middle" fill="#fca5a5" font-size="36" font-weight="800" filter="url(#glow-red)">320M</text>
+  <text x="480" y="190" text-anchor="middle" fill="#94a3b8" font-size="11">tonnes CO2 from data centers by 2035</text>
+  <text x="480" y="208" text-anchor="middle" fill="#64748b" font-size="9">Up from 220M in 2024. AI is the single largest driver -- IEA</text>
+
+  <!-- Card 3: Token Waste -->
+  <rect x="640" y="100" width="290" height="120" rx="12" fill="#1e1b2e" stroke="#312e4a" stroke-width="1"/>
+  <text x="785" y="128" text-anchor="middle" fill="#f87171" font-size="11" font-weight="700" letter-spacing="1.5">AGENT TOKEN WASTE</text>
+  <text x="785" y="168" text-anchor="middle" fill="#fca5a5" font-size="36" font-weight="800" filter="url(#glow-red)">59.4%</text>
+  <text x="785" y="190" text-anchor="middle" fill="#94a3b8" font-size="11">of tokens spent re-reading, not coding</text>
+  <text x="785" y="208" text-anchor="middle" fill="#64748b" font-size="9">LLM inference = 90%+ of AI power consumption -- arXiv</text>
+
+  <!-- ═══ THE CHAIN (center arrow flow) ═══ -->
+  <text x="480" y="252" text-anchor="middle" fill="#64748b" font-size="10" font-weight="600" letter-spacing="2">THE CHAIN: EVERY WASTED TOKEN HAS A COST</text>
+
+  <!-- Chain boxes -->
+  <rect x="30" y="268" width="170" height="40" rx="8" fill="none" stroke="#ef4444" stroke-width="1.5" opacity="0.7"/>
+  <text x="115" y="293" text-anchor="middle" fill="#fca5a5" font-size="11" font-weight="600">Wasted Tokens</text>
+
+  <text x="215" y="292" text-anchor="middle" fill="#475569" font-size="16">&#8594;</text>
+
+  <rect x="230" y="268" width="170" height="40" rx="8" fill="none" stroke="#f59e0b" stroke-width="1.5" opacity="0.7"/>
+  <text x="315" y="293" text-anchor="middle" fill="#fcd34d" font-size="11" font-weight="600">GPU Inference Cycles</text>
+
+  <text x="415" y="292" text-anchor="middle" fill="#475569" font-size="16">&#8594;</text>
+
+  <rect x="430" y="268" width="170" height="40" rx="8" fill="none" stroke="#f59e0b" stroke-width="1.5" opacity="0.7"/>
+  <text x="515" y="293" text-anchor="middle" fill="#fcd34d" font-size="11" font-weight="600">DC Energy Demand</text>
+
+  <text x="615" y="292" text-anchor="middle" fill="#475569" font-size="16">&#8594;</text>
+
+  <rect x="630" y="268" width="170" height="40" rx="8" fill="none" stroke="#ef4444" stroke-width="1.5" opacity="0.7"/>
+  <text x="715" y="293" text-anchor="middle" fill="#fca5a5" font-size="11" font-weight="600">Carbon Emissions</text>
+
+  <text x="815" y="292" text-anchor="middle" fill="#475569" font-size="16">&#8594;</text>
+
+  <rect x="830" y="268" width="105" height="40" rx="8" fill="none" stroke="#ef4444" stroke-width="1.5" opacity="0.9"/>
+  <text x="882" y="288" text-anchor="middle" fill="#fca5a5" font-size="10" font-weight="700">CLIMATE</text>
+  <text x="882" y="301" text-anchor="middle" fill="#fca5a5" font-size="10" font-weight="700">IMPACT</text>
+
+  <!-- ═══ ROW 2: VIEWGRAPH'S IMPACT (comparison bars) ═══ -->
+
+  <text x="480" y="345" text-anchor="middle" fill="#4ade80" font-size="14" font-weight="700" letter-spacing="1">VIEWGRAPH BREAKS THE CHAIN</text>
+  <line x1="340" y1="355" x2="620" y2="355" stroke="#22c55e" stroke-width="1" opacity="0.3"/>
+
+  <!-- Bar chart: Before vs After -->
+  <!-- Labels -->
+  <text x="100" y="385" text-anchor="end" fill="#94a3b8" font-size="10" font-weight="600">Tokens / task</text>
+  <text x="100" y="425" text-anchor="end" fill="#94a3b8" font-size="10" font-weight="600">Interactive query</text>
+  <text x="100" y="465" text-anchor="end" fill="#94a3b8" font-size="10" font-weight="600">Sequential cap.</text>
+  <text x="100" y="505" text-anchor="end" fill="#94a3b8" font-size="10" font-weight="600">Cap. transmit</text>
+
+  <!-- Before bars (red, full width) -->
+  <rect x="105" y="374" width="680" height="14" rx="3" fill="url(#red-glow)" opacity="0.8"/>
+  <text x="795" y="386" fill="#fca5a5" font-size="10" font-weight="700">~1,000,000</text>
+
+  <rect x="105" y="414" width="575" height="14" rx="3" fill="url(#red-glow)" opacity="0.8"/>
+  <text x="690" y="426" fill="#fca5a5" font-size="10" font-weight="700">~100,000</text>
+
+  <rect x="105" y="454" width="540" height="14" rx="3" fill="url(#red-glow)" opacity="0.8"/>
+  <text x="655" y="466" fill="#fca5a5" font-size="10" font-weight="700">~50,000</text>
+
+  <rect x="105" y="494" width="505" height="14" rx="3" fill="url(#red-glow)" opacity="0.8"/>
+  <text x="620" y="506" fill="#fca5a5" font-size="10" font-weight="700">~200,000</text>
+
+  <!-- After bars (green, tiny) -->
+  <rect x="105" y="392" width="21" height="14" rx="3" fill="url(#green-glow)" filter="url(#glow-green)"/>
+  <text x="135" y="404" fill="#4ade80" font-size="10" font-weight="700">~32,000</text>
+  <text x="215" y="404" fill="#22c55e" font-size="10" font-weight="800">97% less</text>
+
+  <rect x="105" y="432" width="100" height="14" rx="3" fill="url(#green-glow)" filter="url(#glow-green)"/>
+  <text x="215" y="444" fill="#4ade80" font-size="10" font-weight="700">~15,000</text>
+  <text x="295" y="444" fill="#22c55e" font-size="10" font-weight="800">85% less</text>
+
+  <rect x="105" y="472" width="7" height="14" rx="3" fill="url(#green-glow)" filter="url(#glow-green)"/>
+  <text x="122" y="484" fill="#4ade80" font-size="10" font-weight="700">~100</text>
+  <text x="170" y="484" fill="#22c55e" font-size="10" font-weight="800">1500x smaller</text>
+
+  <rect x="105" y="512" width="3" height="14" rx="3" fill="url(#green-glow)" filter="url(#glow-green)"/>
+  <text x="118" y="524" fill="#4ade80" font-size="10" font-weight="700">~200</text>
+  <text x="170" y="524" fill="#22c55e" font-size="10" font-weight="800">99.8% less</text>
+
+  <!-- Legend -->
+  <rect x="105" y="542" width="10" height="10" rx="2" fill="url(#red-glow)" opacity="0.8"/>
+  <text x="121" y="551" fill="#94a3b8" font-size="9">Without ViewGraph</text>
+  <rect x="225" y="542" width="10" height="10" rx="2" fill="url(#green-glow)"/>
+  <text x="241" y="551" fill="#94a3b8" font-size="9">With ViewGraph</text>
+
+  <!-- ═══ ROW 3: BOTTOM LINE ═══ -->
+
+  <rect x="30" y="570" width="900" height="90" rx="12" fill="#0f2a1a" stroke="#166534" stroke-width="1"/>
+
+  <!-- Left: cost -->
+  <text x="155" y="598" text-anchor="middle" fill="#86efac" font-size="11" font-weight="700" letter-spacing="1">COST PER TASK</text>
+  <text x="100" y="628" text-anchor="middle" fill="#fca5a5" font-size="22" font-weight="800" text-decoration="line-through">$3.00</text>
+  <text x="155" y="628" text-anchor="middle" fill="#64748b" font-size="16">&#8594;</text>
+  <text x="210" y="628" text-anchor="middle" fill="#4ade80" font-size="22" font-weight="800" filter="url(#glow-green)">$0.10</text>
+  <text x="155" y="648" text-anchor="middle" fill="#64748b" font-size="9">At $3/M tokens, 50 tasks/day</text>
+
+  <!-- Center: tokens saved -->
+  <line x1="310" y1="585" x2="310" y2="650" stroke="#166534" stroke-width="1"/>
+  <text x="480" y="598" text-anchor="middle" fill="#86efac" font-size="11" font-weight="700" letter-spacing="1">MONTHLY TOKEN SAVINGS</text>
+  <text x="480" y="635" text-anchor="middle" fill="#4ade80" font-size="30" font-weight="800" filter="url(#glow-green)">145M tokens</text>
+  <text x="480" y="648" text-anchor="middle" fill="#64748b" font-size="9">Per developer, per month (50 tasks/day)</text>
+
+  <!-- Right: environmental -->
+  <line x1="650" y1="585" x2="650" y2="650" stroke="#166534" stroke-width="1"/>
+  <text x="785" y="598" text-anchor="middle" fill="#86efac" font-size="11" font-weight="700" letter-spacing="1">WHAT THAT MEANS</text>
+  <text x="785" y="625" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">Less compute. Less energy.</text>
+  <text x="785" y="643" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="600">Less carbon. Every session.</text>
+
+  <!-- Footer citations -->
+  <text x="480" y="675" text-anchor="middle" fill="#475569" font-size="8">Sources: IEA Energy and AI (2025) | Goldman Sachs Research | arXiv 2601.14470, 2512.03024 | ViewGraph experiments on 175 captures across 48 websites</text>
+</svg>

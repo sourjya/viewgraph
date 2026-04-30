@@ -31,6 +31,8 @@ The most common workaround for "the agent can't see my UI" is pasting a screensh
 
 A screenshot costs 50-200x more tokens and gives the agent almost nothing actionable. That's 50-200x more compute, more energy, and more carbon -- for a worse result.
 
+<figure><img src=".gitbook/assets/viewgraph-environmental-impact.svg" alt="The Environmental Cost of Wasted AI Tokens - ViewGraph breaks the chain"></figure>
+
 ---
 
 ## You Don't Need to Speak DOM
