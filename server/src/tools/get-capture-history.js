@@ -11,6 +11,7 @@
  */
 
 import { z } from 'zod';
+import { jsonResponse } from '#src/utils/tool-helpers.js';
 
 export function register(server, indexer) {
   server.tool(
@@ -23,7 +24,7 @@ export function register(server, indexer) {
     async ({ url_filter, limit }) => {
       const all = indexer.list({ limit: 200, urlFilter: url_filter });
       if (!all.length) {
-        return { content: [{ type: 'text', text: 'No captures found.' }] };
+        return jsonResponse({ message: 'No captures found.', history: [] });
       }
 
       // Group by normalized URL (strip query params and hash)
@@ -65,7 +66,7 @@ export function register(server, indexer) {
       // S5-3: Apply pagination limit
       const limited = history.slice(0, limit);
 
-      return { content: [{ type: 'text', text: JSON.stringify(limited, null, 2) }] };
+      return jsonResponse(limited);
     },
   );
 }

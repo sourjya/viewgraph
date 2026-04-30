@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
-import { readAndParse, jsonResponse } from '#src/utils/tool-helpers.js';
+import { withCapture, jsonResponse } from '#src/utils/tool-helpers.js';
 import { flattenNodes, getNodeDetails } from '#src/analysis/node-queries.js';
 import { auditNode } from '#src/analysis/a11y-rules.js';
 
@@ -29,8 +29,7 @@ export function register(server, _indexer, capturesDir) {
       filename: z.string().describe('Capture filename'),
     },
     async ({ filename }) => {
-      const { ok, parsed, error } = await readAndParse(filename, capturesDir);
-      if (!ok) return error;
+      return withCapture(filename, capturesDir, (parsed) => {
 
       const nodes = flattenNodes(parsed);
       const allIssues = [];
@@ -57,6 +56,7 @@ export function register(server, _indexer, capturesDir) {
       }
 
       return jsonResponse(grouped);
+      });
     },
   );
 }
