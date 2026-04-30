@@ -13,6 +13,10 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 ### MRR-008 Phase 3 (2026-04-30)
 - 13.2: consistency-checker O(N²×M²) → O(N+M) via pre-indexed matching
 - 13.10: WS/HTTP payload limits documented as intentional
+- 13.18: withCapture() wrapper added (1 tool migrated, pattern established)
+- 13.20: get-capture-history migrated to jsonResponse()
+- 13.21: camelCase deferred (MCP parameter names are agent-facing)
+- 13.25: http-receiver split deferred (needs integration tests first)
 
 ### MRR-008 Phase 2 (2026-04-30)
 - 13.1: readAndParseMulti sequential → Promise.all (14 callers)

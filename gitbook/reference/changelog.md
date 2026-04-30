@@ -44,6 +44,10 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 ### MRR-008 Phase 3 Fixes (April 30)
 - consistency-checker: O(N squared x M squared) to O(N+M) via pre-indexed matching
 - WS/HTTP payload limits documented as intentional (WS: events only, HTTP: captures)
+- withCapture() wrapper added to tool-helpers.js (1 tool migrated, pattern established)
+- get-capture-history migrated to jsonResponse()
+- camelCase standardization deferred (MCP parameter names are agent-facing)
+- http-receiver split deferred (needs integration test coverage first)
 
 ### Security & Code Quality
 - Eliminated all innerHTML assignments from extension source (11 usages replaced with DOM API)
