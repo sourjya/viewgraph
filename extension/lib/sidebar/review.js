@@ -13,7 +13,7 @@
 import { ATTR } from '#lib/selector.js';
 import { resolveType, getBadgeColor, getBadgeIcon, getFilterIcon } from '#lib/annotation-types.js';
 // discoverServer and storage moved to annotation-sidebar.js orchestrator
-import { trashIcon, cameraIcon, closeIcon, checkIcon, circleIcon, svgFromString } from './icons.js';
+import { trashIcon, cameraIcon, closeIcon, checkIcon, circleIcon, setSvg } from './icons.js';
 import { FONT, COLOR, FONT_MONO } from './styles.js';
 
 /**
@@ -268,7 +268,7 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
     const btn = document.createElement('button');
     btn.setAttribute(ATTR, 'type-filter');
     btn.dataset.type = ft.key;
-    btn.replaceChildren(svgFromString(getFilterIcon(ft.key)));
+    setSvg(btn, getFilterIcon(ft.key));
     btn.setAttribute('data-tooltip', ft.label);
     const isOn = activeTypeFilters.has(ft.key) || (ft.key === 'element' && activeTypeFilters.has('region'));
     Object.assign(btn.style, {
@@ -469,7 +469,7 @@ function renderServerHistory(list, history) {
     const iconSvg = getBadgeIcon(ann);
     if (iconSvg) {
       const iconEl = document.createElement('span');
-      iconEl.replaceChildren(svgFromString(iconSvg));
+      setSvg(iconEl, iconSvg);
       Object.assign(iconEl.style, { display: 'inline-flex', color: markerColor, flexShrink: '0', marginRight: '2px' });
       line1.appendChild(iconEl);
     }
@@ -566,7 +566,7 @@ function createEntry(ann, callbacks) {
 
   if (iconSvg) {
     const iconEl = document.createElement('span');
-    iconEl.replaceChildren(svgFromString(iconSvg));
+    setSvg(iconEl, iconSvg);
     Object.assign(iconEl.style, { display: 'inline-flex', color: markerColor, flexShrink: '0', marginRight: '2px' });
     line1.appendChild(iconEl);
   }

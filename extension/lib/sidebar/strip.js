@@ -9,7 +9,7 @@
 
 import { ATTR } from '#lib/selector.js';
 import { getAnnotations } from '#lib/annotate.js';
-import { chevronLeftIcon, chatBubbleIcon, svgFromString } from './icons.js';
+import { chevronLeftIcon, chatBubbleIcon, setSvg } from './icons.js';
 import { COLOR } from './styles.js';
 
 /**
@@ -132,7 +132,7 @@ export function createStrip(opts) {
   const stripButtons = {};
   for (const [key, icon] of Object.entries(modeIcons)) {
     const btn = document.createElement('button');
-    btn.replaceChildren(svgFromString(icon.replace(/width="16" height="16"/, 'width="28" height="28"')));
+    setSvg(btn, icon.replace(/width="16" height="16"/, 'width="28" height="28"'));
     btn.setAttribute('data-tooltip', modeHints[key]);
     btn.dataset.mode = key;
     Object.assign(btn.style, {

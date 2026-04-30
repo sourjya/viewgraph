@@ -13,7 +13,6 @@ import { diagnoseElement } from './ui/element-diagnostics.js';
 
 import { ATTR } from './selector.js';
 import { COLOR, FONT } from './sidebar/styles.js';
-import { svgFromString } from './sidebar/icons.js';
 let panelEl = null;
 let currentId = null;
 let onCommentChange = null;
@@ -393,11 +392,15 @@ export async function show(annotation, callbacks = {}) {
   }, 100);
 }
 
-/** Small header icon button. */
+/** Small header icon button. Uses innerHTML for SVG (hardcoded, no user data). */
 function makeHeaderBtn(svgHtml, title) {
   const btn = document.createElement('button');
   btn.setAttribute(ATTR, 'btn');
-  btn.replaceChildren(svgFromString(svgHtml));
+  // Direct innerHTML for reliability - svgFromString fails in some extension contexts
+  const wrapper = document.createElement('span');
+  wrapper.style.display = 'flex';
+  wrapper.innerHTML = svgHtml;
+  btn.appendChild(wrapper);
   btn.title = title;
   Object.assign(btn.style, {
     border: 'none', background: 'transparent', cursor: 'pointer',

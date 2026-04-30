@@ -12,7 +12,7 @@ import { KEYS } from '#lib/storage.js';
 import { chevronLeftIcon } from './icons.js';
 import * as transport from '#lib/transport-client.js';
 import { COLOR, FONT } from './styles.js';
-import { svgFromString } from './icons.js';
+import { setSvg } from './icons.js';
 
 /**
  * Create the settings screen element.
@@ -83,14 +83,14 @@ export function createSettings() {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
   });
   const helpLink = document.createElement('a');
-  helpLink.replaceChildren(svgFromString('<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>'), document.createTextNode('URL mapping docs'));
+  helpLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>URL mapping docs';
   helpLink.href = 'https://chaoslabz.gitbook.io/viewgraph/getting-started/multi-project';
   helpLink.target = '_blank';
   Object.assign(helpLink.style, { color: COLOR.primaryHover, fontSize: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' });
   helpLink.addEventListener('mouseenter', () => { helpLink.style.textDecoration = 'underline'; });
   helpLink.addEventListener('mouseleave', () => { helpLink.style.textDecoration = 'none'; });
   const advLink = document.createElement('a');
-  advLink.replaceChildren(svgFromString('<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'), document.createTextNode('All servers'));
+  advLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>All servers';
   advLink.href = '#';
   Object.assign(advLink.style, { color: COLOR.primaryHover, fontSize: '10px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', cursor: 'pointer' });
   advLink.addEventListener('mouseenter', () => { advLink.style.textDecoration = 'underline'; });
@@ -105,7 +105,7 @@ export function createSettings() {
     e.preventDefault();
     if (allServersSection.style.display === 'none') {
       allServersSection.style.display = 'block';
-      advLink.replaceChildren(svgFromString('<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><polyline points="18 15 12 9 6 15"/></svg>'), document.createTextNode('All servers'));
+      advLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><polyline points="18 15 12 9 6 15"/></svg>All servers';
       // Fetch all servers
       allServersSection.textContent = 'Scanning...';
       try {
@@ -138,7 +138,7 @@ export function createSettings() {
       } catch { allServersSection.textContent = 'Failed to scan.'; }
     } else {
       allServersSection.style.display = 'none';
-      advLink.replaceChildren(svgFromString('<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'), document.createTextNode('All servers'));
+      advLink.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>All servers';
     }
   });
   cardFooter.append(helpLink, advLink);

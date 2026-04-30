@@ -217,27 +217,29 @@ export function shieldIcon(size = 14, color = '#4ade80', inner = 'none') {
 }
 
 /**
- * Parse an SVG string into a DOM element without innerHTML.
- * Uses DOMParser which is safe (no script execution) and avoids
- * Firefox store innerHTML warnings.
+ * Safely set SVG content on an element. Uses innerHTML because DOMParser
+ * with image/svg+xml is unreliable in Chrome extension content script
+ * and shadow DOM contexts. All SVG strings in this codebase are hardcoded
+ * constants - never user data.
+ *
+ * This is the SINGLE place to change if a better SVG injection method
+ * becomes available.
+ *
+ * @param {Element} el - Target element
+ * @param {string} svgHtml - SVG markup string (hardcoded, not user data)
+ */
+export function setSvg(el, svgHtml) {
+  el.innerHTML = svgHtml;
+}
+
+/**
+ * Create an SVG element from a string. Returns the SVG element.
  * @param {string} svgString - SVG markup
  * @returns {Element}
  */
 export function svgFromString(svgString) {
-  try {
-    const doc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
-    // DOMParser returns a parsererror document on invalid SVG
-    if (doc.querySelector('parsererror')) {
-      // Fallback: create a container and use innerHTML (safe - hardcoded SVG only)
-      const tmp = document.createElement('span');
-      tmp.innerHTML = svgString; // eslint-disable-line -- hardcoded SVG, no user data
-      return tmp.firstElementChild || tmp;
-    }
-    return document.adoptNode(doc.documentElement);
-  } catch {
-    // Fallback for environments where DOMParser fails
-    const tmp = document.createElement('span');
-    tmp.innerHTML = svgString; // eslint-disable-line -- hardcoded SVG, no user data
-    return tmp.firstElementChild || tmp;
-  }
+  const wrapper = document.createElement('span');
+  wrapper.style.display = 'contents';
+  wrapper.innerHTML = svgString;
+  return wrapper.firstElementChild || wrapper;
 }
