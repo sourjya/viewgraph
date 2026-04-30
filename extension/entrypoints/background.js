@@ -42,7 +42,7 @@ async function pushToServer(capture, capturesDir = null) {
     // Falls back to SERVER_URL if no server matched.
     const serverUrl = await discoverySw.discover(pageUrl) || SERVER_URL;
     if (serverUrl) transport.init(serverUrl);
-    console.log('[viewgraph] pushToServer: url', serverUrl);
+    console.error('[viewgraph] pushToServer: url', serverUrl);
     const headers = { 'content-type': 'application/json' };
     if (capturesDir) headers['x-captures-dir'] = capturesDir;
     const res = await fetch(`${serverUrl}/captures`, {
@@ -50,7 +50,7 @@ async function pushToServer(capture, capturesDir = null) {
       headers,
       body: JSON.stringify(capture),
     });
-    console.log('[viewgraph] pushToServer: response', res.status);
+    console.error('[viewgraph] pushToServer: response', res.status);
     if (res.ok) return { ...(await res.json()), _serverUrl: serverUrl };
     const err = await res.text();
     console.error('[viewgraph] pushToServer: error', res.status, err);
@@ -322,7 +322,7 @@ export default defineBackground(() => {
     if (message.type === 'auto-capture') {
       (async () => {
         const result = await pushToServer(message.capture);
-        console.log(`[viewgraph] auto-capture #${message.captureNumber} (${message.hmrSource}): pushed=${!!result}`);
+        console.error(`[viewgraph] auto-capture #${message.captureNumber} (${message.hmrSource}): pushed=${!!result}`);
         sendResponse({ ok: true, pushed: !!result, filename: result?.filename });
       })();
       return true;
@@ -332,7 +332,7 @@ export default defineBackground(() => {
     if (message.type === 'send-review') {
       (async () => {
         const [_tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        console.log('[viewgraph] send-review: tab', _tab?.url, 'includeCapture:', message.includeCapture);
+        console.error('[viewgraph] send-review: tab', _tab?.url, 'includeCapture:', message.includeCapture);
         if (!_tab?.id) { sendResponse({ ok: false, error: 'No active tab' }); return; }
 
         // Ask content script for annotations (and optionally a full capture with snapshot)
@@ -341,7 +341,7 @@ export default defineBackground(() => {
           type: msgType, sessionNote: message.sessionNote,
           includeSnapshot: message.includeSnapshot !== false,
         });
-        console.log('[viewgraph] send-review: content script result', result?.ok);
+        console.error('[viewgraph] send-review: content script result', result?.ok);
         if (!result?.ok) { sendResponse({ ok: false, error: result?.error }); return; }
 
         const pushResult = await pushToServer(result.capture);

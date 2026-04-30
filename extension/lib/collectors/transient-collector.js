@@ -153,6 +153,18 @@ export function startTransientObserver() {
   elementTimestamps = new Map();
   observer = new MutationObserver(onMutation);
   observer.observe(document.body, { childList: true, subtree: true });
+  // Perf: disconnect on tab background, reconnect on foreground
+  document.addEventListener('visibilitychange', _onVisibility);
+}
+
+/** @private Pause/resume observer based on tab visibility. */
+function _onVisibility() {
+  if (document.hidden && observer) {
+    observer.disconnect();
+  } else if (!document.hidden && !observer) {
+    observer = new MutationObserver(onMutation);
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
 }
 
 /**
@@ -160,6 +172,7 @@ export function startTransientObserver() {
  */
 export function stopTransientObserver() {
   if (observer) { observer.disconnect(); observer = null; }
+  document.removeEventListener('visibilitychange', _onVisibility);
   buffer = [];
   elementTimestamps = new Map();
 }

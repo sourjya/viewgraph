@@ -134,6 +134,7 @@ Sourced from [MRR-008 (2026-04-30)](../reviews/MRR-008-2026-04-30.md). Full task
 | Item | Effort | Description |
 |------|--------|-------------|
 | Performance optimization | Medium | Lazy-load heavy modules, optimize DOM traversal for large pages |
+| traverseDOM chunking | Medium | Split single-pass DOM traversal into chunks for 2000+ node pages (prevents long tasks). Needs profiling data. |
 | Extended Enrichment (Tier 2) | Medium | Error boundary state, service worker state, build metadata |
 
 ## Other Ideas (Backlog)

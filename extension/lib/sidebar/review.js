@@ -84,9 +84,10 @@ export function renderReviewList(list, tabContainer, sidebarEl, state, callbacks
   const statusFiltered = activeFilter === 'all' ? anns : activeFilter === 'open' ? open : resolved;
   const visible = statusFiltered.filter((a) => activeTypeFilters.has(resolveType(a)));
 
+  const MAX_RENDERED = 50;
+  let rendered = 0;
   const batches = groupByBatch(visible);
   for (const batch of batches) {
-    // Render batch separator (skip if only one batch with no sentAt - first send)
     if (batches.length > 1 || batch.sentAt) {
       const sep = document.createElement('div');
       sep.setAttribute(ATTR, 'batch-sep');
@@ -99,12 +100,27 @@ export function renderReviewList(list, tabContainer, sidebarEl, state, callbacks
       list.appendChild(sep);
     }
     for (const ann of batch.annotations) {
+      if (rendered >= MAX_RENDERED) break;
       try {
         list.appendChild(createEntry(ann, callbacks));
+        rendered++;
       } catch (e) {
         console.error(`[ViewGraph] Failed to render annotation #${ann.id}:`, e);
       }
     }
+  }
+
+  // Show "N more" button if list was capped
+  if (rendered >= MAX_RENDERED && visible.length > MAX_RENDERED) {
+    const more = document.createElement('button');
+    more.textContent = `Show ${visible.length - MAX_RENDERED} more`;
+    Object.assign(more.style, {
+      display: 'block', width: '100%', padding: '8px', border: 'none',
+      background: 'transparent', color: COLOR.primary, cursor: 'pointer',
+      fontSize: '12px', fontFamily: FONT,
+    });
+    more.addEventListener('click', () => { more.remove(); callbacks.onRefresh(); });
+    list.appendChild(more);
   }
 
   if (visible.length === 0) {
