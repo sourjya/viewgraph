@@ -86,13 +86,29 @@ After sending, your annotations show "Sent to agent - waiting for fix...":
 
 ## 4. Let your agent fix it
 
-Tell your agent:
+In your agent's chat, use the `@vg-review` prompt shortcut (if available) or just tell it:
 
 ```
 Fix the annotations from the latest ViewGraph capture
 ```
 
-The agent reads your annotations with full DOM context, finds the source files, implements fixes, and marks each annotation as resolved. Green checkmarks appear in the sidebar.
+Or be more specific - copy the capture filename from the sidebar footer and paste it:
+
+```
+Review and fix all annotations in viewgraph-localhost-2026-05-01-120000.json
+```
+
+The agent will:
+1. Read your annotations with full DOM context (selectors, styles, a11y state)
+2. Find the source files using `find_source`
+3. Implement the fixes
+4. Mark each annotation as resolved
+
+Green checkmarks appear in the sidebar as each fix lands. If the agent has [Chrome DevTools MCP](https://github.com/anthropics/anthropic-devtools-mcp) installed, it will also take a screenshot to visually verify each fix.
+
+{% hint style="success" %}
+**Pro tip:** You don't need to describe the DOM. Just describe what looks wrong in plain language - "button too small", "text overlaps image", "missing label". ViewGraph attaches the element's exact selector, computed styles, bounding box, and accessibility state automatically. The agent gets everything it needs from the capture.
+{% endhint %}
 
 ## What just happened?
 
