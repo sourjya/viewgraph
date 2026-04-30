@@ -94,4 +94,52 @@ describe('collectNetworkState', () => {
     const result = collectNetworkState();
     expect(result.requests[0].url).toBe('/late');
   });
+
+  // ── Edge cases: cached vs failed distinction ──
+
+  it('(-) cached resource is NOT marked as failed (transferSize 0 but decodedBodySize > 0)', () => {
+    mockPerformance([
+      { name: '/cached.js', initiatorType: 'script', duration: 5, transferSize: 0, decodedBodySize: 15000, startTime: 10 },
+    ]);
+    const result = collectNetworkState();
+    expect(result.requests[0].failed).toBe(false);
+    expect(result.summary.failed).toBe(0);
+  });
+
+  it('(-) zero-duration resource is NOT marked as failed (preflight or instant cache)', () => {
+    mockPerformance([
+      { name: '/instant', initiatorType: 'fetch', duration: 0, transferSize: 0, decodedBodySize: 0, startTime: 10 },
+    ]);
+    const result = collectNetworkState();
+    expect(result.requests[0].failed).toBe(false);
+  });
+
+  it('(+) CORS-blocked request detected as failed (zero transfer, zero decoded, has duration)', () => {
+    mockPerformance([
+      { name: 'https://external.api.com/data', initiatorType: 'fetch', duration: 300, transferSize: 0, decodedBodySize: 0, startTime: 50 },
+    ]);
+    const result = collectNetworkState();
+    expect(result.requests[0].failed).toBe(true);
+  });
+
+  it('(+) mixed cached and failed requests counted correctly', () => {
+    mockPerformance([
+      { name: '/ok', initiatorType: 'fetch', duration: 100, transferSize: 500, decodedBodySize: 1000, startTime: 10 },
+      { name: '/cached', initiatorType: 'script', duration: 2, transferSize: 0, decodedBodySize: 5000, startTime: 20 },
+      { name: '/failed', initiatorType: 'fetch', duration: 200, transferSize: 0, decodedBodySize: 0, startTime: 30 },
+      { name: '/also-failed', initiatorType: 'xmlhttprequest', duration: 150, transferSize: 0, decodedBodySize: 0, startTime: 40 },
+    ]);
+    const result = collectNetworkState();
+    expect(result.summary.total).toBe(4);
+    expect(result.summary.failed).toBe(2);
+  });
+
+  it('(+) handles missing initiatorType gracefully', () => {
+    mockPerformance([
+      { name: '/unknown', duration: 50, transferSize: 100, decodedBodySize: 200, startTime: 10 },
+    ]);
+    const result = collectNetworkState();
+    expect(result.requests[0].initiatorType).toBe('other');
+    expect(result.summary.byType.other).toBe(1);
+  });
 });
