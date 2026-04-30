@@ -87,9 +87,9 @@ Source: [TracePulse Real-World Results](https://chaoslabz.gitbook.io/tracepulse/
 
 | Scenario | Without TracePulse | With TracePulse | Savings |
 |---|---|---|---|
-| Token usage per error | ~12,000 tokens | ~1,000 tokens | **92% reduction** |
+| Token usage per error | ~12,000 tokens | ~1,000 tokens | **92% fewer tokens per error** |
 | Debug time per session | 30+ minutes | <5 minutes | **80%+ time savings** |
-| At scale (1,000 builders x 10 sessions/week) | ~120M wasted tokens/week | ~10M tokens/week | **110M tokens/week saved** |
+| At scale (1,000 builders x 10 sessions/week x ~11,000 tokens saved/error x avg 5 errors/session) | ~550M tokens/week | ~50M tokens/week | **~500M tokens/week saved** |
 
 
 ### Environmental Impact - The Carbon Math
@@ -116,7 +116,7 @@ Every token saved translates directly to reduced compute demand, lower data cent
 ### 2. External AWS Customers (Kiro IDE/CLI Users)
 - **Problem:** Developers using Kiro without companions burn through credits with no visibility into token efficiency or usage patterns
 - **Value:** Reduces customer costs by 40-70% on agentic coding tasks; faster iteration cycles; responsible resource consumption; prevents overage charges
-- **Metric:** 12x token reduction per error; 92% fewer tokens consumed per debugging loop
+- **Metric:** 12x token reduction per error; 92% fewer tokens per debugging loop
 
 ### 3. AWS SSI Credit Recipients (~$50M annually)
 - **Problem:** AWS Skilling & Social Impact (SSI, formerly SRI - Social Responsibility Initiatives) distributes close to **$50 million annually** in free AWS credits to qualifying research institutes, hospitals, NGOs (both private and government), including through the [AWS Education Equity Initiative](https://aws.amazon.com/about-aws/our-impact/education-equity-initiative/) (up to $100M committed) and [AWS Nonprofit Credit Program](https://aws.amazon.com/government-education/nonprofits/nonprofit-credit-program/). Recipients often lack tools to maximize the impact of every credit dollar across Education, Health, and Climate Resilience programs.
