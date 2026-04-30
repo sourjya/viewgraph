@@ -71,6 +71,6 @@ describe('verify_fix via MCP', () => {
 
     const result = await client.callTool({ name: 'verify_fix', arguments: { filename: 'nonexistent.json' } });
     expect(result.isError).toBe(true);
-    expect(result.content[0].text).toContain('Cannot read');
+    expect(result.content[0].text).toContain('Capture not found');
   });
 });

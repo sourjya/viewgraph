@@ -20,7 +20,7 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest"
   },
-  "license": "MIT",
+  "license": "AGPL-3.0",
   "devDependencies": {
     "jsdom": "^29.0.2",
     "vitest": "^4.1.3",

@@ -41,9 +41,10 @@ export function register(server, _indexer, capturesDir) {
       // S3-7: Validate outputPath is within the project directory
       if (outputPath) {
         const resolved = path.resolve(outputPath);
-        const projectRoot = path.resolve(capturesDir, '..'); // .viewgraph/
-        if (!resolved.startsWith(projectRoot + path.sep) && resolved !== projectRoot) {
-          return errorResponse('Error: filePath must be within the project directory');
+        // S3-8: Restrict writes to captures directory only, not all of .viewgraph/
+        const allowedDir = path.resolve(capturesDir);
+        if (!resolved.startsWith(allowedDir + path.sep) && resolved !== allowedDir) {
+          return errorResponse('Error: filePath must be within the captures directory');
         }
       }
       try {

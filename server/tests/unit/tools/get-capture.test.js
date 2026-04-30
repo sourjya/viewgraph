@@ -6,6 +6,7 @@
  */
 
 import { describe, it, expect, afterEach } from 'vitest';
+import path from 'node:path';
 import { createTestClient, FIXTURES_DIR } from './helpers.js';
 import { createIndexer } from '#src/indexer.js';
 import { register } from '#src/tools/get-capture.js';
@@ -88,5 +89,39 @@ describe('get_capture via MCP', () => {
     expect(result.content[0].text).toContain('"metadata"');
 
     rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  // S3-8: filePath output must be restricted to captures directory
+  it('(-) rejects filePath that escapes captures directory', async () => {
+    const indexer = createIndexer({ maxCaptures: 50 });
+    const { client, cleanup: c } = await createTestClient(
+      (server) => register(server, indexer, FIXTURES_DIR),
+    );
+    cleanup = c;
+
+    // Attempt to write to .viewgraph/session-key (parent of captures/)
+    const result = await client.callTool({
+      name: 'get_capture',
+      arguments: { filename: 'valid-capture.json', filePath: path.resolve(FIXTURES_DIR, '..', 'session-key') },
+    });
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain('captures directory');
+  });
+
+  it('(-) rejects filePath with ../ traversal', async () => {
+    const indexer = createIndexer({ maxCaptures: 50 });
+    const { client, cleanup: c } = await createTestClient(
+      (server) => register(server, indexer, FIXTURES_DIR),
+    );
+    cleanup = c;
+
+    const result = await client.callTool({
+      name: 'get_capture',
+      arguments: { filename: 'valid-capture.json', filePath: FIXTURES_DIR + '/../config.json' },
+    });
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain('captures directory');
   });
 });

@@ -11,6 +11,7 @@ import {
   bellIcon, sendIcon, copyIcon, docIcon, downloadIcon,
   trashIcon, cameraIcon, circleIcon, noteIcon,
   crosshairIcon, tagIcon, gearIcon, chatBubbleIcon, shieldIcon,
+  setSvg, svgFromString,
 } from '#lib/sidebar/icons.js';
 
 /** Assert an element is an SVG with the expected size. */
@@ -263,5 +264,46 @@ describe('shieldIcon inner marks', () => {
     expect(svg).not.toBeNull();
     expect(svg.children.length).toBeGreaterThan(1); // shield + check
     container.remove();
+  });
+
+  // F1: setSvg and svgFromString regression tests (SVG injection helpers)
+  // These were the root cause of the v0.9.6 SVG rendering regression.
+
+  it('(+) setSvg injects SVG into element', () => {
+    const el = document.createElement('div');
+    setSvg(el, '<svg width="16" height="16"><path d="M1 1"/></svg>');
+    expect(el.querySelector('svg')).not.toBeNull();
+    expect(el.querySelector('svg').getAttribute('width')).toBe('16');
+  });
+
+  it('(+) setSvg replaces existing content', () => {
+    const el = document.createElement('div');
+    el.textContent = 'old content';
+    setSvg(el, '<svg width="12" height="12"></svg>');
+    expect(el.textContent).not.toContain('old content');
+    expect(el.querySelector('svg')).not.toBeNull();
+  });
+
+  it('(+) svgFromString returns SVG element from markup', () => {
+    const result = svgFromString('<svg width="24" height="24"><circle cx="12" cy="12" r="10"/></svg>');
+    // svgFromString wraps in a span with display:contents
+    const svg = result.tagName === 'svg' ? result : result.querySelector('svg');
+    expect(svg).not.toBeNull();
+    expect(svg.getAttribute('width')).toBe('24');
+  });
+
+  it('(+) svgFromString handles SVG with multiple children', () => {
+    const result = svgFromString('<svg width="16" height="16"><path d="M1 1"/><circle cx="8" cy="8" r="4"/></svg>');
+    const svg = result.tagName === 'svg' ? result : result.querySelector('svg');
+    expect(svg).not.toBeNull();
+    expect(svg.children.length).toBe(2);
+  });
+
+  it('(-) setSvg with empty string clears element', () => {
+    const el = document.createElement('div');
+    setSvg(el, '<svg width="16" height="16"></svg>');
+    expect(el.querySelector('svg')).not.toBeNull();
+    setSvg(el, '');
+    expect(el.querySelector('svg')).toBeNull();
   });
 });

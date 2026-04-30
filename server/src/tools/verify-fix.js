@@ -173,7 +173,8 @@ export function register(server, indexer, capturesDir) {
       }
 
       const result = await readAndParse(targetFile, capturesDir);
-      if (!result.parsed) return errorResponse(`Cannot read capture: ${targetFile}`);
+      // 14.1: Check result.ok to get the specific error message, not just result.parsed
+      if (!result.ok) return result.error;
       const parsed = result.parsed;
 
       const a11y = runA11yAudit(parsed);

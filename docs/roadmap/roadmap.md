@@ -163,9 +163,7 @@ Sourced from [MRR-008 (2026-04-30)](../reviews/MRR-008-2026-04-30.md). Full task
 
 | SRR | Date | Scope | Report |
 |-----|------|-------|--------|
-| SRR-010 | 2026-04-29 | Tier 2 post-cleanup | 2 MEDIUM (fingerprinting, inject guard), 10 test failures fixed |
-| SRR-009 | 2026-04-29 | Tier 2 v3 enhancements | 1 HIGH (filePath write), 3 MEDIUM, 3 LOW fixed |
-| SRR-008 | 2026-04-29 | Tier 3 full codebase | 1 CRITICAL (handshake), 3 HIGH, 4 MEDIUM fixed |
+| SRR-008 | 2026-04-30 | Tier 3 full codebase | 0 CRITICAL, 1 HIGH (carried), 2 new MEDIUM (filePath traversal, URL match inconsistency), 1 new LOW. S3-8 filePath fixed + 4 security tests. [Report](../security/SRR-008-2026-04-30-T3.md) |
 | SRR-007 | 2026-04-27 | Tier 3 sprint-end | [Report](../security/SRR-007-2026-04-27-T3.md) |
 | SRR-006 | 2026-04-24 | Tier 3 sprint-end | [Report](../security/SRR-006-2026-04-24-T3.md) |
 
@@ -173,6 +171,13 @@ Sourced from [MRR-008 (2026-04-30)](../reviews/MRR-008-2026-04-30.md). Full task
 
 | MRR | Date | Report |
 |-----|------|--------|
-| MRR-008 | 2026-04-30 | 22 new findings (5 HIGH, 11 MEDIUM, 6 LOW) — full server fresh-eyes pass. Performance, silent failures, abstraction debt. | [Report](../reviews/MRR-008-2026-04-30.md) |
-| MRR-007 | 2026-04-29 | 6 HIGH (test gaps), 4 MEDIUM, 4 LOW. Test gaps documented for next sprint. |
+| MRR-009 | 2026-04-30 | 8 new findings, 6 resolved from MRR-008. 14.1 verify-fix.js bug fixed. [Report](../reviews/MRR-009-2026-04-30.md) |
+| MRR-008 | 2026-04-30 | 22 new findings (5 HIGH, 11 MEDIUM, 6 LOW) -- full server fresh-eyes pass. [Report](../reviews/MRR-008-2026-04-30.md) |
 | MRR-005 | 2026-04-27 | [Report](../reviews/MRR-005-2026-04-27.md) |
+
+## Other Reviews (2026-04-30)
+
+| Review | Report |
+|--------|--------|
+| Dependency Risk | Zero CVEs, 10 findings (version pinning, license fields, single-maintainer risk). [Report](../reviews/dependency-risk-2026-04-30.md) |
+| Test Quality | 1 HIGH (no setSvg tests -- fixed), 4 MEDIUM, 5 LOW. 1804 tests total. [Report](../reviews/test-quality-2026-04-30.md) |
