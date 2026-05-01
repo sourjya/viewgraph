@@ -44,6 +44,15 @@ export default [
       },
     },
   },
+  // Vitest package runs in jsdom with browser globals
+  {
+    files: ['packages/vitest/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
   // Ignore build outputs, generated files, and experiment scripts
   // Experiment scripts contain page.evaluate() callbacks with browser globals
   // that ESLint can't understand in a Node.js context

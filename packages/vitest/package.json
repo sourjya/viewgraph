@@ -1,0 +1,22 @@
+{
+  "name": "@viewgraph/vitest",
+  "version": "0.9.7",
+  "description": "ViewGraph DOM capture plugin for Vitest - capture structured DOM snapshots during component and unit tests",
+  "license": "AGPL-3.0",
+  "type": "module",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": "./index.js"
+  },
+  "keywords": ["viewgraph", "vitest", "testing", "dom", "capture", "accessibility", "mcp"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourjya/viewgraph",
+    "directory": "packages/vitest"
+  },
+  "peerDependencies": {
+    "vitest": ">=1.0.0",
+    "jsdom": ">=20.0.0"
+  }
+}
