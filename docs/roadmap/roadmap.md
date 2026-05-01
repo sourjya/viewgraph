@@ -192,6 +192,133 @@ Based on [ViewGraph & TracePulse v1.0 Platform Strategy](../references/viewgraph
 
 **Research sources:** Stack Overflow Developer Survey 2025 (49k+ devs), JetBrains Developer Ecosystem Survey 2025 (24.5k devs), GitHub Octoverse 2025, State of JS 2025.
 
+## Session Intelligence Roadmap
+
+Based on [ViewGraph Future Directions v2](../references/viewgraph-future-directions-v2-from-annotated-bug-capture-to-multi-output-session-intelligence.md). Goal: transform ViewGraph from a single-shot bug capture tool into a multi-output session engine. One annotated recording session produces artifacts for five distinct consumer personas - developer, QA engineer, technical writer, product manager, and compliance officer - without re-recording.
+
+**Central insight:** Every output path (Playwright test, QA export, tutorial, onboarding flow, regression baseline) requires exactly the same underlying data. What differs is the renderer, not the recording. The session schema is the platform.
+
+### Phase 1 - v1.1: Steps Recorder + Agent-to-Playwright Path
+
+**The primary differentiator. Build first.**
+
+| # | Feature | Description |
+|---|---|---|
+| 1 | Record Session mode | Guided step-by-step recording UX in extension sidebar (pause-and-annotate between actions) |
+| 2 | Session schema writer | Append-safe, crash-resistant session.json writer in MCP server |
+| 3 | Agent-generated Playwright tests | Primary export - agent converts intent annotations to parameterized tests with real assertions |
+| 4 | QA export | Jira/GitHub structured test cases per step (preconditions, steps, expected result, screenshot) |
+| 5 | Session viewer | Browse, reorder, delete, and edit steps in extension sidebar |
+| 6 | Multi-tab continuity | Track tab switches as navigation steps via `tabs.onActivated` |
+| 7 | Automatic PII masking | Capture-time redaction for password/cc/ssn fields (before payload leaves extension) |
+| 8 | Shadow DOM traversal | Recursive `shadowRoot` query via `composedPath()` for open-mode shadow roots |
+| 9 | SPA navigation patching | History API interception (`pushState`, `replaceState`) in main world context |
+| 10 | Capture-phase event listeners | Framework-agnostic event capture before React/Angular/Vue synthetic event systems |
+
+**Justification:** "Non-technical testers produce real Playwright tests without knowing Playwright exists." No tool does this today. Playwright codegen has no intent, no assertions, no non-technical path. Scribe/Tango have no DOM semantics, no test output. The session schema is output-agnostic from day one - every subsequent renderer is a plug-in on the same schema.
+
+**Competitive insight:** The annotation layer is the bridge between human intent and automated tests. The LLM is the translator. The session schema is the medium. This pipeline does not exist in any tool today.
+
+**Effort:** 3-4 weeks
+
+**Spec:** [`.kiro/specs/session-recorder/`](../../.kiro/specs/session-recorder/requirements.md)
+
+**Key technical dependencies:** v3 actionManifest (element resolver), delta capture (post_delta at 90-99% token reduction), structuralFingerprint (significance detection), observationDepth interactive-only (live recording at ~400 tokens/step), checkpoint envelope (agent-side session mirror).
+
+### Phase 2 - v1.2: Tutorial Designer
+
+| # | Feature | Description |
+|---|---|---|
+| 1 | Tutorial recording mode | Annotation prompts tuned for documentation ("How would you describe this step to a new user?") |
+| 2 | LLM cache generation | Batch generation at session end: auto_title, auto_description per audience, inferred_section |
+| 3 | Section grouping | LLM groups steps under headings derived from context.nearest_heading and context.landmark |
+| 4 | HTML export | Self-contained interactive tutorial with SoM screenshots embedded, step navigation |
+| 5 | Markdown export | Notion/Confluence-compatible with proper heading hierarchy and screenshot links |
+| 6 | PDF export | Paginated with bookmarks, TOC, header/footer with version stamp |
+| 7 | Voice-to-text annotation | Web Speech API transcription during recording (zero backend cost) |
+| 8 | Screenshot annotation tools | Crop, zoom, callout boxes, arrows in session viewer |
+| 9 | Audience selection | Same recording exports with different prose: end user, developer, QA |
+| 10 | Pass/fail per-step annotation | QA execution mode with actual_outcome and expected vs actual diff view |
+
+**Justification:** Scribe/Tango are screenshot pipelines. They give their LLM a pixel image. ViewGraph gives its LLM ARIA roles, component names, network state, form context, and navigation outcomes per step. The LLM writes "Click Submit to create your account. You'll see your dashboard if everything looks good." not "Click the button." This quality gap is structural and not closable without re-architecting around DOM capture.
+
+**Competitive insight:** Glyde is the closest architectural relative (DOM capture for documentation). But Glyde has no ARIA semantics, no network state, no agent integration, no test output. The gap is the entire semantic layer. ViewGraph's auto-generated prose is factually grounded in measured DOM state, not inferred from pixels.
+
+**Effort:** 2-3 weeks
+
+**Spec:** [`.kiro/specs/tutorial-designer/`](../../.kiro/specs/tutorial-designer/requirements.md)
+
+**Key technical dependencies:** Session schema from v1.1, llm_cache fields, renderer_hints.tutorial namespace, v3 correlatedRefs (error context in prose), containerMerging (cleaner hierarchy for section grouping).
+
+### Phase 3 - v1.3: Tutorial Distribution
+
+| # | Feature | Description |
+|---|---|---|
+| 1 | Shareable public links | Hosted tutorial viewer with step-level deep-links (`#step-N`) |
+| 2 | Confluence publish | Direct OAuth 2.0 integration, create/update pages with screenshots as attachments |
+| 3 | Notion publish | Direct API integration, block-based page creation with image blocks |
+| 4 | Staleness detection | DOM drift flagging via structuralFingerprint comparison + per-element semantic diff |
+| 5 | Agent-maintained docs | Agent rewrites drifted steps using new DOM context; human approves before re-publish |
+| 6 | Tutorial completion webhook | Client-side event emission for CRM/analytics integration (PostHog, Amplitude, Mixpanel) |
+| 7 | Version history | Track changes across re-publishes with exportable diff ("What changed in v3") |
+| 8 | Locator stability benchmark | Measure ViewGraph selector stability vs codegen selectors over N UI change cycles |
+
+**Justification:** This is the "living documentation" capability. When the UI changes, the agent flags which tutorial steps drifted and rewrites them. No competitor has this. Scribe tutorials break silently. ViewGraph tutorials self-heal. The staleness detection is only possible because ViewGraph stores semantic context (ARIA labels, component names, structural fingerprints), not pixel data.
+
+**Competitive insight:** The combination of staleness detection + agent rewrite + human approval creates a documentation maintenance loop that eliminates the #1 pain point of every documentation tool: tutorials going stale. This is a product category that does not exist today.
+
+**Effort:** 2-3 weeks
+
+**Spec:** [`.kiro/specs/tutorial-distribution/`](../../.kiro/specs/tutorial-distribution/requirements.md)
+
+**Key technical dependencies:** v3 structuralFingerprint (fast-path staleness gate), actionManifest locator strategies (three-tier element re-location), llm_cache invalidation (lazy regeneration on drift).
+
+### Phase 4 - v1.4: Regression Baseline Mode
+
+| # | Feature | Description |
+|---|---|---|
+| 1 | Regression baseline recording | `recording_mode: "regression_baseline"` stores full DOM snapshot per step in `baselines/` |
+| 2 | Structural regression diffing | Compare current DOM against baseline using structuralFingerprint + per-element semantic diff |
+| 3 | CI integration | Playwright test generated from session includes baseline comparison assertions |
+| 4 | Trace linking | Session steps link to Playwright trace viewer via checkpoint.traceId |
+| 5 | CI failure annotation | Failed Playwright test links back to original session step with intent annotation |
+
+**Justification:** Visual regression testing with annotated semantic context - richer than pixel-diff tools and more meaningful for agents investigating what broke. A button that moved 5px does not fail. A button that changed its ARIA label from "Submit" to "Continue" does. The agent knows why the test exists (from the annotation) and what specifically changed (from the semantic diff).
+
+**Competitive insight:** Self-healing selector tools (Healwright, Playwright AI Healer) react to broken selectors. ViewGraph generates selectors that are less likely to break in the first place. The regression baseline mode quantifies this advantage.
+
+**Effort:** 2 weeks
+
+**Spec:** Not yet created (v1.4 is post-v1.3)
+
+### Phase 5 - v2.0: Onboarding Platform
+
+| # | Feature | Description |
+|---|---|---|
+| 1 | Embeddable JS onboarding widget | WalkMe-lite overlay, no SDK required, reads from published session JSON |
+| 2 | Semantic element re-location | In-app step overlay using ARIA + testId locator strategies (survives UI changes) |
+| 3 | Compliance audit trail | Timestamped tested-scenario export with DOM proof per step (signed artifacts) |
+| 4 | Cross-session analytics | Which steps fail most often, which tutorials are abandoned |
+| 5 | Branching decision trees | Conditional tutorial flows (if user sees X, goto step Y) |
+
+**Justification:** The embeddable widget is the WalkMe-lite path - architecturally significant because it requires no SDK integration. A single script tag reads the session JSON and overlays step annotations on matching DOM elements. Element re-location uses semantic locator strategies (ARIA + testId), making it substantially more resilient than any screenshot-based overlay tool that relies on pixel coordinates.
+
+**Competitive insight:** WalkMe costs $1.5B (SAP acquisition) and requires 8-12 weeks setup. ViewGraph's widget is a one-file embed that reads from the same session JSON that produces Playwright tests and tutorials. The schema is the platform.
+
+**Effort:** 4-6 weeks
+
+**Spec:** Not yet created (v2.0 is long-term)
+
+**Design constraint:** Build the HTML/Markdown export first (v1.2). The embeddable widget shares the same renderer logic but adds live DOM matching. It is the right v2.0 feature, not v1.2.
+
+---
+
+### Schema Freeze Recommendation
+
+Freeze the session schema before writing a single renderer. Once `session.json` files exist in the wild, changing the schema is a migration cost. The schema should be reviewed and locked before v1.1 ships publicly - even if that delays the initial release by a week. The cost of that week is paid once. The cost of a schema migration is paid in every consumer that reads the format.
+
+---
+
 ## Other Ideas (Backlog)
 
 | Idea | Status | Doc |
