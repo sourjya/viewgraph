@@ -85,6 +85,22 @@ export default defineContentScript({
             const scored = scoreAll(elements, viewport);
             const enrichment = await collectAllEnrichment();
             const _t2 = Date.now();
+
+            // Attach component names from enrichment to scored elements.
+            // Lets the agent see "ProductCard" on the node instead of just "div.css-xyz".
+            if (enrichment.components?.components?.length > 0) {
+              const compMap = new Map();
+              for (const c of enrichment.components.components) {
+                if (c.selector && c.component) compMap.set(c.selector, c);
+              }
+              for (const el of scored) {
+                const match = compMap.get(el.selector);
+                if (match) {
+                  el.componentName = match.component;
+                  if (match.source) el.componentSource = match.source;
+                }
+              }
+            }
             if (isRecording()) {
               addStep(message.sessionNote);
               enrichment.session = getCaptureMetadata();

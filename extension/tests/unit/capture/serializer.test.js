@@ -118,4 +118,21 @@ describe('serialize', () => {
     expect(capture.network).toBeUndefined();
     expect(capture.console).toBeUndefined();
   });
+
+  it('(+) includes componentName in actionManifest when present on element', () => {
+    const element = el({ componentName: 'ProductCard' });
+    const capture = serialize([element], []);
+    const manifest = capture.actionManifest;
+    const entries = [...(manifest.byAction?.clickable || [])];
+    const entry = entries.find((e) => e.component === 'ProductCard');
+    expect(entry).toBeDefined();
+    expect(entry.component).toBe('ProductCard');
+  });
+
+  it('(-) componentName is null when not present on element', () => {
+    const capture = serialize([el()], []);
+    const manifest = capture.actionManifest;
+    const entries = [...(manifest.byAction?.clickable || [])];
+    expect(entries[0].component).toBeNull();
+  });
 });

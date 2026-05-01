@@ -101,6 +101,7 @@ function buildSummary(elements, metadata) {
       nid: el.nid,
       alias: el.alias,
       tag: el.tag,
+      component: el.componentName || null,
       actions: el.isInteractive ? ['clickable'] : [],
       visibleText: el.visibleText.slice(0, 50),
       bbox: el.bbox,
@@ -420,6 +421,7 @@ function buildActionManifest(elements) {
       nid: el.nid,
       alias: el.alias,
       tag: el.tag,
+      component: el.componentName || null,
       axName: el.ariaLabel || el.text?.slice(0, 50) || '',
       bbox: el.bbox,
       locator: el.testid ? { strategy: 'testId', value: el.testid }
