@@ -344,6 +344,7 @@ Freeze the session schema before writing a single renderer. Once `session.json` 
 
 | SRR | Date | Scope | Report |
 |-----|------|-------|--------|
+| SRR-009 | 2026-05-01 | Tier 3 post-sprint | 0 CRITICAL, 0 HIGH, 1 MEDIUM (shell injection - fixed), 1 LOW (label cap - fixed). Gateway proxy clean. [Report](../security/SRR-009-2026-05-01-T3.md) |
 | SRR-008 | 2026-04-30 | Tier 3 full codebase | 0 CRITICAL, 1 HIGH (carried), 2 new MEDIUM (filePath traversal, URL match inconsistency), 1 new LOW. S3-8 filePath fixed + 4 security tests. [Report](../security/SRR-008-2026-04-30-T3.md) |
 | SRR-007 | 2026-04-27 | Tier 3 sprint-end | [Report](../security/SRR-007-2026-04-27-T3.md) |
 | SRR-006 | 2026-04-24 | Tier 3 sprint-end | [Report](../security/SRR-006-2026-04-24-T3.md) |
@@ -352,6 +353,7 @@ Freeze the session schema before writing a single renderer. Once `session.json` 
 
 | MRR | Date | Report |
 |-----|------|--------|
+| MRR-010 | 2026-05-01 | 12 new findings, 5 resolved from MRR-009. 15.1 vitest write bug fixed. S3-9 shell injection fixed. [Report](../reviews/MRR-010-2026-05-01.md) |
 | MRR-009 | 2026-04-30 | 8 new findings, 6 resolved from MRR-008. 14.1 verify-fix.js bug fixed. [Report](../reviews/MRR-009-2026-04-30.md) |
 | MRR-008 | 2026-04-30 | 22 new findings (5 HIGH, 11 MEDIUM, 6 LOW) -- full server fresh-eyes pass. [Report](../reviews/MRR-008-2026-04-30.md) |
 | MRR-005 | 2026-04-27 | [Report](../reviews/MRR-005-2026-04-27.md) |
@@ -362,10 +364,3 @@ Freeze the session schema before writing a single renderer. Once `session.json` 
 |--------|--------|
 | Dependency Risk | Zero CVEs, 10 findings (version pinning, license fields, single-maintainer risk). [Report](../reviews/dependency-risk-2026-04-30.md) |
 | Test Quality | 1 HIGH (no setSvg tests -- fixed), 4 MEDIUM, 5 LOW. 1804 tests total. [Report](../reviews/test-quality-2026-04-30.md) |
-
-## Security & Maintainability Reviews (2026-05-01)
-
-| Review | Report |
-|--------|--------|
-| SRR-009 (T3) | 0 CRITICAL, 0 HIGH, 1 MEDIUM (shell injection - fixed), 1 LOW (label cap - fixed). Gateway proxy clean. [Report](../security/SRR-009-2026-05-01-T3.md) |
-| MRR-010 | 12 new findings, 5 resolved from MRR-009. 15.1 vitest write bug fixed. [Report](../reviews/MRR-010-2026-05-01.md) |
