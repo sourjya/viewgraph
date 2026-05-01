@@ -39,5 +39,6 @@
     "type": "git",
     "url": "https://github.com/sourjya/viewgraph.git",
     "directory": "packages/playwright"
-  }
+  },
+  "types": "index.d.ts"
 }
