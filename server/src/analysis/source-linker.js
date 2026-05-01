@@ -91,14 +91,20 @@ export async function findSource(projectRoot, query) {
 
   if (searches.length === 0) return results;
 
-  for (const file of files) {
+  // 15.10: Parallel file reads with concurrency limit for 2-3x speedup
+  const CONCURRENCY = 8;
+  let earlyStop = false;
+
+  /** Process a single file against all search patterns. */
+  async function processFile(file) {
+    if (earlyStop) return;
     let content;
     try {
       // 13.3: Enforce _MAX_FILE_SIZE to prevent memory pressure on large files
       const fileStat = await stat(file);
-      if (fileStat.size > _MAX_FILE_SIZE) continue;
+      if (fileStat.size > _MAX_FILE_SIZE) return;
       content = await readFile(file, 'utf-8');
-    } catch { continue; } // file unreadable or too large - skip
+    } catch { return; } // file unreadable or too large - skip
 
     const lines = content.split('\n');
     for (const search of searches) {
@@ -116,7 +122,13 @@ export async function findSource(projectRoot, query) {
       }
     }
     // Stop early if we have enough high-confidence results
-    if (results.filter((r) => r.confidence === 'high').length >= 5) break;
+    if (results.filter((r) => r.confidence === 'high').length >= 5) earlyStop = true;
+  }
+
+  // Process files in batches of CONCURRENCY
+  for (let i = 0; i < files.length && !earlyStop; i += CONCURRENCY) {
+    const batch = files.slice(i, i + CONCURRENCY);
+    await Promise.all(batch.map(processFile));
   }
 
   // Sort: high confidence first, then by file path
