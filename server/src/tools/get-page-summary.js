@@ -19,10 +19,7 @@ import { withCapture, jsonResponse, NOTICE_PAGE_DATA } from '#src/utils/tool-hel
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'get_page_summary',
-    `Get a compact summary of a ${PROJECT_NAME} capture: URL, title, viewport, layout, styles, element counts, clusters. ` +
-    'WHEN TO USE: Always call this BEFORE get_capture - saves ~90% tokens on large pages. ' +
-    'NEXT: Use get_capture for full details, get_elements_by_role for targeted queries, or audit_accessibility for a11y checks. ' +
-    'PERFORMANCE: ~500 tokens vs ~50K for full capture.',
+    `Get a compact summary of a ${PROJECT_NAME} capture: URL, title, viewport, layout, styles, element counts, clusters. ~500 tokens vs ~50K for full capture.`,
     {
       filename: z.string()
         .describe(`Capture filename (e.g., "${PROJECT_PREFIX}-localhost-2026-04-08T060815.json")`),

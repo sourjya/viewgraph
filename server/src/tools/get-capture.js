@@ -23,10 +23,7 @@ import { readArchiveIndex } from '#src/archive.js';
 export function register(server, _indexer, capturesDir) {
   server.tool(
     'get_capture',
-    `Retrieve the full ${PROJECT_NAME} DOM capture JSON. Includes NODES, SUMMARY, RELATIONS, DETAILS, ANNOTATIONS. ` +
-    'WHEN TO USE: After get_page_summary confirms you need full details. Use list_captures to find filenames. ' +
-    'NEXT: Use get_annotations for user feedback, audit_accessibility for a11y, find_source to locate code. ' +
-    'PERFORMANCE: Can be 50-200KB. Always use get_page_summary first.',
+    `Retrieve the full ${PROJECT_NAME} DOM capture JSON. Includes NODES, SUMMARY, RELATIONS, DETAILS, ANNOTATIONS. Can be 50-200KB.`,
     {
       filename: z.string()
         .describe(`Capture filename (e.g., "${PROJECT_PREFIX}-localhost-2026-04-08T060815.json")`),

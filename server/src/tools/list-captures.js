@@ -17,10 +17,7 @@ import { jsonResponse } from '#src/utils/tool-helpers.js';
 export function register(server, indexer) {
   server.tool(
     'list_captures',
-    `List available ${PROJECT_NAME} DOM captures sorted by most recent first. ` +
-    'Returns filename, URL, title, timestamp, node count. Supports URL substring filter. ' +
-    'WHEN TO USE: To discover what captures exist. Call get_session_status first for a quick count. ' +
-    'NEXT: Use get_page_summary for overview, or get_capture for full details.',
+    `List available ${PROJECT_NAME} DOM captures sorted by most recent first. Returns filename, URL, title, timestamp, node count.`,
     {
       limit: z.number().min(1).max(100).default(20)
         .describe('Maximum number of captures to return (default 20, max 100)'),
