@@ -10,7 +10,7 @@
  */
 
 import path from 'path';
-import { LOG_PREFIX } from './constants.js';
+import { log } from './constants.js';
 
 /**
  * Create a message handler that routes native messaging requests.
@@ -121,7 +121,7 @@ export function createMessageHandler(deps) {
         }
       }
     } catch (err) {
-      console.error(`${LOG_PREFIX} Native message handler error:`, err.message);
+      log('Native message handler error:', err.message);
       return { error: err.message };
     }
   };

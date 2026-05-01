@@ -11,7 +11,7 @@
 
 import chokidar from 'chokidar';
 import path from 'path';
-import { LOG_PREFIX } from './constants.js';
+import { log } from './constants.js';
 
 /**
  * Start watching a directory for capture file changes.
@@ -28,26 +28,26 @@ export function createWatcher(dir, { onAdd, onChange, onRemove }) {
   watcher.on('add', (filePath) => {
     if (!filePath.endsWith('.json')) return;
     const filename = path.basename(filePath);
-    console.error(`${LOG_PREFIX} Capture added: ${filename}`);
+    log('Capture added:', filename);
     onAdd(filename, filePath);
   });
 
   watcher.on('change', (filePath) => {
     if (!filePath.endsWith('.json')) return;
     const filename = path.basename(filePath);
-    console.error(`${LOG_PREFIX} Capture changed: ${filename}`);
+    log('Capture changed:', filename);
     onChange(filename, filePath);
   });
 
   watcher.on('unlink', (filePath) => {
     if (!filePath.endsWith('.json')) return;
     const filename = path.basename(filePath);
-    console.error(`${LOG_PREFIX} Capture removed: ${filename}`);
+    log('Capture removed:', filename);
     onRemove(filename);
   });
 
   watcher.on('error', (err) => {
-    console.error(`${LOG_PREFIX} Watcher error: ${err.message}`);
+    log('Watcher error:', err.message);
   });
 
   return watcher;

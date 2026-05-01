@@ -17,7 +17,7 @@ import { createServer } from 'http';
 import { writeFile, mkdir, readFile } from 'fs/promises';
 import { existsSync, accessSync, constants as fsConstants, readFileSync, mkdirSync, writeFileSync } from 'fs';
 import path from 'path';
-import { LOG_PREFIX, SERVER_VERSION, DEFAULT_HTTP_PORT, ALLOWED_CONFIG_KEYS } from './constants.js';
+import { log, LOG_PREFIX, SERVER_VERSION, DEFAULT_HTTP_PORT, ALLOWED_CONFIG_KEYS } from './constants.js';
 import { createAuthMiddleware } from './auth/middleware.js';
 import { generateSessionKey } from './auth/session-key.js';
 import { validateCapturePath } from './utils/validate-path.js';
@@ -332,7 +332,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
               const validatedConfig = safeConfigPath(targetDir);
               if (validatedConfig) {
                 writeFileSync(validatedConfig, JSON.stringify(existing, null, 2));
-                console.error(`${LOG_PREFIX} Auto-configured: ${validatedConfig} (pattern: ${pattern})`);
+                log('Auto-configured:', validatedConfig, '(pattern:', pattern + ')');
               }
             }
           }
@@ -399,7 +399,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
             for (const evt of errors) {
               fetch(`${tpUrl}/collect`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(evt), signal: AbortSignal.timeout(2000) }).catch(() => {});
             }
-            console.error(`${LOG_PREFIX} Pushed ${errors.length} frontend error(s) to TracePulse`);
+            log('Pushed', errors.length, 'frontend error(s) to TracePulse');
           }
         }
       } catch { /* TP not running or not configured - silent */ }
@@ -521,7 +521,7 @@ export function createHttpReceiver({ queue, capturesDir, allowedDirs = [], port 
           addedElements: pick(diff.added), removedElements: pick(diff.removed),
           movedElements: diff.moved.slice(0, 10), testidDetails: diff.testidChanges.slice(0, 10),
         } });
-      } catch (e) { console.error(`${LOG_PREFIX} Compare error:`, e.message); return json(res, 500, { error: 'Comparison failed' }); }
+      } catch (e) { log('Compare error:', e.message); return json(res, 500, { error: 'Comparison failed' }); }
     }
 
     // GET /captures?url=... - list captures, optionally filtered by URL

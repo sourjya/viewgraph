@@ -21,7 +21,7 @@
 
 import { readFileSync, existsSync } from 'fs';
 import path from 'path';
-import { ENV_CAPTURES_DIR, ENV_MAX_CAPTURES, ENV_HTTP_PORT, ENV_IDLE_TIMEOUT, ENV_ALLOWED_DIRS, LOG_PREFIX, PROJECT_PREFIX, DEFAULT_HTTP_PORT } from './constants.js';
+import { ENV_CAPTURES_DIR, ENV_MAX_CAPTURES, ENV_HTTP_PORT, ENV_IDLE_TIMEOUT, ENV_ALLOWED_DIRS, LOG_PREFIX, PROJECT_PREFIX, DEFAULT_HTTP_PORT, log } from './constants.js';
 
 const CONFIG_FILENAME = `.${PROJECT_PREFIX}rc.json`;
 
@@ -75,10 +75,10 @@ function loadConfigFile(startDir) {
   try {
     const raw = readFileSync(configPath, 'utf-8');
     const config = JSON.parse(raw);
-    console.error(`${LOG_PREFIX} Config loaded from ${configPath}`);
+    log('Config loaded from', configPath);
     return config;
   } catch (err) {
-    console.error(`${LOG_PREFIX} Warning: could not parse ${configPath}: ${err.message}`);
+    log('Warning: could not parse', configPath + ':', err.message);
     return null;
   }
 }

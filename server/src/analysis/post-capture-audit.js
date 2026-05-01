@@ -11,6 +11,7 @@
  */
 
 import { readFile } from 'fs/promises';
+import { log } from '#src/constants.js';
 import { parseCapture } from '#src/parsers/viewgraph-v2.js';
 import { flattenNodes, filterInteractive, getNodeDetails } from '#src/analysis/node-queries.js';
 import { auditNode } from '#src/analysis/a11y-rules.js';
@@ -30,7 +31,7 @@ export async function runPostCaptureAudit(filePath, previousParsed = null) {
     const result = parseCapture(raw);
     if (!result.ok) return null;
     parsed = result.data;
-  } catch (e) { console.error("[viewgraph] post-capture-audit parse failed:", e.message); return null; }
+  } catch (e) { log("post-capture-audit parse failed:", e.message); return null; }
 
   const nodes = flattenNodes(parsed);
 
@@ -82,5 +83,5 @@ function detectRegressions(current, previous) {
         removedElements: diff.removed?.slice(0, 5).map((n) => ({ id: n.id, tag: n.tag, text: n.text?.slice(0, 40) })),
       },
     };
-  } catch (e) { console.error("[viewgraph] regression diff failed:", e.message); return {}; }
+  } catch (e) { log("regression diff failed:", e.message); return {}; }
 }

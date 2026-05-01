@@ -37,6 +37,15 @@ export const ENV_ALLOWED_DIRS = `${PROJECT_PREFIX.toUpperCase()}_ALLOWED_DIRS`;
 /** Stderr log prefix. */
 export const LOG_PREFIX = `[${PROJECT_PREFIX}]`;
 
+/**
+ * Log a message to stderr with the ViewGraph prefix.
+ * MCP servers must use stderr for logging (stdout is the JSON-RPC channel).
+ * @param {...any} args - Message parts (joined with space)
+ */
+export function log(...args) {
+  process.stderr.write(`${LOG_PREFIX} ${args.join(' ')}\n`);
+}
+
 /** Default HTTP receiver port for extension communication. */
 export const DEFAULT_HTTP_PORT = 9876;
 

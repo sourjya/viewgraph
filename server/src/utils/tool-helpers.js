@@ -9,6 +9,7 @@
  */
 
 import { readFile, readdir } from 'fs/promises';
+import { log } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseCapture, parseSummary, parseMetadata } from '#src/parsers/viewgraph-v2.js';
 
@@ -67,7 +68,7 @@ export async function suggestFilename(query, capturesDir) {
   let files;
   try {
     files = (await readdir(capturesDir)).filter((f) => f.endsWith('.json'));
-  } catch (e) { console.error("[viewgraph] readAndParse failed:", e.message); return null; }
+  } catch (e) { log("readAndParse failed:", e.message); return null; }
   if (files.length === 0) return null;
 
   const q = query.toLowerCase();
