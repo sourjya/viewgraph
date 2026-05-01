@@ -49,7 +49,7 @@ describe('sidebar/styles', () => {
   });
 
   it('(+) DESC_STYLE has muted color', () => {
-    expect(DESC_STYLE.color).toContain('#555');
+    expect(DESC_STYLE.color).toContain('--vg-color-text-dim');
   });
 
   it('(+) DIVIDER_STYLE has border-top', () => {
@@ -57,7 +57,7 @@ describe('sidebar/styles', () => {
   });
 
   it('(+) DIVIDER_SUBTLE_STYLE uses darker color', () => {
-    expect(DIVIDER_SUBTLE_STYLE.borderTop).toContain('#2a2a3a');
+    expect(DIVIDER_SUBTLE_STYLE.borderTop).toContain('--vg-surface-hover');
   });
 });
 

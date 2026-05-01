@@ -38,3 +38,13 @@ jobs:
 
       - name: Lint
         run: npx eslint . --max-warnings 10
+
+      - name: No hardcoded hex colors in sidebar
+        run: |
+          count=$(grep -roh "'#[0-9a-fA-F]\{3,8\}'" extension/lib/sidebar/ --include="*.js" | grep -v tokens.js | wc -l)
+          if [ "$count" -gt 0 ]; then
+            echo "ERROR: $count hardcoded hex colors found in sidebar (use tokens.js)"
+            grep -rn "'#[0-9a-fA-F]\{3,8\}'" extension/lib/sidebar/ --include="*.js" | grep -v tokens.js
+            exit 1
+          fi
+          echo "OK: zero hardcoded hex colors in sidebar"

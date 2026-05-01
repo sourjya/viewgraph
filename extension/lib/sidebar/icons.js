@@ -44,28 +44,28 @@ function el(tag, attrs) {
 // ──────────────────────────────────────────────
 
 /** Checkmark polyline. Used for resolved, copied, sent confirmations. */
-export function checkIcon(size = 12, color = 'var(--vg-color-success, #4ade80)') {
+export function checkIcon(size = 12, color = 'var(--vg-color-success)') {
   const s = svg(size, { stroke: color, strokeWidth: 2.5 });
   s.appendChild(el('polyline', { points: '20 6 9 17 4 12' }));
   return s;
 }
 
 /** X / close icon. Used for close buttons and delete. */
-export function closeIcon(size = 18, color = 'var(--vg-color-text-muted, #666)' /* COLOR.muted */) {
+export function closeIcon(size = 18, color = 'var(--vg-color-text-muted)' /* COLOR.muted */) {
   const s = svg(size, { stroke: color });
   s.appendChild(el('path', { d: 'M18 6L6 18M6 6l12 12' }));
   return s;
 }
 
 /** Chevron left. Used for back/collapse buttons. */
-export function chevronLeftIcon(size = 18, color = 'var(--vg-color-accent, #a5b4fc)') {
+export function chevronLeftIcon(size = 18, color = 'var(--vg-color-accent)') {
   const s = svg(size, { stroke: color });
   s.appendChild(el('polyline', { points: '15 18 9 12 15 6' }));
   return s;
 }
 
 /** Chevron right. Used for collapse/expand. */
-export function chevronRightIcon(size = 18, color = 'var(--vg-color-text-muted, #666)' /* COLOR.muted */) {
+export function chevronRightIcon(size = 18, color = 'var(--vg-color-text-muted)' /* COLOR.muted */) {
   const s = svg(size, { stroke: color });
   s.appendChild(el('polyline', { points: '9 18 15 12 9 6' }));
   return s;
@@ -114,7 +114,7 @@ export function downloadIcon(size = 14) {
 }
 
 /** Trash / delete icon. */
-export function trashIcon(size = 12, color = 'var(--vg-color-text-muted, #666)' /* COLOR.muted */) {
+export function trashIcon(size = 12, color = 'var(--vg-color-text-muted)' /* COLOR.muted */) {
   const s = svg(size, { stroke: color });
   s.appendChild(el('polyline', { points: '3 6 5 6 21 6' }));
   s.appendChild(el('path', { d: 'M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2' }));
@@ -130,7 +130,7 @@ export function cameraIcon(size = 16) {
 }
 
 /** Circle (empty) icon. Used for unresolved annotation marker. */
-export function circleIcon(size = 12, color = 'var(--vg-color-text-muted, #666)' /* COLOR.muted */) {
+export function circleIcon(size = 12, color = 'var(--vg-color-text-muted)' /* COLOR.muted */) {
   const s = svg(size, { stroke: color });
   s.appendChild(el('circle', { cx: '12', cy: '12', r: '10' }));
   return s;
@@ -145,7 +145,7 @@ export function noteIcon(size = 14) {
 }
 
 /** Crosshair / target icon. Used for element mode. */
-export function crosshairIcon(size = 12, color = 'var(--vg-color-info-light, #93c5fd)') {
+export function crosshairIcon(size = 12, color = 'var(--vg-color-info-light)') {
   const s = svg(size, { stroke: color });
   s.appendChild(el('circle', { cx: '12', cy: '12', r: '10' }));
   s.appendChild(el('circle', { cx: '12', cy: '12', r: '3' }));
@@ -154,7 +154,7 @@ export function crosshairIcon(size = 12, color = 'var(--vg-color-info-light, #93
 }
 
 /** Tag icon. Used for region mode. */
-export function tagIcon(size = 12, color = 'var(--vg-color-text-dim, #6b7280)') {
+export function tagIcon(size = 12, color = 'var(--vg-color-text-dim)') {
   const s = svg(size, { stroke: color });
   s.appendChild(el('path', { d: 'M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z' }));
   s.appendChild(el('circle', { cx: '7', cy: '7', r: '1', fill: color }));
@@ -190,7 +190,7 @@ export function chatBubbleIcon(count, fill, stroke) {
   text.setAttribute('x', '12');
   text.setAttribute('y', '14');
   text.setAttribute('text-anchor', 'middle');
-  text.setAttribute('fill', 'var(--vg-color-white, #fff)');
+  text.setAttribute('fill', 'var(--vg-color-white)');
   text.setAttribute('font-family', 'system-ui,sans-serif');
   text.setAttribute('font-size', '10');
   text.setAttribute('font-weight', '700');
@@ -205,7 +205,7 @@ export function chatBubbleIcon(count, fill, stroke) {
  * @param {string} color
  * @param {'check'|'x'|'none'} inner - check for trusted, x for untrusted
  */
-export function shieldIcon(size = 14, color = 'var(--vg-color-success, #4ade80)', inner = 'none') {
+export function shieldIcon(size = 14, color = 'var(--vg-color-success)', inner = 'none') {
   const s = svg(size, { stroke: color, fill: 'none' });
   s.appendChild(el('path', { d: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' }));
   if (inner === 'check') {

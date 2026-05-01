@@ -24,7 +24,7 @@ export function createSettings() {
   Object.assign(screen.style, {
     display: 'none', padding: '0',
     position: 'absolute', top: '0', left: '0', right: '0', bottom: '42px',
-    background: 'var(--vg-surface-primary, #1a1a2e)', zIndex: '10', overflowY: 'auto',
+    background: 'var(--vg-surface-primary)', zIndex: '10', overflowY: 'auto',
   });
 
   // Header with back arrow

@@ -13,9 +13,9 @@ import { COLOR, FONT, addHover } from './styles.js';
 
 /** Tier display config: label, background color, text color. */
 const TIERS = {
-  accessibility: { label: 'A11Y', bg: 'var(--vg-color-caution-bg, #92400e)', color: 'var(--vg-color-warning, #fbbf24)' },
-  quality: { label: 'QUAL', bg: 'var(--vg-color-error-bg, #7f1d1d)', color: 'var(--vg-color-error-muted, #fca5a5)' },
-  testability: { label: 'TEST', bg: 'var(--vg-color-info-bg, #1e3a5f)', color: 'var(--vg-color-info-light, #93c5fd)' },
+  accessibility: { label: 'A11Y', bg: 'var(--vg-color-caution-bg)', color: 'var(--vg-color-warning)' },
+  quality: { label: 'QUAL', bg: 'var(--vg-color-error-bg)', color: 'var(--vg-color-error-muted)' },
+  testability: { label: 'TEST', bg: 'var(--vg-color-info-bg)', color: 'var(--vg-color-info-light)' },
 };
 
 /** Severity icons. */

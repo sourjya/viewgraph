@@ -53,7 +53,7 @@ export async function renderCaptures(container) {
   Object.assign(info.style, { color: COLOR.muted, fontSize: '11px', flex: '1' });
   const dot = document.createElement('span');
   const isRecent = d && (now - d.getTime()) < 300000;
-  Object.assign(dot.style, { width: '6px', height: '6px', borderRadius: '50%', flexShrink: '0', background: isRecent ? COLOR.success : 'var(--vg-color-text-dim, #444)' });
+  Object.assign(dot.style, { width: '6px', height: '6px', borderRadius: '50%', flexShrink: '0', background: isRecent ? COLOR.success : 'var(--vg-color-text-dim)' });
   row.append(label, info, dot);
   container.appendChild(row);
 
@@ -85,7 +85,7 @@ export async function renderCaptures(container) {
     const urlEl = document.createElement('div');
     urlEl.setAttribute(ATTR, 'capture-url');
     try { const u = new URL(latest.url); urlEl.textContent = u.host + u.pathname; } catch { urlEl.textContent = latest.url; }
-    Object.assign(urlEl.style, { color: 'var(--vg-color-text-dim, #6b7280)', fontSize: '10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
+    Object.assign(urlEl.style, { color: 'var(--vg-color-text-dim)', fontSize: '10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' });
     container.appendChild(urlEl);
   }
 
@@ -144,7 +144,7 @@ export async function renderCaptures(container) {
         const mins = Math.floor((now - capTime.getTime()) / 60000);
         capAge.textContent = mins < 1 ? 'now' : mins < 60 ? `${mins}m` : mins < 1440 ? `${Math.floor(mins / 60)}h` : `${Math.floor(mins / 1440)}d`;
       }
-      Object.assign(capAge.style, { color: 'var(--vg-color-text-dim, #444)', flexShrink: '0' });
+      Object.assign(capAge.style, { color: 'var(--vg-color-text-dim)', flexShrink: '0' });
       capRow.append(capDot, capName, capAge);
       timelineBody.appendChild(capRow);
     }
@@ -171,16 +171,16 @@ export async function renderCaptures(container) {
     Object.assign(consistBtn.style, {
       border: 'none', borderRadius: '10px', padding: '2px 10px', fontSize: '10px',
       fontWeight: '700', cursor: 'pointer', fontFamily: FONT,
-      background: 'var(--vg-color-info-bg, #1e3a5f)', color: 'var(--vg-color-info, #60a5fa)',
+      background: 'var(--vg-color-info-bg)', color: 'var(--vg-color-info)',
     });
     consistBtn.addEventListener('click', () => {
       const filenames = captures.slice(0, 5).map((c) => c.filename).join(', ');
       const prompt = `Run check_consistency on these captures to find style differences across pages: ${filenames}`;
       navigator.clipboard.writeText(prompt).then(() => {
         consistBtn.textContent = 'Copied!';
-        consistBtn.style.background = 'var(--vg-color-success-dim, #059669)';
+        consistBtn.style.background = 'var(--vg-color-success-dim)';
         consistBtn.style.color = COLOR.white;
-        setTimeout(() => { consistBtn.textContent = 'Compare'; consistBtn.style.background = 'var(--vg-color-info-bg, #1e3a5f)'; consistBtn.style.color = 'var(--vg-color-info, #60a5fa)'; }, 2000);
+        setTimeout(() => { consistBtn.textContent = 'Compare'; consistBtn.style.background = 'var(--vg-color-info-bg)'; consistBtn.style.color = 'var(--vg-color-info)'; }, 2000);
       }).catch(() => {});
     });
     consistRow.append(consistLabel, consistInfo, consistBtn);
@@ -216,8 +216,8 @@ export async function renderCaptures(container) {
     if (current) {
       baseInfo.textContent = current.filename?.replace(/\.json$/, '').slice(-20) || 'set';
       baseBtn.textContent = 'Compare';
-      baseBtn.style.background = 'var(--vg-color-info-bg, #1e3a5f)';
-      baseBtn.style.color = 'var(--vg-color-info, #60a5fa)';
+      baseBtn.style.background = 'var(--vg-color-info-bg)';
+      baseBtn.style.color = 'var(--vg-color-info)';
       baseBtn.addEventListener('click', async () => {
         baseBtn.textContent = '...';
         try {
@@ -245,8 +245,8 @@ export async function renderCaptures(container) {
           await transport.setBaseline(latest.filename);
           baseInfo.textContent = latest.filename.replace(/\.json$/, '').slice(-20);
           baseBtn.textContent = 'Compare';
-          baseBtn.style.background = 'var(--vg-color-info-bg, #1e3a5f)';
-          baseBtn.style.color = 'var(--vg-color-info, #60a5fa)';
+          baseBtn.style.background = 'var(--vg-color-info-bg)';
+          baseBtn.style.color = 'var(--vg-color-info)';
         } catch { baseBtn.textContent = 'Set'; }
       });
     }

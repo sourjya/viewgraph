@@ -185,7 +185,7 @@ Spec: [`.kiro/specs/shadow-dom-color-tokens/`](../../.kiro/specs/shadow-dom-colo
 |----|-------|--------|--------|
 | PR 1 | Token infrastructure: tokens.js + adoptedStyleSheets wiring | 0.5 day | **Done** | |
 | PR 2 | Call site migration: 88 hex values -> var() with fallbacks across 14 files | 1-2 days | **Done** | |
-| PR 3 | Fallback cleanup + CI hex color gate | 0.5 day | Not started |
+| PR 3 | Fallback cleanup + CI hex color gate | 0.5 day | **Done** |
 | PR 4 | Theme switching infrastructure (product decision required for first theme) | 1 day | Not started |
 
 Approach: Option D (Constructable Stylesheets) from the research. Parsed once, shared across instances, theme-switchable via `replaceSync()`. Semantic naming: `--vg-color-success` not `--vg-green`.

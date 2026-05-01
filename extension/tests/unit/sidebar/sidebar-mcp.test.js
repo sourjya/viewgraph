@@ -128,7 +128,7 @@ describe('sidebar MCP disconnected state', () => {
       expect(btn?.style.display).toBe('none');
     });
     const copyBtn = shadowQuery(`[${ATTR}="copy-md"]`);
-    expect(copyBtn.style.background).toMatch(/6366f1|rgb\(99,\s*102,\s*241\)/);
+    expect(copyBtn.style.background).toContain('--vg-color-pending');
   });
 
   it('(+) Copy MD and Report buttons stay enabled when MCP is offline', async () => {

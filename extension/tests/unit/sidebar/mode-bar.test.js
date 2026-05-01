@@ -21,7 +21,7 @@ describe('createModeBar', () => {
   it('(+) updateActive highlights the active mode', () => {
     const m = createModeBar({ onModeClick: vi.fn() });
     m.updateActive('region');
-    expect(m.buttons.region.style.background).toContain('6366f1');
+    expect(m.buttons.region.style.background).toContain('--vg-color-pending');
     expect(m.buttons.element.style.background).toBe('transparent');
   });
 

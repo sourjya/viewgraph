@@ -37,7 +37,7 @@ describe('createFooter', () => {
     const f = createFooter({ onSend: vi.fn(), onShowSettings: vi.fn() });
     f.setOfflineMode();
     expect(f.sendBtn.style.display).toBe('none');
-    expect(f.copyBtn.style.background).toContain('6366f1');
+    expect(f.copyBtn.style.background).toContain('--vg-color-pending');
   });
 
   it('(+) updateDisabledState disables buttons when no notes', () => {

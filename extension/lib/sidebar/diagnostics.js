@@ -96,7 +96,7 @@ export function renderDiagnostics(container, callbacks = {}) {
         if (sp.parent) {
           const parentEl = document.createElement('span');
           parentEl.textContent = ` ${sp.parent}`;
-          Object.assign(parentEl.style, { color: 'var(--vg-color-text-dim, #444)', fontSize: '10px' });
+          Object.assign(parentEl.style, { color: 'var(--vg-color-text-dim)', fontSize: '10px' });
           urlEl.appendChild(parentEl);
         }
         const size = document.createElement('span');
@@ -106,7 +106,7 @@ export function renderDiagnostics(container, callbacks = {}) {
         groupBody.appendChild(row);
         if (req.failed) {
           const detailRow = document.createElement('div');
-          Object.assign(detailRow.style, { display: 'none', paddingLeft: '8px', paddingBottom: '4px', fontSize: '10px', color: 'var(--vg-color-text-muted, #888)', borderLeft: `2px solid ${COLOR.errorDark}` });
+          Object.assign(detailRow.style, { display: 'none', paddingLeft: '8px', paddingBottom: '4px', fontSize: '10px', color: 'var(--vg-color-text-muted)', borderLeft: `2px solid ${COLOR.errorDark}` });
           const parts = [`Type: ${req.initiatorType || 'unknown'}`, `Duration: ${req.duration || 0}ms`];
           const urlDiv = document.createElement('div');
           Object.assign(urlDiv.style, { wordBreak: 'break-all', color: COLOR.errorLight, marginBottom: '2px' });
@@ -264,7 +264,7 @@ export function renderDiagnostics(container, callbacks = {}) {
   const transientData = collectTransient();
   if (transientData.issues.length > 0 || transientData.timeline.length > 0) {
     const badge = transientData.issues.length > 0 ? `${transientData.issues.length} issues` : `${transientData.timeline.length} events`;
-    const { section: transientSection, body: transientBody } = createSection('Page Activity', badge, 'var(--vg-color-warning-dim, #f59e0b)', callbacks.onRefresh);
+    const { section: transientSection, body: transientBody } = createSection('Page Activity', badge, 'var(--vg-color-warning-dim)', callbacks.onRefresh);
     for (const issue of transientData.issues) {
       const row = document.createElement('div');
       Object.assign(row.style, { fontSize: '11px', padding: '2px 0', color: issue.severity === 'major' ? COLOR.errorLight : COLOR.warning });

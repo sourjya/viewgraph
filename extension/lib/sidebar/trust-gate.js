@@ -35,7 +35,7 @@ export function showTrustGate(parent, anchorBtn, { onSend, onTrustUpdated, shado
   const gate = document.createElement('div');
   gate.setAttribute(ATTR, 'trust-gate');
   Object.assign(gate.style, {
-    padding: '10px 12px', background: 'var(--vg-surface-overlay, #2a2a1a)', border: `1px solid ${COLOR.warning}`,
+    padding: '10px 12px', background: 'var(--vg-surface-overlay)', border: `1px solid ${COLOR.warning}`,
     borderRadius: '6px', margin: '4px 0', fontFamily: FONT,
   });
 
@@ -65,7 +65,7 @@ export function showTrustGate(parent, anchorBtn, { onSend, onTrustUpdated, shado
       onTrustUpdated(newTrust);
       // Update shield in shadow DOM
       const shield = shadowRoot?.querySelector(`[${ATTR}="trust-shield"]`);
-      if (shield) { shield.replaceChildren(shieldIcon(16, 'var(--vg-color-info, #60a5fa)', 'check')); shield.setAttribute('data-tooltip', `configured: ${hostname}`); }
+      if (shield) { shield.replaceChildren(shieldIcon(16, 'var(--vg-color-info)', 'check')); shield.setAttribute('data-tooltip', `configured: ${hostname}`); }
     } catch { /* best effort */ }
     gate.remove();
     onSend();

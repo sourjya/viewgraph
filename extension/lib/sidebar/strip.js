@@ -26,7 +26,7 @@ export function createStrip(opts) {
     position: 'fixed', top: '60px', right: '0', zIndex: '2147483646',
     display: 'none', flexDirection: 'column', gap: '2px',
     padding: '6px 5px', borderRadius: '10px 0 0 10px',
-    background: 'var(--vg-surface-elevated, #252536)', border: `1px solid ${COLOR.border}`, borderRight: 'none',
+    background: 'var(--vg-surface-elevated)', border: `1px solid ${COLOR.border}`, borderRight: 'none',
     fontFamily: 'system-ui, sans-serif',
     boxShadow: '-2px 0 8px rgba(0,0,0,0.3)', alignItems: 'center',
   });
