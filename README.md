@@ -39,6 +39,7 @@ Works with any MCP-compatible agent: **Kiro**, **Claude Code**, **Cursor**, **Wi
 | [`server/`](./server/) | MCP server - 41 query/analysis/request tools, WebSocket collab, baselines |
 | [`extension/`](./extension/) | Chrome/Firefox extension - DOM capture, annotate, 21 enrichment collectors, multi-export |
 | [`packages/playwright/`](./packages/playwright/) | Playwright fixture - capture structured DOM snapshots during E2E tests |
+| [`packages/vitest/`](./packages/vitest/) | Vitest plugin - capture DOM snapshots during component and unit tests |
 | [`power/`](./power/) | Kiro Power assets - 3 hooks, 9 prompts, 3 steering docs, MCP config |
 
 ## How It Works
