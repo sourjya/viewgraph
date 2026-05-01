@@ -10,7 +10,7 @@ import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { parseSummary } from '#src/parsers/viewgraph-v2.js';
-import { errorResponse, NOTICE_CAPTURE } from '#src/utils/tool-helpers.js';
+import { errorResponse, textResponse, NOTICE_CAPTURE } from '#src/utils/tool-helpers.js';
 
 const MAX_INLINE_SIZE = 100 * 1024;
 
@@ -51,11 +51,11 @@ export function register(server, indexer, capturesDir) {
           const text = summary.ok
             ? `Latest capture: ${latest.filename} (${(size / 1024).toFixed(1)} KB  -  too large for inline, showing summary)\n\n${JSON.stringify(summary.data, null, 2)}\n\nUse get_capture("${latest.filename}") for the full data.`
             : `Latest capture: ${latest.filename} (${(size / 1024).toFixed(1)} KB). Could not parse summary. Use get_capture for full data.`;
-          return { content: [{ type: 'text', text }] };
+          return textResponse(text);
         }
 
         const notice = NOTICE_CAPTURE + '\n\n';
-        return { content: [{ type: 'text', text: notice + `Latest capture: ${latest.filename}\n\n${content}` }] };
+        return textResponse(notice + `Latest capture: ${latest.filename}\n\n${content}`);
       } catch (err) {
         return errorResponse(`Error reading capture: ${err.message}`);
       }

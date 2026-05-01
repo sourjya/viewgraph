@@ -19,10 +19,10 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 
 import {
-  SERVER_NAME, SERVER_VERSION, SERVER_DESCRIPTION, SERVER_INSTRUCTIONS, LOG_PREFIX,
+  SERVER_NAME, SERVER_VERSION, SERVER_DESCRIPTION, SERVER_INSTRUCTIONS,
 } from '#src/constants.js';
 import { resolveConfig } from '#src/config.js';
-import { ALLOWED_CONFIG_KEYS } from '#src/constants.js';
+import { ALLOWED_CONFIG_KEYS, log } from '#src/constants.js';
 import { createWatcher } from '#src/watcher.js';
 import { runArchive } from '#src/archive.js';
 import { register as registerListArchived } from '#src/tools/list-archived.js';
@@ -179,8 +179,8 @@ registerGetSessionStatus(toolServer, indexer);
 // Gateways dispatch to the captured handlers at call time.
 if (CLUSTERED) {
   const gatewayCount = registerGateways(server, toolRegistry);
-  process.stderr.write(`${LOG_PREFIX} Tool mode: clustered (${gatewayCount} gateways, ~${gatewayCount * 200} schema tokens)\n`);
-  process.stderr.write(`${LOG_PREFIX} Flat mode equivalent: ${toolRegistry.size} tools, ~${toolRegistry.size * 200} schema tokens\n`);
+  log('Tool mode: clustered', '(' + gatewayCount + ' gateways, ~' + (gatewayCount * 200) + ' schema tokens)');
+  log('Flat mode equivalent:', toolRegistry.size, 'tools, ~' + (toolRegistry.size * 200) + ' schema tokens');
 }
 
 // Register MCP prompts (discoverable by any MCP client via prompts/list)
@@ -188,9 +188,9 @@ if (CLUSTERED) {
 registerPrompts(server);
 
 if (SLIM_MODE) {
-  process.stderr.write(`${LOG_PREFIX} Slim mode: 9 core tools registered\n`);
+  log('Slim mode: 9 core tools registered');
 } else if (!CLUSTERED) {
-  process.stderr.write(`${LOG_PREFIX} Tool mode: flat (${toolRegistry.size || 41} tools)\n`);
+  log('Tool mode: flat', '(' + (toolRegistry.size || 41) + ' tools)');
 }
 
 // ---------------------------------------------------------------------------
@@ -204,10 +204,10 @@ async function indexFile(filename, filePath) {
     if (result.ok) {
       indexer.add(filename, result.data);
     } else {
-      console.error(`${LOG_PREFIX} Skipping ${filename}: ${result.error}`);
+      log('Skipping', filename + ':', result.error);
     }
   } catch (err) {
-    console.error(`${LOG_PREFIX} Error reading ${filename}: ${err.message}`);
+    log('Error reading', filename + ':', err.message);
   }
 }
 
@@ -219,19 +219,19 @@ let watcher;
 let httpReceiver;
 
 async function main() {
-  console.error(`${LOG_PREFIX} ViewGraph MCP Server v${SERVER_VERSION}`);
-  console.error(`${LOG_PREFIX} Captures dir: ${CAPTURES_DIR}`);
+  log('ViewGraph MCP Server v' + SERVER_VERSION);
+  log('Captures dir:', CAPTURES_DIR);
   if (ALLOWED_DIRS.length > 1) {
-    console.error(`${LOG_PREFIX} Allowed dirs: ${ALLOWED_DIRS.join(', ')}`);
+    log('Allowed dirs:', ALLOWED_DIRS.join(', '));
   }
 
   // Validate and auto-create captures directory
   if (!existsSync(CAPTURES_DIR)) {
     try {
       mkdirSync(CAPTURES_DIR, { recursive: true });
-      console.error(`${LOG_PREFIX} Created captures dir: ${CAPTURES_DIR}`);
+      log('Created captures dir:', CAPTURES_DIR);
     } catch (err) {
-      console.error(`${LOG_PREFIX} ERROR: Cannot create captures dir: ${err.message}`);
+      log('ERROR: Cannot create captures dir:', err.message);
       process.exit(1);
     }
   }
@@ -314,23 +314,23 @@ async function main() {
     // Detect browser/parent death: when stdin closes, switch to HTTP-only mode.
     // The idle timer will shut down the server if no HTTP activity occurs.
     process.stdin.on('end', () => {
-      console.error(`${LOG_PREFIX} stdin closed - switching to HTTP-only mode (idle timeout: ${IDLE_TIMEOUT_MINUTES}min)`);
+      log('stdin closed - switching to HTTP-only mode (idle timeout:', IDLE_TIMEOUT_MINUTES + 'min)');
       startStdinCloseFallback();
     });
-    console.error(`${LOG_PREFIX} Native messaging host mode + HTTP (port ${HTTP_PORT ?? 9876})`);
+    log('Native messaging host mode + HTTP (port', (HTTP_PORT ?? 9876) + ')');
   } else if (!process.stdin.isTTY) {
     const transport = new StdioServerTransport();
     await server.connect(transport);
     // Detect parent agent death: when stdin closes, switch to HTTP-only mode.
     // The idle timer will shut down the server if no HTTP activity occurs.
     process.stdin.on('end', () => {
-      console.error(`${LOG_PREFIX} stdin closed - switching to HTTP-only mode (idle timeout: ${IDLE_TIMEOUT_MINUTES}min)`);
+      log('stdin closed - switching to HTTP-only mode (idle timeout:', IDLE_TIMEOUT_MINUTES + 'min)');
       startStdinCloseFallback();
     });
-    console.error(`${LOG_PREFIX} MCP server running on stdio + HTTP (port ${HTTP_PORT ?? 9876})`);
+    log('MCP server running on stdio + HTTP (port', (HTTP_PORT ?? 9876) + ')');
   } else {
-    console.error(`${LOG_PREFIX} Standalone mode - HTTP only (port ${HTTP_PORT ?? 9876}). No MCP client detected.`);
-    console.error(`${LOG_PREFIX} To connect an agent, add to MCP config: { "command": "npx", "args": ["-y", "@viewgraph/core"] }`);
+    log('Standalone mode - HTTP only (port', (HTTP_PORT ?? 9876) + '). No MCP client detected.');
+    log('To connect an agent, add to MCP config: { "command": "npx", "args": ["-y", "@viewgraph/core"] }');
   }
 }
 
@@ -372,7 +372,7 @@ function startStdinCloseFallback() {
 // ---------------------------------------------------------------------------
 
 function shutdown(signal) {
-  console.error(`${LOG_PREFIX} Shutting down (${signal})`);
+  log('Shutting down', '(' + signal + ')');
   if (httpReceiver) httpReceiver.stop();
   if (watcher) watcher.close();
   process.exit(0);
@@ -382,6 +382,6 @@ process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 main().catch((err) => {
-  console.error(`${LOG_PREFIX} Fatal error:`, err);
+  log('Fatal error:', err);
   process.exit(1);
 });

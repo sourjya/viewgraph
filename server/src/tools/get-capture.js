@@ -10,7 +10,7 @@ import { readFile } from 'fs/promises';
 import path from 'node:path';
 import { PROJECT_NAME, PROJECT_PREFIX } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
-import { errorResponse, NOTICE_CAPTURE } from '#src/utils/tool-helpers.js';
+import { errorResponse, textResponse, NOTICE_CAPTURE } from '#src/utils/tool-helpers.js';
 import { readArchiveIndex } from '#src/archive.js';
 
 /**
@@ -78,9 +78,9 @@ export function register(server, _indexer, capturesDir) {
               const { writeFileSync, mkdirSync } = await import('fs');
               mkdirSync(path.dirname(outputPath), { recursive: true });
               writeFileSync(outputPath, json);
-              return { content: [{ type: 'text', text: `Capture (${observationDepth}) written to: ${outputPath}` }] };
+              return textResponse(`Capture (${observationDepth}) written to: ${outputPath}`);
             }
-            return { content: [{ type: 'text', text: `${NOTICE_CAPTURE}\n\nCapture: ${filename} (${observationDepth})\n\n${json}` }] };
+            return textResponse(`${NOTICE_CAPTURE}\n\nCapture: ${filename} (${observationDepth})\n\n${json}`);
           } catch { /* parse failed, fall through to full */ }
         }
 
@@ -106,15 +106,15 @@ export function register(server, _indexer, capturesDir) {
                 failedRequests: cap.network?.summary?.failed || 0,
               },
             };
-            return { content: [{ type: 'text', text: JSON.stringify(receipt, null, 2) }] };
+            return textResponse(JSON.stringify(receipt, null, 2));
           } catch {
-            return { content: [{ type: 'text', text: `Capture written to: ${outputPath} (${(Buffer.byteLength(content) / 1024).toFixed(1)} KB)` }] };
+            return textResponse(`Capture written to: ${outputPath} (${(Buffer.byteLength(content) / 1024).toFixed(1)} KB)`);
           }
         }
         const size = Buffer.byteLength(content);
         const notice = NOTICE_CAPTURE + '\n\n';
         const header = `Capture: ${filename} (${(size / 1024).toFixed(1)} KB)\n\n`;
-        return { content: [{ type: 'text', text: notice + header + content }] };
+        return textResponse(notice + header + content);
       } catch (err) {
         if (err.code === 'ENOENT') {
           // Fallback: check archive directory for resolved captures
@@ -131,7 +131,7 @@ export function register(server, _indexer, capturesDir) {
               const size = Buffer.byteLength(content);
               const notice = NOTICE_CAPTURE + '\n\n';
               const header = `Capture: ${filename} (${(size / 1024).toFixed(1)} KB) [archived]\n\n`;
-              return { content: [{ type: 'text', text: notice + header + content }] };
+              return textResponse(notice + header + content);
             }
           } catch { /* archive not available */ }
           return errorResponse(`Error: Capture not found: ${filename}. Use list_captures to see available files.`);
