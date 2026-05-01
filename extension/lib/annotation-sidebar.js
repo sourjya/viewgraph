@@ -50,6 +50,7 @@ import * as transport from '#lib/transport-client.js';
 import { stopJourney } from './session/journey-recorder.js';
 import { startShortcuts, stopShortcuts } from './ui/keyboard-shortcuts.js';
 import { ATTR } from './selector.js';
+import { tokenSheet } from './sidebar/tokens.js';
 
 // ──────────────────────────────────────────────
 // Module State
@@ -319,6 +320,8 @@ export function create() {
   hostEl.setAttribute(ATTR, 'shadow-host');
   Object.assign(hostEl.style, { all: 'initial', position: 'fixed', top: '0', right: '0', zIndex: '2147483646' });
   const shadow = hostEl.attachShadow({ mode: 'closed' });
+  // Adopt the color token sheet into the shadow root (parsed once, shared)
+  shadow.adoptedStyleSheets = [tokenSheet];
   _shadowRoot = shadow;
 
   _bus = createEventBus(shadow);
