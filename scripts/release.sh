@@ -88,6 +88,14 @@ fi
 cd ..
 echo "  ✓ Extension build verified (content script: $((BUILD_SIZE / 1024))KB)"
 
+# Bundle size budget check
+echo "  Checking bundle size budgets..."
+node scripts/check-bundle-size.js
+if [ $? -ne 0 ]; then
+  echo "  ERROR: Bundle size budget exceeded. Fix before releasing."
+  exit 1
+fi
+
 # Verify all server dependencies resolve (catches missing deps like fast-json-patch)
 echo "  Checking server dependency resolution..."
 DEP_CHECK=$(node -e "

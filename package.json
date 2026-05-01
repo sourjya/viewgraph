@@ -48,7 +48,10 @@
     "test:ext": "npm run test --workspace=extension",
     "coverage:server": "npm run test:coverage --workspace=server",
     "coverage:ext": "npm run test:coverage --workspace=extension",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "check:bundle": "node scripts/check-bundle-size.js",
+    "check:perf": "node scripts/perf-gate.js",
+    "check:tokens": "node scripts/measure-schema-tokens.js"
   },
   "engines": {
     "node": ">=20.0.0"
