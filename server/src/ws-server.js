@@ -24,7 +24,7 @@ import { WS_MESSAGES } from './ws-message-types.js';
  */
 
 import { WebSocketServer } from 'ws';
-import { LOG_PREFIX } from './constants.js';
+import { LOG_PREFIX, log } from './constants.js';
 
 /** Keepalive interval - 30 seconds. */
 const PING_INTERVAL_MS = 30000;
@@ -84,7 +84,7 @@ export function createWebSocketServer(httpServer, options = {}) {
       process.stderr.write(`${LOG_PREFIX} WebSocket client disconnected (${clients.size} remaining)\n`);
     });
 
-    ws.on('error', () => { clients.delete(ws); });
+    ws.on('error', (err) => { log('WebSocket client error:', err.message); clients.delete(ws); });
   });
 
   // Keepalive ping

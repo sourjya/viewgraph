@@ -7,9 +7,9 @@
  * @see #src/baselines.js - baseline storage
  */
 
-import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
+import { filenameParam } from '#src/utils/shared-params.js';
 import { setBaseline } from '#src/baselines.js';
 
 /**
@@ -25,7 +25,7 @@ export function register(server, _indexer, capturesDir) {
     `Promote a ${PROJECT_NAME} capture to the golden baseline for its URL. ` +
     'Future compare_baseline calls will diff against this snapshot.',
     {
-      filename: z.string().describe('Capture filename to promote as baseline'),
+      filename: filenameParam,
     },
     async ({ filename }) => {
       try {

@@ -76,7 +76,8 @@ export function register(server, indexer, capturesDir) {
       // S5-1 + 13.7: Single stringify per object for size check
       const targetStr = JSON.stringify(target.parsed);
       const prevStr = JSON.stringify(prev.parsed);
-      if (prevStr.length + targetStr.length > 2_000_000) {
+      // 15.4: Raised from 2MB to 5MB - real captures can be 1-3MB each
+      if (prevStr.length + targetStr.length > 5_000_000) {
         return jsonResponse({
           mode: 'full',
           reason: `Captures too large for diff (${Math.round((prevStr.length + targetStr.length) / 1024)}KB combined)`,

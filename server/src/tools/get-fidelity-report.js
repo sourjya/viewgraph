@@ -12,6 +12,7 @@ import path from 'path';
 import { PROJECT_NAME } from '#src/constants.js';
 import { parseSnapshot, compareFidelity } from '#src/analysis/fidelity.js';
 import { jsonResponse, errorResponse, withCapture } from '#src/utils/tool-helpers.js';
+import { filenameParam } from '#src/utils/shared-params.js';
 
 /**
  * Register the get_fidelity_report MCP tool.
@@ -25,7 +26,7 @@ export function register(server, _indexer, capturesDir) {
     `Compare a ${PROJECT_NAME} capture against its HTML snapshot to measure fidelity. ` +
     'Returns element, testid, interactive, and text coverage metrics.',
     {
-      filename: z.string().describe('Capture JSON filename (e.g., viewgraph-localhost-20260408-120612.json)'),
+      filename: filenameParam,
     },
     async ({ filename }) => {
       return withCapture(filename, capturesDir, async (parsed) => {
