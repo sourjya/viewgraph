@@ -32,6 +32,16 @@ export function errorResponse(msg) {
 }
 
 /**
+ * Format an MCP tool plain text response.
+ * Use for human-readable messages (not JSON data).
+ * @param {string} text - Response text
+ * @returns {{ content: Array }}
+ */
+export function textResponse(text) {
+  return { content: [{ type: 'text', text }] };
+}
+
+/**
  * Compute Levenshtein edit distance between two strings.
  * Used for fuzzy filename matching in "did you mean" suggestions.
  * @param {string} a

@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
-import { jsonResponse } from '#src/utils/tool-helpers.js';
+import { jsonResponse, textResponse } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the list_captures MCP tool.
@@ -27,7 +27,7 @@ export function register(server, indexer) {
     async ({ limit, url_filter: urlFilter }) => {
       const captures = indexer.list({ limit, urlFilter });
       if (captures.length === 0) {
-        return { content: [{ type: 'text', text: 'No captures found.' + (urlFilter ? ` Filter: "${urlFilter}"` : '') }] };
+        return textResponse('No captures found.' + (urlFilter ? ` Filter: "${urlFilter}"` : ''));
       }
       const summary = captures.map((c) => ({
         filename: c.filename,

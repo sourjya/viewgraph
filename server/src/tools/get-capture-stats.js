@@ -10,7 +10,7 @@
 
 import { readFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
-import { jsonResponse } from '#src/utils/tool-helpers.js';
+import { jsonResponse, textResponse } from '#src/utils/tool-helpers.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 
 /**
@@ -27,7 +27,7 @@ export function register(server, indexer, capturesDir) {
     async () => {
       const entries = indexer.list();
       if (entries.length === 0) {
-        return { content: [{ type: 'text', text: 'No captures found' }] };
+        return textResponse('No captures found');
       }
 
       const urls = new Set();

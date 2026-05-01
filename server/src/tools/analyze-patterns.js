@@ -12,7 +12,7 @@
 import { PROJECT_NAME } from '#src/constants.js';
 import { wrapComment } from '#src/utils/sanitize.js';
 import { analyzePatterns } from '#src/analysis/steering-generator.js';
-import { jsonResponse, readAndParseMulti } from '#src/utils/tool-helpers.js';
+import { jsonResponse, textResponse, readAndParseMulti } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the analyze_patterns MCP tool.
@@ -41,7 +41,7 @@ export function register(server, indexer, capturesDir) {
       }
 
       if (annotations.length === 0) {
-        return { content: [{ type: 'text', text: 'No annotations found in any captures' }] };
+        return textResponse('No annotations found in any captures');
       }
 
       const result = analyzePatterns(annotations);

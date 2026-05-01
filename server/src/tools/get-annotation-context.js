@@ -8,7 +8,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
-import { withCapture, jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
+import { withCapture, jsonResponse, errorResponse, textResponse } from '#src/utils/tool-helpers.js';
 import { filenameParam } from '#src/utils/shared-params.js';
 import { NOTICE_MIXED } from '#src/utils/tool-helpers.js';
 import { flattenNodes, getNodeDetails } from '#src/analysis/node-queries.js';
@@ -41,7 +41,7 @@ export function register(server, _indexer, capturesDir, options = {}) {
           }
         }
         if (annotations.length === 0) {
-          return { content: [{ type: 'text', text: 'No annotations in this capture.' }] };
+          return textResponse('No annotations in this capture.');
         }
 
         // Build focused output: annotation + its nodes with details

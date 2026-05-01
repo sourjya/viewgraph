@@ -12,7 +12,7 @@ import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { wrapComment } from '#src/utils/sanitize.js';
 import { detectRecurringIssues } from '#src/analysis/recurring-issues.js';
-import { jsonResponse, readAndParseMulti } from '#src/utils/tool-helpers.js';
+import { jsonResponse, textResponse, readAndParseMulti } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the detect_recurring_issues MCP tool.
@@ -42,7 +42,7 @@ export function register(server, indexer, capturesDir) {
       }
 
       if (captures.length === 0) {
-        return { content: [{ type: 'text', text: 'No annotated captures found' }] };
+        return textResponse('No annotated captures found');
       }
 
       const result = detectRecurringIssues(captures, { minOccurrences: min_occurrences });

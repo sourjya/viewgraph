@@ -14,7 +14,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
-import { jsonResponse, readAndParsePair } from '#src/utils/tool-helpers.js';
+import { jsonResponse, textResponse, readAndParsePair } from '#src/utils/tool-helpers.js';
 import { wrapComment } from '#src/utils/sanitize.js';
 import { flattenNodes } from '#src/analysis/node-queries.js';
 
@@ -39,7 +39,7 @@ export function register(server, indexer, capturesDir) {
 
       const annotations = annotatedData.annotations || [];
       if (annotations.length === 0) {
-        return { content: [{ type: 'text', text: 'No annotations found in the annotated capture' }] };
+        return textResponse('No annotations found in the annotated capture');
       }
 
       const latestNodes = flattenNodes(latestData);

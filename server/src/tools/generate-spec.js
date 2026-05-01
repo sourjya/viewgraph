@@ -13,7 +13,7 @@ import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { wrapComment } from '#src/utils/sanitize.js';
 import { generateSpec } from '#src/analysis/spec-generator.js';
-import { jsonResponse, readAndParseMulti } from '#src/utils/tool-helpers.js';
+import { jsonResponse, textResponse, readAndParseMulti } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the generate_spec MCP tool.
@@ -45,7 +45,7 @@ export function register(server, indexer, capturesDir) {
       }
 
       if (annotations.length === 0) {
-        return { content: [{ type: 'text', text: 'No annotations found in the specified captures' }] };
+        return textResponse('No annotations found in the specified captures');
       }
 
       const spec = generateSpec(annotations, { specName: spec_name });
