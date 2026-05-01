@@ -50,5 +50,6 @@
 * [Changelog](reference/changelog.md)
 * [Roadmap](reference/roadmap.md)
 * [FAQ](reference/faq.md)
+* [Known Limitations](reference/limitations.md)
 * [License (AGPL-3.0)](reference/license.md)
 * [Privacy Policy](reference/privacy-policy.md)
