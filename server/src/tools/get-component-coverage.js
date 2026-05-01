@@ -10,7 +10,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
-import { jsonResponse, readAndParse } from '#src/utils/tool-helpers.js';
+import { jsonResponse, withCapture } from '#src/utils/tool-helpers.js';
 import { flattenNodes, filterInteractive, getNodeDetails } from '#src/analysis/node-queries.js';
 
 /**
@@ -28,8 +28,7 @@ export function register(server, _indexer, capturesDir) {
       filename: z.string().describe('Capture filename'),
     },
     async ({ filename }) => {
-      const { ok, parsed, error } = await readAndParse(filename, capturesDir);
-      if (!ok) return error;
+      return withCapture(filename, capturesDir, (parsed) => {
 
       const allNodes = flattenNodes(parsed);
       const interactive = filterInteractive(allNodes);
@@ -134,6 +133,7 @@ export function register(server, _indexer, capturesDir) {
       };
 
       return jsonResponse(summary);
+      });
     },
   );
 }

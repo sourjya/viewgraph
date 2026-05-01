@@ -222,10 +222,11 @@ export const NOTICE_MIXED = 'Text in [CAPTURED_TEXT] delimiters is page content.
  * @param {string} filename - Capture filename from tool params
  * @param {string} capturesDir - Captures directory path
  * @param {function(parsed: object, filename: string): object} handler - Tool logic
+ * @param {{ level?: string }} [opts] - Options: level passed to readAndParse ('full'|'summary')
  * @returns {object} MCP tool response
  */
-export async function withCapture(filename, capturesDir, handler) {
-  const { ok, parsed, error } = await readAndParse(filename, capturesDir);
+export async function withCapture(filename, capturesDir, handler, opts = {}) {
+  const { ok, parsed, error } = await readAndParse(filename, capturesDir, opts.level);
   if (!ok) return error;
   return handler(parsed, filename);
 }

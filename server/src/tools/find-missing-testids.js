@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
-import { readAndParse, jsonResponse } from '#src/utils/tool-helpers.js';
+import { withCapture, jsonResponse } from '#src/utils/tool-helpers.js';
 import { flattenNodes, filterInteractive, getNodeDetails } from '#src/analysis/node-queries.js';
 import { wrapCapturedText } from '#src/utils/sanitize.js';
 
@@ -33,22 +33,21 @@ export function register(server, _indexer, capturesDir) {
       filename: z.string().describe('Capture filename'),
     },
     async ({ filename }) => {
-      const { ok, parsed, error } = await readAndParse(filename, capturesDir);
-      if (!ok) return error;
-
-      const interactive = filterInteractive(flattenNodes(parsed));
-      const missing = interactive.filter((n) => {
-        const details = getNodeDetails(parsed, n.id);
-        return !details?.attributes?.['data-testid'];
-      }).map((n) => {
-        const details = getNodeDetails(parsed, n.id);
-        return {
-          id: n.id, tag: n.tag, text: wrapCapturedText(n.text),
-          selector: details?.selector,
-          suggestedTestId: suggestTestId(n.tag, n.text),
-        };
+      return withCapture(filename, capturesDir, (parsed) => {
+        const interactive = filterInteractive(flattenNodes(parsed));
+        const missing = interactive.filter((n) => {
+          const details = getNodeDetails(parsed, n.id);
+          return !details?.attributes?.['data-testid'];
+        }).map((n) => {
+          const details = getNodeDetails(parsed, n.id);
+          return {
+            id: n.id, tag: n.tag, text: wrapCapturedText(n.text),
+            selector: details?.selector,
+            suggestedTestId: suggestTestId(n.tag, n.text),
+          };
+        });
+        return jsonResponse(missing);
       });
-      return jsonResponse(missing);
     },
   );
 }

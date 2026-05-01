@@ -1,0 +1,22 @@
+{
+  "budgets": [
+    {
+      "path": "extension/.output/chrome-mv3/content-scripts/content.js",
+      "maxSize": "350 kB",
+      "maxGzip": "100 kB",
+      "description": "Content script injected into every page - keep lean"
+    },
+    {
+      "path": "extension/.output/chrome-mv3/background.js",
+      "maxSize": "30 kB",
+      "maxGzip": "10 kB",
+      "description": "Service worker - minimal footprint"
+    }
+  ],
+  "baseline": {
+    "date": "2026-05-01",
+    "version": "0.9.7",
+    "contentScript": { "raw": 311581, "gzip": 88137 },
+    "background": { "raw": 20670, "gzip": 6709 }
+  }
+}

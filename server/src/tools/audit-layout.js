@@ -10,7 +10,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
-import { readAndParse, jsonResponse } from '#src/utils/tool-helpers.js';
+import { withCapture, jsonResponse } from '#src/utils/tool-helpers.js';
 import { analyzeLayout } from '#src/analysis/layout-analysis.js';
 
 /**
@@ -30,10 +30,10 @@ export function register(server, _indexer, capturesDir) {
       filename: z.string().describe('Capture filename'),
     },
     async ({ filename }) => {
-      const { ok, parsed, error } = await readAndParse(filename, capturesDir);
-      if (!ok) return error;
-      const layout = analyzeLayout(parsed);
-      return jsonResponse(layout);
+      return withCapture(filename, capturesDir, (parsed) => {
+        const layout = analyzeLayout(parsed);
+        return jsonResponse(layout);
+      });
     },
   );
 }

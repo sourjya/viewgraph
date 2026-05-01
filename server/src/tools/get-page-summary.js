@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME, PROJECT_PREFIX } from '#src/constants.js';
-import { readAndParse, jsonResponse, NOTICE_PAGE_DATA } from '#src/utils/tool-helpers.js';
+import { withCapture, jsonResponse, NOTICE_PAGE_DATA } from '#src/utils/tool-helpers.js';
 
 /**
  * Register the get_page_summary MCP tool.
@@ -28,10 +28,10 @@ export function register(server, _indexer, capturesDir) {
         .describe(`Capture filename (e.g., "${PROJECT_PREFIX}-localhost-2026-04-08T060815.json")`),
     },
     async ({ filename }) => {
-      const { ok, parsed, error } = await readAndParse(filename, capturesDir, 'summary');
-      if (!ok) return error;
-      const result = { _notice: NOTICE_PAGE_DATA, ...parsed };
-      return jsonResponse(result);
+      return withCapture(filename, capturesDir, (parsed) => {
+        const result = { _notice: NOTICE_PAGE_DATA, ...parsed };
+        return jsonResponse(result);
+      }, { level: 'summary' });
     },
   );
 }

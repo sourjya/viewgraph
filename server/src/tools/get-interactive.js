@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
-import { readAndParse, jsonResponse } from '#src/utils/tool-helpers.js';
+import { withCapture, jsonResponse } from '#src/utils/tool-helpers.js';
 import { flattenNodes, filterInteractive, getNodeDetails, isInViewport } from '#src/analysis/node-queries.js';
 import { wrapCapturedText } from '#src/utils/sanitize.js';
 
@@ -27,22 +27,21 @@ export function register(server, _indexer, capturesDir) {
       filename: z.string().describe('Capture filename'),
     },
     async ({ filename }) => {
-      const { ok, parsed, error } = await readAndParse(filename, capturesDir);
-      if (!ok) return error;
-
-      const nodes = filterInteractive(flattenNodes(parsed));
-      const viewport = parsed.metadata?.viewport;
-      const elements = nodes.map((n) => {
-        const details = getNodeDetails(parsed, n.id);
-        return {
-          id: n.id, tag: n.tag, text: wrapCapturedText(n.text), actions: n.actions,
-          inViewport: isInViewport(n.bbox, viewport),
-          selector: details?.selector,
-          'data-testid': details?.attributes?.['data-testid'] ?? null,
-          'aria-label': details?.attributes?.['aria-label'] ?? null,
-        };
+      return withCapture(filename, capturesDir, (parsed) => {
+        const nodes = filterInteractive(flattenNodes(parsed));
+        const viewport = parsed.metadata?.viewport;
+        const elements = nodes.map((n) => {
+          const details = getNodeDetails(parsed, n.id);
+          return {
+            id: n.id, tag: n.tag, text: wrapCapturedText(n.text), actions: n.actions,
+            inViewport: isInViewport(n.bbox, viewport),
+            selector: details?.selector,
+            'data-testid': details?.attributes?.['data-testid'] ?? null,
+            'aria-label': details?.attributes?.['aria-label'] ?? null,
+          };
+        });
+        return jsonResponse(elements);
       });
-      return jsonResponse(elements);
     },
   );
 }
