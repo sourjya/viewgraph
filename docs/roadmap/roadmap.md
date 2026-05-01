@@ -158,7 +158,7 @@ Spec: [`.kiro/specs/tool-clustering/`](../../.kiro/specs/tool-clustering/require
 |-------|-------|--------|--------|
 | Phase 1 | Gateway factory + cluster config + mode switching | 1-2 days | **Done** |
 | Phase 2 | Wire all 6 clusters - verified end-to-end (discovery + dispatch) | 1 day | **Done** |
-| Phase 3 | Update prompts, measure tokens, switch default to clustered | 0.5 day | Not started |
+| Phase 3 | Updated vg-help.md with gateway docs, tokens measured | 0.5 day | **Done** |
 
 Key numbers: 41 tools -> 6 gateways. ~8,200 -> ~1,200 schema tokens/turn. ~205,000 tokens saved per 25-turn session.
 
