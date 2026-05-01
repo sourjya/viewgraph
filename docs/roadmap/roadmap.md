@@ -145,7 +145,7 @@ Spec: [`.kiro/specs/extension-perf-pipeline/`](../../.kiro/specs/extension-perf-
 
 | Phase | Scope | Effort | Status |
 |-------|-------|--------|--------|
-| Phase 1 | Bundle size gate + vitest bench (traverser, serializer) + perf-gate.js | 1 day | Not started |
+| Phase 1 | Bundle size gate + vitest bench (traverser, serializer) + perf-gate.js | 1 day | **Done** |
 | Phase 2 | Puppeteer E2E perf (sidebar open, capture time, annotation render) + enrichment verification (console/network error capture against known fixtures) | 1-2 days | Not started |
 | Phase 3 | GitHub Actions workflow + release.sh integration | 0.5 day | Not started |
 
@@ -156,7 +156,7 @@ Spec: [`.kiro/specs/tool-clustering/`](../../.kiro/specs/tool-clustering/require
 
 | Phase | Scope | Effort | Status |
 |-------|-------|--------|--------|
-| Phase 1 | Gateway factory + cluster config + mode switching | 1-2 days | Not started |
+| Phase 1 | Gateway factory + cluster config + mode switching | 1-2 days | **Done** |
 | Phase 2 | Wire all 6 clusters (Capture, Audit, Compare, Annotate, Session, Source) | 1 day | Not started |
 | Phase 3 | Update prompts, measure tokens, switch default to clustered | 0.5 day | Not started |
 
@@ -169,7 +169,7 @@ Spec: [`.kiro/specs/schema-token-optimization/`](../../.kiro/specs/schema-token-
 
 | Phase | Scope | Effort | Status |
 |-------|-------|--------|--------|
-| Phase 1 | Measure baseline token counts | 0.5 day | Not started |
+| Phase 1 | Measure baseline token counts (actual: ~2,009 tokens, 49 avg/tool) | 0.5 day | **Done** |
 | Phase 2 | Compress all 41 tool descriptions | 1 day | Not started |
 | Phase 3 | Extract shared Zod param schemas | 0.5 day | Not started |
 
