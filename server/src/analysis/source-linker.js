@@ -16,7 +16,7 @@
  * @see docs/roadmap/roadmap.md - M15.1 bidirectional element linking
  */
 
-import { readdir, readFile } from 'fs/promises';
+import { readdir, readFile, stat } from 'fs/promises';
 import path from 'path';
 
 /** File extensions to search. */
@@ -93,7 +93,12 @@ export async function findSource(projectRoot, query) {
 
   for (const file of files) {
     let content;
-    try { content = await readFile(file, 'utf-8'); } catch { continue; } // file unreadable - skip
+    try {
+      // 13.3: Enforce _MAX_FILE_SIZE to prevent memory pressure on large files
+      const fileStat = await stat(file);
+      if (fileStat.size > _MAX_FILE_SIZE) continue;
+      content = await readFile(file, 'utf-8');
+    } catch { continue; } // file unreadable or too large - skip
 
     const lines = content.split('\n');
     for (const search of searches) {
