@@ -165,7 +165,7 @@ export async function readAndParsePair(fileA, fileB, capturesDir, level = 'full'
  * @param {string[]} filenames - Capture filenames
  * @param {string} capturesDir - Captures directory path
  * @param {'full'|'summary'|'metadata'} [level='full'] - Parse level
- * @returns {Promise<Array<{ filename: string, parsed: object }>>}
+ * @returns {Promise<{ results: Array<{ filename: string, parsed: object }>, warnings: string[] }>}
  */
 export async function readAndParseMulti(filenames, capturesDir, level = 'full') {
   // 13.1: Parallel reads instead of sequential O(n) latency
@@ -179,8 +179,8 @@ export async function readAndParseMulti(filenames, capturesDir, level = 'full') 
   const warnings = filenames.length - results.length > 0
     ? [`${filenames.length - results.length} of ${filenames.length} captures could not be read`]
     : [];
-  results.warnings = warnings;
-  return results;
+  // 15.7: Return proper object instead of array with bolted-on property
+  return { results, warnings };
 }
 
 /**

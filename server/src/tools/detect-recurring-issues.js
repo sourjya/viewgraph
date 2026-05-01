@@ -30,7 +30,7 @@ export function register(server, indexer, capturesDir) {
     },
     async ({ min_occurrences }) => {
       const filenames = indexer.list().map((e) => e.filename);
-      const results = await readAndParseMulti(filenames, capturesDir);
+      const { results } = await readAndParseMulti(filenames, capturesDir);
       const captures = [];
       for (const { filename, parsed } of results) {
         if (parsed.annotations?.length > 0) {

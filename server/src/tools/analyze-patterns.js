@@ -28,7 +28,7 @@ export function register(server, indexer, capturesDir) {
     {},
     async () => {
       const filenames = indexer.list().map((e) => e.filename);
-      const results = await readAndParseMulti(filenames, capturesDir);
+      const { results } = await readAndParseMulti(filenames, capturesDir);
       const annotations = [];
       for (const { parsed } of results) {
         if (!parsed.annotations?.length) continue;

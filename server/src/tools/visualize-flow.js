@@ -29,7 +29,7 @@ export function register(server, _indexer, capturesDir) {
       filenames: z.array(z.string()).min(2).max(20).describe('Capture filenames in step order'),
     },
     async ({ filenames }) => {
-      const results = await readAndParseMulti(filenames, capturesDir);
+      const { results } = await readAndParseMulti(filenames, capturesDir);
       const steps = results.map((r, i) => {
         const session = r.parsed.session;
         return {

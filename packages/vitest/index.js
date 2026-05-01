@@ -150,6 +150,8 @@ export function captureDOM(label, options = {}) {
         totalNodes: nodes.length,
         interactive: interactive.length,
       },
+      // 15.9: Capabilities metadata - what this capture includes
+      capabilities: ['nodes', 'actionManifest', 'accessibility'],
     },
     nodes: nodes.map((n) => ({
       nid: n.nid,

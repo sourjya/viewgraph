@@ -29,7 +29,7 @@ export function register(server, _indexer, capturesDir) {
       filenames: z.array(z.string()).min(2).max(20).describe('Capture filenames to compare (2-20, chronological order preferred)'),
     },
     async ({ filenames }) => {
-      const results = await readAndParseMulti(filenames, capturesDir);
+      const { results } = await readAndParseMulti(filenames, capturesDir);
       const captures = [];
       for (const { filename, parsed } of results) {
         if (parsed.annotations?.length > 0) {

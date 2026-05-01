@@ -32,7 +32,7 @@ export function register(server, indexer, capturesDir) {
     },
     async ({ filenames, spec_name }) => {
       const sources = filenames || indexer.list().map((e) => e.filename);
-      const results = await readAndParseMulti(sources, capturesDir);
+      const { results } = await readAndParseMulti(sources, capturesDir);
       const annotations = [];
       for (const { parsed } of results) {
         if (!parsed.annotations?.length) continue;
