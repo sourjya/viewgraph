@@ -362,3 +362,10 @@ Freeze the session schema before writing a single renderer. Once `session.json` 
 |--------|--------|
 | Dependency Risk | Zero CVEs, 10 findings (version pinning, license fields, single-maintainer risk). [Report](../reviews/dependency-risk-2026-04-30.md) |
 | Test Quality | 1 HIGH (no setSvg tests -- fixed), 4 MEDIUM, 5 LOW. 1804 tests total. [Report](../reviews/test-quality-2026-04-30.md) |
+
+## Security & Maintainability Reviews (2026-05-01)
+
+| Review | Report |
+|--------|--------|
+| SRR-009 (T3) | 0 CRITICAL, 0 HIGH, 1 MEDIUM (shell injection - fixed), 1 LOW (label cap - fixed). Gateway proxy clean. [Report](../security/SRR-009-2026-05-01-T3.md) |
+| MRR-010 | 12 new findings, 5 resolved from MRR-009. 15.1 vitest write bug fixed. [Report](../reviews/MRR-010-2026-05-01.md) |

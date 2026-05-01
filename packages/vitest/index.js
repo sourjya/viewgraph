@@ -170,11 +170,13 @@ export function captureDOM(label, options = {}) {
     },
   };
 
-  if (options.write !== false) {
+  // 15.1: Default to NOT writing (JSDoc says false, code must match)
+  if (options.write === true) {
     const dir = options.capturesDir || DEFAULT_DIR;
     mkdirSync(dir, { recursive: true });
     const ts = new Date().toISOString().replace(/[:.]/g, '').replace('T', '-').slice(0, 17);
-    const suffix = label ? `-${label.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}` : '';
+    // S16-3: Cap label length to prevent filesystem filename limit issues
+    const suffix = label ? `-${label.replace(/[^a-z0-9]+/gi, '-').toLowerCase().slice(0, 50)}` : '';
     const filename = `viewgraph-vitest-${ts}${suffix}.json`;
     writeFileSync(join(dir, filename), JSON.stringify(capture, null, 2));
     capture._filename = filename;

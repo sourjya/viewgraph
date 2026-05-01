@@ -12,7 +12,7 @@
  */
 
 import { readFileSync, statSync } from 'node:fs';
-import { execSync } from 'node:child_process';
+import { gzipSync } from 'node:zlib';
 import { resolve } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '..');
@@ -47,8 +47,8 @@ for (const budget of config.budgets) {
     continue;
   }
 
-  // Get gzipped size
-  const gzipSize = parseInt(execSync(`gzip -c "${filePath}" | wc -c`).toString().trim(), 10);
+  // S3-9: Use zlib instead of shell command to avoid command injection
+  const gzipSize = gzipSync(readFileSync(filePath)).length;
 
   const maxRaw = parseSize(budget.maxSize);
   const maxGzip = budget.maxGzip ? parseSize(budget.maxGzip) : null;
