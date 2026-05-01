@@ -175,6 +175,21 @@ Spec: [`.kiro/specs/schema-token-optimization/`](../../.kiro/specs/schema-token-
 
 Key budgets: content script < 50KB, sidebar open < 500ms, capture < 2000ms, annotation render < 100ms.
 
+
+## Shadow DOM Color Token Architecture (Spec)
+
+Extract 117 hardcoded hex colors from 19 sidebar files into a centralized token system using Constructable Stylesheets (`adoptedStyleSheets`). Enables theming, prevents color drift, and establishes the platform-native styling architecture for the extension.
+Spec: [`.kiro/specs/shadow-dom-color-tokens/`](../../.kiro/specs/shadow-dom-color-tokens/requirements.md) | Reference: [`docs/references/shadow-dom-css-style-color-management.md`](../references/shadow-dom-css-style-color-management.md)
+
+| PR | Scope | Effort | Status |
+|----|-------|--------|--------|
+| PR 1 | Token infrastructure: `tokens.js` + `adoptedStyleSheets` wiring (no visual change) | 0.5 day | Not started |
+| PR 2 | Call site migration: 117 hex values -> `var()` with fallbacks across 19 files | 1-2 days | Not started |
+| PR 3 | Fallback cleanup + CI hex color gate | 0.5 day | Not started |
+| PR 4 | Theme switching infrastructure (product decision required for first theme) | 1 day | Not started |
+
+Approach: Option D (Constructable Stylesheets) from the research. Parsed once, shared across instances, theme-switchable via `replaceSync()`. Semantic naming: `--vg-color-success` not `--vg-green`.
+
 ## v1.0 Platform Expansion
 
 Based on [ViewGraph & TracePulse v1.0 Platform Strategy](../references/viewgraph-tracepulse-v1-platform-strategy.md). Goal: expand ViewGraph from JS/TS-only to full coverage of the 4 dominant full-stack topologies identified in the research.
