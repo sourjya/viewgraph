@@ -175,6 +175,23 @@ Spec: [`.kiro/specs/schema-token-optimization/`](../../.kiro/specs/schema-token-
 
 Key budgets: content script < 50KB, sidebar open < 500ms, capture < 2000ms, annotation render < 100ms.
 
+## v1.0 Platform Expansion
+
+Based on [ViewGraph & TracePulse v1.0 Platform Strategy](../references/viewgraph-tracepulse-v1-platform-strategy.md). Goal: expand ViewGraph from JS/TS-only to full coverage of the 4 dominant full-stack topologies identified in the research.
+
+| # | Feature | Justification | Effort | Spec |
+|---|---|---|---|---|
+| 1 | Framework Component Capture (React/Vue/Angular) | 80% of users on React (44.7%), Angular (18.2%), Vue (17.6%). Agent gets `ProductCard` instead of `div.css-xyz`. Extends existing components enrichment collector. (SO 2025, Octoverse 2025) | 2-3 days | [`.kiro/specs/framework-component-capture/`](../../.kiro/specs/framework-component-capture/requirements.md) |
+| 2 | @viewgraph/vitest Plugin | Vitest is 2-4x faster than Jest, default for new Vite projects. Closes gap between "test failed" and "here's what the UI looked like." Complements @viewgraph/playwright for E2E. (SO 2025, JetBrains 2025) | 2-3 days | [`.kiro/specs/viewgraph-vitest/`](../../.kiro/specs/viewgraph-vitest/requirements.md) |
+| 3 | Playwright Python Fixture | Python is #1 growth language (+7pp in SO 2025). FastAPI/Django teams run Playwright Python for E2E. Completes the Python story. Published as `viewgraph-playwright` on PyPI. (SO 2025) | 2-3 days | [`.kiro/specs/playwright-python/`](../../.kiro/specs/playwright-python/requirements.md) |
+| 4 | Playwright Strict TypeScript Types | TypeScript is #1 on GitHub (Octoverse 2025). Strict TS teams reject loose types. Current `@viewgraph/playwright` capture payloads typed as `any`. (Octoverse 2025, JetBrains 2025) | 1-2 days | [`.kiro/specs/playwright-strict-types/`](../../.kiro/specs/playwright-strict-types/requirements.md) |
+| 5 | Angular Component Tree Capture | 18.2% usage, enterprise segment with highest agent tool adoption and willingness to pay. Pairs with Spring Boot backend story. (SO 2025) | 2-3 days | [`.kiro/specs/angular-component-capture/`](../../.kiro/specs/angular-component-capture/requirements.md) |
+| 6 | Documented Capture Gaps | Svelte has 62.4% admiration from 7.2% usage - teams WILL ask. React Native is dominant mobile framework. Documenting gaps prevents user frustration and shows transparency. (SO 2025) | 0.5 day | [`.kiro/specs/documented-gaps/`](../../.kiro/specs/documented-gaps/requirements.md) |
+
+**Total estimated effort:** 10-15 days
+
+**Research sources:** Stack Overflow Developer Survey 2025 (49k+ devs), JetBrains Developer Ecosystem Survey 2025 (24.5k devs), GitHub Octoverse 2025, State of JS 2025.
+
 ## Other Ideas (Backlog)
 
 | Idea | Status | Doc |
