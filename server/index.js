@@ -28,6 +28,7 @@ import { runArchive } from '#src/archive.js';
 import { register as registerListArchived } from '#src/tools/list-archived.js';
 import { createIndexer } from '#src/indexer.js';
 import { parseMetadata } from '#src/parsers/viewgraph-v2.js';
+import { createToolProxy, registerGateways } from '#src/clusters/gateway.js';
 import { register as registerListCaptures } from '#src/tools/list-captures.js';
 import { register as registerGetCapture } from '#src/tools/get-capture.js';
 import { register as registerGetLatest } from '#src/tools/get-latest.js';
@@ -97,22 +98,35 @@ const indexer = createIndexer({ maxCaptures: MAX_CAPTURES });
 /** --slim mode: expose only core tools for basic browser tasks. */
 const SLIM_MODE = process.argv.includes('--slim');
 
+/** Tool mode: 'clustered' groups 41 tools into 6 gateways (85% schema token reduction).
+ *  'flat' registers all 41 individually (current default, backward compatible).
+ *  Set via VG_TOOL_MODE env var or .viewgraphrc.json toolMode field. */
+const TOOL_MODE = process.env.VG_TOOL_MODE || config?.toolMode || 'flat';
+const CLUSTERED = TOOL_MODE === 'clustered';
+
+// In clustered mode, proxy captures tool registrations without registering
+// them on the real server. registerGateways() creates 6 gateway tools after
+// all register*() calls complete. In flat mode, proxy passes through normally.
+const { proxy: toolServer, registry: toolRegistry } = CLUSTERED
+  ? createToolProxy(server, { clustered: true })
+  : { proxy: server, registry: new Map() };
+
 // Register core tools (always available)
-registerListCaptures(server, indexer);
-registerGetCapture(server, indexer, CAPTURES_DIR);
-registerGetLatest(server, indexer, CAPTURES_DIR);
-registerGetPageSummary(server, indexer, CAPTURES_DIR);
-registerGetAnnotations(server, indexer, CAPTURES_DIR);
-registerRequestCapture(server, requestQueue);
-registerGetRequestStatus(server, requestQueue);
-registerResolveAnnotation(server, indexer, CAPTURES_DIR, {
+registerListCaptures(toolServer, indexer);
+registerGetCapture(toolServer, indexer, CAPTURES_DIR);
+registerGetLatest(toolServer, indexer, CAPTURES_DIR);
+registerGetPageSummary(toolServer, indexer, CAPTURES_DIR);
+registerGetAnnotations(toolServer, indexer, CAPTURES_DIR);
+registerRequestCapture(toolServer, requestQueue);
+registerGetRequestStatus(toolServer, requestQueue);
+registerResolveAnnotation(toolServer, indexer, CAPTURES_DIR, {
   requestQueue,
   onResolve: ({ uuid, resolution }) => {
     const ws = httpReceiver?.getWsServer?.();
     if (ws) ws.broadcast({ type: WS_MESSAGES.ANNOTATION_RESOLVED, uuid, resolution });
   },
 });
-registerGetUnresolved(server, indexer, CAPTURES_DIR, {
+registerGetUnresolved(toolServer, indexer, CAPTURES_DIR, {
   onStatusChange: ({ uuid, status }) => {
     const ws = httpReceiver?.getWsServer?.();
     if (ws) ws.broadcast({ type: WS_MESSAGES.ANNOTATION_STATUS, uuid, status });
@@ -121,50 +135,62 @@ registerGetUnresolved(server, indexer, CAPTURES_DIR, {
 
 if (!SLIM_MODE) {
 // Register full tool set (analysis, comparison, sessions, etc.)
-registerListArchived(server, CAPTURES_DIR);
-registerGetElementsByRole(server, indexer, CAPTURES_DIR);
-registerGetInteractive(server, indexer, CAPTURES_DIR);
-registerFindMissingTestids(server, indexer, CAPTURES_DIR);
-registerAuditAccessibility(server, indexer, CAPTURES_DIR);
-registerAuditLayout(server, indexer, CAPTURES_DIR);
-registerCompareCaptures(server, indexer, CAPTURES_DIR);
-registerGetAnnotatedCapture(server, indexer, CAPTURES_DIR, {
+registerListArchived(toolServer, CAPTURES_DIR);
+registerGetElementsByRole(toolServer, indexer, CAPTURES_DIR);
+registerGetInteractive(toolServer, indexer, CAPTURES_DIR);
+registerFindMissingTestids(toolServer, indexer, CAPTURES_DIR);
+registerAuditAccessibility(toolServer, indexer, CAPTURES_DIR);
+registerAuditLayout(toolServer, indexer, CAPTURES_DIR);
+registerCompareCaptures(toolServer, indexer, CAPTURES_DIR);
+registerGetAnnotatedCapture(toolServer, indexer, CAPTURES_DIR, {
   onStatusChange: ({ uuid, status }) => {
     const ws = httpReceiver?.getWsServer?.();
     if (ws) ws.broadcast({ type: WS_MESSAGES.ANNOTATION_STATUS, uuid, status });
   },
 });
-registerGetFidelityReport(server, indexer, CAPTURES_DIR);
-registerCompareBaseline(server, indexer, CAPTURES_DIR);
-registerSetBaseline(server, indexer, CAPTURES_DIR);
-registerListBaselines(server, indexer, CAPTURES_DIR);
-registerListSessions(server, indexer, CAPTURES_DIR);
-registerGetSession(server, indexer, CAPTURES_DIR);
-registerFindSource(server, indexer, CAPTURES_DIR);
-registerCheckConsistency(server, indexer, CAPTURES_DIR);
-registerCheckAnnotationStatus(server, indexer, CAPTURES_DIR);
-registerCompareScreenshots(server, indexer, CAPTURES_DIR);
-registerDiffAnnotations(server, indexer, CAPTURES_DIR);
-registerDetectRecurring(server, indexer, CAPTURES_DIR);
-registerVisualizeFlow(server, indexer, CAPTURES_DIR);
-registerGenerateSpec(server, indexer, CAPTURES_DIR);
-registerAnalyzePatterns(server, indexer, CAPTURES_DIR);
-registerAnalyzeJourney(server, indexer, CAPTURES_DIR);
-registerGetCaptureStats(server, indexer, CAPTURES_DIR);
-registerValidateCapture(server, indexer, CAPTURES_DIR);
-registerCompareStyles(server, indexer, CAPTURES_DIR);
-registerGetComponentCoverage(server, indexer, CAPTURES_DIR);
-registerGetCaptureHistory(server, indexer);
-registerVerifyFix(server, indexer, CAPTURES_DIR);
-registerGetCaptureDiff(server, indexer, CAPTURES_DIR);
-registerGetSessionStatus(server, indexer);
+registerGetFidelityReport(toolServer, indexer, CAPTURES_DIR);
+registerCompareBaseline(toolServer, indexer, CAPTURES_DIR);
+registerSetBaseline(toolServer, indexer, CAPTURES_DIR);
+registerListBaselines(toolServer, indexer, CAPTURES_DIR);
+registerListSessions(toolServer, indexer, CAPTURES_DIR);
+registerGetSession(toolServer, indexer, CAPTURES_DIR);
+registerFindSource(toolServer, indexer, CAPTURES_DIR);
+registerCheckConsistency(toolServer, indexer, CAPTURES_DIR);
+registerCheckAnnotationStatus(toolServer, indexer, CAPTURES_DIR);
+registerCompareScreenshots(toolServer, indexer, CAPTURES_DIR);
+registerDiffAnnotations(toolServer, indexer, CAPTURES_DIR);
+registerDetectRecurring(toolServer, indexer, CAPTURES_DIR);
+registerVisualizeFlow(toolServer, indexer, CAPTURES_DIR);
+registerGenerateSpec(toolServer, indexer, CAPTURES_DIR);
+registerAnalyzePatterns(toolServer, indexer, CAPTURES_DIR);
+registerAnalyzeJourney(toolServer, indexer, CAPTURES_DIR);
+registerGetCaptureStats(toolServer, indexer, CAPTURES_DIR);
+registerValidateCapture(toolServer, indexer, CAPTURES_DIR);
+registerCompareStyles(toolServer, indexer, CAPTURES_DIR);
+registerGetComponentCoverage(toolServer, indexer, CAPTURES_DIR);
+registerGetCaptureHistory(toolServer, indexer);
+registerVerifyFix(toolServer, indexer, CAPTURES_DIR);
+registerGetCaptureDiff(toolServer, indexer, CAPTURES_DIR);
+registerGetSessionStatus(toolServer, indexer);
 } // end !SLIM_MODE
 
+// In clustered mode, register 6 gateway tools on the REAL server (not the proxy).
+// All register*() calls above populated the registry via the proxy.
+// Gateways dispatch to the captured handlers at call time.
+if (CLUSTERED) {
+  const gatewayCount = registerGateways(server, toolRegistry);
+  process.stderr.write(`${LOG_PREFIX} Tool mode: clustered (${gatewayCount} gateways, ~${gatewayCount * 200} schema tokens)\n`);
+  process.stderr.write(`${LOG_PREFIX} Flat mode equivalent: ${toolRegistry.size} tools, ~${toolRegistry.size * 200} schema tokens\n`);
+}
+
 // Register MCP prompts (discoverable by any MCP client via prompts/list)
+// Prompts go on the real server, not the proxy (they're not tools)
 registerPrompts(server);
 
 if (SLIM_MODE) {
   process.stderr.write(`${LOG_PREFIX} Slim mode: 9 core tools registered\n`);
+} else if (!CLUSTERED) {
+  process.stderr.write(`${LOG_PREFIX} Tool mode: flat (${toolRegistry.size || 41} tools)\n`);
 }
 
 // ---------------------------------------------------------------------------

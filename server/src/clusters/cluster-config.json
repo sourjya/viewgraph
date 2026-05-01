@@ -1,0 +1,81 @@
+{
+  "clusters": [
+    {
+      "gateway": "vg_capture",
+      "description": "Capture management: list, retrieve, request, and validate DOM captures.",
+      "tools": [
+        "list_captures",
+        "get_capture",
+        "get_latest_capture",
+        "get_page_summary",
+        "get_capture_diff",
+        "get_capture_history",
+        "get_capture_stats",
+        "request_capture",
+        "get_request_status",
+        "validate_capture"
+      ]
+    },
+    {
+      "gateway": "vg_audit",
+      "description": "Audit and inspect: accessibility, layout, testids, coverage, fidelity, elements, and fix verification.",
+      "tools": [
+        "audit_accessibility",
+        "audit_layout",
+        "find_missing_testids",
+        "get_component_coverage",
+        "get_fidelity_report",
+        "get_elements_by_role",
+        "get_interactive_elements",
+        "verify_fix"
+      ]
+    },
+    {
+      "gateway": "vg_compare",
+      "description": "Compare and diff: structural diffs, screenshot pixel diffs, style diffs, baselines, and cross-page consistency.",
+      "tools": [
+        "compare_captures",
+        "compare_screenshots",
+        "compare_styles",
+        "compare_baseline",
+        "check_consistency",
+        "set_baseline",
+        "list_baselines"
+      ]
+    },
+    {
+      "gateway": "vg_annotate",
+      "description": "Annotations: read, resolve, diff, detect patterns, and generate specs from user feedback.",
+      "tools": [
+        "get_annotations",
+        "get_annotation_context",
+        "get_unresolved",
+        "resolve_annotation",
+        "diff_annotations",
+        "check_annotation_status",
+        "detect_recurring_issues",
+        "analyze_patterns",
+        "generate_spec"
+      ]
+    },
+    {
+      "gateway": "vg_session",
+      "description": "Sessions and history: session management, journey analysis, flow visualization, and archives.",
+      "tools": [
+        "get_session_status",
+        "list_sessions",
+        "get_session",
+        "analyze_journey",
+        "visualize_flow",
+        "list_archived"
+      ]
+    },
+    {
+      "gateway": "vg_source",
+      "description": "Source mapping: find the source file that renders a DOM element.",
+      "tools": [
+        "find_source"
+      ]
+    }
+  ]
+}
