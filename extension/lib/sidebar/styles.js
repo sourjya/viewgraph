@@ -20,26 +20,26 @@ export const FONT_MONO = 'SF Mono, Cascadia Code, monospace';
  * Enables future theming by changing values in one place.
  */
 export const COLOR = {
-  muted: '#666',
-  secondary: '#9ca3af',
-  dim: '#555',
-  text: '#c8c8d0',
-  white: '#fff',
-  primary: '#6366f1',
-  primaryLight: '#a5b4fc',
-  primaryHover: '#818cf8',
-  success: '#4ade80',
-  successDark: '#166534',
-  warning: '#f59e0b',
-  warningLight: '#fbbf24',
-  error: '#dc2626',
-  errorLight: '#f87171',
-  errorDark: '#7f1d1d',
-  border: '#333',
-  borderLight: '#2a2a3a',
-  bgDark: '#1a1a2e',
-  bgCard: '#16161e',
-  bgHover: '#2a2a4a',
+  muted: 'var(--vg-color-text-muted, #666)',
+  secondary: 'var(--vg-color-text-muted, #9ca3af)',
+  dim: 'var(--vg-color-text-dim, #555)',
+  text: 'var(--vg-color-text, #c8c8d0)',
+  white: 'var(--vg-color-white, #fff)',
+  primary: 'var(--vg-color-pending, #6366f1)',
+  primaryLight: 'var(--vg-color-accent, #a5b4fc)',
+  primaryHover: 'var(--vg-color-pending-dim, #818cf8)',
+  success: 'var(--vg-color-success, #4ade80)',
+  successDark: 'var(--vg-color-success-bg, #166534)',
+  warning: 'var(--vg-color-warning-dim, #f59e0b)',
+  warningLight: 'var(--vg-color-warning, #fbbf24)',
+  error: 'var(--vg-color-danger, #dc2626)',
+  errorLight: 'var(--vg-color-error, #f87171)',
+  errorDark: 'var(--vg-color-error-bg, #7f1d1d)',
+  border: 'var(--vg-color-text-dim, #333)',
+  borderLight: 'var(--vg-surface-hover, #2a2a3a)',
+  bgDark: 'var(--vg-surface-primary, #1a1a2e)',
+  bgCard: 'var(--vg-surface-deep, #16161e)',
+  bgHover: 'var(--vg-surface-active, #2a2a4a)',
   bgHoverLight: 'rgba(255,255,255,0.06)',
   bgHoverSubtle: 'rgba(255,255,255,0.08)',
 };
@@ -58,7 +58,7 @@ export function addHover(el, hoverBg = COLOR.bgHoverLight, restBg = 'transparent
 
 /** Common style for section/toggle labels (uppercase, small, muted). */
 export const LABEL_STYLE = {
-  fontWeight: '600', fontSize: '11px', color: '#9ca3af',
+  fontWeight: '600', fontSize: '11px', color: 'var(--vg-color-text-muted, #9ca3af)',
   textTransform: 'uppercase', letterSpacing: '0.5px',
   fontFamily: FONT,
 };
@@ -70,10 +70,10 @@ export const TOGGLE_STYLE = {
 };
 
 /** Toggle ON state colors. */
-export const TOGGLE_ON = { background: '#166534', color: '#4ade80' };
+export const TOGGLE_ON = { background: 'var(--vg-color-success-bg, #166534)', color: 'var(--vg-color-success, #4ade80)' };
 
 /** Toggle OFF state colors. */
-export const TOGGLE_OFF = { background: '#333', color: '#666' };
+export const TOGGLE_OFF = { background: 'var(--vg-color-text-dim, #333)', color: 'var(--vg-color-text-muted, #666)' };
 
 /** Style for footer action buttons (Send, Copy MD, Report). */
 export const ACTION_BTN_STYLE = {
@@ -97,10 +97,10 @@ export const TAB_STYLE = {
 };
 
 /** Style for description text below toggles. */
-export const DESC_STYLE = { color: '#555', fontSize: '10px', marginBottom: '6px' };
+export const DESC_STYLE = { color: 'var(--vg-color-text-dim, #555)', fontSize: '10px', marginBottom: '6px' };
 
 /** Thin horizontal divider. */
-export const DIVIDER_STYLE = { border: 'none', borderTop: '1px solid #333', margin: '8px 0 4px' };
+export const DIVIDER_STYLE = { border: 'none', borderTop: '1px solid var(--vg-border-default, #333)', margin: '8px 0 4px' };
 
 /** Thin subtle divider (darker). */
-export const DIVIDER_SUBTLE_STYLE = { border: 'none', borderTop: '1px solid #2a2a3a', margin: '4px 0' };
+export const DIVIDER_SUBTLE_STYLE = { border: 'none', borderTop: '1px solid var(--vg-surface-hover, #2a2a3a)', margin: '4px 0' };

@@ -138,7 +138,7 @@ describe('inspect tab captures section', () => {
     const status = ic.querySelector(`[${ATTR}="capture-status"]`);
     const dots = [...status.querySelectorAll('span')].filter((s) => s.style.borderRadius === '50%');
     expect(dots.length).toBe(1);
-    expect(dots[0].style.background).toBe('rgb(74, 222, 128)');
+    expect(dots[0].style.background).toContain('4ade80');
   });
 
   it('(+) warning shown when latest capture is empty', async () => {

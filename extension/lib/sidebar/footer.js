@@ -53,7 +53,7 @@ export function createFooter({ onSend, onShowSettings }) {
   sendBtn.setAttribute('data-tooltip', 'Send annotations to your AI agent');
   sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent'));
   Object.assign(sendBtn.style, { ...BTN_STYLE, background: COLOR.primary, width: '100%', padding: '9px 4px', marginBottom: '4px' });
-  addHover(sendBtn, '#5558e6', COLOR.primary);
+  addHover(sendBtn, 'var(--vg-color-badge, #5558e6)', COLOR.primary);
   sendBtn.addEventListener('click', onSend);
 
   // Copy Markdown
@@ -149,7 +149,7 @@ export function createFooter({ onSend, onShowSettings }) {
   /** Flash a button green with a success message, then restore. */
   function flashButton(btn, msg, iconFn, label) {
     btn.replaceChildren(checkIcon(14), document.createTextNode(msg));
-    btn.style.background = '#059669';
+    btn.style.background = 'var(--vg-color-success-dim, #059669)';
     setTimeout(() => { btn.replaceChildren(iconFn(14), document.createTextNode(label)); btn.style.background = 'transparent'; }, 2000);
   }
 
@@ -160,7 +160,7 @@ export function createFooter({ onSend, onShowSettings }) {
   function setOfflineMode() {
     sendBtn.style.display = 'none';
     Object.assign(copyBtn.style, { background: COLOR.primary, color: COLOR.white, border: 'none', flex: '1' });
-    Object.assign(dlBtn.style, { background: '#374151', color: COLOR.white, border: 'none', flex: '1' });
+    Object.assign(dlBtn.style, { background: 'var(--vg-border-subtle, #374151)', color: COLOR.white, border: 'none', flex: '1' });
   }
 
   /**
@@ -181,7 +181,7 @@ export function createFooter({ onSend, onShowSettings }) {
    */
   function flashSend() {
     sendBtn.replaceChildren(checkIcon(14), document.createTextNode('Sent!'));
-    sendBtn.style.background = '#059669';
+    sendBtn.style.background = 'var(--vg-color-success-dim, #059669)';
     setTimeout(() => { sendBtn.replaceChildren(sendIcon(14), document.createTextNode('Send to Agent')); sendBtn.style.background = COLOR.primary; }, 2000);
   }
 
@@ -207,7 +207,7 @@ export function createFooter({ onSend, onShowSettings }) {
     }
   }
 
-  const TRUST_COLORS = { trusted: COLOR.success, configured: '#60a5fa', untrusted: COLOR.warning };
+  const TRUST_COLORS = { trusted: COLOR.success, configured: 'var(--vg-color-info, #60a5fa)', untrusted: COLOR.warning };
 
   /**
    * Update the trust shield icon based on trust classification.

@@ -48,7 +48,27 @@ tokenSheet.replaceSync(`
     --vg-surface-primary:   #1a1a2e;
     --vg-surface-elevated:  #252536;
     --vg-surface-overlay:   #2a2a1a;
+    --vg-surface-deep:      #16161e;
+    --vg-surface-card:      #1e1e2e;
+    --vg-surface-hover:     #2a2a3a;
+    --vg-surface-active:    #2a2a4a;
     --vg-border-default:    #334155;
+    --vg-border-subtle:     #374151;
+
+    /* ── Extended palette ── */
+    --vg-color-teal-600:    #0d9488;
+    --vg-color-sky-500:     #0ea5e9;
+    --vg-color-indigo-500:  #6366f1;
+    --vg-color-indigo-400:  #818cf8;
+    --vg-color-indigo-600:  #5558e6;
+    --vg-color-purple-500:  #a855f7;
+    --vg-color-red-600:     #dc2626;
+    --vg-color-amber-800:   #92400e;
+    --vg-color-gray-200:    #e2e8f0;
+    --vg-color-gray-300:    #c8c8d0;
+    --vg-color-gray-350:    #ccc;
+    --vg-color-gray-450:    #888;
+    --vg-color-black:       #000;
 
     /* ── Semantic tokens (call sites use these) ── */
     --vg-color-success:     var(--vg-color-green-400);
@@ -69,5 +89,13 @@ tokenSheet.replaceSync(`
     --vg-color-text-dim:    var(--vg-color-gray-500);
     --vg-color-link:        var(--vg-color-blue-400);
     --vg-color-highlight:   var(--vg-color-yellow-500);
+    --vg-color-diagnostic:  var(--vg-color-teal-600);
+    --vg-color-idea:        var(--vg-color-amber-400);
+    --vg-color-pending:     var(--vg-color-indigo-500);
+    --vg-color-pending-dim: var(--vg-color-indigo-400);
+    --vg-color-badge:       var(--vg-color-indigo-600);
+    --vg-color-severity:    var(--vg-color-purple-500);
+    --vg-color-danger:      var(--vg-color-red-600);
+    --vg-color-caution-bg:  var(--vg-color-amber-800);
   }
 `);

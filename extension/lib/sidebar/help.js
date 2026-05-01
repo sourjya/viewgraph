@@ -62,7 +62,7 @@ export function createHelpCard() {
     k.textContent = text;
     Object.assign(k.style, {
       display: 'inline-block', padding: '2px 6px', borderRadius: '4px',
-      border: `1px solid ${COLOR.dim}`, background: COLOR.borderLight, color: '#e2e8f0',
+      border: `1px solid ${COLOR.dim}`, background: COLOR.borderLight, color: 'var(--vg-color-text, #e2e8f0)',
       fontFamily: 'monospace', fontSize: '11px', fontWeight: '600',
       lineHeight: '1.4', minWidth: '20px', textAlign: 'center',
     });

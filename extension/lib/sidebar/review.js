@@ -260,9 +260,9 @@ function renderFilterTabs(tabContainer, { open, resolved, anns, activeFilter, ac
   typeFilterRow.appendChild(filterSpacer);
   const filterTypes = [
     { key: 'element', label: 'Bugs', color: COLOR.secondary },
-    { key: 'idea', label: 'Ideas', color: '#eab308' },
-    { key: 'diagnostic', label: 'Diagnostics', color: '#0d9488' },
-    { key: 'page-note', label: 'Notes', color: '#0ea5e9' },
+    { key: 'idea', label: 'Ideas', color: 'var(--vg-color-highlight, #eab308)' },
+    { key: 'diagnostic', label: 'Diagnostics', color: 'var(--vg-color-diagnostic, #0d9488)' },
+    { key: 'page-note', label: 'Notes', color: 'var(--vg-color-info, #0ea5e9)' },
   ];
   for (const ft of filterTypes) {
     const btn = document.createElement('button');
@@ -320,7 +320,7 @@ function showClearConfirmation(count, callbacks) {
   });
   const card = document.createElement('div');
   Object.assign(card.style, {
-    background: '#1e1e2e', border: `1px solid ${COLOR.error}`, borderRadius: '10px',
+    background: 'var(--vg-surface-card, #1e1e2e)', border: `1px solid ${COLOR.error}`, borderRadius: '10px',
     padding: '16px', width: '220px', textAlign: 'center',
     fontFamily: 'system-ui, sans-serif', boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
   });
@@ -329,7 +329,7 @@ function showClearConfirmation(count, callbacks) {
   Object.assign(icon.style, { marginBottom: '8px' });
   const msg = document.createElement('div');
   msg.textContent = `Clear ${count} annotation${count > 1 ? 's' : ''}?`;
-  Object.assign(msg.style, { color: '#e0e0e0', fontSize: '13px', fontWeight: '600', marginBottom: '4px' });
+  Object.assign(msg.style, { color: 'var(--vg-color-text, #e0e0e0)', fontSize: '13px', fontWeight: '600', marginBottom: '4px' });
   const sub = document.createElement('div');
   sub.textContent = 'This cannot be undone.';
   Object.assign(sub.style, { color: COLOR.muted, fontSize: '11px', marginBottom: '14px' });
@@ -378,7 +378,7 @@ function createRequestEntry(req, callbacks) {
   capBtn.setAttribute('data-tooltip', 'Capture now');
   Object.assign(capBtn.style, {
     padding: '5px', border: 'none', borderRadius: '6px',
-    background: COLOR.warning, color: '#000', display: 'flex', cursor: 'pointer',
+    background: COLOR.warning, color: 'var(--vg-color-black, #000)', display: 'flex', cursor: 'pointer',
   });
   capBtn.addEventListener('click', () => { callbacks.onRequestCapture(req, entry, capBtn); });
 
@@ -413,9 +413,9 @@ function createRequestEntry(req, callbacks) {
     const guide = document.createElement('div');
     guide.textContent = req.guidance;
     Object.assign(guide.style, {
-      color: '#e0e0e0', fontSize: '12px', lineHeight: '1.4',
+      color: 'var(--vg-color-text, #e0e0e0)', fontSize: '12px', lineHeight: '1.4',
       marginTop: '6px', padding: '6px 8px',
-      background: '#252536', borderRadius: '0', borderLeft: `3px solid ${COLOR.warning}`,
+      background: 'var(--vg-surface-elevated, #252536)', borderRadius: '0', borderLeft: `3px solid ${COLOR.warning}`,
     });
     entry.appendChild(guide);
   }
@@ -478,7 +478,7 @@ function renderServerHistory(list, history) {
       const elBadge = document.createElement('span');
       elBadge.textContent = ann.ancestor;
       Object.assign(elBadge.style, {
-        background: COLOR.bgHover, color: '#93c5fd', fontSize: '10px', fontWeight: '500',
+        background: COLOR.bgHover, color: 'var(--vg-color-info-light, #93c5fd)', fontSize: '10px', fontWeight: '500',
         padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
         fontFamily: FONT_MONO, flexShrink: '0',
       });
@@ -518,7 +518,7 @@ function renderServerHistory(list, history) {
 // ──────────────────────────────────────────────
 
 /** Severity dot color map. */
-const SEV_DOT_COLORS = { critical: '#ef4444', major: '#eab308', minor: '#9ca3af' };
+const SEV_DOT_COLORS = { critical: 'var(--vg-color-error-dim, #ef4444)', major: 'var(--vg-color-highlight, #eab308)', minor: 'var(--vg-color-text-muted, #9ca3af)' };
 
 /** Create a single timeline entry for an annotation. */
 function createEntry(ann, callbacks) {
@@ -585,7 +585,7 @@ function createEntry(ann, callbacks) {
     const sevIcon = document.createElement('span');
     sevIcon.textContent = '!';
     Object.assign(sevIcon.style, {
-      background: SEV_DOT_COLORS[ann.severity] || '#a855f7',
+      background: SEV_DOT_COLORS[ann.severity] || 'var(--vg-color-severity, #a855f7)',
       color: COLOR.white, fontSize: '10px', fontWeight: '900', marginRight: '4px', flexShrink: '0',
       fontFamily: FONT,
       padding: '1px 4px', borderRadius: '3px',
@@ -603,7 +603,7 @@ function createEntry(ann, callbacks) {
     const elBadge = document.createElement('span');
     elBadge.textContent = ann.ancestor;
     Object.assign(elBadge.style, {
-      background: COLOR.bgHover, color: '#93c5fd', fontSize: '10px', fontWeight: '500',
+      background: COLOR.bgHover, color: 'var(--vg-color-info-light, #93c5fd)', fontSize: '10px', fontWeight: '500',
       padding: '1px 4px', borderRadius: '3px', marginRight: '4px',
       fontFamily: FONT_MONO, flexShrink: '0',
     });
@@ -617,7 +617,7 @@ function createEntry(ann, callbacks) {
     const excerpt = rest.join(':').trim().slice(0, 50);
     const sectionTag = document.createElement('span');
     sectionTag.textContent = section;
-    Object.assign(sectionTag.style, { background: '#1e3a5f', color: '#60a5fa', padding: '0 4px', borderRadius: '3px', fontSize: '9px', marginRight: '4px' });
+    Object.assign(sectionTag.style, { background: 'var(--vg-color-info-bg, #1e3a5f)', color: 'var(--vg-color-info, #60a5fa)', padding: '0 4px', borderRadius: '3px', fontSize: '9px', marginRight: '4px' });
     commentText.appendChild(sectionTag);
     commentText.appendChild(document.createTextNode(excerpt + (rest.join(':').trim().length > 50 ? '...' : '')));
   } else {

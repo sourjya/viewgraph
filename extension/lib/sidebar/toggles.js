@@ -134,7 +134,7 @@ export async function renderToggles(container, callbacks = {}) {
   recBtn.textContent = recording ? 'Stop' : 'Start';
   Object.assign(recBtn.style, {
     ...TOGGLE_STYLE,
-    background: recording ? COLOR.errorDark : COLOR.border, color: recording ? '#fca5a5' : COLOR.muted,
+    background: recording ? COLOR.errorDark : COLOR.border, color: recording ? 'var(--vg-color-error-muted, #fca5a5)' : COLOR.muted,
   });
   recBtn.addEventListener('click', () => {
     if (isRecording()) { stopJourney(); stopSession(); }
@@ -166,7 +166,7 @@ export async function renderToggles(container, callbacks = {}) {
     noteInput.placeholder = 'Note for next step (optional)';
     Object.assign(noteInput.style, {
       flex: '1', background: COLOR.bgDark, border: `1px solid ${COLOR.border}`, borderRadius: '4px',
-      color: '#ccc', fontSize: '10px', padding: '3px 6px', fontFamily: FONT,
+      color: 'var(--vg-color-text, #ccc)', fontSize: '10px', padding: '3px 6px', fontFamily: FONT,
       outline: 'none',
     });
     noteInput.addEventListener('focus', () => { noteInput.style.borderColor = COLOR.primary; });

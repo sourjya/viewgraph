@@ -49,7 +49,7 @@ describe('sidebar/styles', () => {
   });
 
   it('(+) DESC_STYLE has muted color', () => {
-    expect(DESC_STYLE.color).toBe('#555');
+    expect(DESC_STYLE.color).toContain('#555');
   });
 
   it('(+) DIVIDER_STYLE has border-top', () => {
