@@ -5,9 +5,9 @@
  * data-testid, and aria-label. Primary input for test generation workflows.
  */
 
-import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { withCapture, jsonResponse } from '#src/utils/tool-helpers.js';
+import { filenameParam } from '#src/utils/shared-params.js';
 import { flattenNodes, filterInteractive, getNodeDetails, isInViewport } from '#src/analysis/node-queries.js';
 import { wrapCapturedText } from '#src/utils/sanitize.js';
 
@@ -24,7 +24,7 @@ export function register(server, _indexer, capturesDir) {
     `Return all clickable/editable elements in a ${PROJECT_NAME} capture with selectors and labels. ` +
     'Includes data-testid and aria-label when present. Sorted by salience (high first).',
     {
-      filename: z.string().describe('Capture filename'),
+      filename: filenameParam,
     },
     async ({ filename }) => {
       return withCapture(filename, capturesDir, (parsed) => {

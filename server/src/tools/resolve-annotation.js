@@ -14,6 +14,7 @@ import { readFile, writeFile } from 'fs/promises';
 import { PROJECT_NAME } from '#src/constants.js';
 import { validateCapturePath } from '#src/utils/validate-path.js';
 import { jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
+import { filenameParam } from '#src/utils/shared-params.js';
 
 /** Allowed resolution actions. */
 const ACTIONS = ['fixed', 'wontfix', 'duplicate', 'invalid'];
@@ -31,7 +32,7 @@ export function register(server, _indexer, capturesDir, options = {}) {
     'resolve_annotation',
     `Mark a ${PROJECT_NAME} annotation as resolved after fixing the issue. Actions: "fixed" (code changed), "wontfix" (intentional), "duplicate", "invalid".`,
     {
-      filename: z.string().describe('Capture filename'),
+      filename: filenameParam,
       annotation_uuid: z.string().min(1).describe('UUID of the annotation to resolve'),
       action: z.enum(ACTIONS).describe('Resolution type'),
       summary: z.string().max(500).describe('Brief description of what was done'),

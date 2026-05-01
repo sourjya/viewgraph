@@ -9,6 +9,7 @@
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { withCapture, jsonResponse, errorResponse } from '#src/utils/tool-helpers.js';
+import { filenameParam } from '#src/utils/shared-params.js';
 import { NOTICE_MIXED } from '#src/utils/tool-helpers.js';
 import { flattenNodes, getNodeDetails } from '#src/analysis/node-queries.js';
 import { wrapComment, wrapCapturedText, detectSuspicious } from '#src/utils/sanitize.js';
@@ -27,7 +28,7 @@ export function register(server, _indexer, capturesDir, options = {}) {
     'Returns only the nodes the user flagged in review mode, with full details. ' +
     'Use annotation_id to focus on a single annotation.',
     {
-      filename: z.string().describe('Capture filename'),
+      filename: filenameParam,
       annotation_id: z.string().optional().describe('Filter to a single annotation by numeric id or uuid'),
     },
     async ({ filename, annotation_id }) => {

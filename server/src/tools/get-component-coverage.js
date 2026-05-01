@@ -11,6 +11,7 @@
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { jsonResponse, withCapture } from '#src/utils/tool-helpers.js';
+import { filenameParam } from '#src/utils/shared-params.js';
 import { flattenNodes, filterInteractive, getNodeDetails } from '#src/analysis/node-queries.js';
 
 /**
@@ -25,7 +26,7 @@ export function register(server, _indexer, capturesDir) {
     `Report data-testid coverage per framework component in a ${PROJECT_NAME} capture. ` +
     'Shows which components have interactive elements missing testids.',
     {
-      filename: z.string().describe('Capture filename'),
+      filename: filenameParam,
     },
     async ({ filename }) => {
       return withCapture(filename, capturesDir, (parsed) => {

@@ -8,9 +8,9 @@
  * @see .kiro/specs/audit-layout/requirements.md FR-4
  */
 
-import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { withCapture, jsonResponse } from '#src/utils/tool-helpers.js';
+import { filenameParam } from '#src/utils/shared-params.js';
 import { analyzeLayout } from '#src/analysis/layout-analysis.js';
 
 /**
@@ -27,7 +27,7 @@ export function register(server, _indexer, capturesDir) {
     'parent container, sibling elements that overlap, and elements extending beyond ' +
     'the viewport. Returns issues with element IDs, selectors, and measurements in pixels.',
     {
-      filename: z.string().describe('Capture filename'),
+      filename: filenameParam,
     },
     async ({ filename }) => {
       return withCapture(filename, capturesDir, (parsed) => {

@@ -171,7 +171,7 @@ Spec: [`.kiro/specs/schema-token-optimization/`](../../.kiro/specs/schema-token-
 |-------|-------|--------|--------|
 | Phase 1 | Measure baseline token counts (actual: ~2,009 tokens, 49 avg/tool) | 0.5 day | **Done** |
 | Phase 2 | Compressed 8 verbose descriptions (2,009 -> 1,699 tokens) | 1 day | **Done** |
-| Phase 3 | Extract shared Zod param schemas | 0.5 day | Not started |
+| Phase 3 | Extracted filenameParam to shared-params.js, migrated 10 tools | 0.5 day | **Done** |
 
 Key budgets: content script < 50KB, sidebar open < 500ms, capture < 2000ms, annotation render < 100ms.
 

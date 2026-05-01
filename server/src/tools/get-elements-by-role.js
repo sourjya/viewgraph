@@ -8,6 +8,7 @@
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { withCapture, jsonResponse } from '#src/utils/tool-helpers.js';
+import { filenameParam } from '#src/utils/shared-params.js';
 import { flattenNodes, filterByRole, getNodeDetails, isInViewport } from '#src/analysis/node-queries.js';
 import { wrapCapturedText } from '#src/utils/sanitize.js';
 
@@ -24,7 +25,7 @@ export function register(server, _indexer, capturesDir) {
     `Filter ${PROJECT_NAME} capture nodes by role: buttons, links, inputs, headings, images, tables, nav, forms. ` +
     'Returns matching elements with id, tag, text, bbox, selector, and attributes.',
     {
-      filename: z.string().describe('Capture filename'),
+      filename: filenameParam,
       role: z.enum(['button', 'link', 'input', 'heading', 'image', 'table', 'nav', 'form'])
         .describe('Element role to filter by'),
     },

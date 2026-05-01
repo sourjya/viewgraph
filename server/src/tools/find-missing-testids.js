@@ -5,9 +5,9 @@
  * Suggests a testid based on tag + text content (kebab-case).
  */
 
-import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { withCapture, jsonResponse } from '#src/utils/tool-helpers.js';
+import { filenameParam } from '#src/utils/shared-params.js';
 import { flattenNodes, filterInteractive, getNodeDetails } from '#src/analysis/node-queries.js';
 import { wrapCapturedText } from '#src/utils/sanitize.js';
 
@@ -30,7 +30,7 @@ export function register(server, _indexer, capturesDir) {
     `Find interactive elements in a ${PROJECT_NAME} capture that lack data-testid attributes. ` +
     'Returns elements with suggested testid values for test coverage improvement.',
     {
-      filename: z.string().describe('Capture filename'),
+      filename: filenameParam,
     },
     async ({ filename }) => {
       return withCapture(filename, capturesDir, (parsed) => {

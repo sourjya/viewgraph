@@ -8,6 +8,7 @@
 import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { withCapture, jsonResponse } from '#src/utils/tool-helpers.js';
+import { filenameParam } from '#src/utils/shared-params.js';
 import { flattenNodes, getNodeDetails } from '#src/analysis/node-queries.js';
 import { auditNode } from '#src/analysis/a11y-rules.js';
 
@@ -26,7 +27,7 @@ export function register(server, _indexer, capturesDir) {
     'buttons without accessible names, insufficient contrast ratios. ' +
     'Includes axe-core results (100+ WCAG rules) when available in the capture.',
     {
-      filename: z.string().describe('Capture filename'),
+      filename: filenameParam,
     },
     async ({ filename }) => {
       return withCapture(filename, capturesDir, (parsed) => {

@@ -7,9 +7,9 @@
  * @see extension/lib/capture-validator.js - client-side equivalent
  */
 
-import { z } from 'zod';
 import { PROJECT_NAME } from '#src/constants.js';
 import { jsonResponse, errorResponse, withCapture } from '#src/utils/tool-helpers.js';
+import { filenameParam } from '#src/utils/shared-params.js';
 
 /** Minimum node count for a useful capture. */
 const MIN_NODES = 5;
@@ -24,7 +24,7 @@ export function register(server, _indexer, capturesDir) {
   server.tool(
     'validate_capture',
     `Check a ${PROJECT_NAME} capture for quality issues: empty pages, missing data, oversized payloads. Returns warnings if the capture may not be useful.`,
-    { filename: z.string().describe('Capture filename') },
+    { filename: filenameParam },
     async ({ filename }) => {
       return withCapture(filename, capturesDir, (parsed) => {
         try {
