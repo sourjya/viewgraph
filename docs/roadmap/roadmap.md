@@ -157,7 +157,7 @@ Spec: [`.kiro/specs/tool-clustering/`](../../.kiro/specs/tool-clustering/require
 | Phase | Scope | Effort | Status |
 |-------|-------|--------|--------|
 | Phase 1 | Gateway factory + cluster config + mode switching | 1-2 days | **Done** |
-| Phase 2 | Wire all 6 clusters (Capture, Audit, Compare, Annotate, Session, Source) | 1 day | Not started |
+| Phase 2 | Wire all 6 clusters - verified end-to-end (discovery + dispatch) | 1 day | **Done** |
 | Phase 3 | Update prompts, measure tokens, switch default to clustered | 0.5 day | Not started |
 
 Key numbers: 41 tools -> 6 gateways. ~8,200 -> ~1,200 schema tokens/turn. ~205,000 tokens saved per 25-turn session.
@@ -170,7 +170,7 @@ Spec: [`.kiro/specs/schema-token-optimization/`](../../.kiro/specs/schema-token-
 | Phase | Scope | Effort | Status |
 |-------|-------|--------|--------|
 | Phase 1 | Measure baseline token counts (actual: ~2,009 tokens, 49 avg/tool) | 0.5 day | **Done** |
-| Phase 2 | Compress all 41 tool descriptions | 1 day | Not started |
+| Phase 2 | Compressed 8 verbose descriptions (2,009 -> 1,699 tokens) | 1 day | **Done** |
 | Phase 3 | Extract shared Zod param schemas | 0.5 day | Not started |
 
 Key budgets: content script < 50KB, sidebar open < 500ms, capture < 2000ms, annotation render < 100ms.
