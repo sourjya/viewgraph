@@ -8,6 +8,48 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ---
 
+## [0.9.7] - 2026-05-01
+
+### Features
+- **Tool clustering**: 41 tools grouped into 6 gateways (vg_capture, vg_audit, vg_compare, vg_annotate, vg_session, vg_source). Set `VG_TOOL_MODE=clustered` to enable. 40% schema token reduction.
+- **@viewgraph/vitest plugin**: DOM capture during Vitest component/unit tests. `captureDOM()` + `captureAndAssert()` with a11y and testid checks. 9 tests.
+- **Framework component names on nodes**: React/Vue/Svelte component names attached to capture nodes. Agent sees `ProductCard` not `div.css-xyz`.
+- **Playwright strict TypeScript types**: Full type definitions for `@viewgraph/playwright` capture payloads.
+- **Extension perf pipeline**: Bundle size gate (350KB/100KB gzip budgets), vitest benchmarks (traverser/serializer), Puppeteer E2E perf tests, GitHub Actions CI workflow.
+- **Schema token optimization**: Compressed 8 verbose descriptions (2,009 -> 1,699 tokens), extracted shared Zod params (filenameParam) to 10 tools.
+- **Mandatory pre-deployment verification**: 6 checks in release.sh (tests, MCP smoke, server live verify, extension build, dep resolution, root dep sync).
+
+### Bug Fixes
+- **SVG rendering regression**: Reverted svgFromString to innerHTML via centralized `setSvg()` helper. All sidebar icons restored.
+- **S3-8 filePath traversal**: Restricted file writes to captures/ directory (was allowing all of .viewgraph/).
+- **14.1 verify-fix.js**: Now checks `result.ok` instead of `result.parsed`, preserving specific error messages.
+- **License fields**: extension/package.json and server/package.json corrected from MIT to AGPL-3.0.
+- **MRR-008 13.3**: source-linker enforces _MAX_FILE_SIZE (200KB) before reading files.
+- **MRR-008 13.22**: Centralized `log()` helper replaces 13 scattered console.error calls.
+- **MRR-008 13.20**: `textResponse()` helper, 7 bare response objects migrated.
+
+### Code Quality
+- **withCapture() migration**: 10 server tools migrated from boilerplate readAndParse to withCapture() wrapper.
+- **Commenting standards**: 15 gaps fixed across 4 files (serializer, verify-fix, traverser, enrichment).
+- **Console/network error tests**: 14 new edge case tests for capture enrichment.
+- **setSvg/svgFromString tests**: 5 regression tests that would have caught the v0.9.6 SVG bug.
+- **Security tests**: 4 filePath traversal tests for get-capture and compare-screenshots.
+- **Dependency pinning**: All production deps pinned to exact versions (no ^ caret ranges).
+
+### Documentation
+- **Responsible AI mission**: Environmental sustainability messaging across README, gitbook, npm-readme, product positioning.
+- **Environmental impact infographic**: SVG with cited research (IEA, Goldman Sachs, arXiv).
+- **Known capture limitations**: React Native, Svelte, Canvas, cross-origin iframes, closed shadow DOM, print stylesheets, hover/focus states.
+- **ViewGraph vs DevTools MCP positioning**: Perception-action architecture with cited research (arXiv 2504.20464, 2412.13501, 2604.01535).
+- **Competitive annotation landscape**: Cursor Design Mode, Windsurf, Pi-Annotate, patent risk assessment.
+- **4 review reports**: SRR-008 (security T3), MRR-009 (maintainability), dependency risk, test quality.
+- **15 specs created**: tool clustering, schema optimization, extension perf pipeline, framework capture, vitest plugin, playwright python, playwright types, angular capture, documented gaps, session recorder, tutorial designer, tutorial distribution.
+
+### Tests
+- **1841 tests** across 3 packages (1280 extension + 552 server + 9 vitest plugin). Was 1795 at start of session.
+
+---
+
 ## [0.9.1] - 2026-04-29 (post-release fixes)
 
 ### MRR-008 Phase 3 (2026-04-30)
