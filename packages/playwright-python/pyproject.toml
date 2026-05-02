@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "viewgraph-playwright"
+version = "0.1.0"
+description = "Structured DOM capture for Playwright Python tests - the UI perception layer for AI coding agents"
+readme = "README.md"
+license = "AGPL-3.0-only"
+requires-python = ">=3.9"
+authors = [{ name = "Sourjya S. Sen" }]
+keywords = ["playwright", "testing", "dom", "capture", "mcp", "ai", "accessibility"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Pytest",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Testing",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "pytest-asyncio>=0.21", "pytest-playwright>=0.4"]
+
+[project.urls]
+Homepage = "https://github.com/sourjya/viewgraph"
+Documentation = "https://chaoslabz.gitbook.io/viewgraph"
+Repository = "https://github.com/sourjya/viewgraph"
+
+[project.entry-points.pytest11]
+viewgraph = "viewgraph_playwright.conftest"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/viewgraph_playwright"]
