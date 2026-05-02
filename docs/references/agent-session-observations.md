@@ -4,7 +4,7 @@ Real-world agent debugging sessions captured for product improvement. Names deid
 
 ## Date: 2026-05-02
 
-### TracePulse Chokepoints (from Piktor project sessions)
+### TracePulse Chokepoints (from canvas-app project sessions)
 
 | CP | What happened | What TP could have done | Wishlist |
 |---|---|---|---|
