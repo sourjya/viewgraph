@@ -2,11 +2,11 @@
 
 ## Current Version
 
-v0.9.1
+v0.9.8
 
 ## Status Summary
 
-**Shipped:** 41 MCP tools, 12 prompt templates, 21 enrichment collectors, 1797 tests (1259 extension + 538 server)
+**Shipped:** 41 MCP tools, 12 prompt templates, 21 enrichment collectors, 1872 tests (1280 extension + 561 server + 22 playwright-python + 9 vitest)
 
 **All major features complete.** Current focus: experiment-validated optimizations and cross-tool integration.
 
@@ -24,7 +24,7 @@ These require experiments to validate before implementation. Each has a detailed
 | Enrichment Opt-In | Token Efficiency | ≥3 sections >70% empty | **FAIL (2/10)** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
 | Selector Stability | Capture Quality | >90% stability | **PASS (97.2%)** | [token-efficiency-experiments.md](../ideas/token-efficiency-experiments.md) |
 
-## Recently Shipped (v0.9.1)
+## Recently Shipped (v0.9.8)
 
 | Feature | Description |
 |---------|-------------|
@@ -62,8 +62,8 @@ Based on [v3 Agentic Enhancements Research](../architecture/viewgraph-v3-agentic
 | 3 | Structural fingerprint in metadata | **Shipped v0.8.0** | Cache-hit detection for unchanged pages |
 | 4 | Error-to-node correlation (correlatedRefs) | **Shipped v0.8.0** | Eliminates 200-500 tokens LLM reasoning per error |
 | 5 | lastActionTarget in metadata | **Shipped v0.8.0** | Agent knows what it just acted on |
-| 6 | Compact enum codec (compactCodec) | **Shipped v0.9.1** | 70-87% on repeated structures |
-| 7 | Viewport-first node ordering | **Shipped v0.9.1** | 20-30% faster scan-to-first-match |
+| 6 | Compact enum codec (compactCodec) | **Shipped v0.9.8** | 70-87% on repeated structures |
+| 7 | Viewport-first node ordering | **Shipped v0.9.8** | 20-30% faster scan-to-first-match |
 
 ### Phase 2 - v3.0 (Medium effort)
 
@@ -79,9 +79,9 @@ Based on [v3 Agentic Enhancements Research](../architecture/viewgraph-v3-agentic
 
 | # | Enhancement | Status | Token Impact |
 |---|---|---|---|
-| 13 | Set-of-Marks section | **Shipped v0.9.1** | Visual + text ref equivalence |
-| 14 | Checkpoint/resume envelope | **Shipped v0.9.1** | Multi-step recovery |
-| 15 | Spatial index quadtree | **Shipped v0.9.1** | O(log n) point/region queries |
+| 13 | Set-of-Marks section | **Shipped v0.9.8** | Visual + text ref equivalence |
+| 14 | Checkpoint/resume envelope | **Shipped v0.9.8** | Multi-step recovery |
+| 15 | Spatial index quadtree | **Shipped v0.9.8** | O(log n) point/region queries |
 | 16 | MCP tool consolidation (41 → 5) | Planned | Schema overhead reduction |
 
 ## Code Health Sprint (MRR-008)
@@ -198,7 +198,7 @@ Based on [ViewGraph & TracePulse v1.0 Platform Strategy](../references/viewgraph
 |---|---|---|---|---|
 | 1 | Framework Component Capture (React/Vue/Angular) | React fiber + Vue 3 + Svelte already in collector. Component names now attached to capture nodes. Angular pending. (SO 2025, Octoverse 2025) | 2-3 days | **Partial** [Spec](../../.kiro/specs/framework-component-capture/requirements.md) |
 | 2 | @viewgraph/vitest Plugin | Vitest is 2-4x faster than Jest, default for new Vite projects. Closes gap between "test failed" and "here's what the UI looked like." Complements @viewgraph/playwright for E2E. (SO 2025, JetBrains 2025) | 2-3 days | [`.kiro/specs/viewgraph-vitest/`](../../.kiro/specs/viewgraph-vitest/requirements.md) |
-| 3 | Playwright Python Fixture | Python is #1 growth language (+7pp in SO 2025). FastAPI/Django teams run Playwright Python for E2E. Completes the Python story. Published as `viewgraph-playwright` on PyPI. (SO 2025) | 2-3 days | [`.kiro/specs/playwright-python/`](../../.kiro/specs/playwright-python/requirements.md) |
+| 3 | Playwright Python Fixture | Python is #1 growth language (+7pp in SO 2025). Published as viewgraph-playwright on PyPI. | 2-3 days | **Done** [`.kiro/specs/playwright-python/`](../../.kiro/specs/playwright-python/requirements.md) |
 | 4 | Playwright Strict TypeScript Types | index.d.ts with full capture payload types. Strict TS projects get type inference. (Octoverse 2025) | 1-2 days | **Done** [Spec](../../.kiro/specs/playwright-strict-types/requirements.md) |
 | 5 | Angular Component Tree Capture | 18.2% usage, enterprise segment with highest agent tool adoption and willingness to pay. Pairs with Spring Boot backend story. (SO 2025) | 2-3 days | [`.kiro/specs/angular-component-capture/`](../../.kiro/specs/angular-component-capture/requirements.md) |
 | 6 | Documented Capture Gaps | Svelte has 62.4% admiration from 7.2% usage - teams WILL ask. React Native is dominant mobile framework. Documenting gaps prevents user frustration and shows transparency. (SO 2025) | 0.5 day | [`.kiro/specs/documented-gaps/`](../../.kiro/specs/documented-gaps/requirements.md) |

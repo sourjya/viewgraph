@@ -1,6 +1,6 @@
 {
   "name": "@viewgraph/playwright",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "ViewGraph capture fixture for Playwright - capture structured DOM snapshots during E2E tests",
   "type": "module",
   "main": "index.js",

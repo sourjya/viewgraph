@@ -1,6 +1,6 @@
 {
   "name": "@viewgraph/vitest",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "ViewGraph DOM capture plugin for Vitest - capture structured DOM snapshots during component and unit tests",
   "license": "AGPL-3.0",
   "type": "module",

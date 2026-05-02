@@ -8,6 +8,26 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ---
 
+## [0.9.8] - 2026-05-03
+
+### Features
+- **Shadow DOM color tokens**: 43 primitive + 30 semantic CSS custom properties via Constructable Stylesheets (`adoptedStyleSheets`). Zero hardcoded hex colors in sidebar. Theme switching ready via `replaceSync()`.
+- **CI hex color gate**: GitHub Actions check prevents new hardcoded hex colors in sidebar files.
+- **viewgraph-playwright (Python)**: PyPI package for structured DOM capture during Playwright Python E2E tests. 22 tests. `capture()`, `annotate()`, `snapshot()`, auto-capture on test failure.
+- **Documented capture gaps**: `gitbook/reference/limitations.md` covers React Native, Svelte, Canvas, iframes, shadow DOM, print, hover.
+
+### Code Health
+- **MRR-010 15.2**: All `console.error`/`process.stderr.write` calls migrated to centralized `log()` helper across 8 server files.
+- **MRR-010 15.8**: All bare `{ content: [...] }` responses migrated to `textResponse()` across all 41 tools.
+- **MRR-010 15.11**: 117 hardcoded hex colors across 19 sidebar files extracted to `tokens.js` token system.
+- **readAndParseMulti**: Returns `{ results, warnings }` object, 7 callers updated.
+- **ws-server**: Error handler now logs instead of silent catch.
+
+### Security
+- **SRR-009**: S3-9 shell injection in check-bundle-size.js fixed (uses `zlib.gzipSync()` instead of shell `gzip`). S16-3 label cap enforced.
+
+---
+
 ## [0.9.7] - 2026-05-01
 
 ### Features
