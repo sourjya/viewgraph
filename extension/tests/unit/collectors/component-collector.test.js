@@ -291,3 +291,77 @@ describe('deduplication', () => {
     expect(components.filter((c) => c.component === 'Card').length).toBe(1);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Angular component extraction
+// ---------------------------------------------------------------------------
+
+describe('Angular detection', () => {
+  beforeEach(() => {
+    delete window.ng;
+  });
+
+  it('(+) detects Angular via ng-version attribute', () => {
+    document.body.innerHTML = '<app-root ng-version="17.0.0"></app-root>';
+    expect(detectFramework()).toBe('angular');
+  });
+
+  it('(+) detects Angular via ng.getComponent debug API', () => {
+    window.ng = { getComponent: () => null };
+    expect(detectFramework()).toBe('angular');
+  });
+});
+
+describe('Angular components', () => {
+  beforeEach(() => {
+    delete window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+  });
+
+  it('(+) extracts component name via ng.getComponent (dev mode)', () => {
+    document.body.innerHTML = '<app-root ng-version="17.0.0"></app-root>';
+    const el = document.createElement('app-header');
+    document.body.appendChild(el);
+
+    class AppHeaderComponent {}
+    window.ng = {
+      getComponent: (node) => node.tagName === 'APP-HEADER' ? new AppHeaderComponent() : null,
+    };
+
+    const { framework, components } = collectComponents();
+    expect(framework).toBe('angular');
+    expect(components.some((c) => c.component === 'AppHeaderComponent')).toBe(true);
+  });
+
+  it('(+) handles ng.getComponent throwing for non-component elements', () => {
+    document.body.innerHTML = '<app-root ng-version="17.0.0"></app-root>';
+    const el = document.createElement('div');
+    document.body.appendChild(el);
+
+    window.ng = {
+      getComponent: () => { throw new Error('not a component'); },
+    };
+
+    const { framework, components } = collectComponents();
+    expect(framework).toBe('angular');
+    expect(components.length).toBe(0);
+  });
+
+  it('(-) returns no components in production mode (no ng debug API)', () => {
+    document.body.innerHTML = '<app-root ng-version="17.0.0"><app-header></app-header></app-root>';
+
+    const { framework, components } = collectComponents();
+    expect(framework).toBe('angular');
+    expect(components.length).toBe(0);
+  });
+
+  it('(+) falls back to custom element tag for _nghost elements', () => {
+    document.body.innerHTML = '<app-root ng-version="17.0.0"></app-root>';
+    const el = document.createElement('app-product-card');
+    el.setAttribute('_nghost', '');
+    document.body.appendChild(el);
+
+    const { framework, components } = collectComponents();
+    expect(framework).toBe('angular');
+    expect(components.some((c) => c.component === 'AppProductCardComponent')).toBe(true);
+  });
+});

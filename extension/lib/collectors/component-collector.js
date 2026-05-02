@@ -31,6 +31,8 @@ export function detectFramework() {
   if (document.querySelector('[data-v-app]') || findVueRoot()) return 'vue';
   // Svelte: compiled components leave __svelte_meta
   if (findSvelteRoot()) return 'svelte';
+  // Angular: ng.getComponent debug API or ng-version attribute
+  if (findAngularRoot()) return 'angular';
   return 'none';
 }
 
@@ -146,6 +148,49 @@ function getSvelteComponentName(el) {
   return null;
 }
 
+/**
+ * Find an Angular root by checking for ng-version attribute or ng debug API.
+ * Angular 14+ sets ng-version on the root component element.
+ * Debug API (ng.getComponent) is available when Angular runs in dev mode.
+ * @returns {boolean}
+ */
+function findAngularRoot() {
+  // ng-version attribute on root component (works in both dev and prod)
+  if (document.querySelector('[ng-version]')) return true;
+  // ng debug API (dev mode only)
+  if (typeof window.ng?.getComponent === 'function') return true;
+  return false;
+}
+
+/**
+ * Extract Angular component name from a DOM element.
+ * Uses ng.getComponent() debug API (dev mode) to get the component instance,
+ * then reads the constructor name. Falls back to the element's tag name for
+ * Angular custom elements (app-*, mat-*) in production mode.
+ * @param {Element} el
+ * @returns {string|null}
+ */
+function getAngularComponentName(el) {
+  // Dev mode: ng.getComponent() returns the component instance
+  if (typeof window.ng?.getComponent === 'function') {
+    try {
+      const comp = window.ng.getComponent(el);
+      if (comp) {
+        return comp.constructor?.name || null;
+      }
+    } catch {
+      // Element is not a component host - expected for plain elements
+    }
+  }
+  // Fallback: Angular custom element tags (app-header, mat-button, etc.)
+  const tag = el.tagName?.toLowerCase();
+  if (tag && (tag.startsWith('app-') || tag.startsWith('mat-') || tag.includes('-')) && el.hasAttribute('_nghost')) {
+    // Convert kebab-case tag to PascalCase: app-product-card -> AppProductCard
+    return tag.split('-').map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join('') + 'Component';
+  }
+  return null;
+}
+
 /** Build a compact selector for an element. */
 /**
  * Collect component names and source paths from the live DOM.
@@ -173,6 +218,8 @@ export function collectComponents() {
       name = getVueComponentName(node);
     } else if (framework === 'svelte') {
       name = getSvelteComponentName(node);
+    } else if (framework === 'angular') {
+      name = getAngularComponentName(node);
     }
 
     if (name && !seen.has(name + ':' + buildSelector(node))) {
