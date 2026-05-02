@@ -6,7 +6,7 @@ v0.9.8
 
 ## Status Summary
 
-**Shipped:** 41 MCP tools, 12 prompt templates, 21 enrichment collectors, 1872 tests (1280 extension + 561 server + 22 playwright-python + 9 vitest)
+**Shipped:** 41 MCP tools, 12 prompt templates, 21 enrichment collectors, 1878 tests (1286 extension + 561 server + 22 playwright-python + 9 vitest)
 
 **All major features complete.** Current focus: experiment-validated optimizations and cross-tool integration.
 
