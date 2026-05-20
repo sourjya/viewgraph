@@ -133,7 +133,7 @@ export default defineBackground(() => {
   // Show welcome page on first install
   chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason === 'install') {
-      chrome.tabs.create({ url: chrome.runtime.getURL('welcome/index.html') });
+      chrome.tabs.create({ url: chrome.runtime.getURL('welcome.html') });
     }
   });
 
