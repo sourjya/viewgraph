@@ -6,6 +6,14 @@ User-facing changes only. For the full engineering changelog, see [GitHub](https
 
 ---
 
+## v0.9.9 - May 20, 2026
+
+### Bug Fixes
+- **Record Flow fixed** - clicks now pass through to the web app during recording instead of being intercepted by the annotation overlay ([#1](https://github.com/sourjya/viewgraph/issues/1))
+- **Welcome page fixed** - no longer shows ERR_FILE_NOT_FOUND on fresh Chrome Web Store install
+
+---
+
 ## v0.8.0 - April 29, 2026
 
 ### v3 Format Phase 1 (format v2.4.0)

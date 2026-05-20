@@ -8,6 +8,18 @@ Previous entries: [CHANGELOG.2026-04-08.md](./CHANGELOG.2026-04-08.md) (project 
 
 ---
 
+## [0.9.9] - 2026-05-20
+
+### Bug Fixes
+- **BUG-031**: Record Flow now allows page interaction. Annotate mode pauses during recording so clicks pass through to the web app. Resumes on stop. ([#1](https://github.com/sourjya/viewgraph/issues/1))
+- **BUG-032**: Welcome page no longer shows ERR_FILE_NOT_FOUND on fresh Chrome Web Store install. Fixed WXT build path mismatch (`welcome/index.html` → `welcome.html`).
+
+### Code Health
+- Added `resume()` to annotate.js (inverse of `pause()`), enabling pause/resume cycles without destroying annotation state.
+- 7 regression tests for BUG-031.
+
+---
+
 ## [0.9.8] - 2026-05-03
 
 ### Features
