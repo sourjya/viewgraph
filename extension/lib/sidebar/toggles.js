@@ -13,6 +13,7 @@ import { ATTR } from '#lib/selector.js';
 import { startWatcher, stopWatcher, isWatcherEnabled, wasHmrTriggered } from '#lib/session/continuous-capture.js';
 import { isRecording, startSession, stopSession, getState } from '#lib/session/session-manager.js';
 import { startJourney, stopJourney } from '#lib/session/journey-recorder.js';
+import { pause as pauseAnnotate, resume as resumeAnnotate } from '#lib/annotate.js';
 import * as transport from '#lib/transport-client.js';
 import { COLOR, FONT, TOGGLE_STYLE, TOGGLE_ON, TOGGLE_OFF, LABEL_STYLE, DESC_STYLE, DIVIDER_STYLE, DIVIDER_SUBTLE_STYLE } from './styles.js';
 
@@ -137,8 +138,14 @@ export async function renderToggles(container, callbacks = {}) {
     background: recording ? COLOR.errorDark : COLOR.border, color: recording ? 'var(--vg-color-error-muted)' : COLOR.muted,
   });
   recBtn.addEventListener('click', () => {
-    if (isRecording()) { stopJourney(); stopSession(); }
-    else {
+    if (isRecording()) {
+      stopJourney();
+      stopSession();
+      // BUG-031: Re-enable annotate mode so clicks are intercepted again
+      resumeAnnotate();
+    } else {
+      // BUG-031: Disable annotate mode so clicks pass through to the web app
+      pauseAnnotate();
       startSession();
       startJourney(({ url, trigger: src }) => {
         chrome.runtime.sendMessage({ type: 'send-review', includeCapture: true, sessionNote: `Auto: ${src} to ${url}` }, () => {});

@@ -836,6 +836,17 @@ export function pause() {
   window.removeEventListener('scroll', onScrollReposition, { capture: true });
 }
 
+/** Resume interaction after pause() - re-adds listeners. No-op if not active or not paused. */
+export function resume() {
+  if (!active) return;
+  document.addEventListener('mousedown', onMouseDown, true);
+  document.addEventListener('mousemove', onMouseMove, true);
+  document.addEventListener('mouseup', onMouseUp, true);
+  document.addEventListener('click', onClick, true);
+  document.addEventListener('wheel', onWheel, { capture: true, passive: false });
+  window.addEventListener('scroll', onScrollReposition, { passive: true, capture: true });
+}
+
 export function stop() {
   if (!active) return;
   active = false;
